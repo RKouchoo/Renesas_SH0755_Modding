@@ -17,5 +17,4 @@ None of the public ECU definitions for the 3.0 H6 have AVLS mapped out. Denso ma
 | 3 | Repurpose the three other O2 sensor circuits for other hardware. | Planned |
 | 4 | Reuse the EVAP solenoid as an EBCS solenoid and implement boost control strategies similar to the 32-bit WRX ECUs. | Planned |
 
-For current engineering notes, see [D2WD610H_RE_NOTES.md](D2WD610H_RE_NOTES.md).
-    
+For current engineering notes, see [D2WD610H_RE_notes.md](D2WD610H_RE_notes.md).
