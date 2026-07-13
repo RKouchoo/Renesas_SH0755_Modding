@@ -1,0 +1,213 @@
+# D2WD610H — EZ30R Denso ECU Reverse Engineering Notes
+
+Working document. Updated as analysis progresses in Ghidra (live MCP session).
+
+---
+
+## 1. ROM Identity (confirmed)
+
+| Field | Value |
+|---|---|
+| CALID | **D2WD610H** (ASCII @ 0x7BDDD; internal id @ 0x2000) |
+| ECU ID | **3C5A387116** (packed @ 0x7BDA8) |
+| Processor | **Renesas SH7055** (SH-2E core, big-endian) |
+| Flash size | **512 KB** (0x00000000–0x0007FFFF) |
+| Vehicle | 2005 ADM Subaru Liberty 3.0R **MT** (BLE) |
+| Reset vector | initial PC 0x000009E0, initial SP 0xFFFFDFA0 |
+| Def match | D2WD610A.xml contains a D2WD610H rom block (ecuid 3C5A387116) — exact match, table set incomplete |
+
+## 2. Memory Map (SH7055)
+
+| Region | Range | Notes |
+|---|---|---|
+| Flash | 0x00000000–0x0007FFFF | ROM image, base = file offset |
+| On-chip RAM | 0xFFFF0000–0xFFFFDFFF | directly referenced by code (good xref anchors); stack at 0xFFFFDFA0 |
+| Peripheral regs | 0xFFFFE400+ | I/O ports, timers, ADC — solenoid/sensor anchors live here |
+
+**Denso literal trick:** RAM addresses ≥0xFFFF8000 are stored as *16-bit* PC-relative
+literals (`mov.w`) and sign-extended — a 2-byte pool entry `c17c` means 0xFFFFC17C.
+ROM pointers/descriptors are 4-byte `mov.l` literals. Read pools with `xxd` on the .bin
+(flash base = file offset) when Ghidra shows opaque `DAT_`/`PTR_` names.
+
+## 3. Table Access Architecture (SOLVED)
+
+### Interpolation core (all renamed in Ghidra)
+
+| Address | Name | Role |
+|---|---|---|
+| 0x0000209C | `table2d_lookup_dispatch` | **Central single-axis lookup.** r4=descriptor, fr4=x → float. 100+ call sites. |
+| 0x00002150 | `table3d_lookup_dispatch` | **Central two-axis (bilinear) lookup.** r4=descriptor, fr4=x, fr5=y → float. |
+| 0x000026E0 | `axis_index_search_float` | Walks float axis down; returns index (r0) + fraction (fr0). |
+| 0x000027D0 | `axis_pair_index_search` | Runs axis search for both axes (r2/r3 idx, fr0/fr1 frac). |
+| 0x00002118 | `table2d_lookup_u16_raw_int` | 1-axis u16 lookup, truncated to int, no rescale. |
+| 0x000020E0 | `table2d_lookup_u8_raw_int` | 1-axis u8 lookup → int. |
+| 0x00002194 / 0x000021B0 | `table3d_lookup_u8/u16_raw_int` | 2-axis integer variants. |
+| 0x000027F0/2858/28A4/28C8/2838 | `interp_1axis_float32/u8/u16/s8/s16` | Leaf linear interp (fmac). Jump table @0x20CC. |
+| 0x000025F8/2684/26B0/2628/2654 | 2-axis leaf handlers (float32/u8/u16/s8/s16) | Jump table @0x2180. 0x25F8/2628/2654 not defined as functions in Ghidra yet (jump-table-only targets) — rename pending. |
+
+### Descriptor layouts
+
+**1-axis (RomRaider "2D"):** `+0x00` u16 axis_len, `+0x02` u8 type, `+0x04` axis ptr
+(float[]), `+0x08` data ptr, `+0x0C` float scale, `+0x10` float offset.
+`result = scale*raw + offset` (skipped for type 0 = float32 data).
+Type codes (byte = offset into handler fnptr table): 0=float32, 4=u8, 8=u16, 0xC=s8, 0x10=s16.
+Type-0 descriptors may be packed to 0xC bytes (no scale fields).
+
+**2-axis (RomRaider "3D"), stride 0x1C:** `+0x00` u16 xlen, `+0x02` u16 ylen,
+`+0x04` xaxis ptr, `+0x08` yaxis ptr, `+0x0C` data ptr, `+0x10` u8 type,
+`+0x14` float scale, `+0x18` float offset.
+
+### Table→code recipe (THE unlock — old "dead end" was mid-struct queries)
+
+1. `get_xrefs_to(table_data_addr)` → returns the descriptor **data-ptr slot**.
+2. Subtract to descriptor **start**: slot−0x08 (1-axis) or slot−0x0C (2-axis).
+3. `get_xrefs_to(descriptor_start)` → literal-pool ref in the **consumer function** (shows as [PARAM]/[DATA]).
+
+Verified: Base Timing A data 0x78AA0 → slot 0x60114 → desc 0x60108 → consumer 0x28418.
+
+## 4. Ignition Timing Architecture (SOLVED)
+
+| Address | Name |
+|---|---|
+| 0x00028418 | `ign_base_timing_map_blend` |
+| 0x000284B8 | `ign_base_timing_select` |
+| 0x00028354 | `ign_blend_factor_from_advance_multiplier` |
+| 0x000281FC | `ign_map_switch_flag_debounce` |
+
+- Six 3D maps via consecutive descriptors (stride 0x1C): **A**=0x60108, **B**=0x60124,
+  **C**=0x60140, **D**=0x6015C, **E**=0x60178, **F**=0x60194. All u8,
+  `deg = 0.3515625*raw − 20`, common X axis 0x780BC. C and F have 20-row Y axes (rest 14).
+- Raw results → RAM 0xFFFFC154/C158/C15C (A,B,C) and 0xFFFFC160/C164/C168 (D,E,F).
+- **Blend:** k = float @ **0xFFFFC17C**; outputs
+  `0xFFFFC16C = A*k + D*(1−k)`, `0xFFFFC170 = B*k + E*(1−k)`, `0xFFFFC174 = C*k + F*(1−k)`.
+  A/B/C = advance side (primary), D/E/F = retard side (reference).
+- **k computation** (`0x28354`): k = float@0xFFFFC974 + float@0xFFFFC978 (knock-learned
+  advance multiplier + step term), clamped; forced to 1.0 when a status check passes.
+- **Selection** (`0x284B8`) → selected base timing @ **0xFFFFC184**:
+  - default: A/D blend (0xFFFFC16C)
+  - B/E (0xFFFFC170) when status fn==1 and bit 0x80 of flag byte 0xFFFFC180
+  - **C/F (0xFFFFC174) when cam mode @0xFFFFCD86 == 3 (high cam) and debounced bit 0x40
+    of 0xFFFFC180** → C/F are the AVLS high-cam maps (hence 20 rows).
+  - Final (after extra 1-axis lookup, desc 0x5FC18) → 0xFFFFC150 and 0xFFFFC188.
+- Flag debounce (`0x281FC`): bit 0x40 set after mode==3 held for a delay from 2D u16 table
+  desc **0x5FFF8**; cleared on 3→1. Bit 0x80 via counter vs ROM u16 @0x77D34.
+
+## 5. AVLS (variable lift) — SOLVED except final port write
+
+| Address | Name |
+|---|---|
+| 0x00040168 | `avls_cam_mode_state_machine` |
+| 0x000405B2 | `avls_mode_commit_copy` (0xFFFFCD87 → 0xFFFFCD86) |
+| 0x000405CC | `avls_osv_actuation_gate` |
+| 0x00040C94/40798/40CE6 | `cam_actuator_output_set_1/2/3` (called with 0|1) |
+
+**RAM cells:** target mode **0xFFFFCD87** (1=low cam, 3=high cam), committed **0xFFFFCD86**,
+current 0xFFFFCD9C, mode timer 0xFFFFCD84 (u16, reload from ROM @0x7D468, −1/tick),
+hysteresis flags 0xFFFFCD9E (bit4 = RPM>4000 latch, bit0x10 = engine running),
+status latch 0xFFFFCD8F, threshold caches 0xFFFFCD94/0xFFFFCD98, defer flag 0xFFFFCD9D.
+
+**Switchover is a load-vs-RPM line, not a single RPM constant:**
+
+| Item | ROM addr | Value |
+|---|---|---|
+| Threshold table 1 data (7×float) | **0x7D67C** | 100,100,30,28,25,15,5 (load units) |
+| Table 1 X axis (RPM, 7×float) | 0x7D660 | 1600,2000,2400,2800,3200,3600,4000 |
+| Threshold table 2 data (7×float) | **0x7D6B4** | 100,100,90,50,30,10,0 |
+| Table 2 X axis (RPM, 7×float) | 0x7D698 | 2000,2050,2400,2800,3200,3600,4000 |
+| Hard high-cam engage RPM | **0x7D4BC** | float 4000.0 |
+| Hard release RPM (hysteresis) | **0x7D4B8** | float 3800.0 |
+| Threshold hysteresis offsets | 0x7D480/0x7D484 | 10.0 / 10.0 |
+| Actuation RPM gate | 0x7D4AC | 3000.0 |
+| Engine-run RPM gate | 0x7D4A8/0x7D4A4 | 512.0 / 510.0 |
+| Sentinel band (table-result check) | 0x7D4A0/0x7D49C | 10000.0 / 9000.0 |
+| Fallback thresholds | 0x7D4B0/0x7D4B4 | 15.0 / 15.0 |
+| Mode timer reload (u16) | 0x7D468 | — |
+
+Descriptors: table 1 = **0x60F58**, table 2 = **0x60F64** (compact 0xC float type).
+Compared load variable: float @ **0xFFFFCF94**; RPM: float @ **0xFFFFB544**.
+Which table is engage vs release: direction not yet pinned (they cross ~3400 rpm) — TODO.
+
+Def fragment written to `avls_def_fragment.xml` in this directory.
+
+**Open sub-item:** the final OSV port write. `cam_actuator_output_set_*` descend into
+float target/feedback layers (AVCS-style continuous control mixed in); the binary port
+bit is likely flushed by a central output-image task. Next session: xref SH7055 port
+data registers (datasheet) instead of descending the call tree.
+
+## 6. Key RAM anchors (confirmed this session)
+
+| RAM addr | Meaning | Evidence |
+|---|---|---|
+| **0xFFFFB544** | Engine RPM (float) | compared vs 4000/3800/512/510 rpm consts; input to switch tables; used across ign+AVLS |
+| 0xFFFFB538 | engine param (float, checked vs 10000/9000 band) — likely RPM-related raw | AVLS state machine |
+| 0xFFFFB46C | engine param (float) | AVLS state machine compare |
+| **0xFFFFCF94** | Load-type value compared to AVLS threshold tables | avls_cam_mode_state_machine |
+| 0xFFFFC17C | Ignition blend factor k (float 0..1) | written 0x28354 |
+| 0xFFFFC974/0xFFFFC978 | Advance-multiplier terms summed into k | 0x28354 |
+| 0xFFFFC184 | Selected base timing (deg, float) | 0x284B8 |
+| 0xFFFFC150 / 0xFFFFC188 | Final base timing after extra lookup | 0x284B8 |
+| 0xFFFFCD86/87 | AVLS cam mode committed/target (1 low, 3 high) | 0x40168/0x405B2 |
+| 0xFFFFB528 | Phase/crank counter used to sync OSV actuation | 0x405CC |
+
+## 7. Open Targets / TODO
+
+- [x] Central table-interpolation routines (2D+3D, all handlers) — DONE
+- [x] Timing selection + blend math — DONE (see §4)
+- [x] AVLS switchover thresholds + def entries — DONE (see §5)
+- [ ] AVLS: physical OSV port write (via SH7055 port register xrefs — datasheet needed)
+- [ ] Which AVLS threshold table = engage vs release (disassemble compare section of 0x40168)
+- [ ] O2/closed-loop enable per bank (factory O2 delete). Started: found
+      `cl_ol_transition_delay_update` @0x22756 (consumer of "CL to OL Transition with Delay
+      (Throttle)" desc 0x5F40C and a BPW desc 0x5F908). **CL/OL state flag byte =
+      0xFFFFBE38** (bit 0x40 throttle-above, 0x20 BPW-above, 0x80 read by delay counter);
+      thresholds cached @0xFFFFBE2C (throttle) / 0xFFFFBE30 (BPW); counters
+      0xFFFFBE16/BE18/BE1A/BE14/BE28; hysteresis consts 0x76254/0x76258 (match def).
+      NEXT: xref readers of 0xFFFFBE38 → closed-loop enable decision → per-bank split.
+      Note: DTC config bytes (0x5BDAx) have NO direct xrefs (computed-base DTC records) —
+      but they are directly flashable to mask O2 DTCs for the O2 delete.
+- [ ] Spare ADC channel (for external wideband input)
+- [ ] Airflow model (speed density — capstone)
+- [ ] Define 0x25F8/0x2628/0x2654 as functions in Ghidra and rename (interp_2axis_float32/s8/s16)
+- [ ] Identify status fns feeding ign_base_timing_select (0x27088, 0x6504C) and the B/E map condition (cruise?)
+
+## 8. Rename Log (Ghidra, applied)
+
+_(underscore names only — strict naming enforcement is ON)_
+- 0x00010690 → **fnptr_task_list_dispatch** — init/scheduler sequential fn-ptr caller
+- 0x0000b536 → **fp_support_helper** — SH-2E FP register support
+- 0x0000209C → **table2d_lookup_dispatch**
+- 0x00002150 → **table3d_lookup_dispatch**
+- 0x000026E0 → **axis_index_search_float**
+- 0x000027D0 → **axis_pair_index_search**
+- 0x00002118 → **table2d_lookup_u16_raw_int**
+- 0x000020E0 → **table2d_lookup_u8_raw_int**
+- 0x00002194 → **table3d_lookup_u8_raw_int**
+- 0x000021B0 → **table3d_lookup_u16_raw_int**
+- 0x000027F0 → **interp_1axis_float32**, 0x2858 → **interp_1axis_u8**, 0x28A4 → **interp_1axis_u16**, 0x28C8 → **interp_1axis_s8**, 0x2838 → **interp_1axis_s16**
+- 0x00002684 → **interp_2axis_u8**, 0x26B0 → **interp_2axis_u16** (0x25F8/2628/2654 pending function definition)
+- 0x00028418 → **ign_base_timing_map_blend**
+- 0x000284B8 → **ign_base_timing_select**
+- 0x00028354 → **ign_blend_factor_from_advance_multiplier**
+- 0x000281FC → **ign_map_switch_flag_debounce**
+- 0x00040168 → **avls_cam_mode_state_machine**
+- 0x000405B2 → **avls_mode_commit_copy**
+- 0x000405CC → **avls_osv_actuation_gate**
+- 0x00040C94/40798/40CE6 → **cam_actuator_output_set_1/2/3**
+- 0x00022756 → **cl_ol_transition_delay_update**
+
+Decompiler comments set at: 0x209C, 0x2150, 0x28418, 0x284B8, 0x40168, 0x405CC, 0x281FC.
+
+## 9. Session Log / Method Notes
+
+- 2026-07-13: Interpolator found via literal-pool chain: xref descriptor-adjacent data →
+  caller passes descriptor as PARAM → fnptr in pool → 0x209C. All goals 1–3 architecture
+  decoded in one session using the table→code recipe (§3) + xxd literal-pool dumps (§2).
+- Descriptor consumers show up as [PARAM] xrefs on the descriptor start; [DATA] xref next
+  to it is the literal-pool word itself. Both point at the consumer function.
+- RAM xrefs (sign-extended mov.w) are fully indexed by Ghidra — get_xrefs_to on
+  0xFFFFxxxx addresses works and distinguishes READ/WRITE. This is the fastest way to
+  walk producer→consumer chains (e.g. blend factor writer found instantly).
+- Decompiler output is polluted by FPSCR_SZ/PR dual-path modeling; for precise operand
+  tracking (which float compares against which constant) prefer `disassemble_function`.
+- Datalog RAM anchor no longer needed — 0xFFFFB544 (RPM) confirmed statically from three
+  independent comparison sites.
