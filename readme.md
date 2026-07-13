@@ -12,7 +12,7 @@ None of the public ECU definitions for the 3.0 H6 have AVLS mapped out. Denso ma
 
 | # | Goal Description | Status |
 | :-: | :--- | :--- |
-| 1 | Find AVLS settings and tables, and create definitions. | **DONE** - See: [avls_def_fragment.xml](avls_def_fragment.xml) |
+| 1 | Find AVLS settings and tables, and create definitions. | **DONE** - See: [avls_def_fragment.xml](avls_def_fragment.xml) pending testing in RomRaider|
 | 2 | Replace dual o2 sensor trim logic with a single aftermarket wideband O2 sensor input. | *In Progress* |
 | 3 | Repurpose the three other O2 sensor circuits for other hardware. | Planned |
 | 4 | Reuse the EVAP solenoid as an EBCS solenoid and implement boost control strategies similar to the 32-bit WRX ECUs. | Planned |
