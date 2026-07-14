@@ -1,15 +1,15 @@
 <!-- AVLS (variable valve lift) switchover — RomRaider def fragment for D2WD610H
      Reverse-engineered from avls_cam_mode_state_machine @ 0x40168.
-     Switchover is a load-vs-RPM line (two hysteresis-paired 7-point float curves)
+     Switchover is a load-vs-RPM line (two operating-state-selected 7-point float curves)
      plus a hard RPM hysteresis pair (4000 engage / 3800 release).
-     NOTE: which curve is engage vs release not yet confirmed (they cross ~3400 rpm);
-     log cam mode 0xFFFFCD86 while tuning to verify direction.
+     Curve 1 is selected when 0xFFFFCD9C == 2; curve 2 when it == 3. Each curve uses its
+     own +10 engage hysteresis and raw curve for release. Normal compared load = 0xFFFFB46C.
      All values are IEEE754 float32, big-endian, real units (no scaling needed). -->
 
 <table name="AVLS Switchover Load Threshold 1" category="AVLS" type="2D"
        storagetype="float" endian="big" sizey="7" userlevel="3"
        storageaddress="0x7D67C">
-  <scaling units="load (matches value at 0xFFFFCF94)" expression="x" to_byte="x" format="#0.0" fineincrement="1" coarseincrement="10"/>
+  <scaling units="load (matches value at 0xFFFFB46C)" expression="x" to_byte="x" format="#0.0" fineincrement="1" coarseincrement="10"/>
   <table type="Y Axis" storageaddress="0x7D660" storagetype="float" endian="big">
     <scaling units="RPM" expression="x" to_byte="x" format="#"/>
   </table>

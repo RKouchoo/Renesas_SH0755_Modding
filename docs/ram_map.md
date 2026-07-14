@@ -36,10 +36,12 @@ unless marked *(inferred)*. Cross-refs: [D2WD610H_RE_notes.md](D2WD610H_RE_notes
 | RAM addr | Meaning |
 |---|---|
 | 0xFFFFCD86 / CD87 | Cam mode committed / target (1=low, 3=high) |
-| 0xFFFFCD94 / CD98 | Switchover-threshold caches (curve 1 / 2) |
-| 0xFFFFCD9E | Hard-RPM hysteresis bits (bit4 = high-cam forced) |
+| 0xFFFFCD94 / CD98 | Switchover-threshold caches (state-2 curve / state-3 curve) |
+| 0xFFFFCD9C | AVLS operating state / curve selector (2=curve 1, 3=curve 2) |
+| 0xFFFFCD9E | AVLS flags (mask 0x04 = hard-RPM high-cam latch; mask 0x10 = engine running) |
 | 0xFFFFCD84 | Mode timer |
-| 0xFFFFCF94 | Load value compared to switchover curves |
+| 0xFFFFB46C | Normal load signal compared to the state-selected switchover curve |
+| 0xFFFFCF94 | Fallback load value compared to the fixed 15.0 threshold only |
 | 0xFFFFB528 | Phase/crank counter (OSV actuation sync) |
 
 ## EVAP purge / boost-patch target (see boost_repurpose_notes.md)

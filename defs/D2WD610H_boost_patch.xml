@@ -6213,18 +6213,18 @@
    <table type="Y Axis" name="Engine Speed" storagetype="float" endian="big" storageaddress="0x7D660">
     <scaling units="RPM" expression="x" to_byte="x" format="#" fineincrement="50" coarseincrement="100" />
    </table>
-   <description>AVLS cam switchover load threshold curve 1 (hysteresis pair with Threshold 2). Above/below this load line (with +/-10.0 hysteresis from the offsets at 0x7D480/0x7D484) the ECU requests the other cam profile. Load compared is the value at RAM 0xFFFFCF94. Stock: RPM 1600, 2000, 2400, 2800, 3200, 3600, 4000 -&gt; load 100, 100, 30, 28, 25, 15, 5. NOTE: engage-vs-release direction of curves 1 and 2 is not yet confirmed from code; log cam mode at RAM 0xFFFFCD86 (1 = low cam, 3 = high cam) to verify.</description>
+   <description>AVLS switchover curve used when operating state 0xFFFFCD9C equals 2. RPM input is 0xFFFFB544 and the normal-path load signal compared is 0xFFFFB46C. From low cam, high cam is requested when load is at least curve + Hysteresis A (0x7D480). From high cam, low cam is requested when load drops below the raw curve. Stock: RPM 1600, 2000, 2400, 2800, 3200, 3600, 4000 -&gt; load 100, 100, 30, 28, 25, 15, 5.</description>
   </table>
   <table type="2D" name="AVLS Switchover Load Threshold 2" category="AVLS" storagetype="float" endian="big" sizey="7" userlevel="3" storageaddress="0x7D6B4">
    <scaling units="load" expression="x" to_byte="x" format="0.0" fineincrement="1" coarseincrement="5" />
    <table type="Y Axis" name="Engine Speed" storagetype="float" endian="big" storageaddress="0x7D698">
     <scaling units="RPM" expression="x" to_byte="x" format="#" fineincrement="50" coarseincrement="100" />
    </table>
-   <description>AVLS cam switchover load threshold curve 2 (hysteresis pair with Threshold 1). Stock: RPM 2000, 2050, 2400, 2800, 3200, 3600, 4000 -&gt; load 100, 100, 90, 50, 30, 10, 0. See Threshold 1 description for logic and the engage/release caveat.</description>
+   <description>AVLS switchover curve used when operating state 0xFFFFCD9C equals 3. From low cam, high cam is requested when load 0xFFFFB46C is at least curve + Hysteresis B (0x7D484). From high cam, low cam is requested when load drops below the raw curve. Stock: RPM 2000, 2050, 2400, 2800, 3200, 3600, 4000 -&gt; load 100, 100, 90, 50, 30, 10, 0.</description>
   </table>
   <table type="1D" name="AVLS High Cam Engage RPM" category="AVLS" storagetype="float" endian="big" sizey="1" userlevel="3" storageaddress="0x7D4BC">
    <scaling units="RPM" expression="x" to_byte="x" format="#" fineincrement="50" coarseincrement="100" />
-   <description>Hard RPM override: at or above this engine speed the high cam profile is forced on regardless of load (sets bit 0x10 at RAM 0xFFFFCD9E). Stock: 4000. Pairs with AVLS High Cam Release RPM (stock 3800) for hysteresis; keep engage above release.</description>
+   <description>Hard RPM override: at or above this engine speed the high-cam latch mask 0x04 is set at RAM 0xFFFFCD9E. Stock: 4000. Pairs with AVLS High Cam Release RPM (stock 3800) for hysteresis; keep engage above release.</description>
   </table>
   <table type="1D" name="AVLS High Cam Release RPM" category="AVLS" storagetype="float" endian="big" sizey="1" userlevel="3" storageaddress="0x7D4B8">
    <scaling units="RPM" expression="x" to_byte="x" format="#" fineincrement="50" coarseincrement="100" />
@@ -6232,11 +6232,11 @@
   </table>
   <table type="1D" name="AVLS Switchover Load Hysteresis A" category="AVLS" storagetype="float" endian="big" sizey="1" userlevel="4" storageaddress="0x7D480">
    <scaling units="load" expression="x" to_byte="x" format="0.0" fineincrement="0.5" coarseincrement="1" />
-   <description>Load hysteresis offset applied around the switchover threshold curves (side A). Stock: 10.0. Widening this reduces cam-mode hunting near the threshold line.</description>
+   <description>Engage hysteresis added to Threshold 1 when operating state 0xFFFFCD9C equals 2. High cam engages at curve + this value and releases below the raw curve. Stock: 10.0.</description>
   </table>
   <table type="1D" name="AVLS Switchover Load Hysteresis B" category="AVLS" storagetype="float" endian="big" sizey="1" userlevel="4" storageaddress="0x7D484">
    <scaling units="load" expression="x" to_byte="x" format="0.0" fineincrement="0.5" coarseincrement="1" />
-   <description>Load hysteresis offset applied around the switchover threshold curves (side B). Stock: 10.0.</description>
+   <description>Engage hysteresis added to Threshold 2 when operating state 0xFFFFCD9C equals 3. High cam engages at curve + this value and releases below the raw curve. Stock: 10.0.</description>
   </table>
   <table type="1D" name="AVLS Actuation Minimum RPM" category="AVLS" storagetype="float" endian="big" sizey="1" userlevel="4" storageaddress="0x7D4AC">
    <scaling units="RPM" expression="x" to_byte="x" format="#" fineincrement="50" coarseincrement="100" />

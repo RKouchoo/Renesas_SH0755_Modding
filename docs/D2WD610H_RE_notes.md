@@ -109,8 +109,9 @@ Verified: Base Timing A data 0x78AA0 → slot 0x60114 → desc 0x60108 → consu
 | 0x00040C94/40798/40CE6 | `cam_actuator_output_set_1/2/3` (called with 0|1) |
 
 **RAM cells:** target mode **0xFFFFCD87** (1=low cam, 3=high cam), committed **0xFFFFCD86**,
-current 0xFFFFCD9C, mode timer 0xFFFFCD84 (u16, reload from ROM @0x7D468, −1/tick),
-hysteresis flags 0xFFFFCD9E (bit4 = RPM>4000 latch, bit0x10 = engine running),
+operating state 0xFFFFCD9C (curve selector: 2=curve 1, 3=curve 2), mode timer 0xFFFFCD84
+(u16, reload from ROM @0x7D468, −1/tick), hysteresis flags 0xFFFFCD9E
+(mask 0x04 = RPM>4000 latch, mask 0x10 = engine running),
 status latch 0xFFFFCD8F, threshold caches 0xFFFFCD94/0xFFFFCD98, defer flag 0xFFFFCD9D.
 
 **Switchover is a load-vs-RPM line, not a single RPM constant:**
@@ -131,8 +132,12 @@ status latch 0xFFFFCD8F, threshold caches 0xFFFFCD94/0xFFFFCD98, defer flag 0xFF
 | Mode timer reload (u16) | 0x7D468 | — |
 
 Descriptors: table 1 = **0x60F58**, table 2 = **0x60F64** (compact 0xC float type).
-Compared load variable: float @ **0xFFFFCF94**; RPM: float @ **0xFFFFB544**.
-Which table is engage vs release: direction not yet pinned (they cross ~3400 rpm) — TODO.
+RPM input is float @ **0xFFFFB544**. The normal curve path compares float load signal
+**0xFFFFB46C**: operating state **0xFFFFCD9C == 2** selects table 1 plus hysteresis A;
+state **3** selects table 2 plus hysteresis B. From low cam, high cam is requested at
+`load >= curve + 10`; from high cam, low cam is requested at `load < curve`. Thus the two
+tables are state-selected curves, **not** engage/release counterparts. **0xFFFFCF94** is used
+only by the fallback path against the fixed 15.0 thresholds at 0x7D4B0/0x7D4B4.
 
 Defs: `defs/D2WD610H_AVLS.xml` is now a **complete self-contained RomRaider def** —
 the 32BITBASE base rom (table templates) + the full D2WD610H table set (all standard
@@ -154,8 +159,8 @@ data registers (datasheet) instead of descending the call tree.
 |---|---|---|
 | **0xFFFFB544** | Engine RPM (float) | compared vs 4000/3800/512/510 rpm consts; input to switch tables; used across ign+AVLS |
 | 0xFFFFB538 | engine param (float, checked vs 10000/9000 band) — likely RPM-related raw | AVLS state machine |
-| 0xFFFFB46C | engine param (float) | AVLS state machine compare |
-| **0xFFFFCF94** | Load-type value compared to AVLS threshold tables | avls_cam_mode_state_machine |
+| **0xFFFFB46C** | Normal AVLS switchover load signal (float; snapshot of filtered 0xFFFFB4C8) | compared against state-selected curves in 0x40168 |
+| 0xFFFFCF94 | AVLS fallback load value | compared only against fixed 15.0 fallback threshold in 0x40168 |
 | 0xFFFFC17C | Ignition blend factor k (float 0..1) | written 0x28354 |
 | 0xFFFFC974/0xFFFFC978 | Advance-multiplier terms summed into k | 0x28354 |
 | 0xFFFFC184 | Selected base timing (deg, float) | 0x284B8 |
@@ -169,7 +174,8 @@ data registers (datasheet) instead of descending the call tree.
 - [x] Timing selection + blend math — DONE (see §4)
 - [x] AVLS switchover thresholds + def entries — DONE (see §5)
 - [ ] AVLS: physical OSV port write (via SH7055 port register xrefs — datasheet needed)
-- [ ] Which AVLS threshold table = engage vs release (disassemble compare section of 0x40168)
+- [x] AVLS curve direction — resolved: curve selected by 0xFFFFCD9C state 2/3; each uses
+      +10 engage hysteresis and its raw curve for release (not an engage/release table pair)
 - [ ] O2/closed-loop enable per bank (factory O2 delete). Started: found
       `cl_ol_transition_delay_update` @0x22756 (consumer of "CL to OL Transition with Delay
       (Throttle)" desc 0x5F40C and a BPW desc 0x5F908). **CL/OL state flag byte =
@@ -240,6 +246,10 @@ _(underscore names only — strict naming enforcement is ON)_
 - 0x00026320 → **solenoid_control_array_init** (inits 6 solenoid structs @0xFFFFBFB8 stride 0x28)
 - 0x0001C5D4 → **solenoid_inhibit_word_build** (builds inhibit word 0xFFFFB744 from per-ch faults)
 - 0x00024570 → **solenoid_circuit_diagnostic** (sets circuit-fault byte 0xFFFFBF21)
+- 0x000182AC → **engine_load_compensation_update**
+- 0x00018A68 → **engine_load_signal_filter_update** (produces filtered load @0xFFFFB4C8)
+- 0x00018AEA → **engine_load_signal_snapshot_copy** (0xFFFFB4C8 → AVLS compare signal 0xFFFFB46C)
+- 0x00047000 → **engine_load_fallback_select** (selects 0xFFFFCF94 fallback value)
 - 0x00014DCC → **throttle_position_sensor_process** (DBW throttle sensor plausibility/processing;
   produces processed throttle opening @0xFFFFB314 used by CL/OL logic and boost demand gate)
 
