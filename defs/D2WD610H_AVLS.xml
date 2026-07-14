@@ -1,0 +1,80 @@
+<!-- ============================================================================
+     AVLS (Variable Valve Lift) definitions for Subaru EZ30R — CALID D2WD610H
+     Reverse-engineered from avls_cam_mode_state_machine @ 0x40168 (Ghidra).
+
+     Cam switchover logic (RE summary):
+       - Two 7-point load-vs-RPM float curves (hysteresis pair) decide the
+         low-cam <-> high-cam transition. Current load value compared is the
+         float at RAM 0xFFFFCF94; engine speed is the float at RAM 0xFFFFB544.
+       - A +/-10.0 load hysteresis offset is applied around the curves.
+       - Hard RPM override: high cam is forced on at >= 4000 rpm and released
+         below 3800 rpm regardless of load.
+       - OSV actuation is additionally gated to >= 3000 rpm.
+       - Committed cam mode lives at RAM 0xFFFFCD86 (1 = low cam, 3 = high cam).
+
+     CAUTION: which curve is the ENGAGE line and which is the RELEASE line is
+     not yet confirmed from code (the two stock curves cross ~3400 rpm).
+     Log cam mode (0xFFFFCD86) while testing before relying on direction.
+
+     All values are IEEE-754 float32, big-endian, stored in real units
+     (no scaling). Stock values are listed in each table description.
+
+     USAGE: RomRaider only applies ONE rom definition per ROM image, so to see
+     these tables alongside the standard D2WD610H tables, copy the <table>
+     blocks below into the D2WD610H <rom> entry in romraider_ecu_defs.xml
+     (fully-specified tables are valid inside a child rom). This file is also
+     loadable standalone (self-contained rom, matches internal ID D2WD610H).
+     ============================================================================ -->
+<roms>
+ <rom>
+  <romid>
+   <xmlid>D2WD610H_AVLS</xmlid>
+   <internalidaddress>2000</internalidaddress>
+   <internalidstring>D2WD610H</internalidstring>
+   <ecuid>3C5A387116</ecuid>
+   <year>04</year>
+   <market>ADM</market>
+   <make>Subaru</make>
+   <model>Liberty</model>
+   <submodel>3.0R AVLS</submodel>
+   <transmission>MT</transmission>
+   <memmodel>SH7055</memmodel>
+   <flashmethod>sti04</flashmethod>
+   <filesize>512kb</filesize>
+  </romid>
+  <table type="2D" name="AVLS Switchover Load Threshold 1" category="AVLS" storagetype="float" endian="big" sizey="7" userlevel="3" storageaddress="0x7D67C">
+   <scaling units="load" expression="x" to_byte="x" format="0.0" fineincrement="1" coarseincrement="5" />
+   <table type="Y Axis" name="Engine Speed" storagetype="float" endian="big" storageaddress="0x7D660">
+    <scaling units="RPM" expression="x" to_byte="x" format="#" fineincrement="50" coarseincrement="100" />
+   </table>
+   <description>AVLS cam switchover load threshold curve 1 (hysteresis pair with Threshold 2). Above/below this load line (with +/-10.0 hysteresis from the offsets at 0x7D480/0x7D484) the ECU requests the other cam profile. Load compared is the value at RAM 0xFFFFCF94. Stock: RPM 1600, 2000, 2400, 2800, 3200, 3600, 4000 -&gt; load 100, 100, 30, 28, 25, 15, 5. NOTE: engage-vs-release direction of curves 1 and 2 is not yet confirmed from code; log cam mode at RAM 0xFFFFCD86 (1 = low cam, 3 = high cam) to verify.</description>
+  </table>
+  <table type="2D" name="AVLS Switchover Load Threshold 2" category="AVLS" storagetype="float" endian="big" sizey="7" userlevel="3" storageaddress="0x7D6B4">
+   <scaling units="load" expression="x" to_byte="x" format="0.0" fineincrement="1" coarseincrement="5" />
+   <table type="Y Axis" name="Engine Speed" storagetype="float" endian="big" storageaddress="0x7D698">
+    <scaling units="RPM" expression="x" to_byte="x" format="#" fineincrement="50" coarseincrement="100" />
+   </table>
+   <description>AVLS cam switchover load threshold curve 2 (hysteresis pair with Threshold 1). Stock: RPM 2000, 2050, 2400, 2800, 3200, 3600, 4000 -&gt; load 100, 100, 90, 50, 30, 10, 0. See Threshold 1 description for logic and the engage/release caveat.</description>
+  </table>
+  <table type="1D" name="AVLS High Cam Engage RPM" category="AVLS" storagetype="float" endian="big" sizey="1" userlevel="3" storageaddress="0x7D4BC">
+   <scaling units="RPM" expression="x" to_byte="x" format="#" fineincrement="50" coarseincrement="100" />
+   <description>Hard RPM override: at or above this engine speed the high cam profile is forced on regardless of load (sets bit 0x10 at RAM 0xFFFFCD9E). Stock: 4000. Pairs with AVLS High Cam Release RPM (stock 3800) for hysteresis; keep engage above release.</description>
+  </table>
+  <table type="1D" name="AVLS High Cam Release RPM" category="AVLS" storagetype="float" endian="big" sizey="1" userlevel="3" storageaddress="0x7D4B8">
+   <scaling units="RPM" expression="x" to_byte="x" format="#" fineincrement="50" coarseincrement="100" />
+   <description>Below this engine speed the hard high-cam RPM override is released (load-based curves take over again). Stock: 3800. Must stay below AVLS High Cam Engage RPM.</description>
+  </table>
+  <table type="1D" name="AVLS Switchover Load Hysteresis A" category="AVLS" storagetype="float" endian="big" sizey="1" userlevel="4" storageaddress="0x7D480">
+   <scaling units="load" expression="x" to_byte="x" format="0.0" fineincrement="0.5" coarseincrement="1" />
+   <description>Load hysteresis offset applied around the switchover threshold curves (side A). Stock: 10.0. Widening this reduces cam-mode hunting near the threshold line.</description>
+  </table>
+  <table type="1D" name="AVLS Switchover Load Hysteresis B" category="AVLS" storagetype="float" endian="big" sizey="1" userlevel="4" storageaddress="0x7D484">
+   <scaling units="load" expression="x" to_byte="x" format="0.0" fineincrement="0.5" coarseincrement="1" />
+   <description>Load hysteresis offset applied around the switchover threshold curves (side B). Stock: 10.0.</description>
+  </table>
+  <table type="1D" name="AVLS Actuation Minimum RPM" category="AVLS" storagetype="float" endian="big" sizey="1" userlevel="4" storageaddress="0x7D4AC">
+   <scaling units="RPM" expression="x" to_byte="x" format="#" fineincrement="50" coarseincrement="100" />
+   <description>Minimum engine speed gate for OSV (oil switching valve) actuation, checked in avls_osv_actuation_gate @ 0x405CC. Below this the high-cam actuation is not commanded even if requested. Stock: 3000.</description>
+  </table>
+ </rom>
+</roms>

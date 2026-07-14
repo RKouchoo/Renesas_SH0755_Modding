@@ -127,7 +127,11 @@ Descriptors: table 1 = **0x60F58**, table 2 = **0x60F64** (compact 0xC float typ
 Compared load variable: float @ **0xFFFFCF94**; RPM: float @ **0xFFFFB544**.
 Which table is engage vs release: direction not yet pinned (they cross ~3400 rpm) — TODO.
 
-Def fragment written to `avls_def_fragment.xml` in this directory.
+Defs: `defs/D2WD610H_AVLS.xml` is the canonical RomRaider-format AVLS definition
+(standalone loadable rom, stock values verified against the ROM image 2026-07-14).
+The same table blocks are also merged into the D2WD610H rom entry in
+`defs/romraider_ecu_defs.xml` so they appear alongside the standard tables.
+(`defs/avls_def_fragment.xml` is the older raw fragment, superseded.)
 
 **Open sub-item:** the final OSV port write. `cam_actuator_output_set_*` descend into
 float target/feedback layers (AVCS-style continuous control mixed in); the binary port
