@@ -7,6 +7,7 @@ This file is the canonical state doc. Companion references:
 - [solenoid_subsystem.md](solenoid_subsystem.md) — cam-bank vs purge PWM outputs
 - [boost_repurpose_notes.md](boost_repurpose_notes.md) — purge chain + boost-control design
 - [patch_build_guide.md](patch_build_guide.md) — boost-patch build/flash plan
+- [hybrid_o2_patch.md](hybrid_o2_patch.md) — retained factory A/F + AEM ECU-logger design
 - [readme.md](../readme.md) — project overview + goals
 
 ---
@@ -145,13 +146,18 @@ Definition layout:
 - `defs/D2WD610H_AVLS.xml` is the AVLS-only custom RomRaider definition.
 - `defs/D2WD610H_AVLS_boost_patch.xml` contains the same D2WD610H + AVLS definition plus the
   canonical boost-patch tables.
+- `defs/D2WD610H_AVLS_wideband_patch.xml` contains D2WD610H + AVLS plus the standalone
+  hybrid-O2 logger calibrations.
+- `defs/D2WD610H_AEM_logger_ecuparam.xml` is a D2-only RomRaider logger fragment, not an ECU
+  definition; `patch/install_aem_logger.py` installs it into a normal logger XML.
 - `defs/romraider_ecu_defs.xml` is a clean upstream metric RomRaider snapshot and is not modified
   with project tables.
 
-Both custom RomRaider files are self-contained. Their embedded metric `32BITBASE` is pruned to
-the 206 templates referenced by the 206 standard D2WD610H address overrides; the only additions
-are seven AVLS tables, plus seven boost tables in the combined variant. Load only one custom
-variant at a time. Stock AVLS values were verified against the ROM image 2026-07-14.
+All three custom RomRaider ROM files are self-contained. Their embedded metric `32BITBASE` is
+pruned to the 206 templates referenced by the 206 standard D2WD610H address overrides; the only
+additions are seven AVLS tables, plus the patch-specific tables in the boost or hybrid variant.
+Load only one custom ROM variant at a time. Stock AVLS values were verified against the ROM
+image 2026-07-14.
 
 **Open sub-item:** the final OSV port write. `cam_actuator_output_set_*` descend into
 float target/feedback layers (AVCS-style continuous control mixed in); the binary port
@@ -181,15 +187,15 @@ data registers (datasheet) instead of descending the call tree.
 - [ ] AVLS: physical OSV port write (via SH7055 port register xrefs — datasheet needed)
 - [x] AVLS curve direction — resolved: curve selected by 0xFFFFCD9C state 2/3; each uses
       +10 engage hysteresis and its raw curve for release (not an engage/release table pair)
-- [ ] O2/closed-loop enable per bank (factory O2 delete). Started: found
-      `cl_ol_transition_delay_update` @0x22756 (consumer of "CL to OL Transition with Delay
-      (Throttle)" desc 0x5F40C and a BPW desc 0x5F908). **CL/OL state flag byte =
-      0xFFFFBE38** (bit 0x40 throttle-above, 0x20 BPW-above, 0x80 read by delay counter);
-      thresholds cached @0xFFFFBE2C (throttle) / 0xFFFFBE30 (BPW); counters
-      0xFFFFBE16/BE18/BE1A/BE14/BE28; hysteresis consts 0x76254/0x76258 (match def).
-      NEXT: xref readers of 0xFFFFBE38 → closed-loop enable decision → per-bank split.
-      Note: DTC config bytes (0x5BDAx) have NO direct xrefs (computed-base DTC records) —
-      but they are directly flashable to mask O2 DTCs for the O2 delete.
+- [x] **Hybrid oxygen-sensor path — standalone development patch built.** The stock RH/Bank-1
+      front A/F process remains intact, with processed lambda/current/readiness mirrored to the
+      Bank-2 RAM paths after stock processing. Bank-2 inhibit checks reuse the unchanged Bank-1
+      helper. A conditioned AEM 30-0310 on raw RH rear channel `0xFFFFAB20` is converted to
+      logging-only lambda at `0xFFFFB098`; it does not enter fuel control. Exact selected harness
+      chain is `E61-3 ↔ B137-24` and `E61-4 ↔ B136-35`, subject to mandatory on-car continuity
+      and 0.2–0.5 V key-on bias checks because market diagrams differ. See
+      `hybrid_o2_patch.md`. The stock CL/OL state flag remains `0xFFFFBE38`; the patch does not
+      replace normal CL/OL transition logic.
 - [x] **Boost repurpose of EVAP purge output — purge chain FOUND** (see `boost_repurpose_notes.md`
       for full chain + patch plan). Purge = temp-scheduled duty PWM in the emissions aux slow task.
       Duty compute `evap_purge_duty_compute` @0x3FC0A (state m/c 0xFFFFCD77, ECT 0xFFFFB3AC, maps
@@ -203,7 +209,12 @@ data registers (datasheet) instead of descending the call tree.
 - [ ] AVLS physical OSV port write — **likely resolved**: OSV/OCV solenoids are driven by the
       crank-angle-synced bank above (ATU-II compare 0xFFFFF652+2n, ctrl bit on 0xFFFFF602).
       Confirm which of the 6 channels `avls_cam_mode_state_machine` (0x40168) commands.
-- [ ] Spare ADC channel (for external wideband input)
+- [x] External wideband logging input selected: repurposed RH rear-O2 ADC `0xFFFFAB20`, through
+      a required external protected differential 0.2 V/V conditioner. Software and logger path
+      are built; the conditioner, harness continuity, and three-point calibration remain physical
+      commissioning work.
+- [ ] Merge the independently verified hybrid-O2 and boost patches only after both hardware paths
+      pass bench commissioning; their free-space allocations are non-overlapping.
 - [ ] Airflow model (speed density — capstone)
 - [ ] Define 0x25F8/0x2628/0x2654 as functions in Ghidra and rename (interp_2axis_float32/s8/s16)
 - [ ] Identify status fns feeding ign_base_timing_select (0x27088, 0x6504C) and the B/E map condition (cruise?)
@@ -257,8 +268,25 @@ _(underscore names only — strict naming enforcement is ON)_
 - 0x00047000 → **engine_load_fallback_select** (selects 0xFFFFCF94 fallback value)
 - 0x00014DCC → **throttle_position_sensor_process** (DBW throttle sensor plausibility/processing;
   produces processed throttle opening @0xFFFFB314 used by CL/OL logic and boost demand gate)
+- 0x0000B690 → **front_af_sensor_pair_signal_process** (stock two-channel front A/F processing;
+  hybrid patch runs the complete body, then mirrors Bank 1 into Bank 2)
+- 0x0000B8CC → **front_af_sensor_pump_current_diagnostic_update** (retained stock front-sensor
+  diagnostic calculation; hybrid task wrapper refreshes Bank-2 readiness afterward)
+- 0x00064FD0 / 0x0006500C → **front_af_sensor_bank1_inhibit_check** /
+  **front_af_sensor_bank2_inhibit_check** (hybrid patch redirects the Bank-2 entry to Bank 1)
+- 0x00018DAC → **front_af_sensor_lambda_condition_filter** (downstream conditioned factory
+  lambda path producing the B4E8/B4EC logger values)
+- 0x0001917A → **front_af_sensor_ready_status_pair_update**
+- 0x0000B62A → **front_af_sensor_sample_task**
+- 0x0000E0D0 → **rear_o2_sensor_pair_voltage_process** (stock AB20/AB0C rear-input scaling;
+  hybrid wrapper replaces only RH output B098 with calibrated AEM lambda after stock processing)
+- 0x0000DFB4 → **rear_o2_sensor_bank_voltage_get** (bank-select getter for B098/B09C; direct
+  callers are the rear diagnostic updater and SSM/log conversion stubs)
+- 0x00033AB8 → **rear_o2_sensor_pair_diagnostic_update** (consumes both rear processed values
+  for stock diagnostic state; retained by the hybrid patch)
 
-Decompiler comments set at: 0x209C, 0x2150, 0x28418, 0x284B8, 0x40168, 0x405CC, 0x281FC.
+Decompiler comments set at: 0x209C, 0x2150, 0x28418, 0x284B8, 0x40168, 0x405CC, 0x281FC,
+0xB690, 0xE0D0, 0xB8CC, 0x64FD0, 0x6500C, 0x18DAC, 0x1917A, 0xDFB4, 0x33AB8.
 
 ## 9. Session Log / Method Notes
 
@@ -274,3 +302,13 @@ Decompiler comments set at: 0x209C, 0x2150, 0x28418, 0x284B8, 0x40168, 0x405CC, 
   tracking (which float compares against which constant) prefer `disassemble_function`.
 - Datalog RAM anchor no longer needed — 0xFFFFB544 (RPM) confirmed statically from three
   independent comparison sites.
+- 2026-07-14: hybrid-O2 trace confirmed the front processed-result chain AE60/64, AE68/6C,
+  AE70/74 → B4E8/B4EC and the rear raw/result chain AB20/AB0C → B098/B09C. All functions opened
+  during this pass use the project underscore naming convention; hybrid semantics were added as
+  Ghidra decompiler comments. The standalone patch hooks B690 and E0D0 with guarded trampolines,
+  redirects the Bank-2 inhibit entry, and wraps the front diagnostic task pointer.
+- B098 consumer audit: direct Ghidra xrefs lead to `rear_o2_sensor_bank_voltage_get`, whose only
+  call sites are `rear_o2_sensor_pair_diagnostic_update` and the small SSM/log conversion stubs at
+  0x31962/0x31978. No direct B098 fuel-control consumer was found. The RH rear diagnostic/catalyst
+  consequences still require vehicle testing even though the explicit RH circuit/heater DTC
+  switches are disabled.

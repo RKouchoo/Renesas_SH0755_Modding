@@ -64,6 +64,22 @@ unless marked *(inferred)*. Cross-refs: [D2WD610H_RE_notes.md](D2WD610H_RE_notes
 | 0xFFFFBE2C / BE30 | CL/OL thresholds cached (throttle / BPW) |
 | 0xFFFFBE14/16/18/1A/28 | CL/OL delay counters |
 
+## Oxygen sensors / hybrid-O2 patch
+| RAM addr | Type | Meaning |
+|---|---|---|
+| 0xFFFFAB18 / AB00 | u16 | Raw RH/Bank-1 and LH/Bank-2 front A/F channels; hybrid patch retains RH and mirrors its processed results into Bank 2 |
+| 0xFFFFAE60 / AE64 | float | Scaled front lambda Bank 1 / Bank 2; hybrid patch copies AE60 → AE64 after stock processing |
+| 0xFFFFAE68 / AE6C | float | Front pump-current-like result Bank 1 / Bank 2; hybrid patch copies AE68 → AE6C |
+| 0xFFFFAE70 / AE74 | float | Front readiness/diagnostic metric Bank 1 / Bank 2; hybrid patch refreshes AE70 → AE74 after both relevant stock tasks |
+| 0xFFFFB4E8 / B4EC | float | Conditioned factory front-sensor lambda logged by RomRaider E91/E109; both remain factory feedback in the hybrid patch |
+| **0xFFFFAB20** | u16 | **Raw RH rear input repurposed for conditioned AEM 30-0310 analog output**; `E61-3`/`B137-24` |
+| **0xFFFFB098** | float | **Hybrid-patch AEM post-turbo lambda log value**; 0.0 = reconstructed controller voltage outside configured window; RomRaider project parameter E500 |
+| 0xFFFFAB0C / B09C | u16 / float | Raw/processed LH rear narrowband, retained stock |
+
+The AEM value is logging-only and never feeds closed-loop fuel. An open ECU pin may sit at the
+stock rear-input bias and therefore need not produce the 0.0 sentinel. See
+[hybrid_o2_patch.md](hybrid_o2_patch.md) for wiring and calibration boundaries.
+
 ## Solenoid output subsystem (cam AVCS/AVLS bank — see solenoid_subsystem.md)
 | RAM addr | Meaning |
 |---|---|

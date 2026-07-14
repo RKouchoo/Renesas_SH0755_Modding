@@ -53,6 +53,16 @@ reuse for the boost (wastegate) solenoid.**
 | Register/var | Role |
 |---|---|
 | MAP raw ADC → RAM 0xFFFFAB04 | manifold pressure sensor; processed by `map_sensor_voltage_to_pressure_process` @0x7A14 into native mmHg absolute at 0xFFFFABC4 |
+| **0xFFFFAB18** | **RH/Bank-1 front A/F raw channel**; retained factory pre-turbo sensor (`E47`, signal `B134-33/B134-26`) |
+| 0xFFFFAB00 | LH/Bank-2 front A/F raw channel; physical sensor removed by the hybrid-O2 patch, whose processed Bank-2 paths mirror Bank 1 |
+| **0xFFFFAB20** | **RH rear-O2 raw ADC / hybrid-patch AEM input**; module-1 channel 4, `E61-3` ↔ `B137-24`; conditioned 0.1–0.9 V only, never direct AEM 0.5–4.5 V |
+| 0xFFFFAB0C | LH rear-O2 raw ADC; remains stock in the current hybrid-O2 patch |
+
+See [hybrid_o2_patch.md](hybrid_o2_patch.md) for the exact H6 connector identity, the
+`E61-4`/`B136-35` sensor reference, and mandatory continuity/bench checks. In particular,
+`B135-15` is ignition control #4 on this ECU and is not an analog input.
+The AEM requires an external protected differential conditioner; the stock disconnected-input
+bias means firmware voltage-window checks alone cannot prove ECU-side continuity.
 
 ## Notable ROM data-structure locations
 | Address | Meaning |

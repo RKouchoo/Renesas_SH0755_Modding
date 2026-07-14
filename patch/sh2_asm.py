@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Minimal two-pass SH-2E (SH7055) big-endian assembler for D2WD610H patch stubs.
 
-Supports the instruction subset the boost stubs need, plus labels (for branches) and
+Supports the instruction subset the boost and wideband stubs need, plus labels (for branches) and
 an auto-placed, deduped 32-bit literal pool (for mov.l @(disp,pc),Rn loads).
 
 Delay slots are NOT auto-filled: jsr/jmp/bra are delayed — put the delay-slot instruction
@@ -23,11 +23,15 @@ class Asm:
 
     # --- moves / loads ---
     def movl_pool(self, rn, val): self.items.append(('pool', rn, val & 0xFFFFFFFF)); return self  # mov.l @(disp,pc),Rn
+    def mov_imm(self, imm, rn):   return self._w(0xE000 | rn<<8 | (imm & 0xFF))
     def mov_reg(self, rm, rn):    return self._w(0x6003 | rn<<8 | rm<<4)   # mov Rm,Rn
+    def movw_at(self, rn, rm):    return self._w(0x6001 | rn<<8 | rm<<4)   # mov.w @Rm,Rn (sign-ext)
     def movl_at(self, rn, rm):    return self._w(0x6002 | rn<<8 | rm<<4)   # mov.l @Rm,Rn
     def movl_store(self, rm, rn): return self._w(0x2002 | rn<<8 | rm<<4)   # mov.l Rm,@Rn
+    def push(self, rm):           return self._w(0x2006 | 15<<8 | rm<<4)   # mov.l Rm,@-r15
     def movb_at(self, rn, rm):    return self._w(0x6000 | rn<<8 | rm<<4)   # mov.b @Rm,Rn (sign-ext)
     def movb_store(self, rm, rn): return self._w(0x2000 | rn<<8 | rm<<4)   # mov.b Rm,@Rn (low byte)
+    def extu_w(self, rm, rn):     return self._w(0x600D | rn<<8 | rm<<4)
     def or_imm(self, imm):        return self._w(0xCB00 | (imm & 0xFF))    # or #imm,r0
     def cmp_eq(self, rm, rn):     return self._w(0x3000 | rn<<8 | rm<<4)   # cmp/eq Rm,Rn (T=Rn==Rm)
 
@@ -38,7 +42,10 @@ class Asm:
     def fpop(self, frn):           return self._w(0xF009 | frn<<8 | 15<<4) # fmov.s @r15+,FRn
     def fmov(self, frm, frn):      return self._w(0xF00C | frn<<8 | frm<<4)# fmov FRm,FRn
     def fldi0(self, frn):          return self._w(0xF08D | frn<<8)         # fldi0 FRn
+    def fldi1(self, frn):          return self._w(0xF09D | frn<<8)         # fldi1 FRn
     def fneg(self, frn):           return self._w(0xF04D | frn<<8)         # fneg FRn
+    def lds_fpul(self, rm):         return self._w(0x405A | rm<<8)          # lds Rm,FPUL
+    def float_fpul(self, frn):      return self._w(0xF02D | frn<<8)         # float FPUL,FRn
 
     # --- FP arith / compare (T = FRn > FRm for fcmpgt) ---
     def fadd(self, frm, frn):  return self._w(0xF000 | frn<<8 | frm<<4)
@@ -121,6 +128,22 @@ def _selftest_known_encoding():
                          "ffffb5440007d7900000209c0000e8c4")
     assert got == want, "SELFTEST FAIL:\n got=%s\nwant=%s" % (got.hex(), want.hex())
     print("sh2_asm selftest OK (reproduces verified SH-2E stub, %d bytes)" % len(got))
+
+    # Instructions added for the u16 ADC-to-float wideband path. Encodings are
+    # cross-checked against the SH-2E instructions already present in D2WD610H.
+    b = Asm(0)
+    b.mov_imm(2, 0).movw_at(0, 1).extu_w(0, 0).lds_fpul(0).float_fpul(0).fldi1(1)
+    got2 = b.assemble()
+    want2 = bytes.fromhex("e0026011600d405af02df19d")
+    assert got2 == want2, "ADC encoding SELFTEST FAIL: got=%s want=%s" % (got2.hex(), want2.hex())
+    print("sh2_asm ADC/float encoding selftest OK")
+
+    c = Asm(0)
+    c.push(14).push(13).push(12).push(11).push(10).push(9)
+    got3 = c.assemble()
+    want3 = bytes.fromhex("2fe62fd62fc62fb62fa62f96")
+    assert got3 == want3, "GPR push SELFTEST FAIL: got=%s want=%s" % (got3.hex(), want3.hex())
+    print("sh2_asm GPR-push encoding selftest OK")
 
 if __name__ == "__main__":
     _selftest_known_encoding()

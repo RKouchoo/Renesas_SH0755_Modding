@@ -57,7 +57,7 @@ def dis_one(rom, o):
              0x26:"lds.l @r%d+,pr",0x00:"shll r%d",0x01:"shlr r%d",0x08:"shll2 r%d",0x09:"shlr2 r%d",
              0x18:"shll8 r%d",0x19:"shlr8 r%d",0x28:"shll16 r%d",0x29:"shlr16 r%d",0x20:"shal r%d",
              0x21:"shar r%d",0x24:"rotcl r%d",0x25:"rotcr r%d",0x04:"rotl r%d",0x05:"rotr r%d",
-             0x10:"dt r%d",0x11:"cmp/pz r%d",0x15:"cmp/pl r%d",0x2d:"lds r%d,fpul",0x5a:"lds r%d,fpscr",
+             0x10:"dt r%d",0x11:"cmp/pz r%d",0x15:"cmp/pl r%d",0x5a:"lds r%d,fpul",0x6a:"lds r%d,fpscr",
              0x0f:"mac.w @r%d+,@r%d+",0x06:"lds.l @r%d+,mach",0x56:"lds.l @r%d+,fpul"}
         if b in t: return (t[b] % n), None
         return ".word 0x%04x" % w, None
