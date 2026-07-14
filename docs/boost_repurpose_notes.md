@@ -171,3 +171,16 @@ custom code in free space, driving the repurposed purge PWM output (0xFFFFF590).
   the 32-bit WRX/STi ECU uses. => closed-loop WRX-style boost IS the target (not open-loop-only).
   Action in patch: rescale MAP sensor table **0x72810** to that sensor's curve (copy the WRX MAP
   scaling), then boost feedback reads **0xFFFFABC4** directly.
+
+================================================================================
+## PATCH STATUS (Phase 1 built)
+================================================================================
+- `patch/patch_boost.py` implements the open-loop hijack; `patch/sh2_disasm.py` = SH-2E
+  disassembler used to build/verify it. Output: `patch/D2WD610H_boost_p1.bin`.
+- Hijack CONFIRMED from disassembly: `evap_purge_duty_compute` @0x3FC0A tail-calls its output
+  via pooled ptr @**0x3FD8C** (=0x0000E8C4), duty ratio in fr4. Patch repoints that literal to a
+  stub @0x7D7CC (RPM 0xFFFFB544 → interp 0x209C → ratio in fr4 → tail-call 0xE8C4).
+- Map: descriptor @0x7D790, RPM axis (float[8]) @0x7D7A4, duty (u8[8]) @0x7D7C4, scale ×0.01.
+  Tunable in RomRaider as "Boost Wastegate Duty (RPM)" in defs/D2WD610H_boost_patch.xml.
+- Binary-verified only (stub disassembles correctly, hijack + tables confirmed). NOT hardware-
+  tested. Pending: overboost fuel cut (fail-safe), PWM-freq check, gating cleanup, Phase 2.

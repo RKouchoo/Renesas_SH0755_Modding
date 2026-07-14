@@ -6244,27 +6244,24 @@
   </table>
 
   <!-- ==========================================================================
-       Boost Control (patch) — added as the boost patch is built.
-       Output = repurposed EVAP purge PWM (ATU-II reg 0xFFFFF590); duty var 0xFFFFCD54.
-       Feedback = MAP @ 0xFFFFABC4 (fit EJ255 sensor + rescale table below).
-       Free space for map/code data: 0x7D790 (9 KB).
-       Placeholder addresses (0xTBD) get filled once the patch lays out free space.
+       Boost Control (patch). Output = repurposed EVAP purge PWM (ATU-II reg 0xFFFFF590).
+       Applied by patch/patch_boost.py (Phase 1, open loop). Addresses below MUST match
+       that script's layout constants. Free space base 0x7D790.
 
-       Planned tables (WRX-style):
-         - MAP Sensor Scaling (0x72810) : rescale to EJ255 (turbo) sensor curve  [override]
-         - Boost Duty (RPM x Load)      : feed-forward wastegate duty %%          [new @0x7D7xx]
-         - Max Wastegate Duty (RPM)     : duty clamp                              [new @0x7D7xx]
-         - Target Boost (RPM x Load)    : closed-loop target (kPa/psi)            [new @0x7D7xx]
-         - Turbo Dynamics P / I gains   : boost-error correction                 [new @0x7D7xx]
-         - Overboost Fuel Cut (kPa)     : fail-safe limit                         [new @0x7D7xx]
-       Example skeleton (commented until addresses are assigned):
+       Phase 1 (ACTIVE): the table below is the boost duty map read by the injected stub
+       (RPM -> duty %% via the ROM interpolator). Stub @0x7D7CC, descriptor @0x7D790.
+       Editing this table in RomRaider tunes boost duty directly.
 
-  <table type="2D" name="Boost Duty (RPM)" category="Boost Control (patch)" storagetype="uint8" endian="big" sizey="8" userlevel="1" storageaddress="0x7D7xx">
-   <scaling units="wastegate duty %" expression="x" to_byte="x" format="0" fineincrement="1" coarseincrement="5" />
-   <table type="Y Axis" name="Engine Speed" storagetype="uint16" endian="big" storageaddress="0x7D7xx">
-    <scaling units="RPM" expression="x" to_byte="x" format="#" fineincrement="50" coarseincrement="250" />
-   </table>
-  </table>
+       Phase 2 (planned, once EJ255 MAP sensor fitted): rescale MAP Sensor Scaling (0x72810)
+       to the turbo sensor; add Target Boost / Max Duty / Turbo Dynamics P-I / Overboost Fuel
+       Cut tables (reuse the 32BITBASE WRX scalings) reading MAP feedback @0xFFFFABC4.
        ========================================================================== -->
+  <table type="2D" name="Boost Wastegate Duty (RPM)" category="Boost Control (patch)" storagetype="uint8" endian="big" sizey="8" userlevel="1" storageaddress="0x7D7C4">
+   <scaling units="wastegate duty %" expression="x" to_byte="x" format="0" fineincrement="1" coarseincrement="5" />
+   <table type="Y Axis" name="Engine Speed" storagetype="float" endian="big" storageaddress="0x7D7A4">
+    <scaling units="RPM" expression="x" to_byte="x" format="0" fineincrement="50" coarseincrement="250" />
+   </table>
+   <description>Phase 1 open-loop boost: PWM duty %% on the (former purge) wastegate solenoid vs engine RPM. Read by the injected stub @0x7D7CC via the ROM interpolator (stored bytes are duty %%, ECU applies ×0.01 → ratio). Placeholder curve {0,0,12,22,28,30,28,22} — TUNE ON DYNO/ROAD. Higher duty generally = more boost (verify vs your solenoid plumbing). Keep an overboost fuel cut as fail-safe.</description>
+  </table>
  </rom>
 </roms>
