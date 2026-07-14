@@ -8,6 +8,7 @@ Proportional + feed-forward controller on the repurposed purge PWM output (ATU-I
     target = TargetBoost[rpm]              (MAP units)
     err    = target - MAP(0xFFFFABC4)
     ratio  = clamp(base + Kp*err, 0, MaxRatio)
+    if throttle <= MinThrottle: ratio = 0  (driver-demand gate)
     if MAP > Overboost: ratio = 0          (actuator fail-safe)
     -> stock output stage 0xE8C4
 
@@ -41,6 +42,7 @@ STOCK_OUTPUT   = 0x0000E8C4     # evap_purge_pwm_output_write (fr4 = ratio)
 INTERP_2D      = 0x0000209C     # table2d_lookup_dispatch(r4=desc, fr4=in) -> fr0
 RPM_ADDR       = 0xFFFFB544     # engine RPM (float)          [read only]
 MAP_ADDR       = 0xFFFFABC4     # manifold pressure (float)   [read only]
+THROTTLE_ADDR  = 0xFFFFB314     # processed throttle opening (float) [read only]
 # overboost fuel-cut (reuses the rev limiter's fuel-cut path, verified):
 REVLIMITER     = 0x00024B24     # rev limiter (sets fuel-cut flag 0xFFFFBF6C bit0x80 by RPM)
 REVLIM_FNPTR   = 0x00011D3C     # periodic-dispatcher fn-ptr slot -> rev limiter (we repoint it)
@@ -56,8 +58,9 @@ KP_ADDR     = 0x7D800   # float32
 MAXR_ADDR   = 0x7D804   # float32
 OVERB_ADDR  = 0x7D808   # float32
 STUB_ADDR   = 0x7D80C   # controller (4-aligned)
-OVERB_FC_ADDR = 0x7D888 # float32: overboost FUEL-CUT MAP limit
-REVWRAP_ADDR  = 0x7D88C # rev-limiter wrapper (adds overboost fuel cut; 4-aligned)
+THROTTLE_GATE_ADDR = 0x7D8A4 # float32: minimum throttle opening for boost duty
+OVERB_FC_ADDR = 0x7D8A8 # float32: overboost FUEL-CUT MAP limit
+REVWRAP_ADDR  = 0x7D8AC # rev-limiter wrapper (adds overboost fuel cut; 4-aligned)
 FREE_START, FREE_END = 0x7D790, 0x7FAF7
 
 # ---------------- tunables (edit here or in RomRaider) ----------------
@@ -67,6 +70,7 @@ TARGET_MAP  = [ 100.0, 105.0, 140.0, 165.0, 175.0, 175.0, 170.0, 160.0 ]      # 
 KP          = 0.0      # ratio per MAP-unit  (0 = feed-forward only; raise to commission)
 MAXRATIO    = 0.85     # max commanded duty ratio
 OVERBOOST   = 250.0    # MAP units -> wastegate duty forced to 0 (soft, actuator-level)
+MIN_THROTTLE = 20.0   # processed throttle opening; at/below this, command zero duty
 OVERBOOST_FUELCUT = 270.0  # MAP units -> HARD fuel cut (set ABOVE OVERBOOST; last-resort)
 DUTY_SCALE  = 0.01     # base-map u8 % -> ratio
 
@@ -86,6 +90,9 @@ def build_stub():
        Reads only RAM (RPM, MAP) + flash constants — NO RAM writes."""
     a = Asm(STUB_ADDR)
     a.stsl_pr()                                                    # [stack: PR]
+    a.movl_pool(1, THROTTLE_ADDR); a.fmov_load(2, 1)               # fr2 = throttle opening
+    a.movl_pool(1, THROTTLE_GATE_ADDR); a.fmov_load(3, 1)          # fr3 = minimum throttle
+    a.fcmpgt(3, 2); a.bf('throttle_off')                           # require throttle > minimum
     a.movl_pool(1, RPM_ADDR); a.fmov_load(4, 1)                    # fr4 = RPM
     a.movl_pool(4, BASE_DESC); a.movl_pool(2, INTERP_2D); a.jsr(2); a.nop()  # fr0 = base ratio
     a.fpush(0)                                                     # [stack: PR, base]
@@ -105,6 +112,9 @@ def build_stub():
     a.fcmpgt(2, 0); a.bf('rdone'); a.fmov(2, 0)                    # clamp high: if ratio>Max -> Max
     a.label('rdone')
     a.fmov(0, 4)                                                   # fr4 = ratio
+    a.bra('out'); a.nop()
+    a.label('throttle_off')
+    a.fldi0(4)                                                     # fail closed: zero solenoid duty
     a.label('out')
     a.ldsl_pr()                                                    # restore PR [stack empty]
     a.movl_pool(2, STOCK_OUTPUT); a.jmp(2); a.nop()                # tail-call output stage
@@ -142,6 +152,7 @@ def main():
         ("target_data", TARGET_DATA, b"".join(f32(x) for x in TARGET_MAP)),
         ("gains",       KP_ADDR,     f32(KP)+f32(MAXRATIO)+f32(OVERBOOST)),
         ("stub",        STUB_ADDR,   build_stub()),
+        ("throttle_gate",THROTTLE_GATE_ADDR, f32(MIN_THROTTLE)),
         ("overb_fc",    OVERB_FC_ADDR, f32(OVERBOOST_FUELCUT)),
         ("fuelcut_wrap",REVWRAP_ADDR,  build_fuelcut_wrapper()),
     ]
@@ -173,8 +184,8 @@ def main():
     print("  RPM    : %s" % RPM_BREAKS)
     print("  base %% : %s" % BASE_DUTY)
     print("  target : %s (MAP units)" % TARGET_MAP)
-    print("  Kp=%g MaxRatio=%g Overboost(duty)=%g Overboost(fuelcut)=%g  (stateless)"
-          % (KP, MAXRATIO, OVERBOOST, OVERBOOST_FUELCUT))
+    print("  Kp=%g MaxRatio=%g MinThrottle=%g Overboost(duty)=%g Overboost(fuelcut)=%g  (stateless)"
+          % (KP, MAXRATIO, MIN_THROTTLE, OVERBOOST, OVERBOOST_FUELCUT))
     print("  fuel cut reuses rev-limiter path: sets 0xFFFFBF6C bit0x80 (via 0x23FC0 aggregator)")
     print("\n*** Fit EJ255 MAP sensor + rescale 0x72810 BEFORE raising Kp / trusting overboost. ***")
     print("Flash via EcuFlash/RomRaider (recomputes subarudbw checksum on save).")

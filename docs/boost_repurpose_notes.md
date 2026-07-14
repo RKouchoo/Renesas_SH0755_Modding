@@ -193,7 +193,8 @@ custom code in free space, driving the repurposed purge PWM output (0xFFFFF590).
   `patch/verify_regions.py` audits free-flash + RAM. Output: `patch/D2WD610H_boost_p2.bin`.
 - Stub @0x7D80C (hijack literal @0x3FD8C → stub, same as Phase 1). Verified by disassembly, and
   confirmed STATELESS (no RAM stores). err = TargetBoost[rpm] − MAP(0xFFFFABC4);
-  ratio = clamp(base + Kp·err, 0, MaxRatio); overboost → ratio 0.
+  ratio = clamp(base + Kp·err, 0, MaxRatio); throttle @0xFFFFB314 at/below the tunable minimum
+  @0x7D8A4 → ratio 0; overboost → ratio 0.
 - **P-only, not PI — deliberate.** Audit (verify_regions.py, cross-checked in Ghidra) found NO RAM
   word can be proven free: 0xFFFFBFF0/BFF8 are inside the cam-solenoid struct array (0xFFFFBFB8 +
   i·0x28, computed access → invisible to xref); the big unreferenced RAM gaps are computed buffers
@@ -210,8 +211,8 @@ custom code in free space, driving the repurposed purge PWM output (0xFFFFF590).
   cut, integral term (needs verified RAM), 2-axis target, faster loop rate.
 
 ### Overboost fuel cut (added to Phase 2)
-Two-tier: SOFT (MAP>0x7D808 → duty 0, in the boost stub) + HARD (MAP>0x7D888 → fuel cut). Hard cut
-reuses the factory rev-limiter path — wrapper @0x7D88C hooked at rev-limiter fn-ptr 0x11D3C
+Two-tier: SOFT (MAP>0x7D808 → duty 0, in the boost stub) + HARD (MAP>0x7D8A8 → fuel cut). Hard cut
+reuses the factory rev-limiter path — wrapper @0x7D8AC hooked at rev-limiter fn-ptr 0x11D3C
 (`FUN_00011AD0` dispatcher) calls `rev_limiter_fuel_cut` @0x24B24 then sets fuel-cut flag
 0xFFFFBF6C bit0x80 on overboost; `fuel_cut_flag_aggregate` @0x23FC0 propagates → injectors off.
 Rev limits: A 0x7644C (resume 0x76450) / B 0x76454 (resume 0x76458). Stateless. Second hijack

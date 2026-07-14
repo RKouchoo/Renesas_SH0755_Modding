@@ -60,7 +60,8 @@ Apply to the **stock** bin (not on top of Phase 1). Adds, in free space:
 - a **stateless** controller stub, hijacking the same literal @0x3FD8C.
 
 Controller each cycle: `ratio = clamp(base + Kp·err, 0, MaxRatio)`, `err = target − MAP(0xFFFFABC4)`;
-if `MAP > Overboost` → `ratio 0`. **No persistent state / no RAM scratch** — reads only RPM, MAP,
+if processed throttle `0xFFFFB314 <= MinThrottle` or `MAP > Overboost` → `ratio 0`.
+**No persistent state / no RAM scratch** — reads only RPM, throttle, MAP,
 and flash constants; writes nothing but the stack.
 
 > **Why P-only, not PI?** `verify_regions.py` showed no RAM word can be *proven* free on this ROM:
@@ -83,3 +84,5 @@ only; bench-validate and keep an independent overboost **fuel** cut. Tune in
 | rpm_axis (shared) | 0x7D7A4 | | Kp / MaxRatio / Overboost | 0x7D800 / 0x7D804 / 0x7D808 |
 | base_data | 0x7D7C4 | | controller stub | 0x7D80C |
 | target_desc | 0x7D7CC | | scratch RAM | none (stateless) |
+| min throttle | 0x7D8A4 | | hard overboost | 0x7D8A8 |
+| fuel-cut wrapper | 0x7D8AC | | throttle input | 0xFFFFB314 |

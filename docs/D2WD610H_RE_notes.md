@@ -240,6 +240,8 @@ _(underscore names only — strict naming enforcement is ON)_
 - 0x00026320 → **solenoid_control_array_init** (inits 6 solenoid structs @0xFFFFBFB8 stride 0x28)
 - 0x0001C5D4 → **solenoid_inhibit_word_build** (builds inhibit word 0xFFFFB744 from per-ch faults)
 - 0x00024570 → **solenoid_circuit_diagnostic** (sets circuit-fault byte 0xFFFFBF21)
+- 0x00014DCC → **throttle_position_sensor_process** (DBW throttle sensor plausibility/processing;
+  produces processed throttle opening @0xFFFFB314 used by CL/OL logic and boost demand gate)
 
 Decompiler comments set at: 0x209C, 0x2150, 0x28418, 0x284B8, 0x40168, 0x405CC, 0x281FC.
 

@@ -6245,16 +6245,16 @@
 
   <!-- ==========================================================================
        Boost Control (patch). Output = repurposed EVAP purge PWM (ATU-II reg 0xFFFFF590).
-       Applied by patch/patch_boost.py (Phase 1, open loop). Addresses below MUST match
-       that script's layout constants. Free space base 0x7D790.
+       Applied by patch/patch_boost.py (Phase 1) or patch/patch_boost_p2.py (Phase 2).
+       Addresses below MUST match the selected script's layout constants. Free space base 0x7D790.
 
        Phase 1 (ACTIVE): the table below is the boost duty map read by the injected stub
        (RPM -> duty %% via the ROM interpolator). Stub @0x7D7CC, descriptor @0x7D790.
        Editing this table in RomRaider tunes boost duty directly.
 
-       Phase 2 (planned, once EJ255 MAP sensor fitted): rescale MAP Sensor Scaling (0x72810)
-       to the turbo sensor; add Target Boost / Max Duty / Turbo Dynamics P-I / Overboost Fuel
-       Cut tables (reuse the 32BITBASE WRX scalings) reading MAP feedback @0xFFFFABC4.
+       Phase 2 (IMPLEMENTED; requires EJ255 MAP sensor): rescale MAP Sensor Scaling (0x72810)
+       to the turbo sensor. The stateless controller uses Target Boost, Max Duty, Minimum
+       Throttle, proportional gain, and soft/hard overboost limits with MAP @0xFFFFABC4.
        ========================================================================== -->
   <table type="2D" name="Boost Wastegate Duty (RPM)" category="Boost Control (patch)" storagetype="uint8" endian="big" sizey="8" userlevel="1" storageaddress="0x7D7C4">
    <scaling units="wastegate duty %" expression="x" to_byte="x" format="0" fineincrement="1" coarseincrement="5" />
@@ -6266,7 +6266,7 @@
 
   <!-- Phase 2 (closed-loop) tables — present in D2WD610H_boost_p2.bin (patch/patch_boost_p2.py).
        Controller: ratio = clamp(base + Kp*err, 0, MaxRatio); err = TargetBoost - MAP(0xFFFFABC4);
-       if MAP > Overboost → ratio 0. STATELESS (proportional + feed-forward; no integral term —
+       if throttle <= MinThrottle or MAP > Overboost → ratio 0. STATELESS (proportional + feed-forward; no integral term —
        no RAM word could be proven free on this ROM, see patch/verify_regions.py). Kp ships at 0
        (feed-forward). Fit EJ255 sensor + rescale MAP (0x72810) before raising Kp. -->
   <table type="2D" name="Boost Target (RPM)" category="Boost Control (patch)" storagetype="float" endian="big" sizey="8" userlevel="1" storageaddress="0x7D7E0">
@@ -6288,9 +6288,13 @@
    <scaling units="MAP (match sensor units)" expression="x" to_byte="x" format="0.0" fineincrement="1" coarseincrement="5" />
    <description>SOFT overboost limit: if MAP (0xFFFFABC4) exceeds this, wastegate duty is forced to 0 (actuator-level). First line of defence. Set BELOW the hard fuel-cut limit.</description>
   </table>
-  <table type="1D" name="Boost Overboost Fuel Cut (hard)" category="Boost Control (patch)" storagetype="float" endian="big" sizey="1" userlevel="1" storageaddress="0x7D888">
+  <table type="1D" name="Boost Minimum Throttle" category="Boost Control (patch)" storagetype="float" endian="big" sizey="1" userlevel="1" storageaddress="0x7D8A4">
+   <scaling units="throttle opening" expression="x" to_byte="x" format="0.0" fineincrement="1" coarseincrement="5" />
+   <description>Driver-demand gate using processed throttle opening at 0xFFFFB314. At or below this threshold the boost stub commands zero wastegate duty. Default 20.0. Stateless/no hysteresis; validate by logging before boost.</description>
+  </table>
+  <table type="1D" name="Boost Overboost Fuel Cut (hard)" category="Boost Control (patch)" storagetype="float" endian="big" sizey="1" userlevel="1" storageaddress="0x7D8A8">
    <scaling units="MAP (match sensor units)" expression="x" to_byte="x" format="0.0" fineincrement="1" coarseincrement="5" />
-   <description>HARD overboost limit: if MAP (0xFFFFABC4) exceeds this, a FUEL CUT is triggered by reusing the rev-limiter path (a wrapper @0x7D88C, hooked at the rev-limiter fn-ptr 0x11D3C, sets fuel-cut flag 0xFFFFBF6C bit0x80). Set ABOVE the soft duty limit — last-resort engine protection. Calibrate to your sensor units. No hysteresis: cuts/resumes right at the threshold.</description>
+   <description>HARD overboost limit: if MAP (0xFFFFABC4) exceeds this, a FUEL CUT is triggered by reusing the rev-limiter path (a wrapper @0x7D8AC, hooked at the rev-limiter fn-ptr 0x11D3C, sets fuel-cut flag 0xFFFFBF6C bit0x80). Set ABOVE the soft duty limit — last-resort engine protection. Calibrate to your sensor units. No hysteresis: cuts/resumes right at the threshold.</description>
   </table>
  </rom>
 </roms>
