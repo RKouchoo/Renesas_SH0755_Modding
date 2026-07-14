@@ -1,6 +1,13 @@
 # D2WD610H — EZ30R Denso ECU Reverse Engineering Notes
 
 Working document. Updated as analysis progresses in Ghidra (live MCP session).
+This file is the canonical state doc. Companion references:
+- [ram_map.md](ram_map.md) — consolidated RAM variables
+- [hardware_io_map.md](hardware_io_map.md) — memory map + peripheral registers
+- [solenoid_subsystem.md](solenoid_subsystem.md) — cam-bank vs purge PWM outputs
+- [boost_repurpose_notes.md](boost_repurpose_notes.md) — purge chain + boost-control design
+- [patch_build_guide.md](patch_build_guide.md) — boost-patch build/flash plan
+- [readme.md](readme.md) — project overview + goals
 
 ---
 
