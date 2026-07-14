@@ -93,8 +93,12 @@ def dis_one(rom, o):
             st = {0x0:"fsts fpul,fr%d",0x1:"flds fr%d,fpul",0x2:"float fpul,fr%d",0x3:"ftrc fr%d,fpul",
                   0x4:"fneg fr%d",0x5:"fabs fr%d",0x6:"fsqrt fr%d",0x8:"fldi0 fr%d",0x9:"fldi1 fr%d",
                   0xa:"fcnvsd",0xb:"fcnvds"}
-            return (st.get(sub, ".word 0x%04x") % (n if sub in st else ())), None
-        return (t.get(lo, ".word 0x%04x") % ((m, n) if lo in t else ())), None
+            if sub in st:
+                return (st[sub] % n) if "%d" in st[sub] else st[sub], None
+            return ".word 0x%04x" % w, None
+        if lo in t:
+            return t[lo] % (m, n), None
+        return ".word 0x%04x" % w, None
     return ".word 0x%04x" % w, None
 
 def disasm(rom, start, end):

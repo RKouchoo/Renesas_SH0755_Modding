@@ -16,7 +16,7 @@ unless marked *(inferred)*. Cross-refs: [D2WD610H_RE_notes.md](D2WD610H_RE_notes
 | 0xFFFFAB04 | u16 | MAP raw ADC value | `map_sensor_process` input |
 | **0xFFFFB3AC** | float | **Coolant temp (ECT), °C** | read by ~100 fns; purge/thermal input |
 | 0xFFFFB3B8 | float | ECT-related threshold (purge enable) | `evap_purge_duty_compute` |
-| **0xFFFFB314** | float | **Processed throttle opening** | produced by `throttle_position_sensor_process` @0x14DCC; input to CL/OL throttle threshold and Phase-2 boost gate |
+| **0xFFFFB314** | float | **Processed throttle opening** | produced by `throttle_position_sensor_process` @0x14DCC; input to CL/OL throttle threshold and the boost-control demand gate |
 
 > Boost feedback for the WRX-style loop = **0xFFFFABC4**. Stock MAP sensor is ~1 bar; fitting
 > the EJ255 (turbo) sensor + rescaling table 0x72810 makes this read positive boost.

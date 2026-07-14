@@ -6245,26 +6245,23 @@
 
   <!-- ==========================================================================
        Boost Control (patch). Output = repurposed EVAP purge PWM (ATU-II reg 0xFFFFF590).
-       Applied by patch/patch_boost.py (Phase 1) or patch/patch_boost_p2.py (Phase 2).
-       Addresses below MUST match the selected script's layout constants. Free space base 0x7D790.
+       Applied only by patch/patch_boost.py; canonical output is patch/D2WD610H_boost.bin.
+       Addresses below MUST match that script's layout constants. Free space base 0x7D790.
 
-       Phase 1 (ACTIVE): the table below is the boost duty map read by the injected stub
-       (RPM -> duty %% via the ROM interpolator). Stub @0x7D7CC, descriptor @0x7D790.
-       Editing this table in RomRaider tunes boost duty directly.
-
-       Phase 2 (IMPLEMENTED; requires EJ255 MAP sensor): rescale MAP Sensor Scaling (0x72810)
-       to the turbo sensor. The stateless controller uses Target Boost, Max Duty, Minimum
-       Throttle, proportional gain, and soft/hard overboost limits with MAP @0xFFFFABC4.
+       The stateless controller uses the feed-forward duty map, Target Boost, Max Duty,
+       Minimum Throttle, proportional gain, and soft/hard overboost limits with MAP
+       @0xFFFFABC4. It requires an EJ255 MAP sensor and a correct 0x72810 MAP rescale before
+       proportional correction or either MAP limit can be trusted.
        ========================================================================== -->
   <table type="2D" name="Boost Wastegate Duty (RPM)" category="Boost Control (patch)" storagetype="uint8" endian="big" sizey="8" userlevel="1" storageaddress="0x7D7C4">
    <scaling units="wastegate duty %" expression="x" to_byte="x" format="0" fineincrement="1" coarseincrement="5" />
    <table type="Y Axis" name="Engine Speed" storagetype="float" endian="big" storageaddress="0x7D7A4">
     <scaling units="RPM" expression="x" to_byte="x" format="0" fineincrement="50" coarseincrement="250" />
    </table>
-   <description>Feed-forward wastegate duty %% vs RPM (used by BOTH Phase 1 open-loop and Phase 2 as the base term). Stored bytes are duty %%, ECU applies ×0.01 → ratio. Placeholder {0,0,12,22,28,30,28,22} — TUNE ON DYNO/ROAD. Higher duty generally = more boost (verify vs solenoid plumbing).</description>
+   <description>Feed-forward wastegate duty %% vs RPM used as the controller base term. Stored bytes are duty %%, ECU applies ×0.01 → ratio. Placeholder {0,0,12,22,28,30,28,22} — TUNE ON DYNO/ROAD. Higher duty generally = more boost (verify vs solenoid plumbing).</description>
   </table>
 
-  <!-- Phase 2 (closed-loop) tables — present in D2WD610H_boost_p2.bin (patch/patch_boost_p2.py).
+  <!-- Controller tables — present in D2WD610H_boost.bin (patch/patch_boost.py).
        Controller: ratio = clamp(base + Kp*err, 0, MaxRatio); err = TargetBoost - MAP(0xFFFFABC4);
        if throttle <= MinThrottle or MAP > Overboost → ratio 0. STATELESS (proportional + feed-forward; no integral term —
        no RAM word could be proven free on this ROM, see patch/verify_regions.py). Kp ships at 0

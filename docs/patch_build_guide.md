@@ -1,107 +1,136 @@
-# Boost-Control Patch — Build Guide
+# Boost-Control Patch — Build and Commissioning Guide
 
-How the EVAP-purge→boost-control patch will be built and flashed. This is the forward-looking
-plan; the RE that backs it is in [boost_repurpose_notes.md](boost_repurpose_notes.md),
-[solenoid_subsystem.md](solenoid_subsystem.md), [ram_map.md](ram_map.md).
+The reverse engineering behind this patch is recorded in
+[boost_repurpose_notes.md](boost_repurpose_notes.md),
+[solenoid_subsystem.md](solenoid_subsystem.md), and [ram_map.md](ram_map.md).
 
 ## Objective
-Repurpose the EVAP purge PWM output (ATU-II reg **0xFFFFF590**) as a wastegate/boost-control
-solenoid driver, implementing **WRX-style boost control** (feed-forward duty + closed-loop
-correction) as custom code in the ROM's 9 KB free space.
+
+The single boost-control patch repurposes the EVAP purge PWM output (ATU-II register
+`0xFFFFF590`) as a wastegate-solenoid driver. It implements stateless proportional +
+feed-forward boost control with throttle gating and independent soft/hard MAP limits.
+
+## Preserve the stock ROM
+
+The repository-root `2005 BLE MT.bin` is the canonical stock image used by Ghidra. Never write
+patches into it and never replace it with a generated ROM.
+
+`patch/patch_boost.py` enforces this workflow:
+
+1. It reads only the fixed root stock path.
+2. It verifies SHA-256 `ed0fe0341d97fb760c2cda3f07277f861495d32f6520e3ce8047b8b0f7bfd4ee`.
+3. It makes a private in-memory copy.
+4. It applies all tables, code, and hooks to that copy.
+5. It writes `patch/D2WD610H_boost.bin` by default.
+6. It refuses any output path that aliases the stock file.
+7. It rereads the stock file after the build and fails if its bytes changed.
+
+Build from the repository root:
+
+```sh
+python3 patch/patch_boost.py
+```
+
+To create a disposable comparison build, supply only a different output path:
+
+```sh
+python3 patch/patch_boost.py /tmp/D2WD610H_boost_test.bin
+```
+
+There is no configurable input and no patch-stacking workflow.
+
+## Controller behavior
+
+The tail-call pointer at `0x3FD8C` in `evap_purge_duty_compute` normally points to
+`evap_purge_pwm_output_write` at `0xE8C4`. The patch points it to the injected controller at
+`0x7D80C`; that controller computes a duty ratio and tail-calls the original output stage.
+
+```text
+base   = BaseDuty[rpm]
+target = TargetBoost[rpm]
+error  = target - MAP(0xFFFFABC4)
+ratio  = clamp(base + Kp * error, 0, MaxRatio)
+
+if throttle(0xFFFFB314) <= MinThrottle:
+    ratio = 0
+if MAP > SoftOverboost:
+    ratio = 0
+
+write ratio through output stage 0xE8C4
+```
+
+The controller reads RPM, processed throttle, MAP, and flash calibrations. It has no persistent
+RAM state. A RAM audit found no word that can be proven free from direct and computed access, so
+the integral term is intentionally omitted rather than risk corrupting another subsystem.
+
+`Kp = 0` is the shipped commissioning calibration. It disables proportional correction while
+leaving all code, throttle gating, clamps, and hard fuel cut installed. Raise Kp only after the
+MAP input is calibrated and the feed-forward duty curve is safe.
+
+## Hard overboost protection
+
+The patch also changes the rev-limiter task pointer at `0x11D3C` from the stock limiter at
+`0x24B24` to a wrapper at `0x7D8AC`. The wrapper runs the stock limiter first, then compares MAP
+with the hard limit at `0x7D8A8`. Above the limit it sets `0xFFFFBF6C` bit `0x80`; the factory
+fuel-cut aggregator at `0x23FC0` propagates that request to injector cut.
+
+This is separate from the soft limit at `0x7D808`, which commands zero solenoid duty. Neither
+limit has hysteresis, so threshold and recovery behavior must be proven on a bench.
+
+## Hardware and calibration prerequisites
+
+- Fit a boost-capable MAP sensor. The planned sensor is the EJ255 turbo Denso unit.
+- Rescale MAP table `0x72810` and validate `0xFFFFABC4` against a reference gauge across the full
+  operating range.
+- Wire the selected EBCS to the former purge-solenoid output.
+- Verify that zero commanded duty produces minimum boost with the installed plumbing.
+- Measure the actual PWM frequency and confirm it suits the solenoid; the stock period
+  calibration alone does not prove the output frequency.
+- Handle `evap_purge_flow_diagnostic` and P0458/P0459 if they trigger.
+
+## Injected layout
+
+The populated region remains inside the verified `0xFF` free run at `0x7D790..0x7FAF7`.
+
+| Block | Address |
+|---|---:|
+| Base-duty descriptor | `0x7D790` |
+| Shared RPM axis, float[8] | `0x7D7A4` |
+| Base-duty data, uint8[8] | `0x7D7C4` |
+| Target descriptor | `0x7D7CC` |
+| Target data, float[8] | `0x7D7E0` |
+| Kp | `0x7D800` |
+| Maximum duty ratio | `0x7D804` |
+| Soft overboost limit | `0x7D808` |
+| Controller | `0x7D80C` |
+| Minimum throttle | `0x7D8A4` |
+| Hard overboost limit | `0x7D8A8` |
+| Fuel-cut wrapper | `0x7D8AC` |
+
+These addresses must remain synchronized with
+[D2WD610H_boost_patch.xml](../defs/D2WD610H_boost_patch.xml).
 
 ## Toolchain
-- **Patcher**: a standalone `patch_boost.py` (planned) — reads the stock `.bin`, applies byte
-  edits, writes a patched `.bin`. No Ghidra dependency at flash time.
-- **Assembly**: SH-2E machine code hand-assembled in the patcher (verified against the same
-  decode used throughout RE).
-- **Def**: [defs/D2WD610H_boost_patch.xml](../defs/D2WD610H_boost_patch.xml) — RomRaider tables for
-  the new maps (category "Boost Control (patch)"); iterate here.
-- **Flashing**: EcuFlash / RomRaider (recomputes the `subarudbw` checksum on save — so the
-  patcher can skip checksum; open+save in the tool before flashing).
 
-## Hardware prerequisites
-- Boost-control (wastegate) solenoid wired to the former purge-solenoid harness pin.
-- **EJ255 (turbo EJ25) MAP sensor** fitted — same 2-bar+ Denso sensor the 32-bit WRX ECU uses;
-  required for closed loop. Rescale MAP table **0x72810** to that sensor's curve so **0xFFFFABC4**
-  reads positive boost.
+- `patch/patch_boost.py`: guarded patch builder.
+- `patch/sh2_asm.py`: minimal two-pass SH-2E assembler.
+- `patch/sh2_disasm.py`: injected-code disassembler.
+- `patch/verify_regions.py`: flash/RAM region audit.
+- RomRaider/EcuFlash: calibration editing and a verified `subarudbw` checksum save before
+  flashing.
 
-## Free-space layout (0x7D790, 9 KB) — to be assigned
-| Block | Contents |
-|---|---|
-| maps | boost duty map, target boost, max duty, turbo-dynamics gains, overboost limit |
-| descriptors | 0x1C-byte table descriptors (reuse interpolator 0x209C / 0x2150) |
-| code | boost-control routine + hijack stub |
-(Exact offsets filled in once the patcher lays them out; update the `0x7D7xx` placeholders in
-the def and the notes when assigned.)
+## Commissioning checklist
 
-## Phase 1 — open-loop feed-forward (works before the sensor)
-**Status: implemented in `patch/patch_boost.py` (steps 1 & 3); binary-verified, not yet
-hardware-tested. Steps 4–7 pending.**
+- [ ] Root stock-ROM hash still matches the known project stock image.
+- [ ] Generated ROM is exactly 512 KiB and differs only at documented tables, code, and hooks.
+- [ ] Boost-capable MAP sensor and table `0x72810` are calibrated against a reference.
+- [ ] Output pin, polarity, solenoid plumbing, and PWM frequency are bench verified.
+- [ ] With `Kp = 0` and conservative base duty, throttle gating is logged and confirmed.
+- [ ] Soft duty shutdown is proven with simulated MAP.
+- [ ] Hard injector cut and recovery are proven with simulated MAP.
+- [ ] Purge diagnostics are resolved.
+- [ ] Final ROM checksum is valid.
+- [ ] Initial running uses wastegate spring pressure as the mechanical fallback.
 
-The implemented hijack is simpler than "overwrite 0xFFFFCD54": `evap_purge_duty_compute`
-@0x3FC0A tail-calls its output stage through a pooled pointer @**0x3FD8C** (`=0x0000E8C4`),
-passing the duty ratio in fr4. The patch repoints that one literal to a stub @0x7D7CC that
-looks up the boost duty (RPM → duty via interpolator 0x209C) and tail-calls the real output
-stage — driving the solenoid from the map without touching 0xFFFFCD54.
-
-1. ✅ Boost duty map (RPM → duty %%) + descriptor in free space (0x7D7C4 / 0x7D7A4 / 0x7D790).
-2. ⬜ Max wastegate duty clamp (map is u8 0–100, inherently clamped; explicit clamp optional).
-3. ✅ Hijack via literal repoint @0x3FD8C → stub @0x7D7CC.
-4. ⬜ Neutralize purge gating (ECT 0xFFFFB3B8 / state 0xFFFFCD77 / status 0xFFFFCD81) — not
-   required for output (hijack overrides the final duty regardless), but tidy for Phase 2.
-5. ⬜ Verify/retune PWM frequency (period RAM 0xFFFFAB84) for a ~15–30 Hz boost solenoid.
-6. ⬜ **Overboost fuel cut** (fail-safe) — compare 0xFFFFABC4 vs a limit, force fuel/ignition cut.
-7. ⬜ Disable `evap_purge_flow_diagnostic` (0x46748) + DTCs P0458 (0x5BD85) / P0459 (0x5BD86)
-   — the diagnostic watches the still-running stock duty (0xFFFFCD54), so it may not trip;
-   toggle via RomRaider DTC switches if it does.
-
-## Phase 2 — closed-loop (after EJ255 sensor + 0x72810 rescale)
-**Status: implemented in `patch/patch_boost_p2.py`; binary-verified (stub disassembles correctly,
-no RAM writes), not yet hardware-tested. Ships Kp=0 (feed-forward) for a safe first flash.**
-
-Controller (runs at the slow-task rate, replacing the output tail-call like Phase 1) — **stateless,
-proportional + feed-forward**:
-```
-base   = BaseDuty[rpm]                 (ratio, feed-forward)
-target = TargetBoost[rpm]              (MAP units)
-err    = target - MAP(0xFFFFABC4)
-ratio  = clamp(base + Kp*err, 0, MaxRatio)
-if throttle(0xFFFFB314) <= MinThrottle: ratio = 0
-if MAP > Overboost: ratio = 0                 # actuator fail-safe
--> output stage 0xE8C4
-```
-- **No persistent RAM state** (reads only RPM/throttle/MAP + flash consts). This is deliberate: an audit
-  (`patch/verify_regions.py`) found NO RAM word can be proven free — the earlier integrator picks
-  (0xFFFFBFF0/BFF8) are inside the cam-solenoid struct array (computed base+index access, which a
-  plain xref check misses), and every large unreferenced RAM gap is a computed-access buffer/jump
-  table. So the integral term ("Turbo Dynamics") is omitted rather than risk corrupting a subsystem.
-- Tunables (Boost Target, Kp, Max Duty Ratio, Minimum Throttle, Overboost Cut) are RomRaider tables in
-  `defs/D2WD610H_boost_patch.xml` (category "Boost Control (patch)").
-- Ownership verified: 0xE8C4 has ONE caller (the hijacked tail-call); 0xFFFFF590 is otherwise
-  written only by init — the stub is the sole runtime driver of the solenoid.
-- **Overboost fuel cut — DONE (also in `patch_boost_p2.py`).** Two-tier protection:
-  *soft* (MAP > 0x7D808 → wastegate duty 0, actuator-level, in the boost stub) and *hard*
-  (MAP > 0x7D8A8 → real FUEL CUT). The hard cut REUSES the factory rev-limiter fuel-cut path: a
-  wrapper @0x7D8AC is hooked at the rev-limiter fn-ptr **0x11D3C** (dispatcher `FUN_00011AD0`);
-  it calls the stock rev limiter (`rev_limiter_fuel_cut` @0x24B24) then sets the fuel-cut flag
-  **0xFFFFBF6C bit0x80** on overboost. That flag feeds `fuel_cut_flag_aggregate` @0x23FC0 →
-  master fuel cut → injectors off. Stateless, no RAM scratch. (No hysteresis on the hard cut;
-  the soft duty limit is the primary control, hard cut is last-resort.)
-- **Throttle demand gate — DONE.** Processed throttle opening @0xFFFFB314 is compared with a
-  tunable minimum @0x7D8A4; at/below the threshold the output ratio is forced to zero. Default
-  20.0; stateless/no hysteresis. See [../audit.md](../audit.md).
-- **Still to add**: the integral term once a scratch RAM word is rigorously verified (or purge
-  RAM reclaimed by NOP-ing the stock writes); 2-axis target (RPM×load); ~10 ms loop-rate upgrade;
-  optional ignition cut in addition to fuel cut.
-- Build helpers: `patch/sh2_asm.py` (assembler, self-validates vs the Phase-1 stub),
-  `patch/verify_regions.py` (region audit).
-
-## Verification checklist (before flashing)
-- [ ] Datalog confirms purge duty tracks 0xFFFFCD54 (proves the output is the purge chain).
-- [ ] Bench/scope the 0xFFFFF590-driven pin at a few commanded duties.
-- [ ] Overboost cut proven on the bench before any boost.
-- [ ] Checksum valid (EcuFlash/RomRaider save).
-
-## Safety
-NA EZ30R, no factory turbo. Only meaningful as part of a forced-induction build. Conservative
-duty map + independent overboost fuel cut are mandatory.
+The current implementation is binary-verified but not vehicle-validated. Do not apply boost
+until every safety-critical item above has been demonstrated on the actual hardware.

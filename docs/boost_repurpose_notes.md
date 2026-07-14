@@ -145,15 +145,13 @@ custom code in free space, driving the repurposed purge PWM output (0xFFFFF590).
   Stock MAP sensor is ~1 bar (NA); it cannot read positive boost. Full WRX-style closed loop
   needs a 2-3 bar MAP sensor fitted + table 0x72810 rescaled (then feedback reads 0xFFFFABC4).
 
-### Recommended phased build
-  Phase 1 (open loop, stock sensor OK): InitialWastegateDuty[rpm,load] + MaxWastegateDuty[rpm]
-    clamp, no error correction. Custom code in free space overwrites purge duty 0xFFFFCD54.
-    Safe first cut; tune base duty on dyno/road.
-  Phase 2 (closed loop, needs boost MAP sensor): add TargetBoost map + boost error + Turbo
-    Dynamics P/I correction reading 0xFFFFABC4.
-  Both phases: implement an overboost cut (compare 0xFFFFABC4 vs limit -> force fuel/ign cut)
-    as the fail-safe. Loop rate: purge runs in slow task; consider hooking a faster (~10ms)
-    task for better wastegate control (v2).
+### Implemented controller strategy
+  There is one patch and one injected controller. It always installs the feed-forward duty map,
+  target map, proportional correction, throttle-demand gate, final-duty clamp, soft duty
+  shutdown, and hard fuel cut. `Kp=0` is only a commissioning calibration; it disables the
+  proportional term without changing patches. Once the boost-capable MAP sensor and scaling are
+  verified, Kp can be introduced gradually in the same ROM definition. The purge path runs in a
+  slow task; a faster task hook remains a possible future controller improvement.
 
 ### New RAM/registers found this step (renamed in Ghidra)
   - map_sensor_process @0x00007A14 ; MAP kPa @0xFFFFABC4 ; MAP raw ADC @0xFFFFAB04.
@@ -173,26 +171,17 @@ custom code in free space, driving the repurposed purge PWM output (0xFFFFF590).
   scaling), then boost feedback reads **0xFFFFABC4** directly.
 
 ================================================================================
-## PATCH STATUS (Phase 1 built)
+## PATCH STATUS (single proportional + feed-forward controller)
 ================================================================================
-- `patch/patch_boost.py` implements the open-loop hijack; `patch/sh2_disasm.py` = SH-2E
-  disassembler used to build/verify it. Output: `patch/D2WD610H_boost_p1.bin`.
-- Hijack CONFIRMED from disassembly: `evap_purge_duty_compute` @0x3FC0A tail-calls its output
-  via pooled ptr @**0x3FD8C** (=0x0000E8C4), duty ratio in fr4. Patch repoints that literal to a
-  stub @0x7D7CC (RPM 0xFFFFB544 → interp 0x209C → ratio in fr4 → tail-call 0xE8C4).
-- Map: descriptor @0x7D790, RPM axis (float[8]) @0x7D7A4, duty (u8[8]) @0x7D7C4, scale ×0.01.
-  Tunable in RomRaider as "Boost Wastegate Duty (RPM)" in defs/D2WD610H_boost_patch.xml.
-- Binary-verified only (stub disassembles correctly, hijack + tables confirmed). NOT hardware-
-  tested. Pending: overboost fuel cut (fail-safe), PWM-freq check, gating cleanup, Phase 2.
-
-================================================================================
-## PATCH STATUS (Phase 2 built — closed-loop proportional + feed-forward)
-================================================================================
-- `patch/patch_boost_p2.py` implements closed-loop boost; `patch/sh2_asm.py` is a two-pass SH-2E
-  assembler (self-validates by reproducing the verified Phase-1 stub byte-for-byte);
-  `patch/verify_regions.py` audits free-flash + RAM. Output: `patch/D2WD610H_boost_p2.bin`.
-- Stub @0x7D80C (hijack literal @0x3FD8C → stub, same as Phase 1). Verified by disassembly, and
-  confirmed STATELESS (no RAM stores). err = TargetBoost[rpm] − MAP(0xFFFFABC4);
+- `patch/patch_boost.py` is the only patcher. It always reads the root `2005 BLE MT.bin`, patches
+  a private copy, and writes `patch/D2WD610H_boost.bin` by default. The stock input path is fixed,
+  and the patcher refuses output paths that alias it.
+- `patch/sh2_asm.py` is a two-pass SH-2E assembler with a known-encoding self-test;
+  `patch/sh2_disasm.py` supports binary inspection; `patch/verify_regions.py` audits free flash
+  and RAM assumptions.
+- The controller stub is at 0x7D80C. `evap_purge_duty_compute` @0x3FC0A tail-calls its output via
+  pooled pointer @0x3FD8C (=0x0000E8C4); the patch repoints that pointer to the stub. Disassembly
+  confirms the controller is STATELESS (no persistent RAM stores). err = TargetBoost[rpm] − MAP(0xFFFFABC4);
   ratio = clamp(base + Kp·err, 0, MaxRatio); throttle @0xFFFFB314 at/below the tunable minimum
   @0x7D8A4 → ratio 0; overboost → ratio 0.
 - **P-only, not PI — deliberate.** Audit (verify_regions.py, cross-checked in Ghidra) found NO RAM
@@ -206,11 +195,12 @@ custom code in free space, driving the repurposed purge PWM output (0xFFFFF590).
 - Free flash VERIFIED CLEAN: 9064 contiguous 0xFF @0x7D790; no code points into it.
 - Layout: base_desc 0x7D790 / rpm_axis 0x7D7A4 / base_data 0x7D7C4 / target_desc 0x7D7CC /
   target_data 0x7D7E0 / Kp 0x7D800 / MaxRatio 0x7D804 / Overboost 0x7D808 / stub 0x7D80C.
-- Ships Kp=0 (feed-forward) for a safe first flash. PREREQUISITE for closed loop: EJ255 MAP sensor
-  + rescale 0x72810. Binary-verified only; not hardware-tested. TODO: hard fuel/ignition overboost
-  cut, integral term (needs verified RAM), 2-axis target, faster loop rate.
+- Kp ships at zero as a commissioning calibration. PREREQUISITE for proportional correction and
+  trustworthy MAP limits: EJ255 MAP sensor + rescale 0x72810. Binary-verified only; not
+  hardware-tested. Future work: integral term (needs verified RAM), 2-axis target, and faster
+  loop rate.
 
-### Overboost fuel cut (added to Phase 2)
+### Overboost fuel cut
 Two-tier: SOFT (MAP>0x7D808 → duty 0, in the boost stub) + HARD (MAP>0x7D8A8 → fuel cut). Hard cut
 reuses the factory rev-limiter path — wrapper @0x7D8AC hooked at rev-limiter fn-ptr 0x11D3C
 (`FUN_00011AD0` dispatcher) calls `rev_limiter_fuel_cut` @0x24B24 then sets fuel-cut flag

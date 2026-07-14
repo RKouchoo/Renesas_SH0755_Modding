@@ -105,8 +105,8 @@ class Asm:
         return bytes(out)
 
 
-def _selftest_phase1():
-    """Reproduce the verified Phase-1 stub byte-for-byte to validate the assembler."""
+def _selftest_known_encoding():
+    """Reproduce a verified SH-2E stub byte-for-byte to validate the assembler."""
     RPM, DESC, INTERP, OUTPUT = 0xFFFFB544, 0x0007D790, 0x0000209C, 0x0000E8C4
     a = Asm(0x7D7CC)
     a.stsl_pr()
@@ -120,7 +120,7 @@ def _selftest_phase1():
     want = bytes.fromhex("4f22d105f418d405d205420b0009f40c4f26d204422b0009"
                          "ffffb5440007d7900000209c0000e8c4")
     assert got == want, "SELFTEST FAIL:\n got=%s\nwant=%s" % (got.hex(), want.hex())
-    print("sh2_asm selftest OK (reproduces verified Phase-1 stub, %d bytes)" % len(got))
+    print("sh2_asm selftest OK (reproduces verified SH-2E stub, %d bytes)" % len(got))
 
 if __name__ == "__main__":
-    _selftest_phase1()
+    _selftest_known_encoding()
