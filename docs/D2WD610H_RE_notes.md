@@ -145,15 +145,17 @@ Definition layout:
 - `defs/D2WD610H.xml` is the retained base metric EcuFlash definition.
 - `defs/D2WD610H_AVLS.xml` is the AVLS-only custom RomRaider definition.
 - `defs/D2WD610H_AVLS_boost_patch.xml` contains the same D2WD610H + AVLS definition plus the
-  canonical boost-patch tables.
+  canonical boost-patch tables and its one-byte runtime enable.
+- `defs/D2WD610H_AVLS_single_front_af_patch.xml` contains D2WD610H + AVLS plus the one-byte
+  single-front-A/F runtime enable; existing DTC switches cover the five removed-sensor edits.
 - `defs/romraider_ecu_defs.xml` is a clean upstream metric RomRaider snapshot and is not modified
   with project tables.
 
-Both custom RomRaider ROM files are self-contained. Their embedded metric `32BITBASE` is pruned
+All three custom RomRaider ROM files are self-contained. Their embedded metric `32BITBASE` is pruned
 to the 206 templates referenced by the 206 standard D2WD610H address overrides; the additions
-are seven AVLS tables and, in the boost variant only, the boost-patch tables. The single-front-A/F
-patch has no editable calibrations and needs no separate definition. Load only one custom ROM
-variant at a time. Stock AVLS values were verified against the ROM image 2026-07-14.
+are seven AVLS tables and, in the patch variants, only the matching patch tables/switch. Load
+only the custom ROM variant matching the image being edited. Stock AVLS values were verified
+against the ROM image 2026-07-14.
 
 **Open sub-item:** the final OSV port write. `cam_actuator_output_set_*` descend into
 float target/feedback layers (AVCS-style continuous control mixed in); the binary port
@@ -265,7 +267,8 @@ _(underscore names only — strict naming enforcement is ON)_
 - 0x0000B8CC → **front_af_sensor_pump_current_diagnostic_update** (retained stock front-sensor
   diagnostic calculation; single-front task wrapper refreshes Bank-2 readiness afterward)
 - 0x00064FD0 / 0x0006500C → **front_af_sensor_bank1_inhibit_check** /
-  **front_af_sensor_bank2_inhibit_check** (single-front patch redirects the Bank-2 entry to Bank 1)
+  **front_af_sensor_bank2_inhibit_check** (single-front patch redirects the Bank-2 entry to a
+  runtime selector: patch on uses Bank 1; patch off reconstructs stock Bank-2 semantics)
 - 0x00018DAC → **front_af_sensor_lambda_condition_filter** (downstream conditioned factory
   lambda path producing the B4E8/B4EC logger values)
 - 0x0001917A → **front_af_sensor_ready_status_pair_update**
@@ -299,6 +302,10 @@ Decompiler comments set at: 0x209C, 0x2150, 0x28418, 0x284B8, 0x40168, 0x405CC, 
   All functions opened during this pass use the project underscore naming convention. The final
   standalone patch hooks only the front process at B690, redirects the Bank-2 inhibit entry, and
   wraps the front diagnostic task pointer. The rear process and all rear DTC switches remain stock.
+- 2026-07-14: both generated patches gained definition-backed runtime-enable bytes. Boost uses
+  0x7D80C (`OFF` forces zero EBCS duty and skips the added MAP cut); single-front A/F uses
+  0x7D91C (`OFF` stops both mirrors and selects stock Bank-2 inhibit behavior). The switches do
+  not undo the boost MAP calibration or the five single-front DTC bytes, respectively.
 - 2026-07-14: retired ECU-side aftermarket-sensor annotations were replaced in the active Ghidra
   program. The established stock function names were re-applied while comments were updated to
   the single-front-A/F design and the explicitly unchanged rear paths.

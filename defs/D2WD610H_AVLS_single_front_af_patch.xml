@@ -1,5 +1,5 @@
 <roms>
- <!-- D2WD610H AVLS + boost-patch definition. Self-contained metric RomRaider XML. Embedded 32BITBASE is pruned to the 206 templates referenced by D2WD610H. Metric source: Merp/SubaruDefs Stable 9b2992eba8133fe5338b89aa77b22c1bb14d6507. -->
+ <!-- D2WD610H AVLS + single-front-A/F-patch definition. Self-contained metric RomRaider XML. Embedded 32BITBASE is pruned to the 206 templates referenced by D2WD610H. Metric source: Merp/SubaruDefs Stable 9b2992eba8133fe5338b89aa77b22c1bb14d6507. -->
  <rom>
   <romid>
    <xmlid>32BITBASE</xmlid>
@@ -1372,7 +1372,7 @@
  </rom>
  <rom base="32BITBASE">
   <romid>
-   <xmlid>D2WD610H_AVLS_BOOST_PATCH</xmlid>
+   <xmlid>D2WD610H_AVLS_SINGLE_FRONT_AF_PATCH</xmlid>
    <internalidaddress>2000</internalidaddress>
    <internalidstring>D2WD610H</internalidstring>
    <ecuid>3C5A387116</ecuid>
@@ -1772,45 +1772,11 @@
    <scaling units="RPM" expression="x" to_byte="x" format="#" fineincrement="50" coarseincrement="100" />
    <description>Minimum engine speed gate for OSV (oil switching valve) actuation, checked in avls_osv_actuation_gate @ 0x405CC. Below this the high-cam actuation is not commanded even if requested. Stock: 3000.</description>
   </table>
-  <!-- D2WD610H EVAP-to-EBCS boost-patch tables -->
-  <table type="Switch" name="Boost Control Patch Enable" category="Boost Control (patch)" sizey="1" userlevel="1" storageaddress="0x7D80C">
-   <description>Only ON (exactly 01) enables EVAP-solenoid boost duty and the added MAP overboost fuel cut. OFF (00), erased FF, or any other value forces zero EBCS duty and runs only the stock rev limiter; with the required plumbing this is the minimum-boost/wastegate-spring state. Verify on the bench that zero duty produces minimum boost before relying on this switch. OFF does not restore the stock MAP-sensor scaling at 0x72810; the installed sensor must remain compatible with {-414.0, 514.199951} unless that calibration is separately restored before flashing.</description>
+  <!-- D2WD610H single-front-A/F patch runtime control -->
+  <table type="Switch" name="Single Front A/F Patch Enable" category="Front A/F (patch)" sizey="1" userlevel="1" storageaddress="0x7D91C">
+   <description>Only ON (exactly 01) mirrors the retained RH/Bank-1 front A/F values and readiness into the LH/Bank-2 paths and uses the Bank-1 inhibit result for both banks. OFF (00), erased FF, or any other value restores stock dual-front signal processing, readiness, and Bank-2 inhibit behavior. OFF does not re-enable the five diagnostic switches disabled in the generated patch image; for fully stock diagnostics also turn ON P0051, P0052, P0151, P0152, and P0154 before saving/flashing. Both rear narrowband paths remain stock in either state.</description>
    <state name="on" data="01" />
    <state name="off" data="00" />
-  </table>
-  <table type="2D" name="Boost Wastegate Duty (RPM)" category="Boost Control (patch)" storagetype="uint8" endian="big" sizey="8" userlevel="1" storageaddress="0x7D7C4">
-   <scaling units="wastegate duty %" expression="x" to_byte="x" format="0" fineincrement="1" coarseincrement="5" />
-   <table type="Y Axis" name="Engine Speed" storagetype="float" endian="big" storageaddress="0x7D7A4">
-    <scaling units="RPM" expression="x" to_byte="x" format="0" fineincrement="50" coarseincrement="250" />
-   </table>
-   <description>Feed-forward wastegate duty %% vs RPM used as the controller base term. Default {0,0,21,19,18,17,15,14} is the A2WC510N full-demand Initial WGDC curve reduced by the donor target ratio 5/13.536 and rounded. This is provenance, not proof of correct duty: WGDC does not scale linearly with boost. Verify polarity/plumbing and tune on the installed hardware.</description>
-  </table>
-  <table type="2D" name="Boost Target (RPM)" category="Boost Control (patch)" storagetype="float" endian="big" sizey="8" userlevel="1" storageaddress="0x7D7E0">
-   <scaling units="psi relative 760 mmHg" expression="(x-760)/51.71493257" to_byte="(x*51.71493257)+760" format="0.00" fineincrement="0.1" coarseincrement="0.5" />
-   <table type="Y Axis" name="Engine Speed" storagetype="float" endian="big" storageaddress="0x7D7A4">
-    <scaling units="RPM" expression="x" to_byte="x" format="0" fineincrement="50" coarseincrement="250" />
-   </table>
-   <description>Boost target vs RPM. Display is psi relative to 760 mmHg (approximately gauge at sea level); stored float is native mmHg absolute to match MAP 0xFFFFABC4 after applying the A2WC510N sensor calibration {-414.0, 514.199951} at 0x72810. The default full-demand A2WC510N shape is proportionally reduced to peak at 5.00 psi. No atmospheric target compensation is implemented.</description>
-  </table>
-  <table type="1D" name="Boost Kp (proportional gain)" category="Boost Control (patch)" storagetype="float" endian="big" sizey="1" userlevel="2" storageaddress="0x7D800">
-   <scaling units="WGDC percentage points per psi error" expression="x*5171.493257" to_byte="x/5171.493257" format="0.00" fineincrement="0.1" coarseincrement="0.5" />
-   <description>Proportional gain. Default stored Kp 0.0005 ratio/mmHg displays as 2.59 WGDC percentage points per psi error, matching the near-zero slope of the A2WC510N Turbo Dynamics Proportional table. No integral term; validate gradually on hardware.</description>
-  </table>
-  <table type="1D" name="Boost Max Duty Ratio" category="Boost Control (patch)" storagetype="float" endian="big" sizey="1" userlevel="2" storageaddress="0x7D804">
-   <scaling units="ratio (1.0 = 100%)" expression="x" to_byte="x" format="0.00" fineincrement="0.01" coarseincrement="0.05" />
-   <description>Upper clamp on final commanded duty ratio. Default 0.33, a conservative scalar cap near the 5 psi-scaled peak of the donor Max WGDC curve.</description>
-  </table>
-  <table type="1D" name="Boost Overboost Cut (Duty, soft)" category="Boost Control (patch)" storagetype="float" endian="big" sizey="1" userlevel="1" storageaddress="0x7D808">
-   <scaling units="psi relative 760 mmHg" expression="(x-760)/51.71493257" to_byte="(x*51.71493257)+760" format="0.00" fineincrement="0.1" coarseincrement="0.5" />
-   <description>SOFT overboost limit: if MAP exceeds this, wastegate duty is forced to 0. Default 6.00 psi relative to 760 mmHg, one psi above the peak target. Set below the hard fuel-cut limit.</description>
-  </table>
-  <table type="1D" name="Boost Minimum Throttle" category="Boost Control (patch)" storagetype="float" endian="big" sizey="1" userlevel="1" storageaddress="0x7D8BC">
-   <scaling units="throttle opening" expression="x" to_byte="x" format="0.0" fineincrement="1" coarseincrement="5" />
-   <description>Driver-demand gate using processed throttle opening at 0xFFFFB314. At or below this threshold the boost stub commands zero wastegate duty. Default native value 30.0 (about 35.7% on the donor x/.84 display convention). Stateless/no hysteresis; validate by logging before boost.</description>
-  </table>
-  <table type="1D" name="Boost Overboost Fuel Cut (hard)" category="Boost Control (patch)" storagetype="float" endian="big" sizey="1" userlevel="1" storageaddress="0x7D8C0">
-   <scaling units="psi relative 760 mmHg" expression="(x-760)/51.71493257" to_byte="(x*51.71493257)+760" format="0.00" fineincrement="0.1" coarseincrement="0.5" />
-   <description>HARD overboost limit: above the default 7.00 psi relative-to-760-mmHg threshold, a FUEL CUT is triggered through the rev-limiter wrapper @0x7D8C4 and flag 0xFFFFBF6C bit0x80 while Boost Control Patch Enable is ON. Last-resort protection; no hysteresis, so bench-prove cut and recovery.</description>
   </table>
  </rom>
 </roms>

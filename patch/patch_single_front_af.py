@@ -10,10 +10,10 @@ Both stock rear narrowband channels remain untouched. An aftermarket post-turbo
 wideband, if fitted, is external instrumentation and is not connected to or
 decoded by this ROM patch.
 
-This remains a separate development patch. Its free-space allocation starts at
-0x7D920, after the boost patch's 0x7D790..0x7D8DF allocation, so both can later be
-merged from a fresh stock image without collision. Never use a generated image as
-patch input.
+This remains a separate development patch. Its runtime-enable byte is at 0x7D91C
+and its code starts at 0x7D920, after the boost patch's 0x7D790..0x7D903
+allocation, so both can later be merged from a fresh stock image without
+collision. Never use a generated image as patch input.
 
 Usage:  python3 patch_single_front_af.py [out.bin]
 """
@@ -27,10 +27,11 @@ from sh2_asm import Asm
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 STOCK = os.path.abspath(os.path.join(HERE, "..", "2005 BLE MT.bin"))
-OUT = (os.path.abspath(sys.argv[1]) if len(sys.argv) > 1
-       else os.path.join(HERE, "D2WD610H_single_front_af.bin"))
+DEFAULT_OUT = os.path.join(HERE, "D2WD610H_single_front_af.bin")
+OUT = (os.path.abspath(sys.argv[1]) if __name__ == "__main__" and len(sys.argv) > 1
+       else DEFAULT_OUT)
 STOCK_SHA256 = "ed0fe0341d97fb760c2cda3f07277f861495d32f6520e3ce8047b8b0f7bfd4ee"
-if len(sys.argv) > 2:
+if __name__ == "__main__" and len(sys.argv) > 2:
     raise SystemExit("usage: python3 patch_single_front_af.py [out.bin]")
 
 
@@ -41,6 +42,7 @@ FRONT_PUMP_DIAG_TASK_PTR = 0x00006A6C
 STOCK_FRONT_PUMP_DIAG_THUNK = 0x0000B658
 BANK1_INHIBIT_ENTRY = 0x00064FD0
 BANK2_INHIBIT_ENTRY = 0x0006500C
+BANK2_INHIBIT_FLAG = 0xFFFFD26C
 
 FRONT_LAMBDA_BANK1 = 0xFFFFAE60
 FRONT_LAMBDA_BANK2 = 0xFFFFAE64
@@ -61,10 +63,12 @@ DISABLED_FRONT_AF_DTC_SWITCHES = {
 }
 
 
-# ---- single-front-A/F free-space layout (boost patch ends at 0x7D8DF) ----
+# ---- single-front-A/F free-space layout (boost patch ends at 0x7D903) ----
+FRONT_AF_ENABLE_ADDR = 0x0007D91C  # uint8: exact 1=mirror patch; every other value=stock logic
 FRONT_MIRROR_WRAPPER_ADDR = 0x0007D920
 FRONT_ORIGINAL_TRAMPOLINE_ADDR = 0x0007D9A0
 FRONT_DIAG_MIRROR_WRAPPER_ADDR = 0x0007D9E0
+BANK2_INHIBIT_SELECTOR_ADDR = 0x0007DA20
 FREE_START, FREE_END = 0x0007D900, 0x0007FAF7
 
 
@@ -95,24 +99,50 @@ def build_front_original_trampoline():
 
 
 def build_front_mirror_wrapper():
-    """Run the complete stock front-A/F process, then mirror Bank 1 into Bank 2."""
+    """Run stock front-A/F processing; mirror Bank 1 only while the patch is enabled."""
     a = Asm(FRONT_MIRROR_WRAPPER_ADDR)
     a.stsl_pr()
     a.movl_pool(1, FRONT_ORIGINAL_TRAMPOLINE_ADDR).jsr(1).nop()
+    a.movl_pool(1, FRONT_AF_ENABLE_ADDR); a.movb_at(0, 1); a.cmp_eq_imm(0x01)
+    a.bf('done')
     emit_float_copy(a, FRONT_LAMBDA_BANK1, FRONT_LAMBDA_BANK2)
     emit_float_copy(a, FRONT_CURRENT_BANK1, FRONT_CURRENT_BANK2)
     emit_float_copy(a, FRONT_READY_METRIC_BANK1, FRONT_READY_METRIC_BANK2)
+    a.label('done')
     a.ldsl_pr().rts().nop()
     return a.assemble()
 
 
 def build_front_diag_mirror_wrapper():
-    """Retain stock diagnostics, then mirror Bank-1 readiness into Bank 2."""
+    """Run stock diagnostics; mirror Bank-1 readiness only while enabled."""
     a = Asm(FRONT_DIAG_MIRROR_WRAPPER_ADDR)
     a.stsl_pr()
     a.movl_pool(1, STOCK_FRONT_PUMP_DIAG_THUNK).jsr(1).nop()
+    a.movl_pool(1, FRONT_AF_ENABLE_ADDR); a.movb_at(0, 1); a.cmp_eq_imm(0x01)
+    a.bf('done')
     emit_float_copy(a, FRONT_READY_METRIC_BANK1, FRONT_READY_METRIC_BANK2)
+    a.label('done')
     a.ldsl_pr().rts().nop()
+    return a.assemble()
+
+
+def build_bank2_inhibit_selector():
+    """Select patched Bank-1 inhibit status or reproduce the stock Bank-2 helper.
+
+    The stock Bank-2 entry is overwritten by its hook, so the disabled path
+    reconstructs that helper's complete behavior: return 2 when bit 0 of
+    0xFFFFD26C is set, otherwise return 0.
+    """
+    a = Asm(BANK2_INHIBIT_SELECTOR_ADDR)
+    a.movl_pool(1, FRONT_AF_ENABLE_ADDR); a.movb_at(0, 1); a.cmp_eq_imm(0x01)
+    a.bf('stock_bank2')
+    a.movl_pool(1, BANK1_INHIBIT_ENTRY); a.jmp(1); a.nop()
+    a.label('stock_bank2')
+    a.movl_pool(1, BANK2_INHIBIT_FLAG); a.movb_at(0, 1); a.and_imm(0x01)
+    a.tst_reg(0, 0); a.bf('inhibited')
+    a.rts(); a.mov_imm(0, 0)
+    a.label('inhibited')
+    a.rts(); a.mov_imm(2, 0)
     return a.assemble()
 
 
@@ -156,17 +186,22 @@ def main():
     rom = bytearray(stock_bytes)
 
     blobs = [
+        ("front_patch_enable", FRONT_AF_ENABLE_ADDR, b"\x01"),
         ("front_sensor_mirror_wrapper", FRONT_MIRROR_WRAPPER_ADDR,
          build_front_mirror_wrapper()),
         ("front_original_trampoline", FRONT_ORIGINAL_TRAMPOLINE_ADDR,
          build_front_original_trampoline()),
         ("front_diagnostic_mirror_wrapper", FRONT_DIAG_MIRROR_WRAPPER_ADDR,
          build_front_diag_mirror_wrapper()),
+        ("bank2_inhibit_selector", BANK2_INHIBIT_SELECTOR_ADDR,
+         build_bank2_inhibit_selector()),
     ]
     limits = {
+        "front_patch_enable": FRONT_MIRROR_WRAPPER_ADDR,
         "front_sensor_mirror_wrapper": FRONT_ORIGINAL_TRAMPOLINE_ADDR,
         "front_original_trampoline": FRONT_DIAG_MIRROR_WRAPPER_ADDR,
-        "front_diagnostic_mirror_wrapper": FREE_END + 1,
+        "front_diagnostic_mirror_wrapper": BANK2_INHIBIT_SELECTOR_ADDR,
+        "bank2_inhibit_selector": FREE_END + 1,
     }
     previous_end = FREE_START
     for name, address, data in sorted(blobs, key=lambda item: item[1]):
@@ -187,7 +222,7 @@ def main():
                   "front A/F process entry")
     checked_write(rom, BANK2_INHIBIT_ENTRY,
                   bytes.fromhex("905c6000c901600c20088f02"),
-                  build_entry_hook(BANK2_INHIBIT_ENTRY, BANK1_INHIBIT_ENTRY),
+                  build_entry_hook(BANK2_INHIBIT_ENTRY, BANK2_INHIBIT_SELECTOR_ADDR),
                   "bank-2 front A/F inhibit entry")
     checked_write(rom, FRONT_PUMP_DIAG_TASK_PTR, be32(STOCK_FRONT_PUMP_DIAG_THUNK),
                   be32(FRONT_DIAG_MIRROR_WRAPPER_ADDR),
@@ -218,6 +253,9 @@ def main():
     print("  closed loop   : stock RH/Bank-1 front A/F -> mirrored Bank-1/Bank-2 paths")
     print("  rear sensors  : both stock rear narrowband paths and diagnostics unchanged")
     print("  ext. wideband : external logger only; no ECU electrical or firmware interface")
+    print("  runtime switch: @0x%05X defaults ON (01); OFF restores stock dual-front logic"
+          % FRONT_AF_ENABLE_ADDR)
+    print("  switch caveat : OFF does not re-enable P0051/P0052/P0151/P0152/P0154")
     print("\n*** DEVELOPMENT IMAGE: validate the retained sensor and both-bank behavior before use. ***")
 
 

@@ -50,12 +50,15 @@ def main():
         raise SystemExit("FAIL: both images must be exactly 512 KiB")
 
     blobs = [
+        ("front patch enable", patch.FRONT_AF_ENABLE_ADDR, b"\x01"),
         ("front mirror wrapper", patch.FRONT_MIRROR_WRAPPER_ADDR,
          patch.build_front_mirror_wrapper()),
         ("front original trampoline", patch.FRONT_ORIGINAL_TRAMPOLINE_ADDR,
          patch.build_front_original_trampoline()),
         ("front diagnostic mirror wrapper", patch.FRONT_DIAG_MIRROR_WRAPPER_ADDR,
          patch.build_front_diag_mirror_wrapper()),
+        ("bank-2 inhibit selector", patch.BANK2_INHIBIT_SELECTOR_ADDR,
+         patch.build_bank2_inhibit_selector()),
     ]
     for label, address, data in blobs:
         expect(image, address, data, label)
@@ -65,8 +68,8 @@ def main():
          patch.build_entry_hook(patch.FRONT_AF_PROCESS_ENTRY, patch.FRONT_MIRROR_WRAPPER_ADDR),
          "front A/F process hook"),
         (patch.BANK2_INHIBIT_ENTRY,
-         patch.build_entry_hook(patch.BANK2_INHIBIT_ENTRY, patch.BANK1_INHIBIT_ENTRY),
-         "bank-2-to-bank-1 inhibit hook"),
+         patch.build_entry_hook(patch.BANK2_INHIBIT_ENTRY, patch.BANK2_INHIBIT_SELECTOR_ADDR),
+         "bank-2 runtime inhibit-selector hook"),
         (patch.FRONT_PUMP_DIAG_TASK_PTR, patch.be32(patch.FRONT_DIAG_MIRROR_WRAPPER_ADDR),
          "front diagnostic wrapper pointer"),
     ]
@@ -74,6 +77,19 @@ def main():
         expect(image, address, data, label)
     for code, address in patch.DISABLED_FRONT_AF_DTC_SWITCHES.items():
         expect(image, address, b"\x00", "%s disabled" % code)
+
+    # Pin each runtime decision independently of blob regeneration. The first
+    # two sequences branch over their copies unless the flag is exactly 01. The
+    # third selects the reconstructed stock Bank-2 helper for every other value.
+    expect(image, patch.FRONT_MIRROR_WRAPPER_ADDR + 8,
+           bytes.fromhex("d10a601088018b0b"), "front-mirror enable branch")
+    expect(image, patch.FRONT_DIAG_MIRROR_WRAPPER_ADDR + 8,
+           bytes.fromhex("d106601088018b03"), "diagnostic-mirror enable branch")
+    expect(image, patch.BANK2_INHIBIT_SELECTOR_ADDR,
+           bytes.fromhex("d107601088018b02"), "Bank-2 selector enable branch")
+    expect(image, patch.BANK2_INHIBIT_SELECTOR_ADDR + 14,
+           bytes.fromhex("d1066010c90120088b01000be000000be002"),
+           "reconstructed stock Bank-2 inhibit behavior")
 
     # Retained paths are safety-critical to the architecture.
     expect(image, patch.BANK1_INHIBIT_ENTRY,
@@ -113,18 +129,22 @@ def main():
     if unexpected:
         raise SystemExit("FAIL: unexpected changed offsets: %s"
                          % ", ".join("0x%05X" % value for value in unexpected[:32]))
-    if image[0x7D790:0x7D8E0] != stock[0x7D790:0x7D8E0]:
+    if image[0x7D790:0x7D904] != stock[0x7D790:0x7D904]:
         raise SystemExit("FAIL: standalone front-A/F image modifies the reserved boost region")
-    if image[0x7D900:0x7D920] != stock[0x7D900:0x7D920]:
-        raise SystemExit("FAIL: retired external-wideband calibration region is not stock/erased")
+    if (image[0x7D904:patch.FRONT_AF_ENABLE_ADDR] !=
+            stock[0x7D904:patch.FRONT_AF_ENABLE_ADDR] or
+            image[patch.FRONT_AF_ENABLE_ADDR + 1:patch.FRONT_MIRROR_WRAPPER_ADDR] !=
+            stock[patch.FRONT_AF_ENABLE_ADDR + 1:patch.FRONT_MIRROR_WRAPPER_ADDR]):
+        raise SystemExit("FAIL: unused pre-wrapper free space is not stock/erased")
     if image[0x7DA60:0x7DB40] != stock[0x7DA60:0x7DB40]:
         raise SystemExit("FAIL: retired external-wideband code region is not stock/erased")
 
     # Instruction ends are the aligned literal-pool starts produced by Asm.
     instruction_spans = [
-        (patch.FRONT_MIRROR_WRAPPER_ADDR, 0x7D948),
+        (patch.FRONT_MIRROR_WRAPPER_ADDR, 0x7D950),
         (patch.FRONT_ORIGINAL_TRAMPOLINE_ADDR, 0x7D9B4),
-        (patch.FRONT_DIAG_MIRROR_WRAPPER_ADDR, 0x7D9F8),
+        (patch.FRONT_DIAG_MIRROR_WRAPPER_ADDR, 0x7DA00),
+        (patch.BANK2_INHIBIT_SELECTOR_ADDR, 0x7DA40),
     ]
     decoded = []
     for start, end in instruction_spans:
@@ -141,11 +161,15 @@ def main():
     print("  output SHA-256 : %s" % hashlib.sha256(image).hexdigest())
     print("  changed bytes  : %d (all inside guarded front hooks/DTCs/free-space allocations)"
           % len(changed))
-    print("  injected code  : %d decoded instructions; no unknown opcodes" % len(decoded))
+    print("  injected code  : %d decoded instructions; no unknown opcodes; enable branches pinned"
+          % len(decoded))
     print("  front feedback : stock Bank 1 mirrored to Bank 2; Bank-1 diagnostics retained")
+    print("  runtime switch : 0x%05X=01; 00 selects stock dual-front signal/inhibit logic"
+          % patch.FRONT_AF_ENABLE_ADDR)
+    print("  OFF caveat     : the five removed-Bank-2 DTC bytes remain disabled until re-enabled")
     print("  rear O2 paths  : both stock processing paths and checked DTC switches retained")
     print("  ext. wideband  : no ECU hook, ADC conversion, RAM publication, or definition")
-    print("  boost region   : 0x7D790..0x7D8DF unchanged")
+    print("  boost region   : 0x7D790..0x7D903 unchanged")
 
 
 if __name__ == "__main__":

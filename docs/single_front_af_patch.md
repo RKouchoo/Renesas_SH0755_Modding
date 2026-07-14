@@ -40,8 +40,30 @@ prologue trampoline, then copies:
 ```
 
 The stock front pump-current diagnostic task still runs. Its wrapper refreshes only the final
-Bank-2 readiness copy. The Bank-2 inhibit helper tail-jumps to the unchanged Bank-1 inhibit
-helper, keeping the retained sensor's stock fault handling in control.
+Bank-2 readiness copy while enabled. A runtime selector makes the Bank-2 inhibit hook use the
+unchanged Bank-1 helper while enabled and reconstructs the complete stock Bank-2 helper behavior
+while disabled.
+
+## RomRaider runtime switch
+
+Use
+[D2WD610H_AVLS_single_front_af_patch.xml](../defs/D2WD610H_AVLS_single_front_af_patch.xml) for
+this generated image. `Single Front A/F Patch Enable` writes `01` (on) or `00` (off) at
+`0x7D91C`; the generated image defaults to on. Only exact `01` enables mirroring; erased `FF`
+and every other value select the disabled/stock-logic paths.
+
+This is a flash-image switch, not a live RomRaider logger control. Save the edited image with a
+valid checksum and reflash it before the selected state can take effect.
+
+- `ON`: run the complete stock front process, then mirror Bank-1 lambda/current/readiness into
+  Bank 2; mirror diagnostic readiness; use Bank-1 inhibit status for both banks.
+- `OFF`: run stock dual-front processing and diagnostics without mirroring, and use the original
+  Bank-2 inhibit semantics.
+
+The switch controls injected runtime logic, not the five noncontiguous DTC bytes written by the
+patch builder. To restore fully stock diagnostic configuration, also turn on P0051, P0052,
+P0151, P0152, and P0154 before saving/flashing. Do not use `OFF` as a normal operating mode after
+the Bank-2 sensor is physically removed: stock logic will again depend on that absent sensor.
 
 ## Deliberately unchanged
 
@@ -65,11 +87,13 @@ vehicle-variant wiring issues associated with feeding a controller into a stock 
 | Front process hook | `0xB690` |
 | Front diagnostic task pointer | `0x6A6C` |
 | Bank-2 inhibit hook | `0x6500C` |
+| Runtime enable byte | `0x7D91C` |
 | Front mirror wrapper | `0x7D920` |
 | Stock-prologue trampoline | `0x7D9A0` |
 | Front diagnostic mirror wrapper | `0x7D9E0` |
+| Bank-2 inhibit runtime selector | `0x7DA20` |
 
-The standalone boost patch occupies `0x7D790..0x7D8DF`; this patch's injected blocks do not
+The standalone boost patch occupies `0x7D790..0x7D903`; this patch's injected blocks do not
 overlap it. A future merged image must still be produced from the root stock ROM and audited as a
 new combined system—never by stacking generated binaries.
 
@@ -117,11 +141,13 @@ Commission in this order:
 
 1. Confirm the exact ROM, retained RH sensor, and actual connector variant.
 2. Build only from the canonical root stock ROM and run `verify_single_front_af.py`.
-3. Correct and verify the ROM checksum.
-4. First run without boost and log E91/E109, closed-loop state, both fuel corrections, and all
+3. Open the image with the matching single-front-A/F RomRaider definition; confirm the enable
+   switch reads on and verify that an off/on edit changes only `0x7D91C` before checksum handling.
+4. Correct and verify the ROM checksum.
+5. First run without boost and log E91/E109, closed-loop state, both fuel corrections, and all
    front/rear sensor DTCs.
-5. Prove both displayed front channels track through idle, steady cruise, throttle transitions,
+6. Prove both displayed front channels track through idle, steady cruise, throttle transitions,
    forced open loop, warm-up, and a controlled retained-sensor fault.
-6. Confirm both stock rear sensors and catalyst diagnostics still behave as they did on stock.
-7. Validate the independently logged post-turbo lambda stream and timestamp alignment before it
+7. Confirm both stock rear sensors and catalyst diagnostics still behave as they did on stock.
+8. Validate the independently logged post-turbo lambda stream and timestamp alignment before it
    is used for tuning decisions.

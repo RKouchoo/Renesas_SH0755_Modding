@@ -37,6 +37,7 @@ Build the standalone single-front-A/F development image the same way:
 ```sh
 python3 patch/patch_single_front_af.py
 python3 patch/verify_single_front_af.py
+python3 patch/verify_romraider_toggles.py
 ```
 
 Never patch a previously patched image. Every build starts from the root stock ROM.
@@ -73,6 +74,7 @@ fuel-cut flag `0xFFFFBF6C` bit `0x80`, which is consumed by `fuel_cut_flag_aggre
 | `sh2_disasm.py` | Minimal SH-2E disassembler used for binary verification. |
 | `verify_regions.py` | Audits free-flash and scratch-RAM assumptions. |
 | `verify_boost_donor.py` | Re-extracts A2WC510N tables and verifies the generated 5 psi defaults and MAP scaling. |
+| `verify_romraider_toggles.py` | Parses both patch definitions and verifies target IDs, switch/table addresses, generated ON bytes, and isolated one-byte OFF edits. |
 | `D2WD610H_boost.bin` | Generated boost-control ROM; never use it as patch input or as the Ghidra stock image. |
 | `patch_single_front_af.py` | Canonical stock-ROM-to-single-front-A/F patcher. |
 | `verify_single_front_af.py` | Audits front hooks, DTC edits, injected code, preserved rear paths, and every changed offset. |
@@ -80,8 +82,20 @@ fuel-cut flag `0xFFFFBF6C` bit `0x80`, which is consumed by `fuel_cut_flag_aggre
 
 RomRaider boost calibration entries are in
 [D2WD610H_AVLS_boost_patch.xml](../defs/D2WD610H_AVLS_boost_patch.xml), category
-`Boost Control (patch)`. The front-A/F patch adds no calibrations and needs no separate ROM or
-logger definition.
+`Boost Control (patch)`. Its `Boost Control Patch Enable` switch writes `01`/`00` at `0x7D80C`.
+The matching front-A/F definition is
+[D2WD610H_AVLS_single_front_af_patch.xml](../defs/D2WD610H_AVLS_single_front_af_patch.xml); its
+`Single Front A/F Patch Enable` switch writes `01`/`00` at `0x7D91C`. Neither patch adds an
+aftermarket-wideband ECU/logger definition.
+
+Both generated images default to `ON`. Boost `OFF` forces zero EBCS duty and bypasses the added
+hard overboost cut while retaining the stock rev limiter; it does not revert the patched MAP
+scaling. Front-A/F `OFF` restores stock dual-front processing/readiness/inhibit behavior, but the
+five generated DTC-byte edits remain off until P0051/P0052/P0151/P0152/P0154 are separately
+re-enabled in RomRaider.
+
+These are flash calibration bytes, not live logger controls. A RomRaider change takes effect only
+after the edited ROM is saved with a valid checksum and flashed to the ECU.
 
 ## Boost injected layout
 
@@ -93,13 +107,14 @@ logger definition.
 | Target descriptor | `0x7D7CC` |
 | Target data | `0x7D7E0` |
 | Kp / maximum ratio / soft overboost | `0x7D800` / `0x7D804` / `0x7D808` |
-| Controller stub | `0x7D80C` |
-| Minimum throttle | `0x7D8A4` |
-| Hard overboost | `0x7D8A8` |
-| Fuel-cut wrapper | `0x7D8AC` |
+| Runtime enable byte | `0x7D80C` |
+| Controller stub | `0x7D810` |
+| Minimum throttle | `0x7D8BC` |
+| Hard overboost | `0x7D8C0` |
+| Fuel-cut wrapper | `0x7D8C4` |
 | Donor MAP scaling | `0x72810`: `{-414.0, 514.199951}` |
-| Purge output hook | `0x3FD8C` -> `0x7D80C` |
-| Rev-limiter hook | `0x11D3C` -> `0x7D8AC` |
+| Purge output hook | `0x3FD8C` -> `0x7D810` |
+| Rev-limiter hook | `0x11D3C` -> `0x7D8C4` |
 
 ## Single-front-A/F path
 
@@ -107,6 +122,10 @@ The separate front-sensor patch runs the complete retained RH/Bank-1 factory A/F
 then mirrors its processed lambda/current/readiness results into the Bank-2 paths. It also makes
 the Bank-2 inhibit helper reuse the unchanged Bank-1 result and disables only P0051, P0052,
 P0151, P0152, and P0154 for the physically removed LH/Bank-2 front sensor.
+
+Its enable byte is `0x7D91C`; wrappers start at `0x7D920`, and the runtime Bank-2 inhibit
+selector is at `0x7DA20`. With the byte clear, the wrappers stop mirroring and the selector
+reconstructs the original Bank-2 helper behavior.
 
 Both rear narrowband channels, their processed RAM values, their diagnostics, and the rear
 processing entry at `0xE0D0` remain stock. A post-turbo wideband must be logged externally; there

@@ -167,7 +167,8 @@ custom code in free space, driving the repurposed purge PWM output (0xFFFFF590).
 - RomRaider def: **defs/D2WD610H_AVLS_boost_patch.xml** — self-contained metric D2WD610H
   definition with AVLS and category "Boost Control (patch)". Its xmlid is
   D2WD610H_AVLS_BOOST_PATCH while internalidstring remains D2WD610H for auto-detect. Load this
-  combined file for a patched ROM; use D2WD610H_AVLS.xml for an AVLS-only ROM.
+  combined file for a patched ROM; use D2WD610H_AVLS.xml for an AVLS-only ROM. The definition
+  exposes the one-byte `Boost Control Patch Enable` at 0x7D80C (`01` on, `00` off).
 - Because 32BITBASE = WRX STi base, the WRX boost table TEMPLATES + scalings are already in the
   file (categories "Boost Control - Target/Wastegate/Turbo Dynamics/Limits"). Reuse those exact
   scalings when adding the patch overrides (e.g. Target Boost psi expr (x-760)*.01933677).
@@ -187,11 +188,12 @@ custom code in free space, driving the repurposed purge PWM output (0xFFFFF590).
 - `patch/sh2_asm.py` is a two-pass SH-2E assembler with a known-encoding self-test;
   `patch/sh2_disasm.py` supports binary inspection; `patch/verify_regions.py` audits free flash
   and RAM assumptions.
-- The controller stub is at 0x7D80C. `evap_purge_duty_compute` @0x3FC0A tail-calls its output via
+- The controller stub is at 0x7D810. `evap_purge_duty_compute` @0x3FC0A tail-calls its output via
   pooled pointer @0x3FD8C (=0x0000E8C4); the patch repoints that pointer to the stub. Disassembly
   confirms the controller is STATELESS (no persistent RAM stores). err = TargetBoost[rpm] − MAP(0xFFFFABC4);
   ratio = clamp(base + Kp·err, 0, MaxRatio); throttle @0xFFFFB314 at/below the tunable minimum
-  @0x7D8A4 → ratio 0; overboost → ratio 0.
+  @0x7D8BC → ratio 0; overboost → ratio 0. Before those calculations it reads enable byte
+  0x7D80C; when clear it forces zero EBCS duty and tail-calls the stock output stage.
 - **P-only, not PI — deliberate.** Audit (verify_regions.py, cross-checked in Ghidra) found NO RAM
   word can be proven free: 0xFFFFBFF0/BFF8 are inside the cam-solenoid struct array (0xFFFFBFB8 +
   i·0x28, computed access → invisible to xref); the big unreferenced RAM gaps are computed buffers
@@ -202,7 +204,8 @@ custom code in free space, driving the repurposed purge PWM output (0xFFFFF590).
   0x72808). The stub is the sole runtime driver — nothing else can fight boost control.
 - Free flash VERIFIED CLEAN: 9064 contiguous 0xFF @0x7D790; no code points into it.
 - Layout: base_desc 0x7D790 / rpm_axis 0x7D7A4 / base_data 0x7D7C4 / target_desc 0x7D7CC /
-  target_data 0x7D7E0 / Kp 0x7D800 / MaxRatio 0x7D804 / Overboost 0x7D808 / stub 0x7D80C.
+  target_data 0x7D7E0 / Kp 0x7D800 / MaxRatio 0x7D804 / Overboost 0x7D808 / enable 0x7D80C /
+  stub 0x7D810 / throttle minimum 0x7D8BC / hard limit 0x7D8C0 / wrapper 0x7D8C4.
 - Default calibration is donor-derived: 5 psi peak target, base WGDC
   `{0,0,21,19,18,17,15,14}`, Kp `0.0005 ratio/mmHg`, maximum duty `0.33`, 30.0 native throttle
   gate, 6 psi duty shutdown, and 7 psi fuel cut (all pressure figures relative to 760 mmHg). The
@@ -211,9 +214,12 @@ custom code in free space, driving the repurposed purge PWM output (0xFFFFF590).
   integral term (needs verified RAM), 2-axis target, and faster loop rate.
 
 ### Overboost fuel cut
-Two-tier: SOFT (MAP>0x7D808 → duty 0, in the boost stub) + HARD (MAP>0x7D8A8 → fuel cut). Hard cut
-reuses the factory rev-limiter path — wrapper @0x7D8AC hooked at rev-limiter fn-ptr 0x11D3C
+Two-tier while enabled: SOFT (MAP>0x7D808 → duty 0, in the boost stub) + HARD
+(MAP>0x7D8C0 → fuel cut). Hard cut reuses the factory rev-limiter path — wrapper @0x7D8C4
+hooked at rev-limiter fn-ptr 0x11D3C
 (`FUN_00011AD0` dispatcher) calls `rev_limiter_fuel_cut` @0x24B24 then sets fuel-cut flag
 0xFFFFBF6C bit0x80 on overboost; `fuel_cut_flag_aggregate` @0x23FC0 propagates → injectors off.
 Rev limits: A 0x7644C (resume 0x76450) / B 0x76454 (resume 0x76458). Stateless. Second hijack
-(0x11D3C) added alongside the output hijack (0x3FD8C); both guarded in the patcher.
+(0x11D3C) added alongside the output hijack (0x3FD8C); both guarded in the patcher. With enable
+clear, the wrapper still executes the stock rev limiter but skips the added MAP cut. The donor
+MAP conversion remains installed in either switch state.

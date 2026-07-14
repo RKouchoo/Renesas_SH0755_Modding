@@ -29,7 +29,12 @@ class Asm:
     def push(self, rm):           return self._w(0x2006 | 15<<8 | rm<<4)   # mov.l Rm,@-r15
     def movb_at(self, rn, rm):    return self._w(0x6000 | rn<<8 | rm<<4)   # mov.b @Rm,Rn (sign-ext)
     def movb_store(self, rm, rn): return self._w(0x2000 | rn<<8 | rm<<4)   # mov.b Rm,@Rn (low byte)
+    def mov_imm(self, imm, rn):   return self._w(0xE000 | rn<<8 | (imm & 0xFF)) # mov #imm,Rn (sign-ext)
+    def and_imm(self, imm):       return self._w(0xC900 | (imm & 0xFF))    # and #imm,r0
     def or_imm(self, imm):        return self._w(0xCB00 | (imm & 0xFF))    # or #imm,r0
+    def tst_imm(self, imm):       return self._w(0xC800 | (imm & 0xFF))    # tst #imm,r0
+    def tst_reg(self, rm, rn):    return self._w(0x2008 | rn<<8 | rm<<4)   # tst Rm,Rn
+    def cmp_eq_imm(self, imm):    return self._w(0x8800 | (imm & 0xFF))    # cmp/eq #imm,r0
     def cmp_eq(self, rm, rn):     return self._w(0x3000 | rn<<8 | rm<<4)   # cmp/eq Rm,Rn (T=Rn==Rm)
 
     # --- FP moves ---
@@ -129,6 +134,13 @@ def _selftest_known_encoding():
     want3 = bytes.fromhex("2fe62fd62fc62fb62fa62f96")
     assert got3 == want3, "GPR push SELFTEST FAIL: got=%s want=%s" % (got3.hex(), want3.hex())
     print("sh2_asm GPR-push encoding selftest OK")
+
+    d = Asm(0)
+    d.mov_imm(2, 0).and_imm(1).tst_reg(0, 0).tst_imm(1).cmp_eq_imm(1)
+    got4 = d.assemble()
+    want4 = bytes.fromhex("e002c9012008c80188010009")
+    assert got4 == want4, "integer-op SELFTEST FAIL: got=%s want=%s" % (got4.hex(), want4.hex())
+    print("sh2_asm integer-op encoding selftest OK")
 
 if __name__ == "__main__":
     _selftest_known_encoding()

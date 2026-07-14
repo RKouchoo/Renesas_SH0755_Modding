@@ -14,9 +14,9 @@ None of the public ECU definitions for the 3.0 H6 have AVLS mapped out. Denso ma
 | # | Goal Description | Status |
 | :-: | :--- | :--- |
 | 1 | Find AVLS settings and tables, and create definitions. | **DONE** — switchover thresholds + hysteresis + RPM overrides mapped; defs in [defs/D2WD610H_AVLS.xml](defs/D2WD610H_AVLS.xml). See notes §5. Pending RomRaider bench test. |
-| 2 | Replace dual front-sensor feedback with one retained factory A/F sensor. | *Development patch built* — RH/Bank-1 factory A/F remains pre-turbo and is mirrored into both fuel-bank paths. Both rear narrowband paths remain stock; the post-turbo wideband is logged externally and has no ECU input. Binary-verified, not vehicle-verified. See [single_front_af_patch.md](docs/single_front_af_patch.md). |
+| 2 | Replace dual front-sensor feedback with one retained factory A/F sensor. | *Development patch built* — RH/Bank-1 factory A/F remains pre-turbo and is mirrored into both fuel-bank paths. A RomRaider switch can restore stock dual-front runtime logic; the five removed-sensor DTC switches must also be re-enabled for fully stock diagnostics. Both rear narrowband paths remain stock; the post-turbo wideband is logged externally and has no ECU input. Binary-verified, not vehicle-verified. See [single_front_af_patch.md](docs/single_front_af_patch.md). |
 | 3 | Repurpose unused O2 sensor circuits for other hardware. | *Planned* — the current single-front-A/F patch deliberately leaves both rear circuits stock, and the removed LH front circuit is not reassigned. |
-| 4 | Reuse the EVAP solenoid as an EBCS solenoid + WRX-style boost control. | *In progress* — purge chain fully RE'd; **one proportional + feed-forward patch with throttle gating and two-tier overboost protection is built** ([patch/](patch/)), binary-verified vs Ghidra, and region-audited. Output = ATU-II reg 0xFFFFF590 (sole owner); MAP feedback = 0xFFFFABC4. Defaults are reduced from turbo-EJ25 ROM A2WC510N to a 5 psi peak target, including its MAP scaling. Needs the matching sensor and bench validation before boost. See [boost_donor_A2WC510N.md](docs/boost_donor_A2WC510N.md), [boost_repurpose_notes.md](docs/boost_repurpose_notes.md), and [patch_build_guide.md](docs/patch_build_guide.md). |
+| 4 | Reuse the EVAP solenoid as an EBCS solenoid + WRX-style boost control. | *In progress* — purge chain fully RE'd; **one proportional + feed-forward patch with throttle gating, two-tier overboost protection, and a RomRaider runtime-enable switch is built** ([patch/](patch/)), binary-verified vs Ghidra, and region-audited. `OFF` commands zero EBCS duty and uses only the stock rev limiter. Output = ATU-II reg 0xFFFFF590 (sole owner); MAP feedback = 0xFFFFABC4. Defaults are reduced from turbo-EJ25 ROM A2WC510N to a 5 psi peak target, including its MAP scaling. Needs the matching sensor and bench validation before boost. See [boost_donor_A2WC510N.md](docs/boost_donor_A2WC510N.md), [boost_repurpose_notes.md](docs/boost_repurpose_notes.md), and [patch_build_guide.md](docs/patch_build_guide.md). |
 | 5 | Potentially change MAF logic to Speed Density. | TBD |
 
 Also solved along the way: the central **table-interpolation** system (descriptor-based) and the
@@ -40,10 +40,12 @@ full **ignition-timing** blend/selection logic. See the notes.
 |---|---|
 | [defs/D2WD610H.xml](defs/D2WD610H.xml) | Base metric EcuFlash definition retained as the D2WD610H source definition. |
 | [defs/D2WD610H_AVLS.xml](defs/D2WD610H_AVLS.xml) | Self-contained metric RomRaider definition: D2WD610H standard tables + AVLS only. |
-| [defs/D2WD610H_AVLS_boost_patch.xml](defs/D2WD610H_AVLS_boost_patch.xml) | Self-contained metric RomRaider definition: D2WD610H standard tables + AVLS + canonical boost-patch calibration. |
+| [defs/D2WD610H_AVLS_boost_patch.xml](defs/D2WD610H_AVLS_boost_patch.xml) | Self-contained metric RomRaider definition: D2WD610H standard tables + AVLS + boost calibration + `Boost Control Patch Enable`. |
+| [defs/D2WD610H_AVLS_single_front_af_patch.xml](defs/D2WD610H_AVLS_single_front_af_patch.xml) | Self-contained metric RomRaider definition: D2WD610H standard tables + AVLS + `Single Front A/F Patch Enable`. |
 | [defs/romraider_ecu_defs.xml](defs/romraider_ecu_defs.xml) | Clean upstream RomRaider metric definition set from SubaruDefs Stable; no project AVLS/boost modifications. |
 
-> Load exactly **one** of the two custom RomRaider definitions at a time. Each embeds a metric
+> Load exactly **one** of the three custom RomRaider definitions at a time—the AVLS-only,
+> boost-patch, or single-front-A/F-patch variant matching the ROM being edited. Each embeds a metric
 > `32BITBASE` pruned to the 206 templates actually referenced by D2WD610H.
 
 ## Reverse-engineering setup

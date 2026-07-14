@@ -38,9 +38,11 @@ from sh2_asm import Asm
 
 HERE  = os.path.dirname(os.path.abspath(__file__))
 STOCK = os.path.abspath(os.path.join(HERE, "..", "2005 BLE MT.bin"))
-OUT   = os.path.abspath(sys.argv[1]) if len(sys.argv) > 1 else os.path.join(HERE, "D2WD610H_boost.bin")
+DEFAULT_OUT = os.path.join(HERE, "D2WD610H_boost.bin")
+OUT = (os.path.abspath(sys.argv[1]) if __name__ == "__main__" and len(sys.argv) > 1
+       else DEFAULT_OUT)
 STOCK_SHA256 = "ed0fe0341d97fb760c2cda3f07277f861495d32f6520e3ce8047b8b0f7bfd4ee"
-if len(sys.argv) > 2:
+if __name__ == "__main__" and len(sys.argv) > 2:
     raise SystemExit("usage: python3 patch_boost.py [out.bin]")
 
 # --- fixed ROM anchors (verified against Ghidra) ---
@@ -65,10 +67,11 @@ TARGET_DATA = 0x7D7E0   # float32[8]  target native mmHg absolute
 KP_ADDR     = 0x7D800   # float32
 MAXR_ADDR   = 0x7D804   # float32
 OVERB_ADDR  = 0x7D808   # float32
-STUB_ADDR   = 0x7D80C   # controller (4-aligned)
-THROTTLE_GATE_ADDR = 0x7D8A4 # float32: minimum throttle opening for boost duty
-OVERB_FC_ADDR = 0x7D8A8 # float32: overboost FUEL-CUT MAP limit
-REVWRAP_ADDR  = 0x7D8AC # rev-limiter wrapper (adds overboost fuel cut; 4-aligned)
+BOOST_ENABLE_ADDR = 0x7D80C # uint8: exact 1=patch; every other value=zero duty/stock rev limit
+STUB_ADDR   = 0x7D810   # controller (4-aligned)
+THROTTLE_GATE_ADDR = 0x7D8BC # float32: minimum throttle opening for boost duty
+OVERB_FC_ADDR = 0x7D8C0 # float32: overboost FUEL-CUT MAP limit
+REVWRAP_ADDR  = 0x7D8C4 # rev-limiter wrapper (adds overboost fuel cut; 4-aligned)
 FREE_START, FREE_END = 0x7D790, 0x7FAF7
 
 # ---------------- donor-derived defaults / tunables ----------------
@@ -119,9 +122,19 @@ def desc_1axis(type_byte, axis_addr, data_addr, scale, offset):
     return d
 
 def build_stub():
-    """Proportional + feed-forward. Entered via tail-call jmp (PR=grandparent, fr4=ignored).
-       Reads only RAM (RPM, MAP) + flash constants — NO RAM writes."""
+    """Proportional + feed-forward. Entered via tail-call jmp (PR=grandparent).
+
+       With BOOST_ENABLE_ADDR clear, force FR4 to zero before the stock output stage
+       (the safe spring-pressure state for the required plumbing). With it set,
+       replace FR4 with calculated boost duty. Reads only RAM + flash constants —
+       NO RAM writes.
+    """
     a = Asm(STUB_ADDR)
+    a.movl_pool(1, BOOST_ENABLE_ADDR); a.movb_at(0, 1); a.cmp_eq_imm(0x01)
+    a.bt('enabled')                                                # exact 01 -> boost controller
+    a.fldi0(4)                                                     # disabled: fail closed at zero EBCS duty
+    a.movl_pool(2, STOCK_OUTPUT); a.jmp(2); a.nop()
+    a.label('enabled')
     a.stsl_pr()                                                    # [stack: PR]
     a.movl_pool(1, THROTTLE_ADDR); a.fmov_load(2, 1)               # fr2 = throttle opening
     a.movl_pool(1, THROTTLE_GATE_ADDR); a.fmov_load(3, 1)          # fr3 = minimum throttle
@@ -160,6 +173,8 @@ def build_fuelcut_wrapper():
     a = Asm(REVWRAP_ADDR)
     a.stsl_pr()                                                    # save dispatcher PR
     a.movl_pool(2, REVLIMITER); a.jsr(2); a.nop()                  # call stock rev limiter
+    a.movl_pool(1, BOOST_ENABLE_ADDR); a.movb_at(0, 1); a.cmp_eq_imm(0x01)
+    a.bf('skip')                                                   # anything but 01: stock rev limiter only
     a.movl_pool(1, MAP_ADDR); a.fmov_load(2, 1)                    # fr2 = MAP
     a.movl_pool(1, OVERB_FC_ADDR); a.fmov_load(3, 1)               # fr3 = fuel-cut limit
     a.fcmpgt(3, 2); a.bf('skip')                                   # if MAP > limit:
@@ -194,6 +209,7 @@ def main():
         ("target_desc", TARGET_DESC, desc_1axis(0x00, RPM_AXIS, TARGET_DATA, 1.0, 0.0)),
         ("target_data", TARGET_DATA, b"".join(f32(x) for x in TARGET_MAP)),
         ("gains",       KP_ADDR,     f32(KP)+f32(MAXRATIO)+f32(OVERBOOST)),
+        ("enable",      BOOST_ENABLE_ADDR, b"\x01"),
         ("stub",        STUB_ADDR,   build_stub()),
         ("throttle_gate",THROTTLE_GATE_ADDR, f32(MIN_THROTTLE)),
         ("overb_fc",    OVERB_FC_ADDR, f32(OVERBOOST_FUELCUT)),
@@ -204,10 +220,14 @@ def main():
     if rom[MAP_SCALING_ADDR:MAP_SCALING_ADDR+len(stock_map_scaling)] != stock_map_scaling:
         raise SystemExit("REFUSING: stock MAP scaling @0x%X is not {%g, %g}"
                          % (MAP_SCALING_ADDR, STOCK_MAP_SENSOR_OFFSET, STOCK_MAP_SENSOR_MULTIPLIER))
-    for name, addr, data in blobs:
+    previous_end = FREE_START
+    for name, addr, data in sorted(blobs, key=lambda item: item[1]):
         assert FREE_START <= addr and addr + len(data) - 1 <= FREE_END, "%s overflows free space" % name
+        if addr < previous_end:
+            raise SystemExit("layout error: %s @0x%X overlaps the preceding allocation" % (name, addr))
         if any(b != 0xFF for b in rom[addr:addr+len(data)]):
             raise SystemExit("REFUSING: %s @0x%X..0x%X not 0xFF-free" % (name, addr, addr+len(data)-1))
+        previous_end = addr + len(data)
     # two hijacks: output tail-call (boost) + rev-limiter fn-ptr (overboost fuel cut)
     cur = struct.unpack_from(">I", rom, HIJACK_LITERAL)[0]
     if cur != STOCK_OUTPUT:
@@ -244,6 +264,9 @@ def main():
     print("  target : %s (psi relative to 760 mmHg; native=%s)" % (TARGET_BOOST_PSI, TARGET_MAP))
     print("  Kp=%g ratio/mmHg MaxRatio=%g MinThrottle=%g Overboost(duty)=%gpsi Overboost(fuelcut)=%gpsi"
           % (KP, MAXRATIO, MIN_THROTTLE, OVERBOOST_PSI, OVERBOOST_FUELCUT_PSI))
+    print("  runtime switch  @0x%05X : ON (01); RomRaider OFF forces zero EBCS duty + stock rev limiter"
+          % BOOST_ENABLE_ADDR)
+    print("  switch caveat   : OFF does not restore the stock MAP-sensor scaling at 0x%05X" % MAP_SCALING_ADDR)
     print("  fuel cut reuses rev-limiter path: sets 0xFFFFBF6C bit0x80 (via 0x23FC0 aggregator)")
     print("\n*** Fit the A2WC510N-compatible EJ255 MAP sensor and validate 0xFFFFABC4 against a gauge. ***")
     print("Flash via EcuFlash/RomRaider (recomputes subarudbw checksum on save).")

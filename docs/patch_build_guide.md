@@ -44,7 +44,8 @@ There is no configurable input and no patch-stacking workflow.
 
 The tail-call pointer at `0x3FD8C` in `evap_purge_duty_compute` normally points to
 `evap_purge_pwm_output_write` at `0xE8C4`. The patch points it to the injected controller at
-`0x7D80C`; that controller computes a duty ratio and tail-calls the original output stage.
+`0x7D810`; that controller checks the runtime-enable byte, computes a duty ratio when enabled,
+and tail-calls the original output stage.
 
 ```text
 base   = BaseDuty[rpm]
@@ -59,6 +60,19 @@ if MAP > SoftOverboost:
 
 write ratio through output stage 0xE8C4
 ```
+
+`Boost Control Patch Enable` in the matching RomRaider definition writes `01` (on) or `00`
+(off) at `0x7D80C`. The generated image defaults to on. Only exact `01` enables the feature;
+erased `FF` and every other value fail closed. Off forces `FR4 = 0.0` before the stock
+PWM output stage and skips the added MAP fuel cut, leaving the stock rev limiter in place. It
+does not replay stock purge duty because that could energize a physically repurposed EBCS. The
+required commissioning assumption is that zero duty produces the minimum-boost/wastegate-spring
+state; prove that plumbing and polarity on a bench.
+
+The switch changes runtime control flow only. It does not restore the stock MAP conversion at
+`0x72810`, so the fitted sensor must remain compatible with the donor calibration while this ROM
+is installed. RomRaider edits the flash image; this is not a live logger toggle, so every state
+change requires a checksum-correct save and reflash.
 
 The controller reads RPM, processed throttle, MAP, and flash calibrations. It has no persistent
 RAM state. A RAM audit found no word that can be proven free from direct and computed access, so
@@ -76,8 +90,9 @@ the 760 mmHg sea-level reference; the patch does not implement atmospheric targe
 ## Hard overboost protection
 
 The patch also changes the rev-limiter task pointer at `0x11D3C` from the stock limiter at
-`0x24B24` to a wrapper at `0x7D8AC`. The wrapper runs the stock limiter first, then compares MAP
-with the hard limit at `0x7D8A8`. Above the limit it sets `0xFFFFBF6C` bit `0x80`; the factory
+`0x24B24` to a wrapper at `0x7D8C4`. The wrapper runs the stock limiter first, checks the runtime
+enable, then compares MAP with the hard limit at `0x7D8C0`. Above the limit it sets
+`0xFFFFBF6C` bit `0x80`; the factory
 fuel-cut aggregator at `0x23FC0` propagates that request to injector cut.
 
 This is separate from the soft limit at `0x7D808`, which commands zero solenoid duty. Neither
@@ -110,10 +125,11 @@ The populated region remains inside the verified `0xFF` free run at `0x7D790..0x
 | Kp | `0x7D800` |
 | Maximum duty ratio | `0x7D804` |
 | Soft overboost limit | `0x7D808` |
-| Controller | `0x7D80C` |
-| Minimum throttle | `0x7D8A4` |
-| Hard overboost limit | `0x7D8A8` |
-| Fuel-cut wrapper | `0x7D8AC` |
+| Runtime enable byte | `0x7D80C` |
+| Controller | `0x7D810` |
+| Minimum throttle | `0x7D8BC` |
+| Hard overboost limit | `0x7D8C0` |
+| Fuel-cut wrapper | `0x7D8C4` |
 
 The donor MAP scaling is an in-place calibration change at `0x72810`, outside the injected
 free-space block.
@@ -128,6 +144,7 @@ These addresses must remain synchronized with
 - `patch/sh2_disasm.py`: injected-code disassembler.
 - `patch/verify_regions.py`: flash/RAM region audit.
 - `patch/verify_boost_donor.py`: donor-table and generated-default verifier.
+- `patch/verify_romraider_toggles.py`: XML/switch-address/default-byte verifier for both patches.
 - RomRaider/EcuFlash: calibration editing and a verified `subarudbw` checksum save before
   flashing.
 
@@ -139,6 +156,8 @@ These addresses must remain synchronized with
 - [ ] A2WC510N-compatible MAP sensor is fitted and the patched `0x72810` conversion is validated
       against a reference.
 - [ ] Output pin, polarity, solenoid plumbing, and PWM frequency are bench verified.
+- [ ] RomRaider `OFF` is bench-proven to produce zero measured output duty and the mechanical
+      minimum-boost state; `ON` restores commanded duty.
 - [ ] With `Kp = 0` and conservative base duty, throttle gating is logged and confirmed.
 - [ ] Soft duty shutdown is proven with simulated MAP.
 - [ ] Hard injector cut and recovery are proven with simulated MAP.
