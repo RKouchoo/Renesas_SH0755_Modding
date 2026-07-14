@@ -62,7 +62,7 @@ fuel-cut flag `0xFFFFBF6C` bit `0x80`, which is consumed by `fuel_cut_flag_aggre
 | `D2WD610H_boost.bin` | Generated boost-control ROM; never use it as patch input or as the Ghidra stock image. |
 
 RomRaider calibration entries are in
-[D2WD610H_boost_patch.xml](../defs/D2WD610H_boost_patch.xml), category
+[D2WD610H_AVLS_boost_patch.xml](../defs/D2WD610H_AVLS_boost_patch.xml), category
 `Boost Control (patch)`.
 
 ## Injected layout

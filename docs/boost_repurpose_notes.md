@@ -164,9 +164,10 @@ custom code in free space, driving the repurposed purge PWM output (0xFFFFF590).
 ================================================================================
 ## PATCH WORKING FILES / DECISIONS
 ================================================================================
-- RomRaider def (iterating): **defs/D2WD610H_boost_patch.xml** — clone of D2WD610H_AVLS.xml,
-  xmlid D2WD610H_BOOST (internalidstring stays D2WD610H for auto-detect). Boost patch tables get
-  added under category "Boost Control (patch)". Load this one going forward (not the AVLS file).
+- RomRaider def: **defs/D2WD610H_AVLS_boost_patch.xml** — self-contained metric D2WD610H
+  definition with AVLS and category "Boost Control (patch)". Its xmlid is
+  D2WD610H_AVLS_BOOST_PATCH while internalidstring remains D2WD610H for auto-detect. Load this
+  combined file for a patched ROM; use D2WD610H_AVLS.xml for an AVLS-only ROM.
 - Because 32BITBASE = WRX STi base, the WRX boost table TEMPLATES + scalings are already in the
   file (categories "Boost Control - Target/Wastegate/Turbo Dynamics/Limits"). Reuse those exact
   scalings when adding the patch overrides (e.g. Target Boost psi expr (x-760)*.01933677).

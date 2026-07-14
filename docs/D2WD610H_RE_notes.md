@@ -139,14 +139,19 @@ state **3** selects table 2 plus hysteresis B. From low cam, high cam is request
 tables are state-selected curves, **not** engage/release counterparts. **0xFFFFCF94** is used
 only by the fallback path against the fixed 15.0 thresholds at 0x7D4B0/0x7D4B4.
 
-Defs: `defs/D2WD610H_AVLS.xml` is now a **complete self-contained RomRaider def** —
-the 32BITBASE base rom (table templates) + the full D2WD610H table set (all standard
-tables) + the AVLS tables (category "AVLS"), 296 table entries total. Load it ALONE;
-do not also load `romraider_ecu_defs.xml` for D2WD610H (duplicate rom identity).
-Stock AVLS values verified against the ROM image 2026-07-14.
-The AVLS blocks also remain merged into the D2WD610H entry of
-`defs/romraider_ecu_defs.xml` (the multi-ECU distribution copy).
-(`defs/avls_def_fragment.xml` is the older raw fragment, superseded.)
+Definition layout:
+
+- `defs/D2WD610H.xml` is the retained base metric EcuFlash definition.
+- `defs/D2WD610H_AVLS.xml` is the AVLS-only custom RomRaider definition.
+- `defs/D2WD610H_AVLS_boost_patch.xml` contains the same D2WD610H + AVLS definition plus the
+  canonical boost-patch tables.
+- `defs/romraider_ecu_defs.xml` is a clean upstream metric RomRaider snapshot and is not modified
+  with project tables.
+
+Both custom RomRaider files are self-contained. Their embedded metric `32BITBASE` is pruned to
+the 206 templates referenced by the 206 standard D2WD610H address overrides; the only additions
+are seven AVLS tables, plus seven boost tables in the combined variant. Load only one custom
+variant at a time. Stock AVLS values were verified against the ROM image 2026-07-14.
 
 **Open sub-item:** the final OSV port write. `cam_actuator_output_set_*` descend into
 float target/feedback layers (AVCS-style continuous control mixed in); the binary port

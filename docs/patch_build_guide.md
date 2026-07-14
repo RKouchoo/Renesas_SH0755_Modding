@@ -119,7 +119,7 @@ The donor MAP scaling is an in-place calibration change at `0x72810`, outside th
 free-space block.
 
 These addresses must remain synchronized with
-[D2WD610H_boost_patch.xml](../defs/D2WD610H_boost_patch.xml).
+[D2WD610H_AVLS_boost_patch.xml](../defs/D2WD610H_AVLS_boost_patch.xml).
 
 ## Toolchain
 

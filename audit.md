@@ -28,7 +28,9 @@ purge-DTC handling, checksum correction, and an overboost-cut bench test before 
   dispatcher, allowing the forced `0xFFFFBF6C` bit `0x80` to be consumed that cycle.
 - `evap_purge_pwm_output_write` at `0xE8C4` accepts the injected `0.0..1.0` ratio and remains
   the sole runtime writer used by the patched control path.
-- Patch definition XML parses and its storage addresses match the current injected layout.
+- `defs/D2WD610H_AVLS_boost_patch.xml` parses and its boost-table storage addresses match the
+  current injected layout. The companion `D2WD610H_AVLS.xml` contains AVLS only; both use the
+  pruned metric RomRaider base and contain no unrelated ECU definitions.
 - No persistent scratch RAM is introduced.
 - The A2WC510N donor image is pinned at SHA-256
   `db8827673a2383ce0ee3182d2c33f81be39fd63c3545e77b3e6bf8476488008d`. Its boost-table

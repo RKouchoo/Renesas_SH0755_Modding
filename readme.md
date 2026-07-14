@@ -34,14 +34,16 @@ full **ignition-timing** blend/selection logic. See the notes.
 | [ram_map.md](docs/ram_map.md) | Consolidated confirmed RAM variables (RPM, MAP, ECT, ignition, AVLS, purge, CL/OL, solenoids). |
 | [hardware_io_map.md](docs/hardware_io_map.md) | SH7055 memory map, ROM landmarks, identified peripheral registers, key ROM data structures. |
 
-### Definitions (RomRaider)
+### Definitions
 | File | Use |
 |---|---|
-| [defs/D2WD610H_AVLS.xml](defs/D2WD610H_AVLS.xml) | Self-contained def: all standard D2WD610H tables + AVLS. |
-| [defs/D2WD610H_boost_patch.xml](defs/D2WD610H_boost_patch.xml) | Calibration definition for the canonical boost patch (xmlid D2WD610H_BOOST). |
-| [defs/romraider_ecu_defs.xml](defs/romraider_ecu_defs.xml) | Full multi-ECU distribution (32BITBASE = WRX STi base; D2WD610H has AVLS merged). |
+| [defs/D2WD610H.xml](defs/D2WD610H.xml) | Base metric EcuFlash definition retained as the D2WD610H source definition. |
+| [defs/D2WD610H_AVLS.xml](defs/D2WD610H_AVLS.xml) | Self-contained metric RomRaider definition: D2WD610H standard tables + AVLS only. |
+| [defs/D2WD610H_AVLS_boost_patch.xml](defs/D2WD610H_AVLS_boost_patch.xml) | Self-contained metric RomRaider definition: D2WD610H standard tables + AVLS + canonical boost-patch calibration. |
+| [defs/romraider_ecu_defs.xml](defs/romraider_ecu_defs.xml) | Clean upstream RomRaider metric definition set from SubaruDefs Stable; no project AVLS/boost modifications. |
 
-> Load exactly **one** D2WD610H definition at a time (they share ROM identity).
+> Load exactly **one** of the two custom RomRaider definitions at a time. Each embeds a metric
+> `32BITBASE` pruned to the 206 templates actually referenced by D2WD610H.
 
 ## Reverse-engineering setup
 
