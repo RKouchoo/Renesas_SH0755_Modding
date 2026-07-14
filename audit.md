@@ -339,3 +339,89 @@ checksum.
 - Boost `OFF` retains the donor MAP scaling and bypasses the added hard overboost cut. Front-A/F
   `OFF` restores stock front/rear runtime logic but does not re-enable the 13 removed-sensor DTC
   bytes. The existing component caveats remain unchanged in the combined image.
+
+# Five-Psi / 98 RON Base Turbo Map Audit
+
+Audit date: 2026-07-15. Output:
+`base_turbo_map/D2WD610H_5psi_98RON_base_turbo.bin`.
+
+## Verdict
+
+The base-turbo image is a reproducible, checksum-valid calibration derivative of the verified
+combined patch. It is suitable as a conservative **starting file for hardware entry and dyno
+commissioning**, not as an assumption-complete flash-and-drive tune. The fuel and ignition edits
+are structurally verified, and an OEM STI-pink injector starting calibration is now installed, but
+injector identity/condition, fuel-pressure capacity, MAF
+scaling, MAP validation, post-turbo wideband logging, and physical boost tests remain mandatory.
+
+## Build provenance and binary checks
+
+- `build_base_turbo_map.py` reads the pinned root stock ROM, verifies both stock BIN copies and the
+  original SRF `MEMD` payload, and reconstructs the combined patch in memory.
+- That intermediate stage must be byte-identical to
+  `patch/D2WD610H_boost_single_front_af.bin`, SHA-256
+  `019e06e509afce2e798bfe29543e2536524c259d3ab6683c7dd3131ee069fb5e`, before calibration is
+  allowed. No generated image is used as patch input.
+- The pinned 192-KiB A4TE002B injector donor must have CALID `A4TE002B`, SHA-256
+  `e3cc868a51476aaa25c1ffb63e8af8ba3e35ca4ace404e842f193bf117754b44`, flow raw `4900` at
+  `0x2866B`, and latency raw `{697,372,245,171,95}` at `0x28673` before calibration is allowed.
+- Output SHA-256 is
+  `fd9a9354c7a9f2d82813253d41b17adb058b68ceb3f426a0c197a6322fbf2c0f`.
+- Exactly 1,043 bytes differ from the combined stage across 39 owned writes. Ownership covers the
+  paired Primary Open Loop axes/maps, CL-to-OL delay, shared timing and KCA axes, six base-timing
+  maps, two KCA maps, IAT compensation, Rev Limit A, injector scalar/deadtime, four cranking maps,
+  two tip-in maps and threshold, five AVLS tables, six boost calibration fields, and checksum.
+- The first Subaru checksum table entry remains `0x2000..0x7FAF7`; calculated/stored difference
+  `0x4BD6335B` satisfies additive target `0x5AA5A55A`.
+- The matching combined RomRaider definition parses with all edited table addresses unchanged.
+- The canonical root/base stock ROMs, SRF, combined artifact, patch code/hooks, enable bytes, MAP
+  scaling, O2 patch, and removed-sensor DTC edits remain unchanged.
+
+## Calibration safety properties verified
+
+- Spring-only boost: base WGDC is all zero, Kp is zero, and maximum final duty ratio is zero. Both
+  patches remain enabled, retaining the hard MAP fuel-cut wrapper.
+- The target remains 5 psi from 2500 RPM through its final breakpoint rather than tapering at high
+  RPM. Because the final duty clamp is zero, it still cannot raise boost above spring pressure.
+- Soft duty shutdown is 5.5 psi and hard fuel cut is 6.5 psi relative to 760 mmHg. The limits still
+  depend completely on validating the installed donor-scaled MAP sensor and have no atmospheric
+  compensation or hard-cut hysteresis.
+- Both 14x10 Primary Open Loop maps use the richer stock bank or the new lambda cap, then match
+  banks at each edited cell. No cell becomes leaner. Caps progress from lambda 0.93 at 0.96 g/rev
+  to 0.78 at 1.60+ g/rev, with 0.77 at 6000+ RPM. Both fuel axes, the shared timing axis, and both
+  KCA axes now end at 3.0 g/rev rather than 2.0.
+- Both atmospheric CL-to-OL delay counters are zero, making the enriched Primary OL result decide
+  the transition instead of the stock delayed threshold path.
+- All six base-timing maps are capped from 1.09 g/rev / 2000 RPM up, including the two high-cam
+  paths used by earlier AVLS, and no cell is advanced. Full-load ceilings are -2 degrees at 2000,
+  4 at 3200, and 13 at 6800 RPM.
+  Positive KCA is capped at 2 degrees at 1.09 g/rev and removed at 1.22+ g/rev; no KCA cell is
+  increased.
+- The high-IAT curve reaches -10.20 degrees at 110 C. Rev Limit A is set to the requested 6800 cut /
+  6770 resume, retaining 30 RPM hysteresis and a hard limiter.
+- The A4TE002B factory injector calibration translates to D2WD raw flow `3266.667236` (552.47
+  cc/min estimated) and deadtimes 2.788/1.488/0.980/0.684/0.380 ms. The 0.4893883551 injector-scale
+  ratio is applied to all absolute cranking/tip-in IPW starting values, rounding toward richer.
+- AVLS actuation is permitted at 2500 RPM; the load curves are lowered and the hard high-cam
+  engage/release points are 3200/3000 RPM with stock 10-unit hysteresis retained.
+- Both MAF arrays remain byte-identical. The MAF Limit is already max-encoded at about 300 g/s,
+  and Engine Load Limit remains 4.0 g/rev above the expanded 3.0 g/rev calibration axes.
+
+## Remaining flash blockers
+
+1. Confirm all six injectors are genuine/matched STI top-feed pinks, validate the OEM starting
+   scalar/deadtime with trims and start/transient tests, and prove fuel-pump/regulator differential
+   pressure at boost.
+2. Calibrate the installed MAF/housing and prove it does not reach its voltage or approximately
+   297.69 g/s table ceiling.
+3. Fit the MAP sensor matching `{-414.0, 514.199951}` and validate it against a reference over
+   vacuum and positive pressure.
+4. Complete standalone front-A/F/rear-delete tests and validate external post-turbo wideband
+   timestamps/status.
+5. Pressure-test the 45 mm wastegate and prove direct-reference spring pressure, zero-duty
+   polarity, PWM behavior, boost-creep margin, and the simulated hard-cut response.
+6. Use a load-controlled dyno, monitor fuel/oil pressure externally, and follow
+   `base_turbo_map/COMMISSIONING.md`; stop rather than tuning around a failed hardware gate.
+
+No Ghidra function was opened for this calibration revision. Every edited address was an already
+mapped, named RomRaider table, so there was no inspected function requiring a rename.

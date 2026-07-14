@@ -64,6 +64,21 @@ requires the composed result to be their exact union. Open that image only with
 `defs/D2WD610H_AVLS_boost_single_front_af_patch.xml`. Both standalone commissioning plans still
 apply before the combined image is flashed.
 
+For the separate conservative 5 psi / 98 RON starting calibration, run:
+
+```sh
+python3 base_turbo_map/build_base_turbo_map.py
+python3 base_turbo_map/verify_base_turbo_map.py
+```
+
+It reconstructs the same combined stage directly from the pinned stock/SRF payload, verifies the
+canonical combined hash, applies only documented calibration changes, and writes a valid Subaru
+checksum. It uses the 5 psi wastegate spring with zero electronic duty. Read
+[`base_turbo_map/README.md`](../base_turbo_map/README.md) and its commissioning checklist before
+using the artifact. The pinned A4TE002B factory calibration supplies the STI-pink injector starting
+values, but injector identity/condition, MAF/housing data, fuel-system capacity, and physical tests
+remain intentional flash blockers.
+
 ## Controller behavior
 
 The tail-call pointer at `0x3FD8C` in `evap_purge_duty_compute` normally points to

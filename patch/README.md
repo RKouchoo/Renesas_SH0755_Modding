@@ -61,6 +61,21 @@ The normal combined output is `patch/D2WD610H_boost_single_front_af.bin`. It is 
 non-overlapping union of both component patch sets applied to one fresh stock copy, not a patch
 applied to either standalone generated image.
 
+The conservative 5 psi / 98 RON calibration is kept separately in
+[`base_turbo_map/`](../base_turbo_map/README.md):
+
+```sh
+python3 base_turbo_map/build_base_turbo_map.py
+python3 base_turbo_map/verify_base_turbo_map.py
+```
+
+That builder also starts from the root stock ROM. It reconstructs and hash-verifies this combined
+stage in memory before applying calibration changes; it never uses a generated ROM as patch input.
+Its output commands zero EBCS duty for the installed 5 psi wastegate spring, translates the pinned
+A4TE002B STI-pink injector calibration, moves AVLS earlier, and sets the requested 6800 RPM limit.
+It is not flash-ready until injector identity/condition, MAF, fuel-pressure, MAP, and
+external-wideband requirements are met.
+
 Never patch a previously patched image. Every build starts from the root stock ROM.
 
 ## Boost controller
