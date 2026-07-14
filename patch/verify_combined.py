@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Binary audit for the combined D2WD610H boost + single-front-A/F image.
+"""Binary audit for the combined D2WD610H boost + single-front-A/F/rear-O2-delete image.
 
 Usage: python3 patch/verify_combined.py [patched.bin]
 """
@@ -92,34 +92,50 @@ def main():
            bytes.fromhex("d106601088018b03"), "diagnostic-mirror enable branch")
     expect(image, front.BANK2_INHIBIT_SELECTOR_ADDR,
            bytes.fromhex("d107601088018b02"), "Bank-2 selector enable branch")
+    expect(image, front.REAR_O2_PROCESS_ENTRY,
+           front.build_entry_hook(front.REAR_O2_PROCESS_ENTRY,
+                                  front.REAR_O2_PROCESS_SELECTOR_ADDR),
+           "rear O2 process selector hook")
+    rear_task_hooks = (
+        (front.REAR_O2_THRESHOLD_TASK_PTR, front.REAR_O2_THRESHOLD_SELECTOR_ADDR),
+        (front.REAR_O2_FILTER_TASK_PTR, front.REAR_O2_FILTER_SELECTOR_ADDR),
+        (front.REAR_O2_INTEGRATOR_TASK_PTR, front.REAR_O2_INTEGRATOR_SELECTOR_ADDR),
+        (front.REAR_O2_RESPONSE_RATIO_TASK_PTR, front.REAR_O2_RESPONSE_RATIO_SELECTOR_ADDR),
+        (front.REAR_O2_VOLTAGE_DIAG_TASK_PTR, front.REAR_O2_VOLTAGE_DIAG_SELECTOR_ADDR),
+    )
+    for pointer, selector in rear_task_hooks:
+        expect(image, pointer, front.be32(selector),
+               "rear O2 task selector pointer @0x%05X" % pointer)
+    selector_prefix = bytes.fromhex("d104601088018b01000b0009d102412b")
+    for address in (
+            front.REAR_O2_PROCESS_SELECTOR_ADDR,
+            front.REAR_O2_THRESHOLD_SELECTOR_ADDR,
+            front.REAR_O2_FILTER_SELECTOR_ADDR,
+            front.REAR_O2_INTEGRATOR_SELECTOR_ADDR,
+            front.REAR_O2_RESPONSE_RATIO_SELECTOR_ADDR,
+            front.REAR_O2_VOLTAGE_DIAG_SELECTOR_ADDR):
+        expect(image, address, selector_prefix,
+               "rear O2 exact-01 no-op selector @0x%05X" % address)
     for code, address in front.DISABLED_FRONT_AF_DTC_SWITCHES.items():
         expect(image, address, b"\x00", "%s disabled" % code)
+    for code, address in front.DISABLED_REAR_O2_DTC_SWITCHES.items():
+        expect(image, address, b"\x00", "%s rear O2 disabled" % code)
 
     # These paths must remain stock even in the combined image.
     expect(image, front.BANK1_INHIBIT_ENTRY,
            bytes.fromhex("907a6000c8088f020009000b"),
            "retained Bank-1 front-A/F inhibit helper")
-    expect(image, 0x0000E0D0, bytes.fromhex("2fd6e020d521e700d421e600"),
-           "stock rear-O2 process entry")
     retained_dtc_switches = {
         "P0031 retained RH front": 0x0005BDAC,
         "P0032 retained RH front": 0x0005BDAA,
         "P0131 retained RH front": 0x0005BDA0,
         "P0132 retained RH front": 0x0005BDA2,
         "P0134 retained RH front": 0x0005BDBD,
-        "P0037 retained RH rear": 0x0005BDAB,
-        "P0038 retained RH rear": 0x0005BDA9,
-        "P0137 retained RH rear": 0x0005BD9F,
-        "P0138 retained RH rear": 0x0005BDA4,
-        "P0057 retained LH rear": 0x0005BDC1,
-        "P0058 retained LH rear": 0x0005BDC2,
-        "P0157 retained LH rear": 0x0005BDC3,
-        "P0158 retained LH rear": 0x0005BDC4,
     }
     for label, address in retained_dtc_switches.items():
         expect(image, address, b"\x01", label)
-    if image[0x7DA60:0x7DB40] != stock[0x7DA60:0x7DB40]:
-        raise SystemExit("FAIL: retired external-wideband region is not stock/erased")
+    if image[0x7DB3C:0x7DB40] != stock[0x7DB3C:0x7DB40]:
+        raise SystemExit("FAIL: post-rear-patch free region is not stock/erased")
 
     instruction_spans = [
         (boost.STUB_ADDR, 0x7D88C),
@@ -128,6 +144,13 @@ def main():
         (front.FRONT_ORIGINAL_TRAMPOLINE_ADDR, 0x7D9B4),
         (front.FRONT_DIAG_MIRROR_WRAPPER_ADDR, 0x7DA00),
         (front.BANK2_INHIBIT_SELECTOR_ADDR, 0x7DA40),
+        (front.REAR_O2_PROCESS_SELECTOR_ADDR, 0x7DA74),
+        (front.REAR_O2_ORIGINAL_TRAMPOLINE_ADDR, 0x7DA94),
+        (front.REAR_O2_THRESHOLD_SELECTOR_ADDR, 0x7DAB4),
+        (front.REAR_O2_FILTER_SELECTOR_ADDR, 0x7DAD4),
+        (front.REAR_O2_INTEGRATOR_SELECTOR_ADDR, 0x7DAF4),
+        (front.REAR_O2_RESPONSE_RATIO_SELECTOR_ADDR, 0x7DB14),
+        (front.REAR_O2_VOLTAGE_DIAG_SELECTOR_ADDR, 0x7DB34),
     ]
     decoded = []
     for start, end in instruction_spans:
@@ -142,7 +165,7 @@ def main():
     print("  injected code  : %d decoded instructions; no unknown opcodes" % len(decoded))
     print("  runtime enables: boost 0x%05X=01; front-A/F 0x%05X=01"
           % (boost.BOOST_ENABLE_ADDR, front.FRONT_AF_ENABLE_ADDR))
-    print("  retained paths : Bank-1 factory A/F plus both rear narrowbands/diagnostics")
+    print("  O2 architecture: retained Bank-1 factory A/F; both rear narrowbands bypassed")
     print("  regenerated    : byte-identical from fresh stock; no generated input stacking")
 
 

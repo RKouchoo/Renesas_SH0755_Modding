@@ -72,8 +72,8 @@ unless marked *(inferred)*. Cross-refs: [D2WD610H_RE_notes.md](D2WD610H_RE_notes
 | 0xFFFFAE68 / AE6C | float | Front pump-current-like result Bank 1 / Bank 2; patch copies AE68 -> AE6C |
 | 0xFFFFAE70 / AE74 | float | Front readiness/diagnostic metric Bank 1 / Bank 2; patch refreshes AE70 -> AE74 after both relevant stock tasks |
 | 0xFFFFB4E8 / B4EC | float | Conditioned factory front-sensor values logged by RomRaider E91/E109; both follow the retained sensor after patching |
-| 0xFFFFAB20 / B098 | u16 / float | Raw/processed stock RH rear narrowband; unmodified |
-| 0xFFFFAB0C / B09C | u16 / float | Raw/processed stock LH rear narrowband; unmodified |
+| 0xFFFFAB20 / B098 | u16 / float | Raw/processed RH rear narrowband; stock chain when patch is off, conversion/monitoring bypassed when the single-front patch is on |
+| 0xFFFFAB0C / B09C | u16 / float | Raw/processed LH rear narrowband; stock chain when patch is off, conversion/monitoring bypassed when the single-front patch is on |
 
 The patch publishes no external-wideband value into ECU RAM. Post-turbo lambda is recorded by a
 separate logger and merged with the ECU log by timestamp. See

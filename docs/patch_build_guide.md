@@ -50,7 +50,7 @@ The extractor parses the SRF chunk table and verifies that its `MEMD` payload at
 is exactly 512 KiB and byte-identical to both stock BIN copies. It leaves an already-identical
 `base_roms/2005 BLE MT.bin` untouched and refuses to overwrite a differing file.
 
-For the combined boost + single-front-A/F development image, use:
+For the combined boost + single-front-A/F/rear-O2-delete development image, use:
 
 ```sh
 python3 patch/patch_combined.py

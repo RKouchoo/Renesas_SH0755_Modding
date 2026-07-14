@@ -169,9 +169,10 @@ custom code in free space, driving the repurposed purge PWM output (0xFFFFF590).
   D2WD610H_AVLS_BOOST_PATCH while internalidstring remains D2WD610H for auto-detect. Load this
   definition for the standalone boost ROM; use D2WD610H_AVLS.xml for an AVLS-only ROM. The definition
   exposes the one-byte `Boost Control Patch Enable` at 0x7D80C (`01` on, `00` off).
-- The combined boost + single-front-A/F image uses
+- The combined boost + single-front-A/F/rear-O2-delete image uses
   **defs/D2WD610H_AVLS_boost_single_front_af_patch.xml**, which retains the same boost tables and
-  switch addresses and adds `Single Front A/F Patch Enable` at 0x7D91C.
+  switch addresses and adds `Single Front A/F Patch Enable` at 0x7D91C; exact `01` also bypasses
+  both rear narrowband conversion/monitor paths.
 - Because 32BITBASE = WRX STi base, the WRX boost table TEMPLATES + scalings are already in the
   file (categories "Boost Control - Target/Wastegate/Turbo Dynamics/Limits"). Reuse those exact
   scalings when adding the patch overrides (e.g. Target Boost psi expr (x-760)*.01933677).

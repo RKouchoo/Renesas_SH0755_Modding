@@ -6,9 +6,12 @@ feedback source. Its processed lambda, pump-current, and readiness results are
 mirrored into the Bank-2 paths so the stock per-bank conditioning and fuel-control
 code can remain in place after the LH/Bank-2 front sensor is removed.
 
-Both stock rear narrowband channels remain untouched. An aftermarket post-turbo
-wideband, if fitted, is external instrumentation and is not connected to or
-decoded by this ROM patch.
+When the same runtime switch is enabled, both stock rear narrowband channels are
+also removed from ECU processing: their ADC conversion, filtering, response
+integration/ratio publication, and voltage-diagnostic dispatch are bypassed. All
+eight mapped D2WD610H rear-sensor/heater DTC switches are disabled in the generated image.
+An aftermarket post-turbo wideband, if fitted, remains external instrumentation
+and is not connected to or decoded by this ROM patch.
 
 This standalone development patch has a runtime-enable byte at 0x7D91C and its
 code starts at 0x7D920, after the boost patch's 0x7D790..0x7D903 allocation.
@@ -44,6 +47,21 @@ BANK1_INHIBIT_ENTRY = 0x00064FD0
 BANK2_INHIBIT_ENTRY = 0x0006500C
 BANK2_INHIBIT_FLAG = 0xFFFFD26C
 
+REAR_O2_PROCESS_ENTRY = 0x0000E0D0
+REAR_O2_PROCESS_RESUME = 0x0000E0DC
+REAR_O2_RAW_ADC_BASE = 0xFFFFAB00
+REAR_O2_RAW_COPY_BASE = 0xFFFFB094
+REAR_O2_THRESHOLD_TASK_PTR = 0x00011488
+STOCK_REAR_O2_THRESHOLD_UPDATE = 0x00033B12
+REAR_O2_FILTER_TASK_PTR = 0x0001148C
+STOCK_REAR_O2_FILTER_UPDATE = 0x00033AAC
+REAR_O2_INTEGRATOR_TASK_PTR = 0x00011490
+STOCK_REAR_O2_INTEGRATOR_UPDATE = 0x00033970
+REAR_O2_RESPONSE_RATIO_TASK_PTR = 0x00011494
+STOCK_REAR_O2_RESPONSE_RATIO_UPDATE = 0x00034BE4
+REAR_O2_VOLTAGE_DIAG_TASK_PTR = 0x000114A0
+STOCK_REAR_O2_VOLTAGE_DIAG_DISPATCH = 0x00069568
+
 FRONT_LAMBDA_BANK1 = 0xFFFFAE60
 FRONT_LAMBDA_BANK2 = 0xFFFFAE64
 FRONT_CURRENT_BANK1 = 0xFFFFAE68
@@ -51,9 +69,8 @@ FRONT_CURRENT_BANK2 = 0xFFFFAE6C
 FRONT_READY_METRIC_BANK1 = 0xFFFFAE70
 FRONT_READY_METRIC_BANK2 = 0xFFFFAE74
 
-# Disable only diagnostics belonging to the physically removed LH/Bank-2 front
-# A/F sensor. The retained RH/Bank-1 front sensor and both rear narrowband sensors
-# keep their stock diagnostics.
+# Disable diagnostics belonging to the physically removed LH/Bank-2 front A/F
+# sensor. The retained RH/Bank-1 front sensor keeps its stock diagnostics.
 DISABLED_FRONT_AF_DTC_SWITCHES = {
     "P0051": 0x0005BDB4,
     "P0052": 0x0005BDB3,
@@ -62,13 +79,34 @@ DISABLED_FRONT_AF_DTC_SWITCHES = {
     "P0154": 0x0005BDBC,
 }
 
+# Ghidra and the D2WD610H RomRaider definition expose these eight rear-S2
+# voltage/heater switches.  No P0139/P0140/P0141/P0159/P0160/P0161 or
+# P0420/P0430 switches are defined for this calibration.
+DISABLED_REAR_O2_DTC_SWITCHES = {
+    "P0037": 0x0005BDAB,
+    "P0038": 0x0005BDA9,
+    "P0057": 0x0005BDC1,
+    "P0058": 0x0005BDC2,
+    "P0137": 0x0005BD9F,
+    "P0138": 0x0005BDA4,
+    "P0157": 0x0005BDC3,
+    "P0158": 0x0005BDC4,
+}
+
 
 # ---- single-front-A/F free-space layout (boost patch ends at 0x7D903) ----
-FRONT_AF_ENABLE_ADDR = 0x0007D91C  # uint8: exact 1=mirror patch; every other value=stock logic
+FRONT_AF_ENABLE_ADDR = 0x0007D91C  # uint8: exact 1=front mirror + rear delete; else stock logic
 FRONT_MIRROR_WRAPPER_ADDR = 0x0007D920
 FRONT_ORIGINAL_TRAMPOLINE_ADDR = 0x0007D9A0
 FRONT_DIAG_MIRROR_WRAPPER_ADDR = 0x0007D9E0
 BANK2_INHIBIT_SELECTOR_ADDR = 0x0007DA20
+REAR_O2_PROCESS_SELECTOR_ADDR = 0x0007DA60
+REAR_O2_ORIGINAL_TRAMPOLINE_ADDR = 0x0007DA80
+REAR_O2_THRESHOLD_SELECTOR_ADDR = 0x0007DAA0
+REAR_O2_FILTER_SELECTOR_ADDR = 0x0007DAC0
+REAR_O2_INTEGRATOR_SELECTOR_ADDR = 0x0007DAE0
+REAR_O2_RESPONSE_RATIO_SELECTOR_ADDR = 0x0007DB00
+REAR_O2_VOLTAGE_DIAG_SELECTOR_ADDR = 0x0007DB20
 FREE_START, FREE_END = 0x0007D900, 0x0007FAF7
 
 
@@ -146,6 +184,27 @@ def build_bank2_inhibit_selector():
     return a.assemble()
 
 
+def build_runtime_noop_selector(address, stock_target):
+    """Return immediately when enabled; tail-jump to stock for every other value."""
+    a = Asm(address)
+    a.movl_pool(1, FRONT_AF_ENABLE_ADDR); a.movb_at(0, 1); a.cmp_eq_imm(0x01)
+    a.bf('stock')
+    a.rts(); a.nop()
+    a.label('stock')
+    a.movl_pool(1, stock_target); a.jmp(1); a.nop()
+    return a.assemble()
+
+
+def build_rear_o2_original_trampoline():
+    """Reconstruct the six overwritten rear-ADC instructions, then resume stock."""
+    a = Asm(REAR_O2_ORIGINAL_TRAMPOLINE_ADDR)
+    a.push(13).mov_imm(0x20, 0)
+    a.movl_pool(5, REAR_O2_RAW_ADC_BASE).mov_imm(0, 7)
+    a.movl_pool(4, REAR_O2_RAW_COPY_BASE).mov_imm(0, 6)
+    a.movl_pool(1, REAR_O2_PROCESS_RESUME).jmp(1).nop()
+    return a.assemble()
+
+
 def checked_write(rom, address, expected, replacement, label):
     current = bytes(rom[address:address + len(expected)])
     if current != expected:
@@ -180,6 +239,26 @@ def build_blobs():
          build_front_diag_mirror_wrapper()),
         ("bank2_inhibit_selector", BANK2_INHIBIT_SELECTOR_ADDR,
          build_bank2_inhibit_selector()),
+        ("rear_o2_process_selector", REAR_O2_PROCESS_SELECTOR_ADDR,
+         build_runtime_noop_selector(REAR_O2_PROCESS_SELECTOR_ADDR,
+                                     REAR_O2_ORIGINAL_TRAMPOLINE_ADDR)),
+        ("rear_o2_original_trampoline", REAR_O2_ORIGINAL_TRAMPOLINE_ADDR,
+         build_rear_o2_original_trampoline()),
+        ("rear_o2_threshold_selector", REAR_O2_THRESHOLD_SELECTOR_ADDR,
+         build_runtime_noop_selector(REAR_O2_THRESHOLD_SELECTOR_ADDR,
+                                     STOCK_REAR_O2_THRESHOLD_UPDATE)),
+        ("rear_o2_filter_selector", REAR_O2_FILTER_SELECTOR_ADDR,
+         build_runtime_noop_selector(REAR_O2_FILTER_SELECTOR_ADDR,
+                                     STOCK_REAR_O2_FILTER_UPDATE)),
+        ("rear_o2_integrator_selector", REAR_O2_INTEGRATOR_SELECTOR_ADDR,
+         build_runtime_noop_selector(REAR_O2_INTEGRATOR_SELECTOR_ADDR,
+                                     STOCK_REAR_O2_INTEGRATOR_UPDATE)),
+        ("rear_o2_response_ratio_selector", REAR_O2_RESPONSE_RATIO_SELECTOR_ADDR,
+         build_runtime_noop_selector(REAR_O2_RESPONSE_RATIO_SELECTOR_ADDR,
+                                     STOCK_REAR_O2_RESPONSE_RATIO_UPDATE)),
+        ("rear_o2_voltage_diag_selector", REAR_O2_VOLTAGE_DIAG_SELECTOR_ADDR,
+         build_runtime_noop_selector(REAR_O2_VOLTAGE_DIAG_SELECTOR_ADDR,
+                                     STOCK_REAR_O2_VOLTAGE_DIAG_DISPATCH)),
     ]
 
 
@@ -199,7 +278,14 @@ def apply_to_rom(rom):
         "front_sensor_mirror_wrapper": FRONT_ORIGINAL_TRAMPOLINE_ADDR,
         "front_original_trampoline": FRONT_DIAG_MIRROR_WRAPPER_ADDR,
         "front_diagnostic_mirror_wrapper": BANK2_INHIBIT_SELECTOR_ADDR,
-        "bank2_inhibit_selector": FREE_END + 1,
+        "bank2_inhibit_selector": REAR_O2_PROCESS_SELECTOR_ADDR,
+        "rear_o2_process_selector": REAR_O2_ORIGINAL_TRAMPOLINE_ADDR,
+        "rear_o2_original_trampoline": REAR_O2_THRESHOLD_SELECTOR_ADDR,
+        "rear_o2_threshold_selector": REAR_O2_FILTER_SELECTOR_ADDR,
+        "rear_o2_filter_selector": REAR_O2_INTEGRATOR_SELECTOR_ADDR,
+        "rear_o2_integrator_selector": REAR_O2_RESPONSE_RATIO_SELECTOR_ADDR,
+        "rear_o2_response_ratio_selector": REAR_O2_VOLTAGE_DIAG_SELECTOR_ADDR,
+        "rear_o2_voltage_diag_selector": FREE_END + 1,
     }
     previous_end = FREE_START
     for name, address, data in sorted(blobs, key=lambda item: item[1]):
@@ -225,8 +311,28 @@ def apply_to_rom(rom):
     checked_write(rom, FRONT_PUMP_DIAG_TASK_PTR, be32(STOCK_FRONT_PUMP_DIAG_THUNK),
                   be32(FRONT_DIAG_MIRROR_WRAPPER_ADDR),
                   "front pump-current diagnostic task pointer")
+    checked_write(rom, REAR_O2_PROCESS_ENTRY,
+                  bytes.fromhex("2fd6e020d521e700d421e600"),
+                  build_entry_hook(REAR_O2_PROCESS_ENTRY, REAR_O2_PROCESS_SELECTOR_ADDR),
+                  "rear O2 ADC process entry")
+    rear_task_hooks = (
+        (REAR_O2_THRESHOLD_TASK_PTR, STOCK_REAR_O2_THRESHOLD_UPDATE,
+         REAR_O2_THRESHOLD_SELECTOR_ADDR, "rear O2 threshold task pointer"),
+        (REAR_O2_FILTER_TASK_PTR, STOCK_REAR_O2_FILTER_UPDATE,
+         REAR_O2_FILTER_SELECTOR_ADDR, "rear O2 filter task pointer"),
+        (REAR_O2_INTEGRATOR_TASK_PTR, STOCK_REAR_O2_INTEGRATOR_UPDATE,
+         REAR_O2_INTEGRATOR_SELECTOR_ADDR, "rear O2 response task pointer"),
+        (REAR_O2_RESPONSE_RATIO_TASK_PTR, STOCK_REAR_O2_RESPONSE_RATIO_UPDATE,
+         REAR_O2_RESPONSE_RATIO_SELECTOR_ADDR, "rear O2 response-ratio task pointer"),
+        (REAR_O2_VOLTAGE_DIAG_TASK_PTR, STOCK_REAR_O2_VOLTAGE_DIAG_DISPATCH,
+         REAR_O2_VOLTAGE_DIAG_SELECTOR_ADDR, "rear O2 voltage diagnostic task pointer"),
+    )
+    for pointer, stock_target, selector, label in rear_task_hooks:
+        checked_write(rom, pointer, be32(stock_target), be32(selector), label)
     for code, address in DISABLED_FRONT_AF_DTC_SWITCHES.items():
         checked_write(rom, address, b"\x01", b"\x00", "%s switch" % code)
+    for code, address in DISABLED_REAR_O2_DTC_SWITCHES.items():
+        checked_write(rom, address, b"\x01", b"\x00", "%s rear-O2 switch" % code)
 
     for _, address, data in blobs:
         rom[address:address + len(data)] = data
@@ -268,11 +374,11 @@ def main():
     for name, address, data in blobs:
         print("  %-34s @0x%05X : %d bytes" % (name, address, len(data)))
     print("  closed loop   : stock RH/Bank-1 front A/F -> mirrored Bank-1/Bank-2 paths")
-    print("  rear sensors  : both stock rear narrowband paths and diagnostics unchanged")
+    print("  rear sensors  : both rear narrowband ADC/monitor paths bypassed while enabled")
     print("  ext. wideband : external logger only; no ECU electrical or firmware interface")
-    print("  runtime switch: @0x%05X defaults ON (01); OFF restores stock dual-front logic"
+    print("  runtime switch: @0x%05X defaults ON (01); OFF restores stock front/rear logic"
           % FRONT_AF_ENABLE_ADDR)
-    print("  switch caveat : OFF does not re-enable P0051/P0052/P0151/P0152/P0154")
+    print("  switch caveat : OFF does not re-enable the 13 statically disabled O2 DTC switches")
     print("\n*** DEVELOPMENT IMAGE: validate the retained sensor and both-bank behavior before use. ***")
 
 

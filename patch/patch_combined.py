@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Build the combined D2WD610H boost + single-front-A/F ROM.
+"""Build the combined D2WD610H boost + single-front-A/F/rear-O2-delete ROM.
 
 Both component patch sets are applied in memory to a fresh, hash-pinned copy of
 the canonical root stock ROM.  Generated standalone images are never inputs.
@@ -121,7 +121,7 @@ def main():
         raise RuntimeError("base stock provenance changed during combined build")
 
     all_changed = boost_changed | front_changed
-    print("Combined boost + single-front-A/F patch written: %s" % output)
+    print("Combined boost + single-front-A/F/rear-O2-delete patch written: %s" % output)
     print("  stock source    : %s (UNCHANGED)" % STOCK)
     print("  stock SHA-256   : %s" % stock_hash)
     print("  SRF SHA-256     : %s" % srf_hash)

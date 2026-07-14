@@ -147,7 +147,7 @@ Definition layout:
 - `defs/D2WD610H_AVLS_boost_patch.xml` contains the same D2WD610H + AVLS definition plus the
   canonical boost-patch tables and its one-byte runtime enable.
 - `defs/D2WD610H_AVLS_single_front_af_patch.xml` contains D2WD610H + AVLS plus the one-byte
-  single-front-A/F runtime enable; existing DTC switches cover the five removed-sensor edits.
+  front-mirror/rear-delete runtime enable; existing DTC switches cover all 13 removed-sensor edits.
 - `defs/D2WD610H_AVLS_boost_single_front_af_patch.xml` is the combined-image variant containing
   the canonical boost tables plus both unchanged runtime-enable switches.
 - `defs/romraider_ecu_defs.xml` is a clean upstream metric RomRaider snapshot and is not modified
@@ -187,10 +187,11 @@ data registers (datasheet) instead of descending the call tree.
 - [ ] AVLS: physical OSV port write (via SH7055 port register xrefs — datasheet needed)
 - [x] AVLS curve direction — resolved: curve selected by 0xFFFFCD9C state 2/3; each uses
       +10 engage hysteresis and its raw curve for release (not an engage/release table pair)
-- [x] **Single-front-A/F path — standalone development patch built.** The stock RH/Bank-1
+- [x] **Single-front-A/F plus rear-O2-delete path — standalone development patch built.** The stock RH/Bank-1
       front A/F process remains intact, with processed lambda/current/readiness mirrored to the
       Bank-2 RAM paths after stock processing. Bank-2 inhibit checks reuse the unchanged Bank-1
-      helper. Both rear narrowband ADC/result paths and their diagnostics remain stock. The
+      helper. Exact enable `01` bypasses the rear ADC converter and five traced monitor stages,
+      and disables eight mapped rear sensor/heater DTC switches. The
       post-turbo wideband is recorded by an external logger and has no ECU input or ROM code.
       See `single_front_af_patch.md`. The stock CL/OL state flag remains `0xFFFFBE38`; the patch
       does not replace normal CL/OL transition logic.
@@ -210,8 +211,8 @@ data registers (datasheet) instead of descending the call tree.
 - [x] ECU-side aftermarket-wideband input retired. External lambda data will be timestamped and
       merged with the ECU log off-board; the ROM publishes no aftermarket-sensor value.
 - [x] Combined stock-to-ROM builder and definition created. `patch/patch_combined.py` applies both
-      guarded components to one fresh stock copy; `verify_combined.py` proves the 580 changed bytes
-      are the exact 369 + 211 union with zero overlap. Hardware use remains gated on both standalone
+      guarded components to one fresh stock copy; `verify_combined.py` proves the 811 changed bytes
+      are the exact 369 + 442 union with zero overlap. Hardware use remains gated on both standalone
       commissioning plans.
 - [ ] Airflow model (speed density — capstone)
 - [ ] Define 0x25F8/0x2628/0x2654 as functions in Ghidra and rename (interp_2axis_float32/s8/s16)
@@ -277,15 +278,25 @@ _(underscore names only — strict naming enforcement is ON)_
   lambda path producing the B4E8/B4EC logger values)
 - 0x0001917A → **front_af_sensor_ready_status_pair_update**
 - 0x0000B62A → **front_af_sensor_sample_task**
-- 0x0000E0D0 → **rear_o2_sensor_pair_voltage_process** (stock AB20/AB0C rear-input scaling to
-  B098/B09C; deliberately unmodified by the single-front patch)
-- 0x0000DFB4 → **rear_o2_sensor_bank_voltage_get** (bank-select getter for B098/B09C; direct
-  callers are the rear diagnostic updater and SSM/log conversion stubs)
-- 0x00033AB8 → **rear_o2_sensor_pair_diagnostic_update** (consumes both rear processed values
-  for stock diagnostic state; remains completely stock)
+- 0x0000E0C8 → **rear_o2_sensor_pair_adc_task_thunk**
+- 0x0000E0D0 → **rear_o2_sensor_pair_adc_convert** (AB20/AB0C rear-input scaling to B098/B09C;
+  entry is now runtime-hooked by the single-front/rear-delete patch)
+- 0x0000DFB4 → **rear_o2_sensor_bank_voltage_select** (bank-select getter for B098/B09C; traced
+  consumers are the rear monitor pipeline and SSM/log conversion stubs)
+- 0x00011270 → **diagnostic_monitor_update_dispatch** (task-pointer dispatcher containing all
+  five rear pipeline slots used by the patch)
+- 0x00033B12 → **rear_o2_sensor_monitor_threshold_update**
+- 0x00033AAC → **rear_o2_sensor_pair_filter_delta_update**
+- 0x00033964 → **rear_o2_sensor_response_integrator_initialize**
+- 0x00033970 → **rear_o2_sensor_response_integrator_update**
+- 0x00034BE4 → **rear_o2_sensor_response_ratio_update**
+- 0x00069568 → **rear_o2_sensor_voltage_diagnostic_dispatch**
+- 0x00069572 → **rear_o2_sensor_voltage_low_diagnostic_pair**
+- 0x000697B4 → **rear_o2_sensor_voltage_high_diagnostic_pair**
 
 Decompiler comments set at: 0x209C, 0x2150, 0x28418, 0x284B8, 0x40168, 0x405CC, 0x281FC,
-0xB690, 0xE0D0, 0xB8CC, 0x64FD0, 0x6500C, 0x18DAC, 0x1917A, 0xDFB4, 0x33AB8.
+0xB690, 0xE0D0, 0xB8CC, 0x64FD0, 0x6500C, 0x18DAC, 0x1917A, 0xDFB4, 0x33B12,
+0x33AAC, 0x33964, 0x33970, 0x34BE4, and 0x69568.
 
 ## 9. Session Log / Method Notes
 
@@ -301,15 +312,20 @@ Decompiler comments set at: 0x209C, 0x2150, 0x28418, 0x284B8, 0x40168, 0x405CC, 
   tracking (which float compares against which constant) prefer `disassemble_function`.
 - Datalog RAM anchor no longer needed — 0xFFFFB544 (RPM) confirmed statically from three
   independent comparison sites.
-- 2026-07-14: oxygen-sensor tracing confirmed the front processed-result chain AE60/64,
+- 2026-07-14: initial oxygen-sensor tracing confirmed the front processed-result chain AE60/64,
   AE68/6C, AE70/74 -> B4E8/B4EC and the stock rear raw/result chain AB20/AB0C -> B098/B09C.
-  All functions opened during this pass use the project underscore naming convention. The final
-  standalone patch hooks only the front process at B690, redirects the Bank-2 inhibit entry, and
-  wraps the front diagnostic task pointer. The rear process and all rear DTC switches remain stock.
+  That first revision retained the rear paths; it was superseded by the 2026-07-15 rear-delete
+  revision below.
 - 2026-07-14: both generated patches gained definition-backed runtime-enable bytes. Boost uses
   0x7D80C (`OFF` forces zero EBCS duty and skips the added MAP cut); single-front A/F uses
-  0x7D91C (`OFF` stops both mirrors and selects stock Bank-2 inhibit behavior). The switches do
-  not undo the boost MAP calibration or the five single-front DTC bytes, respectively.
+  0x7D91C (`OFF` restores stock front and rear runtime paths). The switches do not undo the boost
+  MAP calibration or the 13 single-front/rear-delete DTC bytes, respectively.
 - 2026-07-14: retired ECU-side aftermarket-sensor annotations were replaced in the active Ghidra
   program. The established stock function names were re-applied while comments were updated to
-  the single-front-A/F design and the explicitly unchanged rear paths.
+  the then-current single-front-A/F design.
+- 2026-07-15: rear narrowband removal trace completed in live Ghidra. `B098/B09C` have no found
+  fuel-control consumer: their bank getter feeds the rear threshold/filter/response/voltage-DTC
+  pipeline plus two logger stubs. Every inspected function was renamed with underscore names and
+  the relevant decompiler comments were updated. The patch now hooks `0xE0D0`, redirects task
+  pointers `0x11488/0x1148C/0x11490/0x11494/0x114A0` through exact-`01` no-op selectors, and disables
+  P0037/P0038/P0057/P0058/P0137/P0138/P0157/P0158. The heater drivers themselves remain stock.

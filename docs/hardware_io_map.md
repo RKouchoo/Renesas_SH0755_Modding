@@ -55,8 +55,8 @@ reuse for the boost (wastegate) solenoid.**
 | MAP raw ADC → RAM 0xFFFFAB04 | manifold pressure sensor; processed by `map_sensor_voltage_to_pressure_process` @0x7A14 into native mmHg absolute at 0xFFFFABC4 |
 | **0xFFFFAB18** | **RH/Bank-1 front A/F raw channel**; retained factory pre-turbo sensor (`E47`, signal `B134-33/B134-26`) |
 | 0xFFFFAB00 | LH/Bank-2 front A/F raw channel; physical sensor removed by the single-front-A/F patch, whose processed Bank-2 paths mirror Bank 1 |
-| **0xFFFFAB20** | **Stock RH rear-O2 raw ADC**; module-1 channel 4, deliberately unmodified by the single-front-A/F patch |
-| 0xFFFFAB0C | Stock LH rear-O2 raw ADC; deliberately unmodified by the single-front-A/F patch |
+| **0xFFFFAB20** | **RH rear-O2 raw ADC**; module-1 channel 4; hardware sampling remains, but the single-front patch bypasses rear conversion/monitoring while enabled |
+| 0xFFFFAB0C | LH rear-O2 raw ADC; hardware sampling remains, but the single-front patch bypasses rear conversion/monitoring while enabled |
 
 See [single_front_af_patch.md](single_front_af_patch.md) for the exact firmware boundary and the
 matching-generation front-sensor connector assignments. An aftermarket post-turbo wideband is

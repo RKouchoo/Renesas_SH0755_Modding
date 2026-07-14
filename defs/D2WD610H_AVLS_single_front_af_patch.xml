@@ -1,5 +1,5 @@
 <roms>
- <!-- D2WD610H AVLS + single-front-A/F-patch definition. Self-contained metric RomRaider XML. Embedded 32BITBASE is pruned to the 206 templates referenced by D2WD610H. Metric source: Merp/SubaruDefs Stable 9b2992eba8133fe5338b89aa77b22c1bb14d6507. -->
+ <!-- D2WD610H AVLS + single-front-A/F/rear-O2-delete patch definition. Self-contained metric RomRaider XML. Embedded 32BITBASE is pruned to the 206 templates referenced by D2WD610H. Metric source: Merp/SubaruDefs Stable 9b2992eba8133fe5338b89aa77b22c1bb14d6507. -->
  <rom>
   <romid>
    <xmlid>32BITBASE</xmlid>
@@ -1773,8 +1773,8 @@
    <description>Minimum engine speed gate for OSV (oil switching valve) actuation, checked in avls_osv_actuation_gate @ 0x405CC. Below this the high-cam actuation is not commanded even if requested. Stock: 3000.</description>
   </table>
   <!-- D2WD610H single-front-A/F patch runtime control -->
-  <table type="Switch" name="Single Front A/F Patch Enable" category="Front A/F (patch)" sizey="1" userlevel="1" storageaddress="0x7D91C">
-   <description>Only ON (exactly 01) mirrors the retained RH/Bank-1 front A/F values and readiness into the LH/Bank-2 paths and uses the Bank-1 inhibit result for both banks. OFF (00), erased FF, or any other value restores stock dual-front signal processing, readiness, and Bank-2 inhibit behavior. OFF does not re-enable the five diagnostic switches disabled in the generated patch image; for fully stock diagnostics also turn ON P0051, P0052, P0151, P0152, and P0154 before saving/flashing. Both rear narrowband paths remain stock in either state.</description>
+  <table type="Switch" name="Single Front A/F Patch Enable" category="Front A/F + Rear O2 (patch)" sizey="1" userlevel="1" storageaddress="0x7D91C">
+   <description>Only ON (exactly 01) mirrors the retained RH/Bank-1 front A/F values and readiness into the LH/Bank-2 paths, uses the Bank-1 inhibit result for both banks, and bypasses both rear narrowband ADC/monitor/voltage-diagnostic paths. OFF (00), erased FF, or any other value restores stock dual-front and rear-O2 runtime logic. OFF does not re-enable the 13 diagnostic switches disabled in the generated patch image; for fully stock diagnostics also turn ON P0051, P0052, P0151, P0152, P0154, P0037, P0038, P0057, P0058, P0137, P0138, P0157, and P0158 before saving/flashing.</description>
    <state name="on" data="01" />
    <state name="off" data="00" />
   </table>

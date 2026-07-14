@@ -14,8 +14,8 @@ None of the public ECU definitions for the 3.0 H6 have AVLS mapped out. Denso ma
 | # | Goal Description | Status |
 | :-: | :--- | :--- |
 | 1 | Find AVLS settings and tables, and create definitions. | **DONE** — switchover thresholds + hysteresis + RPM overrides mapped; defs in [defs/D2WD610H_AVLS.xml](defs/D2WD610H_AVLS.xml). See notes §5. Pending RomRaider bench test. |
-| 2 | Replace dual front-sensor feedback with one retained factory A/F sensor. | *Development patch built* — RH/Bank-1 factory A/F remains pre-turbo and is mirrored into both fuel-bank paths. A RomRaider switch can restore stock dual-front runtime logic; the five removed-sensor DTC switches must also be re-enabled for fully stock diagnostics. Both rear narrowband paths remain stock; the post-turbo wideband is logged externally and has no ECU input. Available standalone and in the combined boost + front-A/F image. Binary-verified, not vehicle-verified. See [single_front_af_patch.md](docs/single_front_af_patch.md). |
-| 3 | Repurpose unused O2 sensor circuits for other hardware. | *Planned* — the current single-front-A/F patch deliberately leaves both rear circuits stock, and the removed LH front circuit is not reassigned. |
+| 2 | Replace dual front-sensor feedback with one retained factory A/F sensor and delete both rear narrowbands. | *Development patch built* — RH/Bank-1 factory A/F remains pre-turbo and is mirrored into both fuel-bank paths. The same RomRaider switch bypasses the traced rear ADC/monitor/voltage-diagnostic paths. Thirteen removed-sensor DTC switches are disabled and must be re-enabled for fully stock diagnostics. The post-turbo wideband is logged externally and has no ECU input. Available standalone and in the combined image. Binary-verified, not vehicle-verified. See [single_front_af_patch.md](docs/single_front_af_patch.md). |
+| 3 | Repurpose unused O2 sensor circuits for other hardware. | *Planned* — the three removed sensor circuits are not reassigned; the rear heater drivers are not electrically tri-stated by the current patch. |
 | 4 | Reuse the EVAP solenoid as an EBCS solenoid + WRX-style boost control. | *In progress* — purge chain fully RE'd; **one proportional + feed-forward patch with throttle gating, two-tier overboost protection, and a RomRaider runtime-enable switch is built** ([patch/](patch/)), binary-verified vs Ghidra, and region-audited. `OFF` commands zero EBCS duty and uses only the stock rev limiter. Output = ATU-II reg 0xFFFFF590 (sole owner); MAP feedback = 0xFFFFABC4. Defaults are reduced from turbo-EJ25 ROM A2WC510N to a 5 psi peak target, including its MAP scaling. Standalone and combined stock-to-ROM builders are available. Needs the matching sensor and bench validation before boost. See [boost_donor_A2WC510N.md](docs/boost_donor_A2WC510N.md), [boost_repurpose_notes.md](docs/boost_repurpose_notes.md), and [patch_build_guide.md](docs/patch_build_guide.md). |
 | 5 | Potentially change MAF logic to Speed Density. | TBD |
 
@@ -30,7 +30,7 @@ full **ignition-timing** blend/selection logic. See the notes.
 | [boost_repurpose_notes.md](docs/boost_repurpose_notes.md) | EVAP-purge control chain + WRX-style boost-control design + patch plan + files/decisions. |
 | [boost_donor_A2WC510N.md](docs/boost_donor_A2WC510N.md) | Pinned A2WC510N turbo-EJ25 donor, extracted table addresses, MAP calibration, and 5 psi reduction. |
 | [patch_build_guide.md](docs/patch_build_guide.md) | How the single boost patch gets built, calibrated, verified, and flashed. |
-| [single_front_af_patch.md](docs/single_front_af_patch.md) | One-factory-A/F architecture, exact patch boundary, rear-path preservation, external logging boundary, and commissioning limits. |
+| [single_front_af_patch.md](docs/single_front_af_patch.md) | One-factory-A/F architecture, rear-narrowband logical deletion, external logging boundary, and commissioning limits. |
 | [solenoid_subsystem.md](docs/solenoid_subsystem.md) | The two PWM output subsystems: crank-synced AVCS/AVLS cam bank vs. the purge PWM (boost target). |
 | [ram_map.md](docs/ram_map.md) | Consolidated confirmed RAM variables (RPM, MAP, ECT, ignition, AVLS, purge, CL/OL, oxygen sensors, solenoids). |
 | [hardware_io_map.md](docs/hardware_io_map.md) | SH7055 memory map, ROM landmarks, identified peripheral registers, sensor channels, and key ROM data structures. |
@@ -41,8 +41,8 @@ full **ignition-timing** blend/selection logic. See the notes.
 | [defs/D2WD610H.xml](defs/D2WD610H.xml) | Base metric EcuFlash definition retained as the D2WD610H source definition. |
 | [defs/D2WD610H_AVLS.xml](defs/D2WD610H_AVLS.xml) | Self-contained metric RomRaider definition: D2WD610H standard tables + AVLS only. |
 | [defs/D2WD610H_AVLS_boost_patch.xml](defs/D2WD610H_AVLS_boost_patch.xml) | Self-contained metric RomRaider definition: D2WD610H standard tables + AVLS + boost calibration + `Boost Control Patch Enable`. |
-| [defs/D2WD610H_AVLS_single_front_af_patch.xml](defs/D2WD610H_AVLS_single_front_af_patch.xml) | Self-contained metric RomRaider definition: D2WD610H standard tables + AVLS + `Single Front A/F Patch Enable`. |
-| [defs/D2WD610H_AVLS_boost_single_front_af_patch.xml](defs/D2WD610H_AVLS_boost_single_front_af_patch.xml) | Self-contained metric RomRaider definition for the combined image: D2WD610H standard tables + AVLS + boost calibration + both runtime-enable switches. |
+| [defs/D2WD610H_AVLS_single_front_af_patch.xml](defs/D2WD610H_AVLS_single_front_af_patch.xml) | Self-contained metric RomRaider definition: D2WD610H standard tables + AVLS + the front-mirror/rear-delete runtime switch. |
+| [defs/D2WD610H_AVLS_boost_single_front_af_patch.xml](defs/D2WD610H_AVLS_boost_single_front_af_patch.xml) | Self-contained metric RomRaider definition for the combined image: D2WD610H standard tables + AVLS + boost calibration + boost and front-mirror/rear-delete switches. |
 | [defs/romraider_ecu_defs.xml](defs/romraider_ecu_defs.xml) | Clean upstream RomRaider metric definition set from SubaruDefs Stable; no project AVLS/boost modifications. |
 
 > Load exactly **one** of the four custom RomRaider definitions at a time—the AVLS-only,

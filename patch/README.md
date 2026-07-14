@@ -3,7 +3,8 @@
 This directory contains the canonical boost-control patch, the single-front-A/F development
 patch, and a combined builder. The boost patch repurposes the EVAP purge PWM output as an
 electronic boost-control solenoid driver. The front-A/F patch retains one factory pre-turbo A/F
-sensor for closed-loop control and mirrors its processed results into both bank paths. Each
+sensor for closed-loop control, mirrors it into both bank paths, and logically removes both rear
+narrowbands from the traced ADC/monitor chain. Each
 standalone image and the combined image are built directly from fresh stock; generated images
 are never stacked.
 
@@ -97,17 +98,17 @@ fuel-cut flag `0xFFFFBF6C` bit `0x80`, which is consumed by `fuel_cut_flag_aggre
 | `verify_regions.py` | Audits free-flash and scratch-RAM assumptions. |
 | `verify_boost_donor.py` | Re-extracts A2WC510N tables and verifies the generated 5 psi defaults and MAP scaling. |
 | `verify_romraider_toggles.py` | Parses standalone and combined definitions and verifies target IDs, switch/table addresses, generated ON bytes, and isolated one-byte OFF edits. |
-| `verify_combined.py` | Regenerates the combined image, audits the exact union/change ownership, decodes all injected code, and checks retained sensor paths. |
+| `verify_combined.py` | Regenerates the combined image, audits exact union/change ownership, decodes all injected code, and checks the retained front/rear-delete paths. |
 | `D2WD610H_boost.bin` | Generated boost-control ROM; never use it as patch input or as the Ghidra stock image. |
-| `patch_single_front_af.py` | Canonical stock-ROM-to-single-front-A/F patcher. |
-| `verify_single_front_af.py` | Audits front hooks, DTC edits, injected code, preserved rear paths, and every changed offset. |
+| `patch_single_front_af.py` | Canonical stock-ROM-to-single-front-A/F plus rear-O2-delete patcher. |
+| `verify_single_front_af.py` | Audits front hooks, rear bypass hooks, 13 DTC edits, injected code, and every changed offset. |
 | `D2WD610H_single_front_af.bin` | Generated standalone front-A/F development ROM. |
 | `D2WD610H_boost_single_front_af.bin` | Generated combined development ROM; both runtime switches default on. |
 
 RomRaider boost calibration entries are in
 [D2WD610H_AVLS_boost_patch.xml](../defs/D2WD610H_AVLS_boost_patch.xml), category
 `Boost Control (patch)`. Its `Boost Control Patch Enable` switch writes `01`/`00` at `0x7D80C`.
-The matching front-A/F definition is
+The matching front-A/F/rear-delete definition is
 [D2WD610H_AVLS_single_front_af_patch.xml](../defs/D2WD610H_AVLS_single_front_af_patch.xml); its
 `Single Front A/F Patch Enable` switch writes `01`/`00` at `0x7D91C`. Neither patch adds an
 aftermarket-wideband ECU/logger definition.
@@ -118,10 +119,9 @@ It contains the boost tables and both enable switches at their unchanged compone
 
 The relevant switches default to `ON` in every generated image. Boost `OFF` forces zero EBCS duty
 and bypasses the added hard overboost cut while retaining the stock rev limiter; it does not
-revert the patched MAP scaling. Front-A/F `OFF` restores stock dual-front
-processing/readiness/inhibit behavior, but the
-five generated DTC-byte edits remain off until P0051/P0052/P0151/P0152/P0154 are separately
-re-enabled in RomRaider.
+revert the patched MAP scaling. Front-A/F `OFF` restores stock dual-front and rear-O2 runtime
+logic, but the 13 generated DTC-byte edits remain off until P0051/P0052/P0151/P0152/P0154 and
+P0037/P0038/P0057/P0058/P0137/P0138/P0157/P0158 are separately re-enabled in RomRaider.
 
 These are flash calibration bytes, not live logger controls. A RomRaider change takes effect only
 after the edited ROM is saved with a valid checksum and flashed to the ECU.
@@ -145,21 +145,26 @@ after the edited ROM is saved with a valid checksum and flashed to the ECU.
 | Purge output hook | `0x3FD8C` -> `0x7D810` |
 | Rev-limiter hook | `0x11D3C` -> `0x7D8C4` |
 
-## Single-front-A/F path
+## Single-front-A/F and rear-O2-delete path
 
 The separate front-sensor patch runs the complete retained RH/Bank-1 factory A/F processing,
 then mirrors its processed lambda/current/readiness results into the Bank-2 paths. It also makes
-the Bank-2 inhibit helper reuse the unchanged Bank-1 result and disables only P0051, P0052,
-P0151, P0152, and P0154 for the physically removed LH/Bank-2 front sensor.
+the Bank-2 inhibit helper reuse the unchanged Bank-1 result and disables P0051, P0052, P0151,
+P0152, and P0154 for the physically removed LH/Bank-2 front sensor.
 
-Its enable byte is `0x7D91C`; wrappers start at `0x7D920`, and the runtime Bank-2 inhibit
-selector is at `0x7DA20`. With the byte clear, the wrappers stop mirroring and the selector
-reconstructs the original Bank-2 helper behavior.
+Its enable byte is `0x7D91C`; front wrappers start at `0x7D920`, the runtime Bank-2 inhibit
+selector is at `0x7DA20`, and rear selectors occupy `0x7DA60..0x7DB3B`. With the byte clear,
+the wrappers stop mirroring/bypassing and restore the original front and rear runtime behavior.
 
-Both rear narrowband channels, their processed RAM values, their diagnostics, and the rear
-processing entry at `0xE0D0` remain stock. A post-turbo wideband must be logged externally; there
-is no ECU analog input, conversion routine, RAM publication, patch calibration, or custom ECU
-logger parameter for it.
+With exact enable `01`, the hook at `0xE0D0` returns before converting raw rear channels
+`0xFFFFAB20/0xFFFFAB0C`, and task-pointer selectors at `0x11488`, `0x1148C`, `0x11490`, and
+`0x114A0` bypass the traced rear threshold, filter/delta, response-integrator, and paired
+low/high-voltage diagnostic stages. The patch also disables P0037, P0038, P0057, P0058, P0137,
+P0138, P0157, and P0158. Rear logger values are stale/undefined while enabled. The heater output
+drivers are not electrically tri-stated, so disconnected harness terminals must remain insulated.
+
+A post-turbo wideband must be logged externally; there is no ECU analog input, conversion
+routine, RAM publication, patch calibration, or custom ECU logger parameter for it.
 
 The standard RomRaider E91/E109 channels remain the later factory front-sensor log paths and
 should both track the retained sensor after patching. See
@@ -176,8 +181,8 @@ as the mechanical fallback during commissioning.
 
 The single-front-A/F image is likewise binary-verified, not vehicle-verified. Verify the exact
 front-sensor connector variant, correct the checksum, and prove both-bank logging and retained
-sensor fault behavior without boost. Confirm both stock rear sensors and their diagnostics still
-operate normally.
+sensor fault behavior without boost. With the rear connectors safely isolated, confirm all eight
+mapped rear DTCs remain inactive and neither fuel correction changes unexpectedly.
 
 The combined artifact is structurally and binary verified, but it does not waive either
 standalone commissioning plan. Prove the front-A/F behavior without boost and prove the complete

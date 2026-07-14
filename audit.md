@@ -127,23 +127,24 @@ proven, or gate from a confirmed existing hysteretic demand flag.
 
 # Single-Front-A/F Patch Audit
 
-Audit date: 2026-07-14. Target: D2WD610H / ECU ID `3C5A387116`, Renesas SH7055,
+Audit date: 2026-07-15. Target: D2WD610H / ECU ID `3C5A387116`, Renesas SH7055,
 stock image `2005 BLE MT.bin`.
 
 ## Verdict
 
 The standalone single-front-A/F patch is structurally valid. It retains the complete stock
 RH/Bank-1 front A/F processing path and mirrors its processed lambda-like, pump-current-like, and
-readiness results into the Bank-2 RAM paths. It disables only the five diagnostic switches tied
-to the physically removed LH/Bank-2 front sensor.
+readiness results into the Bank-2 RAM paths. Exact runtime enable `01` also bypasses both rear
+narrowband ADC conversion and all five traced rear monitor stages. The generated image disables
+five DTC switches for the removed LH/Bank-2 front sensor and eight mapped DTC switches for the
+removed rear sensors/heaters.
 
-The former ECU-side aftermarket-wideband input has been completely retired. Both rear
-narrowband channels, the rear processing entry, their processed RAM values, and their checked DTC
-switches remain stock. A post-turbo lambda sensor is external instrumentation and must be logged
-outside the ECU.
+The former ECU-side aftermarket-wideband input remains completely retired. A post-turbo lambda
+sensor is external instrumentation and must be logged outside the ECU. Rear-O2 logger results are
+stale/undefined while the delete is enabled.
 
 This is binary verification, not vehicle validation. The retained sensor, both-bank behavior,
-exact harness variant, checksum, and rear-sensor operation still require physical testing before
+exact harness variant, checksum, rear-delete behavior, and open-circuit heater outputs still require physical testing before
 the patch is used alone or enabled in the combined image.
 
 ## Binary checks completed
@@ -153,10 +154,9 @@ the patch is used alone or enabled in the combined image.
 - The root `2005 BLE MT.bin` remains unchanged at SHA-256
   `ed0fe0341d97fb760c2cda3f07277f861495d32f6520e3ce8047b8b0f7bfd4ee`.
 - The generated `patch/D2WD610H_single_front_af.bin` is 512 KiB with SHA-256
-  `6df938627dfe3616e9fea78e7fa8dd2dffd1bc6651440407aad916e701dde3d8`.
-- All 211 changed bytes are confined to three guarded front hooks/task entries, five explicit
-  Bank-2 front A/F DTC switches, and five injected allocations (enable byte, two wrappers,
-  stock-prologue trampoline, and Bank-2 selector).
+  `99a0b2df7f24a247307dfdde6790d464264bbbe6ae8498632735d6d98b4ae5eb`.
+- All 442 changed bytes are confined to nine guarded front/rear hooks or task pointers, 13
+  explicit removed-sensor DTC switches, and 12 injected allocations.
 - The front process hook at `0xB690` runs the complete stock
   `front_af_sensor_pair_signal_process` through a prologue trampoline, then copies
   `AE60->AE64`, `AE68->AE6C`, and `AE70->AE74`.
@@ -164,45 +164,72 @@ the patch is used alone or enabled in the combined image.
   `AE70->AE74` only while enabled. The Bank-2 inhibit entry at `0x6500C` jumps to a selector at
   `0x7DA20`: enabled tail-jumps to the unchanged Bank-1 helper at `0x64FD0`; disabled directly
   reproduces the stock Bank-2 helper's `0xFFFFD26C bit 0 -> return 0/2` behavior.
-- The only disabled switches are P0051, P0052, P0151, P0152, and P0154 for the removed
-  LH/Bank-2 front sensor.
-- The verifier confirms that the retained RH/Bank-1 front switches, all four checked RH-rear
-  switches, and all four checked LH-rear switches remain enabled.
-- The rear process entry at `0xE0D0` is byte-identical to stock. No hook writes `0xFFFFB098` or
-  `0xFFFFB09C`; only the new enable byte at `0x7D91C` is used in the former calibration range,
-  and the external-input code range `0x7DA60..0x7DB3F` remains erased stock flash.
+- The disabled front switches are P0051, P0052, P0151, P0152, and P0154. The disabled rear
+  switches are P0037, P0038, P0057, P0058, P0137, P0138, P0157, and P0158. Retained RH/Bank-1
+  front DTC switches remain enabled.
+- The rear process entry at `0xE0D0` is guardedly replaced with an exact-`01` selector. Enabled
+  returns before converting either raw rear channel; disabled uses a relocated prologue and
+  resumes stock at `0xE0DC`.
+- Task pointers `0x11488`, `0x1148C`, `0x11490`, `0x11494`, and `0x114A0` are guardedly
+  redirected through selectors for rear threshold, filter/delta, response integrator, response
+  ratio publication, and paired low/high-voltage diagnostics. Each returns immediately only for
+  exact `01` and otherwise tail-jumps to its original stock target.
+- Former external-wideband free space `0x7DA60..0x7DB3B` now holds only these rear-delete
+  selectors and relocated stock prologue. No aftermarket conversion or ECU logger input returned.
 - The standalone image leaves the boost allocation `0x7D790..0x7D903` byte-identical to stock.
 - The verifier regenerated every blob and hook from source, rejected all unexpected changed
-  offsets, replayed the overwritten stock prologue byte-for-byte, and decoded 66 injected SH-2E
+  offsets, reconstructed both overwritten stock prologues, and decoded 136 injected SH-2E
   instructions with no unknown opcodes.
 - The shared assembler self-tests pass. Rebuilding the boost patch produced a byte-identical
   image with its existing SHA-256
   `744f4c320f5097256af16101cbba1b71985d8c9dfa77805158a0c4e204fe4560`, and the pinned donor
   table/default verifier also passes.
 
+## Ghidra rear-path verification
+
+- Raw RH/LH rear ADC words `0xFFFFAB20/0xFFFFAB0C` are converted by
+  `rear_o2_sensor_pair_adc_convert` at `0xE0D0` into processed floats
+  `0xFFFFB098/0xFFFFB09C`.
+- Ghidra xrefs from the processed values lead to `rear_o2_sensor_bank_voltage_select` at
+  `0xDFB4`. Its consumers are `rear_o2_sensor_pair_filter_delta_update` and two small SSM/log
+  conversion stubs at `0x31962/0x31978`; no fuel-control consumer was found.
+- The traced downstream chain is `rear_o2_sensor_monitor_threshold_update` (`0x33B12`),
+  `rear_o2_sensor_pair_filter_delta_update` (`0x33AAC`),
+  `rear_o2_sensor_response_integrator_update` (`0x33970`),
+  `rear_o2_sensor_response_ratio_update` (`0x34BE4`), then
+  `rear_o2_sensor_voltage_diagnostic_dispatch` (`0x69568`) and its low/high pair functions.
+- The initialization-only `rear_o2_sensor_response_integrator_initialize` (`0x33964`) writes
+  1.0 to both integrators. It remains stock; all runtime consumers of those integrators are
+  bypassed while the delete is enabled.
+- Every function inspected in this pass was renamed in the live Ghidra project using underscore
+  conventions. Comments at the converter/getter and five patched stages were updated to record
+  the switch behavior and task-pointer locations.
+- The rear heater-output driver path was not hooked or electrically tri-stated. With sensors
+  disconnected, its pins can still be commanded into an open circuit; the eight mapped circuit
+  DTCs are disabled. This hardware behavior remains a bench check.
+
 ## RomRaider runtime toggle
 
 - `defs/D2WD610H_AVLS_single_front_af_patch.xml` is a self-contained metric definition with XMLID
   `D2WD610H_AVLS_SINGLE_FRONT_AF_PATCH`. It parses successfully and exposes `Single Front A/F
   Patch Enable` at `0x7D91C` with `01`/`00` on/off states. The generated image defaults to `01`.
-- Only exact `01` enables the three injected substitutions. `00`, erased `FF`, and all other
-  values stop signal mirroring after the complete stock front process, stop readiness mirroring
-  after the stock diagnostic task, and select stock Bank-2 inhibit semantics. XML and byte-level
-  simulation confirmed that operating this switch changes only `0x7D91C` before checksum
-  correction.
+- Only exact `01` enables front mirroring/Bank-2 inhibit substitution and all six rear no-op
+  selectors. `00`, erased `FF`, and all other values select stock front and rear runtime paths.
+  XML and byte-level simulation confirmed that operating this switch changes only `0x7D91C`
+  before checksum correction.
 - The definition edits a flash byte; state changes require a checksum-correct save and reflash.
-- The five removed-sensor DTC switches are noncontiguous static edits and are deliberately not
-  hidden behind the one-byte runtime flag. For fully stock diagnostic configuration, also turn
-  on P0051, P0052, P0151, P0152, and P0154 in the same definition before saving/flashing.
-- Off is not a valid normal configuration after the physical Bank-2 front sensor is removed,
-  because stock dual-front processing will again consume that missing channel.
+- The 13 removed-sensor DTC switches are noncontiguous static edits and are deliberately not
+  hidden behind the one-byte runtime flag. For fully stock diagnostics, re-enable all five front
+  and eight rear codes listed above in the same definition before saving/flashing.
+- Off is not a valid normal configuration after any of the three sensors is removed, because
+  stock front/rear runtime logic will again consume absent channels.
 
 ## Project cleanup checks
 
 - `patch/patch_single_front_af.py` and `patch/verify_single_front_af.py` replace the retired
   wideband-named patcher and verifier.
-- The ECU-side analog conversion, voltage-window test, rear-process trampoline, external-sensor
-  RAM publication, and four RH-rear DTC edits have been removed from the patch.
+- The retired ECU-side aftermarket analog conversion, calibration, and RAM publication remain
+  removed. The newly used `0x7DA60..0x7DB3B` blocks are rear-delete selectors only.
 - The dedicated external-sensor logger installer, logger fragment, six-table calibration
   definition, and old generated ROM have been removed.
 - The front-A/F patch adds no sensor calibration or logger parameter. It now has a dedicated
@@ -215,8 +242,9 @@ the patch is used alone or enabled in the combined image.
   only the single-front runtime switch. The combined
   `defs/D2WD610H_AVLS_boost_single_front_af_patch.xml` contains the unchanged boost tables plus
   both component runtime switches.
-- The stock reverse-engineering notes now describe `0xFFFFAB20/0xFFFFB098` and
-  `0xFFFFAB0C/0xFFFFB09C` as the unmodified RH/LH rear narrowband paths.
+- The reverse-engineering notes now describe `0xFFFFAB20/0xFFFFB098` and
+  `0xFFFFAB0C/0xFFFFB09C` as stock hardware/RAM paths whose conversion and monitor consumers are
+  bypassed while the single-front/rear-delete switch is enabled.
 
 ## External logging boundary
 
@@ -238,7 +266,9 @@ Boost commissioning must therefore retain independent mechanical and ECU MAP-bas
    corrections, and all front/rear sensor DTCs.
 4. Prove the two logged front channels track through idle, steady cruise, warm-up, throttle
    transitions, forced open loop, and a controlled retained-sensor fault.
-5. Confirm both stock rear sensors, heaters, and catalyst diagnostic behavior remain normal.
+5. Safely isolate both rear connectors. Confirm all eight mapped rear DTCs remain inactive,
+   ignore stale rear logger values, and verify both fuel corrections remain stable. Scope the
+   disconnected heater outputs if no-command behavior is required.
 6. Validate the external post-turbo lambda stream, its status indication, and timestamp alignment
    before using it for tuning decisions.
 7. After both standalone commissioning plans pass, rebuild and verify the combined image from the
@@ -253,8 +283,8 @@ stock image `2005 BLE MT.bin`.
 
 `patch/patch_combined.py` produces one combined development image directly from a fresh copy of
 the canonical root stock ROM. It does not patch either generated standalone image. The generated
-ROM is the exact, non-overlapping union of the boost-control patch and the single-front-A/F patch.
-Its structure, changed-byte ownership, injected instructions, retained sensor paths, and both
+ROM is the exact, non-overlapping union of the boost-control patch and the single-front-A/F plus
+rear-O2-delete patch. Its structure, changed-byte ownership, injected instructions, O2 paths, and both
 RomRaider switches are binary verified.
 
 This does not make the image vehicle-validated. The standalone front-A/F behavior must first be
@@ -280,8 +310,8 @@ checksum.
 ## Combined binary checks completed
 
 - Generated artifact: `patch/D2WD610H_boost_single_front_af.bin`, 512 KiB, SHA-256
-  `044be5792333e053230a040ddecfd118ba8c6c06183c1d9a0373d274c7695bdf`.
-- Exactly 580 bytes differ from stock: 369 owned by the boost patch plus 211 owned by the
+  `019e06e509afce2e798bfe29543e2536524c259d3ab6683c7dd3131ee069fb5e`.
+- Exactly 811 bytes differ from stock: 369 owned by the boost patch plus 442 owned by the
   single-front-A/F patch, with zero overlapping offsets.
 - Before composing the image, the builder independently applies each component to stock and
   rejects any intersecting changed-byte ownership. It then applies both guarded change sets to a
@@ -289,13 +319,13 @@ checksum.
 - Refactoring the component scripts to expose shared `apply_to_rom` functions did not change
   either standalone artifact: boost remains SHA-256
   `744f4c320f5097256af16101cbba1b71985d8c9dfa77805158a0c4e204fe4560`; single-front-A/F remains
-  SHA-256 `6df938627dfe3616e9fea78e7fa8dd2dffd1bc6651440407aad916e701dde3d8`.
+  SHA-256 `99a0b2df7f24a247307dfdde6790d464264bbbe6ae8498632735d6d98b4ae5eb`.
 - `patch/verify_combined.py` regenerates the expected image from stock, checks every byte, pins all
-  five component hooks/task edits and all five enable-dependent branches, verifies the five removed
-  Bank-2 front-sensor DTC edits, and confirms the retained Bank-1 front and both rear paths.
-- All six injected code spans decode as 150 known SH-2E instructions with no unknown opcodes.
-- The retired external-wideband region `0x7DA60..0x7DB3F` remains erased stock flash. No
-  aftermarket-wideband input or logger publication was reintroduced.
+  component hooks/task edits and enable-dependent branches, verifies all 13 removed-sensor DTC
+  edits, and confirms the retained Bank-1 front plus both rear-delete paths.
+- All 13 injected code spans decode as 220 known SH-2E instructions with no unknown opcodes.
+- The former external-wideband region `0x7DA60..0x7DB3B` now contains only verified rear-delete
+  selectors/trampoline. No aftermarket-wideband input or logger publication was reintroduced.
 
 ## Combined RomRaider definition
 
@@ -307,5 +337,5 @@ checksum.
 - Both generated bytes default to `01`. XML parsing and byte simulation verify that changing
   either switch to `00` changes only its own one-byte address before checksum handling.
 - Boost `OFF` retains the donor MAP scaling and bypasses the added hard overboost cut. Front-A/F
-  `OFF` does not re-enable P0051/P0052/P0151/P0152/P0154. The existing component caveats remain
-  unchanged in the combined image.
+  `OFF` restores stock front/rear runtime logic but does not re-enable the 13 removed-sensor DTC
+  bytes. The existing component caveats remain unchanged in the combined image.
