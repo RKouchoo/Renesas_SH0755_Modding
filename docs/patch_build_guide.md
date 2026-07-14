@@ -56,25 +56,33 @@ stage — driving the solenoid from the map without touching 0xFFFFCD54.
    toggle via RomRaider DTC switches if it does.
 
 ## Phase 2 — closed-loop (after EJ255 sensor + 0x72810 rescale)
-**Status: implemented in `patch/patch_boost_p2.py`; binary-verified (PI stub disassembles
-correctly), not yet hardware-tested. Ships with Kp=Ki=0 (feed-forward) for a safe first flash.**
+**Status: implemented in `patch/patch_boost_p2.py`; binary-verified (stub disassembles correctly,
+no RAM writes), not yet hardware-tested. Ships Kp=0 (feed-forward) for a safe first flash.**
 
-Controller (runs at the slow-task rate, replacing the output tail-call like Phase 1):
+Controller (runs at the slow-task rate, replacing the output tail-call like Phase 1) — **stateless,
+proportional + feed-forward**:
 ```
 base   = BaseDuty[rpm]                 (ratio, feed-forward)
 target = TargetBoost[rpm]              (MAP units)
 err    = target - MAP(0xFFFFABC4)
-I      = clamp(I + Ki*err, -Ilim, +Ilim)      # integrator @ RAM 0xFFFFBFF0
-ratio  = clamp(base + Kp*err + I, 0, MaxRatio)
-if MAP > Overboost: ratio = 0, I = 0          # actuator fail-safe
+ratio  = clamp(base + Kp*err, 0, MaxRatio)
+if MAP > Overboost: ratio = 0                 # actuator fail-safe
 -> output stage 0xE8C4
 ```
-- Integrator state in confirmed-free RAM 0xFFFFBFF0; init-flag 0xFFFFBFF8 (self-zeroes first run).
-- Tunables (Boost Target, Kp, Ki, Integrator Limit, Max Duty Ratio, Overboost Cut) are RomRaider
-  tables in `defs/D2WD610H_boost_patch.xml` (category "Boost Control (patch)").
-- **Still to add**: a proper overboost FUEL/ignition cut (Phase 2's cut is actuator-level only);
-  2-axis target (RPM×load); loop-rate upgrade (~10 ms task) for tighter control.
-- Build helper: `patch/sh2_asm.py` (assembler, self-validates against the Phase-1 stub).
+- **No persistent RAM state** (reads only RPM/MAP + flash consts). This is deliberate: an audit
+  (`patch/verify_regions.py`) found NO RAM word can be proven free — the earlier integrator picks
+  (0xFFFFBFF0/BFF8) are inside the cam-solenoid struct array (computed base+index access, which a
+  plain xref check misses), and every large unreferenced RAM gap is a computed-access buffer/jump
+  table. So the integral term ("Turbo Dynamics") is omitted rather than risk corrupting a subsystem.
+- Tunables (Boost Target, Kp, Max Duty Ratio, Overboost Cut) are RomRaider tables in
+  `defs/D2WD610H_boost_patch.xml` (category "Boost Control (patch)").
+- Ownership verified: 0xE8C4 has ONE caller (the hijacked tail-call); 0xFFFFF590 is otherwise
+  written only by init — the stub is the sole runtime driver of the solenoid.
+- **Still to add**: overboost FUEL/ignition cut (Phase 2's cut is actuator-level only); the
+  integral term once a scratch RAM word is rigorously verified (or purge RAM reclaimed by NOP-ing
+  the stock writes); 2-axis target (RPM×load); ~10 ms loop-rate upgrade.
+- Build helpers: `patch/sh2_asm.py` (assembler, self-validates vs the Phase-1 stub),
+  `patch/verify_regions.py` (region audit).
 
 ## Verification checklist (before flashing)
 - [ ] Datalog confirms purge duty tracks 0xFFFFCD54 (proves the output is the purge chain).

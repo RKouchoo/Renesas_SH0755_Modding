@@ -6265,35 +6265,28 @@
   </table>
 
   <!-- Phase 2 (closed-loop) tables — present in D2WD610H_boost_p2.bin (patch/patch_boost_p2.py).
-       Controller: ratio = clamp(base + Kp*err + I, 0, MaxRatio); I = clamp(I + Ki*err, ±Ilim);
-       err = TargetBoost - MAP(0xFFFFABC4); if MAP > Overboost → ratio 0. Gains ship at 0
-       (feed-forward). Fit EJ255 sensor + rescale MAP (0x72810) before raising Kp/Ki. -->
+       Controller: ratio = clamp(base + Kp*err, 0, MaxRatio); err = TargetBoost - MAP(0xFFFFABC4);
+       if MAP > Overboost → ratio 0. STATELESS (proportional + feed-forward; no integral term —
+       no RAM word could be proven free on this ROM, see patch/verify_regions.py). Kp ships at 0
+       (feed-forward). Fit EJ255 sensor + rescale MAP (0x72810) before raising Kp. -->
   <table type="2D" name="Boost Target (RPM)" category="Boost Control (patch)" storagetype="float" endian="big" sizey="8" userlevel="1" storageaddress="0x7D7E0">
    <scaling units="MAP (match sensor units)" expression="x" to_byte="x" format="0.0" fineincrement="1" coarseincrement="5" />
    <table type="Y Axis" name="Engine Speed" storagetype="float" endian="big" storageaddress="0x7D7A4">
     <scaling units="RPM" expression="x" to_byte="x" format="0" fineincrement="50" coarseincrement="250" />
    </table>
-   <description>Closed-loop boost target vs RPM, in the SAME units as the MAP variable 0xFFFFABC4 (set these to match your rescaled EJ255 sensor, e.g. kPa absolute). error = target − MAP drives the PI correction.</description>
+   <description>Closed-loop boost target vs RPM, in the SAME units as the MAP variable 0xFFFFABC4 (set to match your rescaled EJ255 sensor, e.g. kPa absolute). error = target − MAP drives the proportional correction.</description>
   </table>
   <table type="1D" name="Boost Kp (proportional gain)" category="Boost Control (patch)" storagetype="float" endian="big" sizey="1" userlevel="2" storageaddress="0x7D800">
    <scaling units="ratio per MAP-unit" expression="x" to_byte="x" format="0.0000" fineincrement="0.0005" coarseincrement="0.002" />
-   <description>Proportional gain: duty ratio added per unit of boost error. Ships at 0 (feed-forward). Raise gently to commission the closed loop.</description>
+   <description>Proportional gain: duty ratio added per unit of boost error. Ships at 0 (feed-forward). Raise gently to commission the closed loop. (No integral term — see patch notes.)</description>
   </table>
-  <table type="1D" name="Boost Ki (integral gain)" category="Boost Control (patch)" storagetype="float" endian="big" sizey="1" userlevel="2" storageaddress="0x7D804">
-   <scaling units="ratio per MAP-unit per cycle" expression="x" to_byte="x" format="0.00000" fineincrement="0.0001" coarseincrement="0.0005" />
-   <description>Integral gain (per controller cycle = slow-task rate). Ships at 0. Raise AFTER Kp; watch for wind-up/oscillation. Clamped by Integrator Limit.</description>
-  </table>
-  <table type="1D" name="Boost Integrator Limit" category="Boost Control (patch)" storagetype="float" endian="big" sizey="1" userlevel="2" storageaddress="0x7D808">
-   <scaling units="ratio" expression="x" to_byte="x" format="0.00" fineincrement="0.01" coarseincrement="0.05" />
-   <description>Max absolute integrator contribution to duty ratio (±). Anti-windup clamp. Default 0.25.</description>
-  </table>
-  <table type="1D" name="Boost Max Duty Ratio" category="Boost Control (patch)" storagetype="float" endian="big" sizey="1" userlevel="2" storageaddress="0x7D80C">
+  <table type="1D" name="Boost Max Duty Ratio" category="Boost Control (patch)" storagetype="float" endian="big" sizey="1" userlevel="2" storageaddress="0x7D804">
    <scaling units="ratio (1.0 = 100%)" expression="x" to_byte="x" format="0.00" fineincrement="0.01" coarseincrement="0.05" />
    <description>Upper clamp on final commanded duty ratio. Default 0.85.</description>
   </table>
-  <table type="1D" name="Boost Overboost Cut (MAP)" category="Boost Control (patch)" storagetype="float" endian="big" sizey="1" userlevel="1" storageaddress="0x7D810">
+  <table type="1D" name="Boost Overboost Cut (MAP)" category="Boost Control (patch)" storagetype="float" endian="big" sizey="1" userlevel="1" storageaddress="0x7D808">
    <scaling units="MAP (match sensor units)" expression="x" to_byte="x" format="0.0" fineincrement="1" coarseincrement="5" />
-   <description>If MAP (0xFFFFABC4) exceeds this, the wastegate duty is forced to 0 and the integrator reset (actuator-level fail-safe). Calibrate to your sensor units once rescaled. NOTE: this only reduces boost via the wastegate — add a proper fuel/ignition overboost cut for a hard limit.</description>
+   <description>If MAP (0xFFFFABC4) exceeds this, the wastegate duty is forced to 0 (actuator-level fail-safe). Calibrate to your sensor units once rescaled. NOTE: this only reduces boost via the wastegate — add a proper fuel/ignition overboost cut for a hard limit.</description>
   </table>
  </rom>
 </roms>

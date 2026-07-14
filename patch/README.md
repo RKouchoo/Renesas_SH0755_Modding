@@ -8,9 +8,10 @@ boost/wastegate solenoid driver. Background: [../docs/boost_repurpose_notes.md](
 | File | What |
 |---|---|
 | `patch_boost.py` | **Phase 1** patcher (open-loop RPM→duty) — stock `.bin` → patched `.bin`. |
-| `patch_boost_p2.py` | **Phase 2** patcher (closed-loop PI boost control) — stock `.bin` → patched `.bin`. |
+| `patch_boost_p2.py` | **Phase 2** patcher (closed-loop proportional + feed-forward) — stock `.bin` → patched `.bin`. |
 | `sh2_asm.py` | Minimal two-pass SH-2E assembler (labels + literal pool). Self-tests against the verified Phase-1 stub. |
 | `sh2_disasm.py` | Minimal SH-2E disassembler used to build/verify the patches. |
+| `verify_regions.py` | Audits free-flash + scratch-RAM assumptions (direct refs + known computed regions). |
 | `D2WD610H_boost_p1.bin` / `_p2.bin` | Build outputs (generated; not the stock image). |
 
 ## Usage
@@ -51,21 +52,27 @@ stock value (guards against double-patching / wrong image).
 - Closed loop (target boost + Turbo Dynamics using MAP @0xFFFFABC4) = Phase 2, needs the EJ255
   sensor + 0x72810 rescale.
 
-## Phase 2 — closed-loop PI boost control (`patch_boost_p2.py`)
+## Phase 2 — closed-loop proportional + feed-forward (`patch_boost_p2.py`)
 Apply to the **stock** bin (not on top of Phase 1). Adds, in free space:
 - feed-forward base duty map (same table as Phase 1),
 - target boost map (RPM → target, float),
-- Kp / Ki / Integrator-Limit / Max-Duty-Ratio / Overboost gains (tunable floats),
-- a PI controller stub, hijacking the same literal @0x3FD8C.
+- Kp / Max-Duty-Ratio / Overboost gains (tunable floats),
+- a **stateless** controller stub, hijacking the same literal @0x3FD8C.
 
-Controller each cycle: `ratio = clamp(base + Kp·err + I, 0, MaxRatio)`, `I = clamp(I + Ki·err, ±Ilim)`,
-`err = target − MAP(0xFFFFABC4)`; if `MAP > Overboost` → `ratio 0` and integrator reset. Integrator
-state in confirmed-free RAM **0xFFFFBFF0** (+ init-flag **0xFFFFBFF8**, self-zeroing at first run).
+Controller each cycle: `ratio = clamp(base + Kp·err, 0, MaxRatio)`, `err = target − MAP(0xFFFFABC4)`;
+if `MAP > Overboost` → `ratio 0`. **No persistent state / no RAM scratch** — reads only RPM, MAP,
+and flash constants; writes nothing but the stack.
 
-**Ships safe:** default `Kp=Ki=0` ⇒ behaves as feed-forward (= Phase 1). Overboost cut active.
+> **Why P-only, not PI?** `verify_regions.py` showed no RAM word can be *proven* free on this ROM:
+> the top-of-RAM candidates fall inside the cam-solenoid struct array (computed base+index access,
+> invisible to a plain xref check), and the large unreferenced RAM gaps are computed-access buffers /
+> jump tables. Rather than risk corrupting another subsystem, the integral term is omitted. Adding I
+> later needs a rigorously-verified scratch (or reclaiming purge RAM by NOP-ing the stock writes).
+
+**Ships safe:** default `Kp=0` ⇒ pure feed-forward (= Phase 1). Overboost cut active.
 
 **PREREQUISITE:** MAP (0xFFFFABC4) must read real boost — fit the **EJ255 (turbo) MAP sensor** and
-rescale table **0x72810** first. Do NOT raise Kp/Ki on the stock ~1-bar sensor. Binary-verified
+rescale table **0x72810** first. Do NOT raise Kp on the stock ~1-bar sensor. Binary-verified
 only; bench-validate and keep an independent overboost **fuel** cut. Tune in
 [../defs/D2WD610H_boost_patch.xml](../defs/D2WD610H_boost_patch.xml) (category "Boost Control (patch)").
 
@@ -73,6 +80,6 @@ only; bench-validate and keep an independent overboost **fuel** cut. Tune in
 | Item | Addr | | Item | Addr |
 |---|---|---|---|---|
 | base_desc | 0x7D790 | | target_data | 0x7D7E0 |
-| rpm_axis (shared) | 0x7D7A4 | | Kp/Ki/Ilim/MaxR/Overboost | 0x7D800..0x7D810 |
-| base_data | 0x7D7C4 | | PI stub | 0x7D814 |
-| target_desc | 0x7D7CC | | integrator / init-flag (RAM) | 0xFFFFBFF0 / 0xFFFFBFF8 |
+| rpm_axis (shared) | 0x7D7A4 | | Kp / MaxRatio / Overboost | 0x7D800 / 0x7D804 / 0x7D808 |
+| base_data | 0x7D7C4 | | controller stub | 0x7D80C |
+| target_desc | 0x7D7CC | | scratch RAM | none (stateless) |

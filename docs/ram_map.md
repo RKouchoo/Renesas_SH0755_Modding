@@ -61,7 +61,7 @@ unless marked *(inferred)*. Cross-refs: [D2WD610H_RE_notes.md](D2WD610H_RE_notes
 ## Solenoid output subsystem (cam AVCS/AVLS bank — see solenoid_subsystem.md)
 | RAM addr | Meaning |
 |---|---|
-| 0xFFFFBFB8 | Control-struct array base (6 × 0x28, channel idx @ +0x0C) |
+| 0xFFFFBFB8 | Control-struct array base (6 × 0x28 = **spans 0xFFFFBFB8–0xFFFFC0A7**, channel idx @ +0x0C). Accessed by computed base+index, so per-field addresses (e.g. 0xFFFFBFF0/BFF8) show NO xref but ARE used — do not repurpose. |
 | 0xFFFFB744 | Solenoid inhibit/fault word (16-bit; bit n = channel n) |
 | 0xFFFFBF21 | Circuit-fault byte (bits 0x80..0x04 = ch0..5) |
 | 0xFFFFD94C | Solenoid command byte (bits read by fault thunks) |

@@ -19,7 +19,7 @@ confirmed from code. See also [ram_map.md](ram_map.md), [solenoid_subsystem.md](
 | 0x00002000 | Internal ID string "D2WD610H" |
 | 0x0007BDA8 | ECU ID `3C5A387116` |
 | 0x0007BDDD | CALID `D2WD610H` |
-| **0x0007D790** | **~9 KB free space** (patch code + new tables land here) |
+| **0x0007D790** | **~9 KB free space** (patch code + new tables land here). Also the ROM checksum's END boundary (`rom_checksum_accumulate` @0x4FB8C sums up to, not into, this address) — so free-space writes are outside the internal sum; only in-range edits need the flasher's checksum recalc. |
 | 0x0007FFFF | end of flash |
 
 ## Denso literal trick (how RAM/I-O addresses appear in code)
