@@ -118,3 +118,56 @@ the boost duty map conservatively and keep an independent overboost fuel cut as 
   oil-control solenoids, NOT purge.
 - The radiator fan (FUN_0003F878) is relay-driven (mode bytes 0xFFFFF97C / 0xFFFFFA80), not PWM.
 - ATU config cluster 0xFFFFF444-F44E is setup data (ref only from table @ 0xFA94), not an output.
+
+================================================================================
+## WRX-STYLE BOOST CONTROL (target architecture)
+================================================================================
+Replicate the 32-bit Subaru (WRX STi, = 32BITBASE in the defs) boost-control algorithm as
+custom code in free space, driving the repurposed purge PWM output (0xFFFFF590).
+
+### The WRX algorithm (from 32BITBASE tables)
+  target = TargetBoost[rpm, load/throttle]  (+ atm/ECT/IAT/gear compensations)
+  base   = InitialWastegateDuty[rpm, target]   (feed-forward)
+  error  = target - actualMAP
+  corr   = TurboDynamics: integral(error)*Ki + proportional(error)*Kp   (closed loop)
+  duty   = clamp( base + corr, 0, MaxWastegateDuty[rpm] )
+  if actualMAP > BoostLimit(FuelCut): cut fuel/ignition   (overboost protection)
+  -> write duty to wastegate solenoid PWM
+
+### What this ECU already has (good news)
+  - Output: purge PWM chain -> ATU-II reg 0xFFFFF590 (see above).
+  - Feedback: MAP value @ RAM **0xFFFFABC4** (map_sensor_process @0x7A14, raw ADC 0xFFFFAB04,
+    scaling table 0x72810). Firmware plumbing for boost feedback exists.
+  - RPM @ 0xFFFFB544; load/airflow available; ECT 0xFFFFB3AC; IAT/atm available.
+  - Interpolators 0x209C (2D) / 0x2150 (3D); free space 0x7D790 (9KB).
+
+### The catch for CLOSED loop
+  Stock MAP sensor is ~1 bar (NA); it cannot read positive boost. Full WRX-style closed loop
+  needs a 2-3 bar MAP sensor fitted + table 0x72810 rescaled (then feedback reads 0xFFFFABC4).
+
+### Recommended phased build
+  Phase 1 (open loop, stock sensor OK): InitialWastegateDuty[rpm,load] + MaxWastegateDuty[rpm]
+    clamp, no error correction. Custom code in free space overwrites purge duty 0xFFFFCD54.
+    Safe first cut; tune base duty on dyno/road.
+  Phase 2 (closed loop, needs boost MAP sensor): add TargetBoost map + boost error + Turbo
+    Dynamics P/I correction reading 0xFFFFABC4.
+  Both phases: implement an overboost cut (compare 0xFFFFABC4 vs limit -> force fuel/ign cut)
+    as the fail-safe. Loop rate: purge runs in slow task; consider hooking a faster (~10ms)
+    task for better wastegate control (v2).
+
+### New RAM/registers found this step (renamed in Ghidra)
+  - map_sensor_process @0x00007A14 ; MAP kPa @0xFFFFABC4 ; MAP raw ADC @0xFFFFAB04.
+
+================================================================================
+## PATCH WORKING FILES / DECISIONS
+================================================================================
+- RomRaider def (iterating): **defs/D2WD610H_boost_patch.xml** — clone of D2WD610H_AVLS.xml,
+  xmlid D2WD610H_BOOST (internalidstring stays D2WD610H for auto-detect). Boost patch tables get
+  added under category "Boost Control (patch)". Load this one going forward (not the AVLS file).
+- Because 32BITBASE = WRX STi base, the WRX boost table TEMPLATES + scalings are already in the
+  file (categories "Boost Control - Target/Wastegate/Turbo Dynamics/Limits"). Reuse those exact
+  scalings when adding the patch overrides (e.g. Target Boost psi expr (x-760)*.01933677).
+- HARDWARE DECISION: fitting an **EJ255 (turbo EJ25) MAP sensor** — the same 2-bar+ Denso sensor
+  the 32-bit WRX/STi ECU uses. => closed-loop WRX-style boost IS the target (not open-loop-only).
+  Action in patch: rescale MAP sensor table **0x72810** to that sensor's curve (copy the WRX MAP
+  scaling), then boost feedback reads **0xFFFFABC4** directly.
