@@ -14,7 +14,7 @@ correction) as custom code in the ROM's 9 KB free space.
   edits, writes a patched `.bin`. No Ghidra dependency at flash time.
 - **Assembly**: SH-2E machine code hand-assembled in the patcher (verified against the same
   decode used throughout RE).
-- **Def**: [defs/D2WD610H_boost_patch.xml](defs/D2WD610H_boost_patch.xml) — RomRaider tables for
+- **Def**: [defs/D2WD610H_boost_patch.xml](../defs/D2WD610H_boost_patch.xml) — RomRaider tables for
   the new maps (category "Boost Control (patch)"); iterate here.
 - **Flashing**: EcuFlash / RomRaider (recomputes the `subarudbw` checksum on save — so the
   patcher can skip checksum; open+save in the tool before flashing).

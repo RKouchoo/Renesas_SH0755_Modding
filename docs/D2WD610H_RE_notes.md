@@ -7,7 +7,7 @@ This file is the canonical state doc. Companion references:
 - [solenoid_subsystem.md](solenoid_subsystem.md) — cam-bank vs purge PWM outputs
 - [boost_repurpose_notes.md](boost_repurpose_notes.md) — purge chain + boost-control design
 - [patch_build_guide.md](patch_build_guide.md) — boost-patch build/flash plan
-- [readme.md](readme.md) — project overview + goals
+- [readme.md](../readme.md) — project overview + goals
 
 ---
 

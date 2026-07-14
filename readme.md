@@ -16,7 +16,7 @@ None of the public ECU definitions for the 3.0 H6 have AVLS mapped out. Denso ma
 | 1 | Find AVLS settings and tables, and create definitions. | **DONE** — switchover thresholds + hysteresis + RPM overrides mapped; defs in [defs/D2WD610H_AVLS.xml](defs/D2WD610H_AVLS.xml). See notes §5. Pending RomRaider bench test. |
 | 2 | Replace dual O2 sensor trim logic with a single aftermarket wideband O2 input. | *In progress* — closed/open-loop state flag found (0xFFFFBE38); tracing per-bank enable. |
 | 3 | Repurpose the three other O2 sensor circuits for other hardware. | Planned |
-| 4 | Reuse the EVAP solenoid as an EBCS solenoid + WRX-style boost control. | *In progress* — **purge control chain fully reverse-engineered**; physical output = ATU-II reg 0xFFFFF590; MAP feedback = 0xFFFFABC4; boost-patch def created. See [boost_repurpose_notes.md](boost_repurpose_notes.md) + [patch_build_guide.md](patch_build_guide.md). |
+| 4 | Reuse the EVAP solenoid as an EBCS solenoid + WRX-style boost control. | *In progress* — **purge control chain fully reverse-engineered**; physical output = ATU-II reg 0xFFFFF590; MAP feedback = 0xFFFFABC4; boost-patch def created. See [boost_repurpose_notes.md](docs/boost_repurpose_notes.md) + [patch_build_guide.md](docs/patch_build_guide.md). |
 | 5 | Potentially change MAF logic to Speed Density. | TBD |
 
 Also solved along the way: the central **table-interpolation** system (descriptor-based) and the
@@ -26,18 +26,18 @@ full **ignition-timing** blend/selection logic. See the notes.
 
 | Doc | Contents |
 |---|---|
-| [D2WD610H_RE_notes.md](D2WD610H_RE_notes.md) | **Canonical engineering notes** — ROM identity, memory map, interpolation core, ignition timing, AVLS, RAM anchors, open targets, Ghidra rename log, methods. Read this first. |
-| [boost_repurpose_notes.md](boost_repurpose_notes.md) | EVAP-purge control chain + WRX-style boost-control design + patch plan + files/decisions. |
-| [patch_build_guide.md](patch_build_guide.md) | How the boost patch gets built and flashed (patcher, free-space layout, phases, checksum). |
-| [solenoid_subsystem.md](solenoid_subsystem.md) | The two PWM output subsystems: crank-synced AVCS/AVLS cam bank vs. the purge PWM (boost target). |
-| [ram_map.md](ram_map.md) | Consolidated confirmed RAM variables (RPM, MAP, ECT, ignition, AVLS, purge, CL/OL, solenoids). |
-| [hardware_io_map.md](hardware_io_map.md) | SH7055 memory map, ROM landmarks, identified peripheral registers, key ROM data structures. |
+| [D2WD610H_RE_notes.md](docs/D2WD610H_RE_notes.md) | **Canonical engineering notes** — ROM identity, memory map, interpolation core, ignition timing, AVLS, RAM anchors, open targets, Ghidra rename log, methods. Read this first. |
+| [boost_repurpose_notes.md](docs/boost_repurpose_notes.md) | EVAP-purge control chain + WRX-style boost-control design + patch plan + files/decisions. |
+| [patch_build_guide.md](docs/patch_build_guide.md) | How the boost patch gets built and flashed (patcher, free-space layout, phases, checksum). |
+| [solenoid_subsystem.md](docs/solenoid_subsystem.md) | The two PWM output subsystems: crank-synced AVCS/AVLS cam bank vs. the purge PWM (boost target). |
+| [ram_map.md](docs/ram_map.md) | Consolidated confirmed RAM variables (RPM, MAP, ECT, ignition, AVLS, purge, CL/OL, solenoids). |
+| [hardware_io_map.md](docs/hardware_io_map.md) | SH7055 memory map, ROM landmarks, identified peripheral registers, key ROM data structures. |
 
 ### Definitions (RomRaider)
 | File | Use |
 |---|---|
 | [defs/D2WD610H_AVLS.xml](defs/D2WD610H_AVLS.xml) | Self-contained def: all standard D2WD610H tables + AVLS. |
-| [defs/D2WD610H_boost_patch.xml](defs/D2WD610H_boost_patch.xml) | Working boost-patch def (xmlid D2WD610H_BOOST) — iterate here as the patch is built. |
+| [defs/D2WD610H_boost_patch.xml](defs/D2WD610H_boost_patch.xml) | WIP boost-patch def (xmlid D2WD610H_BOOST) — iterate here as the patch is built. |
 | [defs/romraider_ecu_defs.xml](defs/romraider_ecu_defs.xml) | Full multi-ECU distribution (32BITBASE = WRX STi base; D2WD610H has AVLS merged). |
 
 > Load exactly **one** D2WD610H definition at a time (they share ROM identity).
