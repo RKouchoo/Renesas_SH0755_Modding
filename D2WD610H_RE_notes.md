@@ -172,14 +172,16 @@ data registers (datasheet) instead of descending the call tree.
       NEXT: xref readers of 0xFFFFBE38 → closed-loop enable decision → per-bank split.
       Note: DTC config bytes (0x5BDAx) have NO direct xrefs (computed-base DTC records) —
       but they are directly flashable to mask O2 DTCs for the O2 delete.
-- [ ] **Boost repurpose of EVAP purge output** (see `boost_repurpose_notes.md`).
-      CORRECTION: the 6-channel PWM bank RE'd this session (`solenoid_pwm_channel_drive`
-      @0x96FC, `solenoid_channel_output_update` @0x268E8, ctrl reg 0xFFFFF602 / compare
-      0xFFFFF652+2n, structs @0xFFFFBFB8, inhibit word 0xFFFFB744) is **crank-angle-synced
-      (30°×24=720°, scheduler 0x263EE) → it is the AVCS/AVLS cam solenoid driver, NOT purge.**
-      Purge is a separate free-running PWM, still unlocated. NEXT: find purge duty computation
-      (airflow/purge-density map, ECT+CL gated, zeroed at idle/DFCO) → its PWM output pin; or
-      trace the P0458/P0459 output-driver diagnostic (DTCs 0x5BD85/0x5BD86).
+- [x] **Boost repurpose of EVAP purge output — purge chain FOUND** (see `boost_repurpose_notes.md`
+      for full chain + patch plan). Purge = temp-scheduled duty PWM in the emissions aux slow task.
+      Duty compute `evap_purge_duty_compute` @0x3FC0A (state m/c 0xFFFFCD77, ECT 0xFFFFB3AC, maps
+      desc 0x609C4/0x609D8) → duty%% RAM 0xFFFFCD54 → output stage `evap_purge_pwm_output_write`
+      @0xE8C4 → **physical PWM register 0xFFFFF590** (ATU-II), period RAM 0xFFFFAB84. Diagnostic
+      `evap_purge_flow_diagnostic` @0x46748. DTCs P0458 0x5BD85 / P0459 0x5BD86. Confidence HIGH;
+      confirm by datalogging purge duty. REMAINING for patch: build boost map (free space 0x7D790),
+      hijack duty at 0x3FC0A, neutralize ECT gating, check/retune PWM freq, mask DTCs, re-checksum.
+      NOTE: the crank-synced 6-ch bank (0x96FC/0x268E8, 0xFFFFF602/0xFFFFF652+2n) is AVCS/AVLS cam,
+      NOT purge (earlier mis-ID, corrected).
 - [ ] AVLS physical OSV port write — **likely resolved**: OSV/OCV solenoids are driven by the
       crank-angle-synced bank above (ATU-II compare 0xFFFFF652+2n, ctrl bit on 0xFFFFF602).
       Confirm which of the 6 channels `avls_cam_mode_state_machine` (0x40168) commands.
@@ -216,6 +218,10 @@ _(underscore names only — strict naming enforcement is ON)_
 - 0x000268E8 → **solenoid_channel_output_update** (per-channel duty→count + inhibit gate)
 - 0x00026DFC → **solenoid_status_word_read** (returns solenoid inhibit word @0xFFFFB744)
   (Note: this bank is cam/valve-timing solenoids, not purge — scheduler 0x263EE, 30°×24 phase.)
+- 0x0003FC0A → **evap_purge_duty_compute** (purge duty schedule; state m/c 0xFFFFCD77 → duty 0xFFFFCD54)
+- 0x0003F9E4 → **evap_purge_state_update** (purge enable/status byte 0xFFFFCD81)
+- 0x0000E8C4 → **evap_purge_pwm_output_write** (duty ratio → ATU-II reg 0xFFFFF590; period 0xFFFFAB84)
+- 0x00046748 → **evap_purge_flow_diagnostic** (rationality/circuit monitor → P0458/P0459)
 
 Decompiler comments set at: 0x209C, 0x2150, 0x28418, 0x284B8, 0x40168, 0x405CC, 0x281FC.
 
