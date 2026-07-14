@@ -2,6 +2,7 @@
 
 The reverse engineering behind this patch is recorded in
 [boost_repurpose_notes.md](boost_repurpose_notes.md),
+[boost_donor_A2WC510N.md](boost_donor_A2WC510N.md),
 [solenoid_subsystem.md](solenoid_subsystem.md), and [ram_map.md](ram_map.md).
 
 ## Objective
@@ -63,9 +64,14 @@ The controller reads RPM, processed throttle, MAP, and flash calibrations. It ha
 RAM state. A RAM audit found no word that can be proven free from direct and computed access, so
 the integral term is intentionally omitted rather than risk corrupting another subsystem.
 
-`Kp = 0` is the shipped commissioning calibration. It disables proportional correction while
-leaving all code, throttle gating, clamps, and hard fuel cut installed. Raise Kp only after the
-MAP input is calibrated and the feed-forward duty curve is safe.
+The generated default `Kp` is `0.0005 ratio/mmHg`, copied from the near-zero slope of the donor's
+Turbo Dynamics Proportional table. For first hardware commissioning, set it to zero in RomRaider;
+that disables proportional correction while leaving throttle gating, clamps, and hard fuel cut
+installed. Restore or tune gain only after MAP and feed-forward duty are proven.
+
+The target, base duty, maximum duty, throttle gate, and two boost limits are documented in
+[boost_donor_A2WC510N.md](boost_donor_A2WC510N.md). The default target peaks at 5 psi relative to
+the 760 mmHg sea-level reference; the patch does not implement atmospheric target compensation.
 
 ## Hard overboost protection
 
@@ -79,9 +85,11 @@ limit has hysteresis, so threshold and recovery behavior must be proven on a ben
 
 ## Hardware and calibration prerequisites
 
-- Fit a boost-capable MAP sensor. The planned sensor is the EJ255 turbo Denso unit.
-- Rescale MAP table `0x72810` and validate `0xFFFFABC4` against a reference gauge across the full
-  operating range.
+- Fit the MAP sensor compatible with the A2WC510N donor. The patcher automatically replaces the
+  stock `{-150.0, 250.0}` floats at `0x72810` with donor values
+  `{-414.0, 514.199951}`.
+- Validate `0xFFFFABC4` against a reference gauge across the full operating range. It stores
+  native mmHg absolute; the RomRaider patch tables display psi relative to 760 mmHg.
 - Wire the selected EBCS to the former purge-solenoid output.
 - Verify that zero commanded duty produces minimum boost with the installed plumbing.
 - Measure the actual PWM frequency and confirm it suits the solenoid; the stock period
@@ -107,6 +115,9 @@ The populated region remains inside the verified `0xFF` free run at `0x7D790..0x
 | Hard overboost limit | `0x7D8A8` |
 | Fuel-cut wrapper | `0x7D8AC` |
 
+The donor MAP scaling is an in-place calibration change at `0x72810`, outside the injected
+free-space block.
+
 These addresses must remain synchronized with
 [D2WD610H_boost_patch.xml](../defs/D2WD610H_boost_patch.xml).
 
@@ -116,14 +127,17 @@ These addresses must remain synchronized with
 - `patch/sh2_asm.py`: minimal two-pass SH-2E assembler.
 - `patch/sh2_disasm.py`: injected-code disassembler.
 - `patch/verify_regions.py`: flash/RAM region audit.
+- `patch/verify_boost_donor.py`: donor-table and generated-default verifier.
 - RomRaider/EcuFlash: calibration editing and a verified `subarudbw` checksum save before
   flashing.
 
 ## Commissioning checklist
 
 - [ ] Root stock-ROM hash still matches the known project stock image.
-- [ ] Generated ROM is exactly 512 KiB and differs only at documented tables, code, and hooks.
-- [ ] Boost-capable MAP sensor and table `0x72810` are calibrated against a reference.
+- [ ] Generated ROM is exactly 512 KiB and differs only at the documented MAP scaling, injected
+      tables/code, and two hooks.
+- [ ] A2WC510N-compatible MAP sensor is fitted and the patched `0x72810` conversion is validated
+      against a reference.
 - [ ] Output pin, polarity, solenoid plumbing, and PWM frequency are bench verified.
 - [ ] With `Kp = 0` and conservative base duty, throttle gating is logged and confirmed.
 - [ ] Soft duty shutdown is proven with simulated MAP.

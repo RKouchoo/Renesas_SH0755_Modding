@@ -235,7 +235,7 @@ _(underscore names only — strict naming enforcement is ON)_
 - 0x0003F9E4 → **evap_purge_state_update** (purge enable/status byte 0xFFFFCD81)
 - 0x0000E8C4 → **evap_purge_pwm_output_write** (duty ratio → ATU-II reg 0xFFFFF590; period 0xFFFFAB84)
 - 0x00046748 → **evap_purge_flow_diagnostic** (rationality/circuit monitor → P0458/P0459)
-- 0x00007A14 → **map_sensor_process** (MAP sensor → RAM 0xFFFFABC4; boost feedback source)
+- 0x00007A14 → **map_sensor_voltage_to_pressure_process** (sensor voltage × multiplier + offset → native mmHg absolute at RAM 0xFFFFABC4; boost feedback source)
 - 0x00002390 → **fixedpoint_mul_q16_sat**
 - 0x00024B24 → **rev_limiter_fuel_cut** (RPM vs Rev Limit A/B → sets fuel-cut flag 0xFFFFBF6C bit0x80)
 - 0x00023FC0 → **fuel_cut_flag_aggregate** (ORs cut conditions → master fuel cut)

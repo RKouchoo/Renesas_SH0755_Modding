@@ -52,7 +52,7 @@ reuse for the boost (wastegate) solenoid.**
 ### A/D — sensors
 | Register/var | Role |
 |---|---|
-| MAP raw ADC → RAM 0xFFFFAB04 | manifold pressure sensor; processed by `map_sensor_process` @0x7A14 |
+| MAP raw ADC → RAM 0xFFFFAB04 | manifold pressure sensor; processed by `map_sensor_voltage_to_pressure_process` @0x7A14 into native mmHg absolute at 0xFFFFABC4 |
 
 ## Notable ROM data-structure locations
 | Address | Meaning |

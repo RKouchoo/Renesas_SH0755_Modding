@@ -77,7 +77,7 @@ Purge occupies two entries in the aux/emissions cluster: idx 33 (state) and idx 
 | Table interpolator (reuse for boost map) | code **0x209C** (2D) / **0x2150** (3D) | descriptor-based |
 
 ================================================================================
-## PATCH PLAN (to implement later)
+## ORIGINAL PATCH PLAN (implementation history)
 ================================================================================
 The physical output (0xFFFFF590) already does clean PWM. The mod is purely about WHAT duty is
 written and removing purge-specific behaviour. Cleanest approach = keep the output stage, replace
@@ -134,27 +134,32 @@ custom code in free space, driving the repurposed purge PWM output (0xFFFFF590).
   if actualMAP > BoostLimit(FuelCut): cut fuel/ignition   (overboost protection)
   -> write duty to wastegate solenoid PWM
 
-### What this ECU already has (good news)
+### What this ECU already has
   - Output: purge PWM chain -> ATU-II reg 0xFFFFF590 (see above).
-  - Feedback: MAP value @ RAM **0xFFFFABC4** (map_sensor_process @0x7A14, raw ADC 0xFFFFAB04,
-    scaling table 0x72810). Firmware plumbing for boost feedback exists.
+  - Feedback: MAP value @ RAM **0xFFFFABC4**
+    (`map_sensor_voltage_to_pressure_process` @0x7A14, raw ADC 0xFFFFAB04, scaling table
+    0x72810). Ghidra confirms `MAP_native = voltage × multiplier + offset`; native pressure is
+    mmHg absolute. Firmware plumbing for boost feedback exists.
   - RPM @ 0xFFFFB544; load/airflow available; ECT 0xFFFFB3AC; IAT/atm available.
   - Interpolators 0x209C (2D) / 0x2150 (3D); free space 0x7D790 (9KB).
 
-### The catch for CLOSED loop
-  Stock MAP sensor is ~1 bar (NA); it cannot read positive boost. Full WRX-style closed loop
-  needs a 2-3 bar MAP sensor fitted + table 0x72810 rescaled (then feedback reads 0xFFFFABC4).
+### Hardware prerequisite for closed loop
+  The stock NA MAP sensor cannot cover the required boost range. `patch_boost.py` now copies the
+  A2WC510N calibration `{-414.0, 514.199951}` into 0x72810, but the compatible turbo MAP sensor
+  must be fitted and 0xFFFFABC4 must be checked against a reference gauge before the controller
+  or either MAP limit can be trusted.
 
 ### Implemented controller strategy
   There is one patch and one injected controller. It always installs the feed-forward duty map,
   target map, proportional correction, throttle-demand gate, final-duty clamp, soft duty
-  shutdown, and hard fuel cut. `Kp=0` is only a commissioning calibration; it disables the
-  proportional term without changing patches. Once the boost-capable MAP sensor and scaling are
-  verified, Kp can be introduced gradually in the same ROM definition. The purge path runs in a
-  slow task; a faster task hook remains a possible future controller improvement.
+  shutdown, and hard fuel cut. The generated default is the A2WC510N near-zero proportional
+  slope (`Kp=0.0005 ratio/mmHg`); setting Kp to zero remains the recommended first hardware
+  commissioning step because it disables correction without changing patch code. The purge path
+  runs in a slow task; a faster task hook remains a possible future controller improvement.
 
 ### New RAM/registers found this step (renamed in Ghidra)
-  - map_sensor_process @0x00007A14 ; MAP kPa @0xFFFFABC4 ; MAP raw ADC @0xFFFFAB04.
+  - `map_sensor_voltage_to_pressure_process` @0x00007A14; native mmHg absolute MAP
+    @0xFFFFABC4; MAP raw ADC @0xFFFFAB04.
 
 ================================================================================
 ## PATCH WORKING FILES / DECISIONS
@@ -165,10 +170,12 @@ custom code in free space, driving the repurposed purge PWM output (0xFFFFF590).
 - Because 32BITBASE = WRX STi base, the WRX boost table TEMPLATES + scalings are already in the
   file (categories "Boost Control - Target/Wastegate/Turbo Dynamics/Limits"). Reuse those exact
   scalings when adding the patch overrides (e.g. Target Boost psi expr (x-760)*.01933677).
-- HARDWARE DECISION: fitting an **EJ255 (turbo EJ25) MAP sensor** — the same 2-bar+ Denso sensor
-  the 32-bit WRX/STi ECU uses. => closed-loop WRX-style boost IS the target (not open-loop-only).
-  Action in patch: rescale MAP sensor table **0x72810** to that sensor's curve (copy the WRX MAP
-  scaling), then boost feedback reads **0xFFFFABC4** directly.
+- DONOR/HARDWARE DECISION: A2WC510N, a 2005 USDM Legacy GT MT turbo-EJ25 ROM, supplies Target
+  Boost A/B, Initial/Max WGDC, Turbo Dynamics Proportional, fuel-cut strategy, and MAP scaling.
+  The patch installs its exact MAP conversion at **0x72810** and reduces the full-demand target
+  shape to a 5 psi peak. See [boost_donor_A2WC510N.md](boost_donor_A2WC510N.md). The compatible
+  sensor still must be fitted and validated; copying calibration bytes alone does not identify or
+  prove the installed hardware.
 
 ================================================================================
 ## PATCH STATUS (single proportional + feed-forward controller)
@@ -195,10 +202,12 @@ custom code in free space, driving the repurposed purge PWM output (0xFFFFF590).
 - Free flash VERIFIED CLEAN: 9064 contiguous 0xFF @0x7D790; no code points into it.
 - Layout: base_desc 0x7D790 / rpm_axis 0x7D7A4 / base_data 0x7D7C4 / target_desc 0x7D7CC /
   target_data 0x7D7E0 / Kp 0x7D800 / MaxRatio 0x7D804 / Overboost 0x7D808 / stub 0x7D80C.
-- Kp ships at zero as a commissioning calibration. PREREQUISITE for proportional correction and
-  trustworthy MAP limits: EJ255 MAP sensor + rescale 0x72810. Binary-verified only; not
-  hardware-tested. Future work: integral term (needs verified RAM), 2-axis target, and faster
-  loop rate.
+- Default calibration is donor-derived: 5 psi peak target, base WGDC
+  `{0,0,21,19,18,17,15,14}`, Kp `0.0005 ratio/mmHg`, maximum duty `0.33`, 30.0 native throttle
+  gate, 6 psi duty shutdown, and 7 psi fuel cut (all pressure figures relative to 760 mmHg). The
+  patch also replaces 0x72810 with the donor MAP conversion. These are traceable starting values,
+  not hardware validation; use Kp=0 and zero/low base duty for first commissioning. Future work:
+  integral term (needs verified RAM), 2-axis target, and faster loop rate.
 
 ### Overboost fuel cut
 Two-tier: SOFT (MAP>0x7D808 → duty 0, in the boost stub) + HARD (MAP>0x7D8A8 → fuel cut). Hard cut

@@ -11,15 +11,18 @@ unless marked *(inferred)*. Cross-refs: [D2WD610H_RE_notes.md](D2WD610H_RE_notes
 | **0xFFFFB544** | float | **Engine RPM** | compared vs 4000/3800/512/510; table input; ign+AVLS |
 | 0xFFFFB538 | float | RPM-related raw (checked vs 10000/9000 band) | AVLS state machine |
 | 0xFFFFB46C | float | engine param | AVLS state machine compare |
-| **0xFFFFABC4** | float | **Manifold pressure (MAP), eng. units** | `map_sensor_process` @0x7A14 output |
-| 0xFFFFABC8 | — | MAP filtered/scaled intermediate | `map_sensor_process` |
-| 0xFFFFAB04 | u16 | MAP raw ADC value | `map_sensor_process` input |
+| **0xFFFFABC4** | float | **Manifold pressure (MAP), native mmHg absolute** | `map_sensor_voltage_to_pressure_process` @0x7A14 output; `MAP = voltage × scaling[1] + scaling[0]` |
+| 0xFFFFABC8 | — | MAP filtered/scaled intermediate | `map_sensor_voltage_to_pressure_process` |
+| 0xFFFFAB04 | u16 | MAP raw ADC value | `map_sensor_voltage_to_pressure_process` input |
 | **0xFFFFB3AC** | float | **Coolant temp (ECT), °C** | read by ~100 fns; purge/thermal input |
 | 0xFFFFB3B8 | float | ECT-related threshold (purge enable) | `evap_purge_duty_compute` |
 | **0xFFFFB314** | float | **Processed throttle opening** | produced by `throttle_position_sensor_process` @0x14DCC; input to CL/OL throttle threshold and the boost-control demand gate |
 
-> Boost feedback for the WRX-style loop = **0xFFFFABC4**. Stock MAP sensor is ~1 bar; fitting
-> the EJ255 (turbo) sensor + rescaling table 0x72810 makes this read positive boost.
+> Boost feedback for the WRX-style loop = **0xFFFFABC4**. The patch replaces the stock
+> `{-150.0, 250.0}` calibration at `0x72810` with the A2WC510N EJ255 donor calibration
+> `{-414.0, 514.199951}`. Fit the matching sensor and validate the result against a reference;
+> pressure remains native mmHg absolute in RAM even though the patch definition displays psi
+> relative to its 760 mmHg sea-level reference.
 
 ## Ignition timing (see notes §4)
 | RAM addr | Meaning |

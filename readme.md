@@ -16,7 +16,7 @@ None of the public ECU definitions for the 3.0 H6 have AVLS mapped out. Denso ma
 | 1 | Find AVLS settings and tables, and create definitions. | **DONE** — switchover thresholds + hysteresis + RPM overrides mapped; defs in [defs/D2WD610H_AVLS.xml](defs/D2WD610H_AVLS.xml). See notes §5. Pending RomRaider bench test. |
 | 2 | Replace dual O2 sensor trim logic with a single aftermarket wideband O2 input. | *In progress* — closed/open-loop state flag found (0xFFFFBE38); tracing per-bank enable. |
 | 3 | Repurpose the three other O2 sensor circuits for other hardware. | Planned |
-| 4 | Reuse the EVAP solenoid as an EBCS solenoid + WRX-style boost control. | *In progress* — purge chain fully RE'd; **one proportional + feed-forward patch with throttle gating and two-tier overboost protection is built** ([patch/](patch/)), binary-verified vs Ghidra, and region-audited. Output = ATU-II reg 0xFFFFF590 (sole owner); MAP feedback = 0xFFFFABC4. Kp ships at zero for commissioning. Needs EJ255 sensor + bench validation before boost. See [boost_repurpose_notes.md](docs/boost_repurpose_notes.md), [patch_build_guide.md](docs/patch_build_guide.md). |
+| 4 | Reuse the EVAP solenoid as an EBCS solenoid + WRX-style boost control. | *In progress* — purge chain fully RE'd; **one proportional + feed-forward patch with throttle gating and two-tier overboost protection is built** ([patch/](patch/)), binary-verified vs Ghidra, and region-audited. Output = ATU-II reg 0xFFFFF590 (sole owner); MAP feedback = 0xFFFFABC4. Defaults are reduced from turbo-EJ25 ROM A2WC510N to a 5 psi peak target, including its MAP scaling. Needs the matching sensor and bench validation before boost. See [boost_donor_A2WC510N.md](docs/boost_donor_A2WC510N.md), [boost_repurpose_notes.md](docs/boost_repurpose_notes.md), and [patch_build_guide.md](docs/patch_build_guide.md). |
 | 5 | Potentially change MAF logic to Speed Density. | TBD |
 
 Also solved along the way: the central **table-interpolation** system (descriptor-based) and the
@@ -28,6 +28,7 @@ full **ignition-timing** blend/selection logic. See the notes.
 |---|---|
 | [D2WD610H_RE_notes.md](docs/D2WD610H_RE_notes.md) | **Canonical engineering notes** — ROM identity, memory map, interpolation core, ignition timing, AVLS, RAM anchors, open targets, Ghidra rename log, methods. Read this first. |
 | [boost_repurpose_notes.md](docs/boost_repurpose_notes.md) | EVAP-purge control chain + WRX-style boost-control design + patch plan + files/decisions. |
+| [boost_donor_A2WC510N.md](docs/boost_donor_A2WC510N.md) | Pinned A2WC510N turbo-EJ25 donor, extracted table addresses, MAP calibration, and 5 psi reduction. |
 | [patch_build_guide.md](docs/patch_build_guide.md) | How the single boost patch gets built, calibrated, verified, and flashed. |
 | [solenoid_subsystem.md](docs/solenoid_subsystem.md) | The two PWM output subsystems: crank-synced AVCS/AVLS cam bank vs. the purge PWM (boost target). |
 | [ram_map.md](docs/ram_map.md) | Consolidated confirmed RAM variables (RPM, MAP, ECT, ignition, AVLS, purge, CL/OL, solenoids). |

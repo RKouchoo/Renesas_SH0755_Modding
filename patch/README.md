@@ -3,6 +3,7 @@
 This directory contains the single boost-control patch for repurposing the EVAP purge PWM
 output as an electronic boost-control solenoid driver. Background and commissioning details:
 [boost_repurpose_notes.md](../docs/boost_repurpose_notes.md),
+[boost_donor_A2WC510N.md](../docs/boost_donor_A2WC510N.md),
 [patch_build_guide.md](../docs/patch_build_guide.md), and [audit.md](../audit.md).
 
 ## Stock-ROM rule
@@ -42,9 +43,9 @@ if MAP > SoftOverboost: ratio = 0
 ```
 
 It is stateless proportional + feed-forward control. No safe persistent scratch-RAM word has
-been proven, so an integral term is intentionally omitted. `Kp` ships at `0`; this is a
-commissioning default that leaves the same patch running as feed-forward control until the MAP
-sensor and calibration are proven.
+been proven, so an integral term is intentionally omitted. Defaults are reduced from A2WC510N
+to a 5 psi peak target; `Kp` is `0.0005 ratio/mmHg`. Set Kp to zero for the first hardware
+commissioning pass, then restore/tune it only after MAP and feed-forward duty are proven.
 
 A second hook wraps the stock rev limiter. When MAP exceeds the hard limit, it sets the factory
 fuel-cut flag `0xFFFFBF6C` bit `0x80`, which is consumed by `fuel_cut_flag_aggregate` at `0x23FC0`.
@@ -57,6 +58,7 @@ fuel-cut flag `0xFFFFBF6C` bit `0x80`, which is consumed by `fuel_cut_flag_aggre
 | `sh2_asm.py` | Minimal two-pass SH-2E assembler with a known-encoding self-test. |
 | `sh2_disasm.py` | Minimal SH-2E disassembler used for binary verification. |
 | `verify_regions.py` | Audits free-flash and scratch-RAM assumptions. |
+| `verify_boost_donor.py` | Re-extracts A2WC510N tables and verifies the generated 5 psi defaults and MAP scaling. |
 | `D2WD610H_boost.bin` | Generated boost-control ROM; never use it as patch input or as the Ghidra stock image. |
 
 RomRaider calibration entries are in
@@ -77,12 +79,14 @@ RomRaider calibration entries are in
 | Minimum throttle | `0x7D8A4` |
 | Hard overboost | `0x7D8A8` |
 | Fuel-cut wrapper | `0x7D8AC` |
+| Donor MAP scaling | `0x72810`: `{-414.0, 514.199951}` |
 | Purge output hook | `0x3FD8C` → `0x7D80C` |
 | Rev-limiter hook | `0x11D3C` → `0x7D8AC` |
 
 ## Before flashing
 
-This patch is binary-verified, not vehicle-verified. Fit and calibrate the boost-capable MAP
-sensor, rescale table `0x72810`, verify PWM frequency and output polarity on a bench, prove both
-overboost responses, deal with purge DTCs if required, and produce a valid `subarudbw` checksum.
-Keep wastegate spring pressure as the mechanical fallback during commissioning.
+This patch is binary-verified, not vehicle-verified. It already copies the A2WC510N MAP scaling
+to `0x72810`; fit the compatible sensor and verify logged pressure against a reference. Verify
+PWM frequency and output polarity on a bench, prove both overboost responses, deal with purge
+DTCs if required, and produce a valid `subarudbw` checksum. Keep wastegate spring pressure as
+the mechanical fallback during commissioning.
