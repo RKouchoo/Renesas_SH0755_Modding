@@ -26,6 +26,9 @@ class Asm:
     def mov_reg(self, rm, rn):    return self._w(0x6003 | rn<<8 | rm<<4)   # mov Rm,Rn
     def movl_at(self, rn, rm):    return self._w(0x6002 | rn<<8 | rm<<4)   # mov.l @Rm,Rn
     def movl_store(self, rm, rn): return self._w(0x2002 | rn<<8 | rm<<4)   # mov.l Rm,@Rn
+    def movb_at(self, rn, rm):    return self._w(0x6000 | rn<<8 | rm<<4)   # mov.b @Rm,Rn (sign-ext)
+    def movb_store(self, rm, rn): return self._w(0x2000 | rn<<8 | rm<<4)   # mov.b Rm,@Rn (low byte)
+    def or_imm(self, imm):        return self._w(0xCB00 | (imm & 0xFF))    # or #imm,r0
     def cmp_eq(self, rm, rn):     return self._w(0x3000 | rn<<8 | rm<<4)   # cmp/eq Rm,Rn (T=Rn==Rm)
 
     # --- FP moves ---
@@ -49,6 +52,7 @@ class Asm:
     def ldsl_pr(self):  return self._w(0x4F26)   # lds.l @r15+,pr
     def jsr(self, rn):  return self._w(0x400B | rn<<8)   # jsr @Rn   (delayed)
     def jmp(self, rn):  return self._w(0x402B | rn<<8)   # jmp @Rn   (delayed)
+    def rts(self):      return self._w(0x000B)           # rts       (delayed)
     def nop(self):      return self._w(0x0009)
     def bt(self, label):  self.items.append(('br','bt',label));  return self   # non-delayed
     def bf(self, label):  self.items.append(('br','bf',label));  return self   # non-delayed

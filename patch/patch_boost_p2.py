@@ -41,6 +41,10 @@ STOCK_OUTPUT   = 0x0000E8C4     # evap_purge_pwm_output_write (fr4 = ratio)
 INTERP_2D      = 0x0000209C     # table2d_lookup_dispatch(r4=desc, fr4=in) -> fr0
 RPM_ADDR       = 0xFFFFB544     # engine RPM (float)          [read only]
 MAP_ADDR       = 0xFFFFABC4     # manifold pressure (float)   [read only]
+# overboost fuel-cut (reuses the rev limiter's fuel-cut path, verified):
+REVLIMITER     = 0x00024B24     # rev limiter (sets fuel-cut flag 0xFFFFBF6C bit0x80 by RPM)
+REVLIM_FNPTR   = 0x00011D3C     # periodic-dispatcher fn-ptr slot -> rev limiter (we repoint it)
+FUELCUT_FLAG   = 0xFFFFBF6C     # fuel-cut status byte; bit0x80 feeds the fuel-cut aggregator (0x23FC0)
 
 # --- free-space layout (all 0xFF-verified free; < 0x7FAF7) ---
 BASE_DESC   = 0x7D790   # 1-axis desc: RPM -> base duty ratio (u8 % * 0.01)
@@ -52,6 +56,8 @@ KP_ADDR     = 0x7D800   # float32
 MAXR_ADDR   = 0x7D804   # float32
 OVERB_ADDR  = 0x7D808   # float32
 STUB_ADDR   = 0x7D80C   # controller (4-aligned)
+OVERB_FC_ADDR = 0x7D888 # float32: overboost FUEL-CUT MAP limit
+REVWRAP_ADDR  = 0x7D88C # rev-limiter wrapper (adds overboost fuel cut; 4-aligned)
 FREE_START, FREE_END = 0x7D790, 0x7FAF7
 
 # ---------------- tunables (edit here or in RomRaider) ----------------
@@ -60,7 +66,8 @@ BASE_DUTY   = [   0,     0,     12,     22,     28,     30,     28,     22 ]   #
 TARGET_MAP  = [ 100.0, 105.0, 140.0, 165.0, 175.0, 175.0, 170.0, 160.0 ]      # MAP units (match sensor!)
 KP          = 0.0      # ratio per MAP-unit  (0 = feed-forward only; raise to commission)
 MAXRATIO    = 0.85     # max commanded duty ratio
-OVERBOOST   = 250.0    # MAP units -> ratio forced to 0 (calibrate to your sensor!)
+OVERBOOST   = 250.0    # MAP units -> wastegate duty forced to 0 (soft, actuator-level)
+OVERBOOST_FUELCUT = 270.0  # MAP units -> HARD fuel cut (set ABOVE OVERBOOST; last-resort)
 DUTY_SCALE  = 0.01     # base-map u8 % -> ratio
 
 assert len(RPM_BREAKS) == len(BASE_DUTY) == len(TARGET_MAP) == 8
@@ -103,6 +110,22 @@ def build_stub():
     a.movl_pool(2, STOCK_OUTPUT); a.jmp(2); a.nop()                # tail-call output stage
     return a.assemble()
 
+def build_fuelcut_wrapper():
+    """Rev-limiter wrapper: run the stock rev limiter, then set the fuel-cut flag on overboost.
+       Entered void (PR = dispatcher). Runs in the rev-limiter's task slot, so the fuel-cut
+       aggregator (0x23FC0) picks up the flag the same/next cycle. No RAM state."""
+    a = Asm(REVWRAP_ADDR)
+    a.stsl_pr()                                                    # save dispatcher PR
+    a.movl_pool(2, REVLIMITER); a.jsr(2); a.nop()                  # call stock rev limiter
+    a.movl_pool(1, MAP_ADDR); a.fmov_load(2, 1)                    # fr2 = MAP
+    a.movl_pool(1, OVERB_FC_ADDR); a.fmov_load(3, 1)               # fr3 = fuel-cut limit
+    a.fcmpgt(3, 2); a.bf('skip')                                   # if MAP > limit:
+    a.movl_pool(1, FUELCUT_FLAG)                                   #   flag |= 0x80  (force fuel cut)
+    a.movb_at(0, 1); a.or_imm(0x80); a.movb_store(0, 1)
+    a.label('skip')
+    a.ldsl_pr(); a.rts(); a.nop()                                  # return to dispatcher
+    return a.assemble()
+
 # ---------------- apply ----------------
 def main():
     with open(STOCK, "rb") as f:
@@ -119,31 +142,41 @@ def main():
         ("target_data", TARGET_DATA, b"".join(f32(x) for x in TARGET_MAP)),
         ("gains",       KP_ADDR,     f32(KP)+f32(MAXRATIO)+f32(OVERBOOST)),
         ("stub",        STUB_ADDR,   build_stub()),
+        ("overb_fc",    OVERB_FC_ADDR, f32(OVERBOOST_FUELCUT)),
+        ("fuelcut_wrap",REVWRAP_ADDR,  build_fuelcut_wrapper()),
     ]
     for name, addr, data in blobs:
         assert FREE_START <= addr and addr + len(data) - 1 <= FREE_END, "%s overflows free space" % name
         if any(b != 0xFF for b in rom[addr:addr+len(data)]):
             raise SystemExit("REFUSING: %s @0x%X..0x%X not 0xFF-free" % (name, addr, addr+len(data)-1))
+    # two hijacks: output tail-call (boost) + rev-limiter fn-ptr (overboost fuel cut)
     cur = struct.unpack_from(">I", rom, HIJACK_LITERAL)[0]
     if cur != STOCK_OUTPUT:
-        raise SystemExit("REFUSING: hijack literal @0x%X = 0x%08X (expected 0x%08X)" % (HIJACK_LITERAL, cur, STOCK_OUTPUT))
+        raise SystemExit("REFUSING: output hijack @0x%X = 0x%08X (expected 0x%08X)" % (HIJACK_LITERAL, cur, STOCK_OUTPUT))
+    cur2 = struct.unpack_from(">I", rom, REVLIM_FNPTR)[0]
+    if cur2 != REVLIMITER:
+        raise SystemExit("REFUSING: rev-limiter fn-ptr @0x%X = 0x%08X (expected 0x%08X)" % (REVLIM_FNPTR, cur2, REVLIMITER))
 
     for name, addr, data in blobs:
         rom[addr:addr+len(data)] = data
     rom[HIJACK_LITERAL:HIJACK_LITERAL+4] = be32(STUB_ADDR)
+    rom[REVLIM_FNPTR:REVLIM_FNPTR+4]     = be32(REVWRAP_ADDR)
 
     with open(OUT, "wb") as f:
         f.write(rom)
 
-    print("Phase 2 (P + feed-forward) boost patch written: %s" % OUT)
-    print("  hijack @0x%05X : 0x%08X -> 0x%08X" % (HIJACK_LITERAL, STOCK_OUTPUT, STUB_ADDR))
+    print("Phase 2 (P + feed-forward + overboost fuel cut) boost patch written: %s" % OUT)
+    print("  output hijack   @0x%05X : 0x%08X -> 0x%08X" % (HIJACK_LITERAL, STOCK_OUTPUT, STUB_ADDR))
+    print("  revlimiter hook @0x%05X : 0x%08X -> 0x%08X" % (REVLIM_FNPTR, REVLIMITER, REVWRAP_ADDR))
     for name, addr, data in blobs:
         print("  %-11s @0x%05X : %d bytes" % (name, addr, len(data)))
     print("  RPM    : %s" % RPM_BREAKS)
     print("  base %% : %s" % BASE_DUTY)
     print("  target : %s (MAP units)" % TARGET_MAP)
-    print("  Kp=%g MaxRatio=%g Overboost=%g  (stateless; no RAM scratch)" % (KP, MAXRATIO, OVERBOOST))
-    print("\n*** Fit EJ255 MAP sensor + rescale 0x72810 BEFORE raising Kp. ***")
+    print("  Kp=%g MaxRatio=%g Overboost(duty)=%g Overboost(fuelcut)=%g  (stateless)"
+          % (KP, MAXRATIO, OVERBOOST, OVERBOOST_FUELCUT))
+    print("  fuel cut reuses rev-limiter path: sets 0xFFFFBF6C bit0x80 (via 0x23FC0 aggregator)")
+    print("\n*** Fit EJ255 MAP sensor + rescale 0x72810 BEFORE raising Kp / trusting overboost. ***")
     print("Flash via EcuFlash/RomRaider (recomputes subarudbw checksum on save).")
 
 if __name__ == "__main__":

@@ -6284,9 +6284,13 @@
    <scaling units="ratio (1.0 = 100%)" expression="x" to_byte="x" format="0.00" fineincrement="0.01" coarseincrement="0.05" />
    <description>Upper clamp on final commanded duty ratio. Default 0.85.</description>
   </table>
-  <table type="1D" name="Boost Overboost Cut (MAP)" category="Boost Control (patch)" storagetype="float" endian="big" sizey="1" userlevel="1" storageaddress="0x7D808">
+  <table type="1D" name="Boost Overboost Cut (Duty, soft)" category="Boost Control (patch)" storagetype="float" endian="big" sizey="1" userlevel="1" storageaddress="0x7D808">
    <scaling units="MAP (match sensor units)" expression="x" to_byte="x" format="0.0" fineincrement="1" coarseincrement="5" />
-   <description>If MAP (0xFFFFABC4) exceeds this, the wastegate duty is forced to 0 (actuator-level fail-safe). Calibrate to your sensor units once rescaled. NOTE: this only reduces boost via the wastegate — add a proper fuel/ignition overboost cut for a hard limit.</description>
+   <description>SOFT overboost limit: if MAP (0xFFFFABC4) exceeds this, wastegate duty is forced to 0 (actuator-level). First line of defence. Set BELOW the hard fuel-cut limit.</description>
+  </table>
+  <table type="1D" name="Boost Overboost Fuel Cut (hard)" category="Boost Control (patch)" storagetype="float" endian="big" sizey="1" userlevel="1" storageaddress="0x7D888">
+   <scaling units="MAP (match sensor units)" expression="x" to_byte="x" format="0.0" fineincrement="1" coarseincrement="5" />
+   <description>HARD overboost limit: if MAP (0xFFFFABC4) exceeds this, a FUEL CUT is triggered by reusing the rev-limiter path (a wrapper @0x7D88C, hooked at the rev-limiter fn-ptr 0x11D3C, sets fuel-cut flag 0xFFFFBF6C bit0x80). Set ABOVE the soft duty limit — last-resort engine protection. Calibrate to your sensor units. No hysteresis: cuts/resumes right at the threshold.</description>
   </table>
  </rom>
 </roms>

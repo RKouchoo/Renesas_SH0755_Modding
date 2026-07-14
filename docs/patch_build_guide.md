@@ -78,9 +78,17 @@ if MAP > Overboost: ratio = 0                 # actuator fail-safe
   `defs/D2WD610H_boost_patch.xml` (category "Boost Control (patch)").
 - Ownership verified: 0xE8C4 has ONE caller (the hijacked tail-call); 0xFFFFF590 is otherwise
   written only by init — the stub is the sole runtime driver of the solenoid.
-- **Still to add**: overboost FUEL/ignition cut (Phase 2's cut is actuator-level only); the
-  integral term once a scratch RAM word is rigorously verified (or purge RAM reclaimed by NOP-ing
-  the stock writes); 2-axis target (RPM×load); ~10 ms loop-rate upgrade.
+- **Overboost fuel cut — DONE (also in `patch_boost_p2.py`).** Two-tier protection:
+  *soft* (MAP > 0x7D808 → wastegate duty 0, actuator-level, in the boost stub) and *hard*
+  (MAP > 0x7D888 → real FUEL CUT). The hard cut REUSES the factory rev-limiter fuel-cut path: a
+  wrapper @0x7D88C is hooked at the rev-limiter fn-ptr **0x11D3C** (dispatcher `FUN_00011AD0`);
+  it calls the stock rev limiter (`rev_limiter_fuel_cut` @0x24B24) then sets the fuel-cut flag
+  **0xFFFFBF6C bit0x80** on overboost. That flag feeds `fuel_cut_flag_aggregate` @0x23FC0 →
+  master fuel cut → injectors off. Stateless, no RAM scratch. (No hysteresis on the hard cut;
+  the soft duty limit is the primary control, hard cut is last-resort.)
+- **Still to add**: the integral term once a scratch RAM word is rigorously verified (or purge
+  RAM reclaimed by NOP-ing the stock writes); 2-axis target (RPM×load); ~10 ms loop-rate upgrade;
+  optional ignition cut in addition to fuel cut.
 - Build helpers: `patch/sh2_asm.py` (assembler, self-validates vs the Phase-1 stub),
   `patch/verify_regions.py` (region audit).
 

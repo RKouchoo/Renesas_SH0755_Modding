@@ -208,3 +208,11 @@ custom code in free space, driving the repurposed purge PWM output (0xFFFFF590).
 - Ships Kp=0 (feed-forward) for a safe first flash. PREREQUISITE for closed loop: EJ255 MAP sensor
   + rescale 0x72810. Binary-verified only; not hardware-tested. TODO: hard fuel/ignition overboost
   cut, integral term (needs verified RAM), 2-axis target, faster loop rate.
+
+### Overboost fuel cut (added to Phase 2)
+Two-tier: SOFT (MAP>0x7D808 → duty 0, in the boost stub) + HARD (MAP>0x7D888 → fuel cut). Hard cut
+reuses the factory rev-limiter path — wrapper @0x7D88C hooked at rev-limiter fn-ptr 0x11D3C
+(`FUN_00011AD0` dispatcher) calls `rev_limiter_fuel_cut` @0x24B24 then sets fuel-cut flag
+0xFFFFBF6C bit0x80 on overboost; `fuel_cut_flag_aggregate` @0x23FC0 propagates → injectors off.
+Rev limits: A 0x7644C (resume 0x76450) / B 0x76454 (resume 0x76458). Stateless. Second hijack
+(0x11D3C) added alongside the output hijack (0x3FD8C); both guarded in the patcher.
