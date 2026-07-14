@@ -222,6 +222,12 @@ _(underscore names only — strict naming enforcement is ON)_
 - 0x0003F9E4 → **evap_purge_state_update** (purge enable/status byte 0xFFFFCD81)
 - 0x0000E8C4 → **evap_purge_pwm_output_write** (duty ratio → ATU-II reg 0xFFFFF590; period 0xFFFFAB84)
 - 0x00046748 → **evap_purge_flow_diagnostic** (rationality/circuit monitor → P0458/P0459)
+- 0x000114B0 → **slow_task_dispatcher** (~50 fn-ptr sequential caller, slow loop)
+- 0x0003F878 → **radiator_fan_mode_select** (fan mode 0-3 from ECT hysteresis; relay stages, not PWM)
+- 0x000263EE → **solenoid_phase_scheduler** (crank-angle 30°×24 scheduler for cam solenoid bank)
+- 0x00026320 → **solenoid_control_array_init** (inits 6 solenoid structs @0xFFFFBFB8 stride 0x28)
+- 0x0001C5D4 → **solenoid_inhibit_word_build** (builds inhibit word 0xFFFFB744 from per-ch faults)
+- 0x00024570 → **solenoid_circuit_diagnostic** (sets circuit-fault byte 0xFFFFBF21)
 
 Decompiler comments set at: 0x209C, 0x2150, 0x28418, 0x284B8, 0x40168, 0x405CC, 0x281FC.
 
