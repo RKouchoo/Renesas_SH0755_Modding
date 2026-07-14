@@ -46,6 +46,28 @@ CASES = [
         },
     },
     {
+        "definition": ROOT / "defs/D2WD610H_AVLS_rotational_idle_patch.xml",
+        "image": ROOT / "patch/D2WD610H_rotational_idle.bin",
+        "xmlid": "D2WD610H_AVLS_ROTATIONAL_IDLE_PATCH",
+        "switch": "Rotational Idle Patch Enable",
+        "address": 0x7DB40,
+        "default": 0x00,
+        "alternate": 0x01,
+        "tables": {
+            "Rotational Idle Minimum Coolant Temperature": 0x7DB44,
+            "Rotational Idle Maximum Coolant Temperature": 0x7DB48,
+            "Rotational Idle Minimum Engine Speed": 0x7DB4C,
+            "Rotational Idle Maximum Engine Speed": 0x7DB50,
+            "Rotational Idle Maximum Throttle": 0x7DB54,
+            "Rotational Idle Maximum Vehicle Speed": 0x7DB58,
+            "Rotational Idle Minimum Manifold Pressure": 0x7DB5C,
+            "Rotational Idle Maximum Manifold Pressure": 0x7DB60,
+            "Rotational Idle Maximum Retard": 0x7DB64,
+            "Rotational Idle Minimum Final Timing": 0x7DB68,
+            "Rotational Idle Cylinder Timing Offsets": 0x7DB6C,
+        },
+    },
+    {
         "definition": ROOT / "defs/D2WD610H_AVLS_boost_single_front_af_patch.xml",
         "image": ROOT / "patch/D2WD610H_boost_single_front_af.bin",
         "xmlid": "D2WD610H_AVLS_BOOST_SINGLE_FRONT_AF_PATCH",
@@ -118,19 +140,22 @@ def main():
                                  % (case["definition"].name, name, expected_address))
 
         image = case["image"].read_bytes()
-        if len(image) != 0x80000 or image[address] != 0x01:
-            raise SystemExit("FAIL: %s is not a 512-KiB generated-ON image"
-                             % case["image"].name)
-        off = bytearray(image)
-        off[address] = 0x00
-        changed = [index for index, pair in enumerate(zip(image, off)) if pair[0] != pair[1]]
+        default = case.get("default", 0x01)
+        alternate = case.get("alternate", 0x00)
+        if len(image) != 0x80000 or image[address] != default:
+            raise SystemExit("FAIL: %s is not a 512-KiB generated-%02X image"
+                             % (case["image"].name, default))
+        edited = bytearray(image)
+        edited[address] = alternate
+        changed = [index for index, pair in enumerate(zip(image, edited)) if pair[0] != pair[1]]
         if changed != [address]:
-            raise SystemExit("FAIL: simulated OFF edit was not isolated to the enable byte")
+            raise SystemExit("FAIL: simulated toggle edit was not isolated to the enable byte")
 
-        print("PASS: %-48s %s @0x%05X (ON=01/OFF=00)"
-              % (case["definition"].name, case["switch"], address))
+        print("PASS: %-48s %s @0x%05X (default=%02X, alternate=%02X)"
+              % (case["definition"].name, case["switch"], address,
+                 default, alternate))
 
-    print("RomRaider toggle audit PASS: XML, target IDs, table addresses, defaults, and isolated OFF edits")
+    print("RomRaider toggle audit PASS: XML, target IDs, table addresses, defaults, and isolated toggle edits")
 
 
 if __name__ == "__main__":

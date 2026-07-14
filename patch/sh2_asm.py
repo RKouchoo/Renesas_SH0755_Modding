@@ -1,8 +1,9 @@
 #!/usr/bin/env python3
 """Minimal two-pass SH-2E (SH7055) big-endian assembler for D2WD610H patch stubs.
 
-Supports the instruction subset the boost and single-front-A/F stubs need, plus labels (for
-branches) and an auto-placed, deduped 32-bit literal pool (for mov.l @(disp,pc),Rn loads).
+Supports the instruction subset the boost, single-front-A/F, and rotational-idle stubs need,
+plus labels (for branches) and an auto-placed, deduped 32-bit literal pool (for
+mov.l @(disp,pc),Rn loads).
 
 Delay slots are NOT auto-filled: jsr/jmp/bra are delayed — put the delay-slot instruction
 (usually nop()) immediately after. bt/bf are NON-delayed (no delay slot).
@@ -36,6 +37,8 @@ class Asm:
     def tst_reg(self, rm, rn):    return self._w(0x2008 | rn<<8 | rm<<4)   # tst Rm,Rn
     def cmp_eq_imm(self, imm):    return self._w(0x8800 | (imm & 0xFF))    # cmp/eq #imm,r0
     def cmp_eq(self, rm, rn):     return self._w(0x3000 | rn<<8 | rm<<4)   # cmp/eq Rm,Rn (T=Rn==Rm)
+    def add_imm(self, imm, rn):   return self._w(0x7000 | rn<<8 | (imm & 0xFF)) # add #imm,Rn
+    def dt(self, rn):             return self._w(0x4010 | rn<<8)            # Rn--; T=(Rn==0)
 
     # --- FP moves ---
     def fmov_load(self, frn, rn):  return self._w(0xF008 | frn<<8 | rn<<4) # fmov.s @Rn,FRn
@@ -46,11 +49,12 @@ class Asm:
     def fldi0(self, frn):          return self._w(0xF08D | frn<<8)         # fldi0 FRn
     def fneg(self, frn):           return self._w(0xF04D | frn<<8)         # fneg FRn
 
-    # --- FP arith / compare (T = FRn > FRm for fcmpgt) ---
+    # --- FP arith / compare ---
     def fadd(self, frm, frn):  return self._w(0xF000 | frn<<8 | frm<<4)
     def fsub(self, frm, frn):  return self._w(0xF001 | frn<<8 | frm<<4)
     def fmul(self, frm, frn):  return self._w(0xF002 | frn<<8 | frm<<4)
     def fdiv(self, frm, frn):  return self._w(0xF003 | frn<<8 | frm<<4)
+    def fcmpeq(self, frm, frn):return self._w(0xF004 | frn<<8 | frm<<4)    # T = FRn == FRm
     def fcmpgt(self, frm, frn):return self._w(0xF005 | frn<<8 | frm<<4)    # T = FRn > FRm
 
     # --- control flow ---
@@ -141,6 +145,20 @@ def _selftest_known_encoding():
     want4 = bytes.fromhex("e002c9012008c80188010009")
     assert got4 == want4, "integer-op SELFTEST FAIL: got=%s want=%s" % (got4.hex(), want4.hex())
     print("sh2_asm integer-op encoding selftest OK")
+
+    e = Asm(0)
+    e.add_imm(4, 3).dt(2)
+    got5 = e.assemble()
+    want5 = bytes.fromhex("73044210")
+    assert got5 == want5, "loop-op SELFTEST FAIL: got=%s want=%s" % (got5.hex(), want5.hex())
+    print("sh2_asm loop-op encoding selftest OK")
+
+    f = Asm(0)
+    f.fcmpeq(3, 3)
+    got6 = f.assemble()
+    want6 = bytes.fromhex("f3340009")
+    assert got6 == want6, "FP-equality SELFTEST FAIL: got=%s want=%s" % (got6.hex(), want6.hex())
+    print("sh2_asm FP-equality encoding selftest OK")
 
 if __name__ == "__main__":
     _selftest_known_encoding()

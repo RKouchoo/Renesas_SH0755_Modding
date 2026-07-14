@@ -81,6 +81,10 @@ Verified: Base Timing A data 0x78AA0 → slot 0x60114 → desc 0x60108 → consu
 | 0x000284B8 | `ign_base_timing_select` |
 | 0x00028354 | `ign_blend_factor_from_advance_multiplier` |
 | 0x000281FC | `ign_map_switch_flag_debounce` |
+| 0x00027DE8 | `ign_idle_timing_blend_factor_update` |
+| 0x00027F3E | `ign_idle_timing_target_update` |
+| 0x00028166 | `ign_base_and_idle_timing_update` |
+| 0x000279CC | `ign_final_timing_per_cylinder_update` |
 
 - Six 3D maps via consecutive descriptors (stride 0x1C): **A**=0x60108, **B**=0x60124,
   **C**=0x60140, **D**=0x6015C, **E**=0x60178, **F**=0x60194. All u8,
@@ -99,6 +103,26 @@ Verified: Base Timing A data 0x78AA0 → slot 0x60114 → desc 0x60108 → consu
   - Final (after extra 1-axis lookup, desc 0x5FC18) → 0xFFFFC150 and 0xFFFFC188.
 - Flag debounce (`0x281FC`): bit 0x40 set after mode==3 held for a delay from 2D u16 table
   desc **0x5FFF8**; cleared on 3→1. Bit 0x80 via counter vs ROM u16 @0x77D34.
+- The idle path was traced through `ign_idle_timing_blend_factor_update`,
+  `ign_idle_timing_target_update`, and `ign_base_and_idle_timing_update`. The idle target checks
+  vehicle-speed float **0xFFFFB538** against the `Base Timing Idle Vehicle Speed Threshold` at
+  **0x77E1C** (stock 4.0 km/h), confirming the RAM signal's meaning.
+- `ign_final_timing_per_cylinder_update` adds a common timing sum to six per-cylinder correction
+  floats at **0xFFFFCCC8..0xFFFFCCDC**, then applies the stock clamps and publishes six final
+  angles at **0xFFFFC0EC..0xFFFFC100**. Periodic task-pointer slot **0x11E30** points to this
+  function in stock.
+- The six final values feed `ign_timing_cylinder_minimum_check_update` (`0x28C38`),
+  `ign_cylinder_timing_to_schedule_count` (`0x2A2BC`),
+  `ign_current_cylinder_timing_select_update` (`0x3E45C`), and
+  `ign_timing_logger_convert` (`0x4F1C4`). The normal ignition-timing logger reads the first
+  output at `0xFFFFC0EC`.
+- The correction-array state path is
+  `ign_per_cylinder_correction_enable_latch_update` (`0x3D7E4`),
+  `ign_per_cylinder_correction_array_update` (`0x3D824`),
+  `ign_per_cylinder_correction_state_clear` (`0x3D8E2`),
+  `ign_per_cylinder_correction_state_any_active` (`0x3D916`),
+  `ign_per_cylinder_correction_initialize` (`0x3D95A`), and
+  `ign_per_cylinder_correction_array_clear` (`0x3D980`).
 
 ## 5. AVLS (variable lift) — SOLVED except final port write
 
@@ -148,12 +172,14 @@ Definition layout:
   canonical boost-patch tables and its one-byte runtime enable.
 - `defs/D2WD610H_AVLS_single_front_af_patch.xml` contains D2WD610H + AVLS plus the one-byte
   front-mirror/rear-delete runtime enable; existing DTC switches cover all 13 removed-sensor edits.
+- `defs/D2WD610H_AVLS_rotational_idle_patch.xml` contains D2WD610H + AVLS plus only the separate
+  rotational-idle switch, operating gates, safety limits, and six timing offsets.
 - `defs/D2WD610H_AVLS_boost_single_front_af_patch.xml` is the combined-image variant containing
   the canonical boost tables plus both unchanged runtime-enable switches.
 - `defs/romraider_ecu_defs.xml` is a clean upstream metric RomRaider snapshot and is not modified
   with project tables.
 
-All four custom RomRaider ROM files are self-contained. Their embedded metric `32BITBASE` is pruned
+All five custom RomRaider ROM files are self-contained. Their embedded metric `32BITBASE` is pruned
 to the 206 templates referenced by the 206 standard D2WD610H address overrides; the additions
 are seven AVLS tables and, in the patch variants, only the matching patch tables/switches. Load
 only the custom ROM variant matching the image being edited. Stock AVLS values were verified
@@ -169,13 +195,15 @@ data registers (datasheet) instead of descending the call tree.
 | RAM addr | Meaning | Evidence |
 |---|---|---|
 | **0xFFFFB544** | Engine RPM (float) | compared vs 4000/3800/512/510 rpm consts; input to switch tables; used across ign+AVLS |
-| 0xFFFFB538 | engine param (float, checked vs 10000/9000 band) — likely RPM-related raw | AVLS state machine |
+| **0xFFFFB538** | Vehicle speed (float, km/h) | `ign_idle_timing_target_update` compares it with stock 4.0-km/h idle-timing threshold @0x77E1C; also consumed by AVLS logic |
 | **0xFFFFB46C** | Normal AVLS switchover load signal (float; snapshot of filtered 0xFFFFB4C8) | compared against state-selected curves in 0x40168 |
 | 0xFFFFCF94 | AVLS fallback load value | compared only against fixed 15.0 fallback threshold in 0x40168 |
 | 0xFFFFC17C | Ignition blend factor k (float 0..1) | written 0x28354 |
 | 0xFFFFC974/0xFFFFC978 | Advance-multiplier terms summed into k | 0x28354 |
 | 0xFFFFC184 | Selected base timing (deg, float) | 0x284B8 |
 | 0xFFFFC150 / 0xFFFFC188 | Final base timing after extra lookup | 0x284B8 |
+| 0xFFFFCCC8..0xFFFFCCDC | Six per-cylinder ignition correction floats | written/cleared by 0x3D824/0x3D980; consumed by 0x279CC |
+| 0xFFFFC0EC..0xFFFFC100 | Six final per-cylinder ignition angles | produced by 0x279CC; consumed by scheduling/current-cylinder/logger paths |
 | 0xFFFFCD86/87 | AVLS cam mode committed/target (1 low, 3 high) | 0x40168/0x405B2 |
 | 0xFFFFB528 | Phase/crank counter used to sync OSV actuation | 0x405CC |
 
@@ -214,6 +242,11 @@ data registers (datasheet) instead of descending the call tree.
       guarded components to one fresh stock copy; `verify_combined.py` proves the 811 changed bytes
       are the exact 369 + 442 union with zero overlap. Hardware use remains gated on both standalone
       commissioning plans.
+- [x] **Rotational-idle standalone component built.** `patch_rotational_idle.py` wraps the complete
+      stock task at 0x279CC through task-pointer slot 0x11E30, defaults OFF, and applies bounded
+      retard-only six-cylinder offsets only inside the calibrated warm/stationary idle window.
+      `verify_rotational_idle.py` proves exact binary ownership and future three-component
+      compatibility in memory. It is not yet installed in the combined patch or base turbo map.
 - [ ] Airflow model (speed density — capstone)
 - [ ] Define 0x25F8/0x2628/0x2654 as functions in Ghidra and rename (interp_2axis_float32/s8/s16)
 - [ ] Identify status fns feeding ign_base_timing_select (0x27088, 0x6504C) and the B/E map condition (cruise?)
@@ -237,6 +270,21 @@ _(underscore names only — strict naming enforcement is ON)_
 - 0x000284B8 → **ign_base_timing_select**
 - 0x00028354 → **ign_blend_factor_from_advance_multiplier**
 - 0x000281FC → **ign_map_switch_flag_debounce**
+- 0x00027DE8 → **ign_idle_timing_blend_factor_update**
+- 0x00027F3E → **ign_idle_timing_target_update**
+- 0x00028166 → **ign_base_and_idle_timing_update**
+- 0x000279CC → **ign_final_timing_per_cylinder_update**
+- 0x0003D7E4 → **ign_per_cylinder_correction_enable_latch_update**
+- 0x0003D824 → **ign_per_cylinder_correction_array_update**
+- 0x0003D8E2 → **ign_per_cylinder_correction_state_clear**
+- 0x0003D916 → **ign_per_cylinder_correction_state_any_active**
+- 0x0003D95A → **ign_per_cylinder_correction_initialize**
+- 0x0003D980 → **ign_per_cylinder_correction_array_clear**
+- 0x00028C38 → **ign_timing_cylinder_minimum_check_update**
+- 0x0002A2BC → **ign_cylinder_timing_to_schedule_count**
+- 0x0003E45C → **ign_current_cylinder_timing_select_update**
+- 0x0004F1C4 → **ign_timing_logger_convert**
+- 0x000482DC → **runtime_signal_fixedpoint_export_update**
 - 0x00040168 → **avls_cam_mode_state_machine**
 - 0x000405B2 → **avls_mode_commit_copy**
 - 0x000405CC → **avls_osv_actuation_gate**
@@ -295,6 +343,8 @@ _(underscore names only — strict naming enforcement is ON)_
 - 0x000697B4 → **rear_o2_sensor_voltage_high_diagnostic_pair**
 
 Decompiler comments set at: 0x209C, 0x2150, 0x28418, 0x284B8, 0x40168, 0x405CC, 0x281FC,
+0x27DE8, 0x27F3E, 0x28166, 0x279CC, 0x3D7E4, 0x3D824, 0x3D8E2, 0x3D916, 0x3D95A,
+0x3D980, 0x28C38, 0x2A2BC, 0x3E45C, 0x4F1C4, 0x482DC,
 0xB690, 0xE0D0, 0xB8CC, 0x64FD0, 0x6500C, 0x18DAC, 0x1917A, 0xDFB4, 0x33B12,
 0x33AAC, 0x33964, 0x33970, 0x34BE4, and 0x69568.
 
@@ -329,3 +379,10 @@ Decompiler comments set at: 0x209C, 0x2150, 0x28418, 0x284B8, 0x40168, 0x405CC, 
   the relevant decompiler comments were updated. The patch now hooks `0xE0D0`, redirects task
   pointers `0x11488/0x1148C/0x11490/0x11494/0x114A0` through exact-`01` no-op selectors, and disables
   P0037/P0038/P0057/P0058/P0137/P0138/P0157/P0158. The heater drivers themselves remain stock.
+- 2026-07-15: final ignition path traced for the standalone rotational-idle experiment. The stock
+  periodic pointer at `0x11E30` calls `ign_final_timing_per_cylinder_update` (`0x279CC`), which
+  combines six corrections at `0xFFFFCCC8..CCDC` with the common timing result and writes six
+  final angles at `0xFFFFC0EC..C100`. Producers and downstream scheduling/logger consumers were
+  all renamed with underscore names. The separate default-OFF wrapper now runs the stock task
+  first and applies only gated, bounded, retard-only post-processing; compatibility with the two
+  existing components is verified in memory, but no combined artifact was changed.

@@ -9,7 +9,7 @@ unless marked *(inferred)*. Cross-refs: [D2WD610H_RE_notes.md](D2WD610H_RE_notes
 | RAM addr | Type | Meaning | Evidence |
 |---|---|---|---|
 | **0xFFFFB544** | float | **Engine RPM** | compared vs 4000/3800/512/510; table input; ign+AVLS |
-| 0xFFFFB538 | float | RPM-related raw (checked vs 10000/9000 band) | AVLS state machine |
+| **0xFFFFB538** | float | **Vehicle speed, km/h** | `ign_idle_timing_target_update` compares it with the stock 4.0-km/h threshold at 0x77E1C; also consumed by AVLS logic |
 | 0xFFFFB46C | float | engine param | AVLS state machine compare |
 | **0xFFFFABC4** | float | **Manifold pressure (MAP), native mmHg absolute** | `map_sensor_voltage_to_pressure_process` @0x7A14 output; `MAP = voltage × scaling[1] + scaling[0]` |
 | 0xFFFFABC8 | — | MAP filtered/scaled intermediate | `map_sensor_voltage_to_pressure_process` |
@@ -34,6 +34,12 @@ unless marked *(inferred)*. Cross-refs: [D2WD610H_RE_notes.md](D2WD610H_RE_notes
 | 0xFFFFC180 | Timing-map select bits (0x80, 0x40) |
 | 0xFFFFC184 | Selected base timing (deg) |
 | 0xFFFFC150 / C188 | Final base timing after extra lookup |
+| 0xFFFFCCC8–CCDC | Six per-cylinder correction floats; updated/cleared by the `ign_per_cylinder_correction_*` state path |
+| **0xFFFFC0EC–C100** | **Six final per-cylinder ignition angles** produced by `ign_final_timing_per_cylinder_update`; consumed by minimum-check, schedule-count, current-cylinder, and logger paths |
+
+The standalone rotational-idle component runs the stock final-timing task first and then, only
+inside its calibrated idle window, post-processes the six `0xFFFFC0EC–C100` values in place. It
+allocates no RAM and does not alter the stock correction array.
 
 ## AVLS (variable lift) (see notes §5)
 | RAM addr | Meaning |

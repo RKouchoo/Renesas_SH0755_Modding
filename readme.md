@@ -18,6 +18,7 @@ None of the public ECU definitions for the 3.0 H6 have AVLS mapped out. Denso ma
 | 3 | Repurpose unused O2 sensor circuits for other hardware. | *Planned* — the three removed sensor circuits are not reassigned; the rear heater drivers are not electrically tri-stated by the current patch. |
 | 4 | Reuse the EVAP solenoid as an EBCS solenoid + WRX-style boost control. | *In progress* — purge chain fully RE'd; **one proportional + feed-forward patch with throttle gating, two-tier overboost protection, and a RomRaider runtime-enable switch is built** ([patch/](patch/)), binary-verified vs Ghidra, and region-audited. `OFF` commands zero EBCS duty and uses only the stock rev limiter. Output = ATU-II reg 0xFFFFF590 (sole owner); MAP feedback = 0xFFFFABC4. Defaults are reduced from turbo-EJ25 ROM A2WC510N to a 5 psi peak target, including its MAP scaling. Standalone and combined stock-to-ROM builders are available. A separate [5 psi / 98 RON base-turbo calibration](base_turbo_map/README.md) now reconstructs the combined image from stock, uses an A4TE002B factory STI-pink injector calibration, moves AVLS earlier, expands fuel/timing/KCA load axes to 3.0 g/rev, holds the 5 psi target to the requested 6800 RPM maximum, commands zero EBCS duty for the spring, and applies conservative fuel/timing limits. It remains blocked on injector identity/condition, MAF/fuel-system validation, and physical commissioning. See [boost_donor_A2WC510N.md](docs/boost_donor_A2WC510N.md), [boost_repurpose_notes.md](docs/boost_repurpose_notes.md), and [patch_build_guide.md](docs/patch_build_guide.md). |
 | 5 | Potentially change MAF logic to Speed Density. | TBD |
+| 6 | Add a conservative rotational/lumpy idle mode. | *Standalone development patch built* — the complete stock final-timing task runs first, then an exact-`01`, warm/stationary/closed-throttle gate applies six bounded retard-only offsets. The image and RomRaider switch default OFF. It has its own guarded component API and non-overlapping allocation for a later merge, but is deliberately absent from the current combined patch and base turbo map. Binary-verified, not vehicle-verified. See [rotational_idle_patch.md](docs/rotational_idle_patch.md). |
 
 Also solved along the way: the central **table-interpolation** system (descriptor-based) and the
 full **ignition-timing** blend/selection logic. See the notes.
@@ -31,6 +32,7 @@ full **ignition-timing** blend/selection logic. See the notes.
 | [boost_donor_A2WC510N.md](docs/boost_donor_A2WC510N.md) | Pinned A2WC510N turbo-EJ25 donor, extracted table addresses, MAP calibration, and 5 psi reduction. |
 | [patch_build_guide.md](docs/patch_build_guide.md) | How the single boost patch gets built, calibrated, verified, and flashed. |
 | [single_front_af_patch.md](docs/single_front_af_patch.md) | One-factory-A/F architecture, rear-narrowband logical deletion, external logging boundary, and commissioning limits. |
+| [rotational_idle_patch.md](docs/rotational_idle_patch.md) | Separate default-OFF per-cylinder retard patch, operating gates, allocation, verifier, and commissioning limits. |
 | [base_turbo_map/README.md](base_turbo_map/README.md) | Reproducible combined-image derivative with conservative 5 psi / 98 RON fuel, ignition, spring-only boost, checksum, and commissioning documentation. |
 | [solenoid_subsystem.md](docs/solenoid_subsystem.md) | The two PWM output subsystems: crank-synced AVCS/AVLS cam bank vs. the purge PWM (boost target). |
 | [ram_map.md](docs/ram_map.md) | Consolidated confirmed RAM variables (RPM, MAP, ECT, ignition, AVLS, purge, CL/OL, oxygen sensors, solenoids). |
@@ -43,11 +45,12 @@ full **ignition-timing** blend/selection logic. See the notes.
 | [defs/D2WD610H_AVLS.xml](defs/D2WD610H_AVLS.xml) | Self-contained metric RomRaider definition: D2WD610H standard tables + AVLS only. |
 | [defs/D2WD610H_AVLS_boost_patch.xml](defs/D2WD610H_AVLS_boost_patch.xml) | Self-contained metric RomRaider definition: D2WD610H standard tables + AVLS + boost calibration + `Boost Control Patch Enable`. |
 | [defs/D2WD610H_AVLS_single_front_af_patch.xml](defs/D2WD610H_AVLS_single_front_af_patch.xml) | Self-contained metric RomRaider definition: D2WD610H standard tables + AVLS + the front-mirror/rear-delete runtime switch. |
+| [defs/D2WD610H_AVLS_rotational_idle_patch.xml](defs/D2WD610H_AVLS_rotational_idle_patch.xml) | Self-contained metric RomRaider definition: D2WD610H standard tables + AVLS + standalone rotational-idle gates, offsets, and default-OFF switch. |
 | [defs/D2WD610H_AVLS_boost_single_front_af_patch.xml](defs/D2WD610H_AVLS_boost_single_front_af_patch.xml) | Self-contained metric RomRaider definition for the combined image: D2WD610H standard tables + AVLS + boost calibration + boost and front-mirror/rear-delete switches. |
 | [defs/romraider_ecu_defs.xml](defs/romraider_ecu_defs.xml) | Clean upstream RomRaider metric definition set from SubaruDefs Stable; no project AVLS/boost modifications. |
 
-> Load exactly **one** of the four custom RomRaider definitions at a time—the AVLS-only,
-> boost-patch, single-front-A/F-patch, or combined variant matching the ROM being edited. Each embeds a metric
+> Load exactly **one** of the five custom RomRaider definitions at a time—the AVLS-only,
+> boost-patch, single-front-A/F-patch, rotational-idle-patch, or combined variant matching the ROM being edited. Each embeds a metric
 > `32BITBASE` pruned to the 206 templates actually referenced by D2WD610H.
 
 ## Reverse-engineering setup

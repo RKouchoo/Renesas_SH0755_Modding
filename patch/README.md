@@ -1,18 +1,20 @@
 # patch/ — D2WD610H patch builders
 
 This directory contains the canonical boost-control patch, the single-front-A/F development
-patch, and a combined builder. The boost patch repurposes the EVAP purge PWM output as an
+patch, a separate rotational-idle development patch, and a two-component combined builder. The boost patch repurposes the EVAP purge PWM output as an
 electronic boost-control solenoid driver. The front-A/F patch retains one factory pre-turbo A/F
 sensor for closed-loop control, mirrors it into both bank paths, and logically removes both rear
-narrowbands from the traced ADC/monitor chain. Each
-standalone image and the combined image are built directly from fresh stock; generated images
-are never stacked.
+narrowbands from the traced ADC/monitor chain. The rotational-idle component post-processes the
+six stock final ignition angles only inside a bounded warm-idle window. It is intentionally not
+installed by the current combined builder. Each standalone image and the combined image are
+built directly from fresh stock; generated images are never stacked.
 
 Background and commissioning details:
 [boost_repurpose_notes.md](../docs/boost_repurpose_notes.md),
 [boost_donor_A2WC510N.md](../docs/boost_donor_A2WC510N.md),
 [patch_build_guide.md](../docs/patch_build_guide.md),
-[single_front_af_patch.md](../docs/single_front_af_patch.md), and [audit.md](../audit.md).
+[single_front_af_patch.md](../docs/single_front_af_patch.md),
+[rotational_idle_patch.md](../docs/rotational_idle_patch.md), and [audit.md](../audit.md).
 
 ## Stock-ROM rule
 
@@ -49,6 +51,19 @@ python3 patch/verify_single_front_af.py
 python3 patch/verify_romraider_toggles.py
 ```
 
+Build the separate rotational-idle development image:
+
+```sh
+python3 patch/patch_rotational_idle.py
+python3 patch/verify_rotational_idle.py
+python3 patch/verify_romraider_toggles.py
+```
+
+Its normal output is `patch/D2WD610H_rotational_idle.bin`. The enable byte is generated as `00`,
+so installing the binary does not activate the timing effect. Its reusable `apply_to_rom()` API
+is exercised against the other components in memory, but it is not imported by
+`patch_combined.py` yet.
+
 Build and verify the combined image:
 
 ```sh
@@ -59,7 +74,7 @@ python3 patch/verify_romraider_toggles.py
 
 The normal combined output is `patch/D2WD610H_boost_single_front_af.bin`. It is the exact
 non-overlapping union of both component patch sets applied to one fresh stock copy, not a patch
-applied to either standalone generated image.
+applied to either standalone generated image. It does not contain the rotational-idle component.
 
 The conservative 5 psi / 98 RON calibration is kept separately in
 [`base_turbo_map/`](../base_turbo_map/README.md):
@@ -112,12 +127,15 @@ fuel-cut flag `0xFFFFBF6C` bit `0x80`, which is consumed by `fuel_cut_flag_aggre
 | `sh2_disasm.py` | Minimal SH-2E disassembler used for binary verification. |
 | `verify_regions.py` | Audits free-flash and scratch-RAM assumptions. |
 | `verify_boost_donor.py` | Re-extracts A2WC510N tables and verifies the generated 5 psi defaults and MAP scaling. |
-| `verify_romraider_toggles.py` | Parses standalone and combined definitions and verifies target IDs, switch/table addresses, generated ON bytes, and isolated one-byte OFF edits. |
+| `verify_romraider_toggles.py` | Parses standalone and combined definitions and verifies target IDs, switch/table addresses, generated defaults, and isolated one-byte toggle edits. |
 | `verify_combined.py` | Regenerates the combined image, audits exact union/change ownership, decodes all injected code, and checks the retained front/rear-delete paths. |
 | `D2WD610H_boost.bin` | Generated boost-control ROM; never use it as patch input or as the Ghidra stock image. |
 | `patch_single_front_af.py` | Canonical stock-ROM-to-single-front-A/F plus rear-O2-delete patcher. |
 | `verify_single_front_af.py` | Audits front hooks, rear bypass hooks, 13 DTC edits, injected code, and every changed offset. |
 | `D2WD610H_single_front_af.bin` | Generated standalone front-A/F development ROM. |
+| `patch_rotational_idle.py` | Canonical stock-ROM-to-rotational-idle patcher with guarded `apply_to_rom()` component API. |
+| `verify_rotational_idle.py` | Audits the exact binary, injected instructions, operating policy, changed-byte ownership, and future three-component compatibility. |
+| `D2WD610H_rotational_idle.bin` | Generated standalone rotational-idle development ROM; enable defaults off. |
 | `D2WD610H_boost_single_front_af.bin` | Generated combined development ROM; both runtime switches default on. |
 
 RomRaider boost calibration entries are in
@@ -128,15 +146,21 @@ The matching front-A/F/rear-delete definition is
 `Single Front A/F Patch Enable` switch writes `01`/`00` at `0x7D91C`. Neither patch adds an
 aftermarket-wideband ECU/logger definition.
 
+The separate rotational-idle image must be opened with
+[D2WD610H_AVLS_rotational_idle_patch.xml](../defs/D2WD610H_AVLS_rotational_idle_patch.xml). Its
+`Rotational Idle Patch Enable` switch writes `01`/`00` at `0x7DB40`; all operating gates and six
+timing offsets are in category `Rotational Idle (patch)`.
+
 The combined image must be opened with
 [D2WD610H_AVLS_boost_single_front_af_patch.xml](../defs/D2WD610H_AVLS_boost_single_front_af_patch.xml).
 It contains the boost tables and both enable switches at their unchanged component addresses.
 
-The relevant switches default to `ON` in every generated image. Boost `OFF` forces zero EBCS duty
-and bypasses the added hard overboost cut while retaining the stock rev limiter; it does not
-revert the patched MAP scaling. Front-A/F `OFF` restores stock dual-front and rear-O2 runtime
+Boost and front-A/F switches default to `ON` in their generated images. Boost `OFF` forces zero
+EBCS duty and bypasses the added hard overboost cut while retaining the stock rev limiter; it
+does not revert the patched MAP scaling. Front-A/F `OFF` restores stock dual-front and rear-O2 runtime
 logic, but the 13 generated DTC-byte edits remain off until P0051/P0052/P0151/P0152/P0154 and
 P0037/P0038/P0057/P0058/P0137/P0138/P0157/P0158 are separately re-enabled in RomRaider.
+Rotational idle defaults `OFF`; only exact `01` permits its bounded timing post-processing.
 
 These are flash calibration bytes, not live logger controls. A RomRaider change takes effect only
 after the edited ROM is saved with a valid checksum and flashed to the ECU.
@@ -186,6 +210,23 @@ should both track the retained sensor after patching. See
 [single_front_af_patch.md](../docs/single_front_af_patch.md) for the exact patch and harness
 boundary.
 
+## Rotational-idle path
+
+The standalone component redirects periodic task pointer `0x11E30` from
+`ign_final_timing_per_cylinder_update` at `0x279CC` to a wrapper at `0x7DB90`. The wrapper always
+runs the stock task first. Only exact enable `01`, ECT 80–105 C, RPM 600–1050, throttle at or
+below about 2%, vehicle speed at or below 1 km/h, and MAP 150–550 mmHg absolute permit the six
+default offsets `{-6,0,-6,0,-6,0}` degrees.
+
+Positive offsets cannot add advance, requested retard is limited to 8 degrees, final timing uses
+a 5-degree-BTDC floor, and a final ceiling prevents the result from ever exceeding the original
+stock angle. NaN sensor/gate data exits to stock, invalid offset/maximum-retard data produces
+zero offset, and an invalid timing floor retains stock. The component occupies
+`0x7DB40..0x7DCEB`, after the front patch's final byte at
+`0x7DB3B`. It changes no fuel, airflow, AVLS, limiter, misfire-DTC, or persistent-RAM behavior.
+See [rotational_idle_patch.md](../docs/rotational_idle_patch.md) for the complete policy and
+standalone commissioning sequence.
+
 ## Before flashing
 
 The boost patch is binary-verified, not vehicle-verified. It already copies the A2WC510N MAP
@@ -199,7 +240,13 @@ front-sensor connector variant, correct the checksum, and prove both-bank loggin
 sensor fault behavior without boost. With the rear connectors safely isolated, confirm all eight
 mapped rear DTCs remain inactive and neither fuel correction changes unexpectedly.
 
-The combined artifact is structurally and binary verified, but it does not waive either
+The rotational-idle image is also binary-verified only and must be commissioned separately with
+its switch off first. Correct the checksum, log the complete warm idle and misfire behavior, then
+test the mild default offsets while stationary and without boost. Uneven combustion torque and
+retarded timing can increase vibration and exhaust/turbo temperature; stop on abnormal results.
+
+The current combined artifact is structurally and binary verified, but it does not waive either
 standalone commissioning plan. Prove the front-A/F behavior without boost and prove the complete
 boost hardware/failsafe sequence separately before flashing the combined image. It also needs a
-valid `subarudbw` checksum.
+valid `subarudbw` checksum. Rotational idle remains outside that artifact until its own standalone
+test plan passes and a later three-component combined definition/verifier is created.

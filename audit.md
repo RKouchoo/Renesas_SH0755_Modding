@@ -425,3 +425,105 @@ scaling, MAP validation, post-turbo wideband logging, and physical boost tests r
 
 No Ghidra function was opened for this calibration revision. Every edited address was an already
 mapped, named RomRaider table, so there was no inspected function requiring a rename.
+
+# Standalone Rotational-Idle Patch Audit
+
+Audit date: 2026-07-15. Target: D2WD610H / ECU ID `3C5A387116`, Renesas SH7055,
+stock image `2005 BLE MT.bin`.
+
+## Verdict
+
+`patch/patch_rotational_idle.py` produces a separate, default-OFF development image that should
+execute the intended bounded timing post-processing. It always runs the complete stock final
+timing task first, requires exact enable `01` and a warm/stationary/closed-throttle/high-vacuum
+idle window, then applies six retard-only offsets. It does not cut fuel, modify idle airflow,
+force AVLS, disable misfire detection, alter the limiter, or allocate RAM.
+
+The component follows the same guarded stock-to-ROM and `apply_to_rom()` framework as the boost
+and front-A/F components. Its allocation and changed-byte ownership are disjoint, making it ready
+for a later combined-patch integration. That integration has deliberately not been performed:
+`patch_combined.py`, the existing combined binary, and `base_turbo_map` remain unchanged.
+
+This verdict is static and binary only. It does not prove idle quality, sound, exhaust/turbo
+temperature, vibration, misfire behavior, checksum acceptance, or safe operation on the vehicle.
+
+## Ghidra verification and naming
+
+- Periodic task-pointer slot `0x11E30` contains stock target `0x279CC`.
+- `ign_final_timing_per_cylinder_update` at `0x279CC` combines a common timing result with six
+  correction floats at `0xFFFFCCC8..0xFFFFCCDC`, applies stock clamps, and writes six final
+  angles at `0xFFFFC0EC..0xFFFFC100`.
+- The six-output consumers were traced through the minimum check, schedule-count conversion,
+  current-cylinder selection, and logger conversion. The normal ignition logger reads the first
+  final angle at `0xFFFFC0EC`.
+- ECT `0xFFFFB3AC`, RPM `0xFFFFB544`, processed throttle `0xFFFFB314`, MAP
+  `0xFFFFABC4`, and vehicle speed `0xFFFFB538` are confirmed live float inputs. The vehicle-speed
+  identity is independently supported by its comparison with the stock 4.0-km/h idle-timing
+  threshold at ROM `0x77E1C`.
+- Every function opened in this trace was renamed in the live Ghidra project using the project's
+  underscore convention: the three idle/base timing functions, final per-cylinder update, six
+  correction-state functions, four downstream timing/logger functions, and the fixed-point
+  runtime export helper. The exact names and addresses are recorded in
+  `docs/D2WD610H_RE_notes.md`.
+
+## Binary checks completed
+
+- The builder always reads the fixed root stock ROM, requires its exact 512-KiB length and
+  SHA-256 `ed0fe0341d97fb760c2cda3f07277f861495d32f6520e3ce8047b8b0f7bfd4ee`, patches an
+  in-memory copy, and refuses an output path that aliases the stock source.
+- Generated artifact: `patch/D2WD610H_rotational_idle.bin`, 512 KiB, SHA-256
+  `f5ce45cb46b244e0c3973e3dfab699a3a2a13a1b296b758c96ec19f655ed7165`.
+- Exactly 404 bytes differ from stock. Ownership is limited to the guarded task pointer and the
+  dedicated enable/calibration/wrapper allocations at `0x7DB40..0x7DCEB`.
+- The enable byte is `00` in the generated image. Machine code compares it with exact `01`; all
+  other values leave the newly computed stock timing outputs unchanged.
+- Every operating boundary is inclusive: ECT 80–105 C, RPM 600–1050, throttle no greater than
+  native 1.68 (about 2%), vehicle speed no greater than 1 km/h, and MAP 150–550 mmHg absolute.
+- Each sensor and gate threshold is self-compared before its range check, so NaN values return
+  directly to stock timing. NaN offsets and non-positive/NaN maximum-retard calibration produce
+  zero offset for the affected calculation; a NaN final-timing floor retains the stock angle.
+- Default offsets are `{-6,0,-6,0,-6,0}` degrees. Positive requested offsets are forced to zero,
+  requested retard is limited by the 8-degree maximum, and the result uses a 5-degree-BTDC floor.
+  A final original-angle ceiling prevents either the floor or malformed maximum-retard data from
+  adding advance relative to the stock result.
+- `verify_rotational_idle.py` regenerates the complete expected image, verifies every float and
+  changed offset, pins the exact-enable branch, six-cylinder loop, stock-angle ceiling, and
+  balanced return, and decodes 136 injected SH-2E instructions with no unknown opcode.
+- The executable policy model exercises every gate on and outside its boundary, all non-`01`
+  enable values, positive offsets, maximum-retard limiting, the final timing floor, and the
+  no-advance ceiling.
+- Independent stock builds of boost, front-A/F, and rotational-idle components have pairwise
+  disjoint changed-byte sets. Applying all three guarded APIs in memory produces their exact
+  byte-set union and preserves every independently generated component byte.
+- The canonical root ROM was re-read after build and verification and remains unchanged.
+
+## RomRaider definition and separation
+
+- `defs/D2WD610H_AVLS_rotational_idle_patch.xml` is self-contained and contains only the pruned
+  metric `32BITBASE` plus target XMLID `D2WD610H_AVLS_ROTATIONAL_IDLE_PATCH` for internal ID
+  `D2WD610H`.
+- It exposes `Rotational Idle Patch Enable` at `0x7DB40`, ten scalar gates/limits, and the six
+  per-cylinder offsets at `0x7DB6C`. All addresses and `01`/`00` switch states parse and verify.
+- Byte simulation confirms an OFF-to-ON definition edit changes only `0x7DB40` before checksum
+  handling. This is a flash calibration switch, not a live logger control.
+- No rotational table or switch was added to the boost, front-A/F, existing combined, or base
+  turbo definitions. A later merge must add the component and its definition entries together,
+  then extend the combined exact-union verifier.
+
+## Remaining blockers and commissioning order
+
+1. Produce and independently verify a valid Subaru checksum; the standalone builder does not
+   correct it.
+2. Flash/run the standalone image with the switch OFF first. Confirm the complete stock warm idle
+   and log ECT, RPM, throttle, speed, MAP, timing, lambda, corrections, battery voltage, and all
+   six misfire counters.
+3. Test the mild defaults only while fully warm, stationary, in neutral, and without boost
+   control. Confirm cylinder-1 timing changes only inside the documented window and returns to
+   stock immediately outside it.
+4. Monitor exhaust/turbo temperature, oil pressure, lambda, RPM stability, misfire counts, and
+   vibration. Stop on any abnormal result; do not disable misfire protection to mask it.
+5. Decide from measured behavior whether a stronger effect is safe or useful. The current patch
+   supplies uneven timing only and may produce a mild or negligible audible effect.
+6. Merge the unchanged component API into the main patch only after standalone testing passes,
+   then create a matching three-switch combined definition, checksum-valid output, and complete
+   three-component regression audit.
