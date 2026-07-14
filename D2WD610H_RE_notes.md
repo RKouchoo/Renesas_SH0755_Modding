@@ -169,13 +169,17 @@ data registers (datasheet) instead of descending the call tree.
       NEXT: xref readers of 0xFFFFBE38 → closed-loop enable decision → per-bank split.
       Note: DTC config bytes (0x5BDAx) have NO direct xrefs (computed-base DTC records) —
       but they are directly flashable to mask O2 DTCs for the O2 delete.
-- [ ] **Boost repurpose of EVAP purge output** — solenoid PWM output subsystem fully RE'd
-      (see `boost_repurpose_notes.md`). 6 PWM channels; channel n → ctrl bit (0x0100<<n) on
-      0xFFFFF602, duty reg 0xFFFFF652+2n. Driver `solenoid_pwm_channel_drive` @0x96FC;
-      per-solenoid `solenoid_channel_output_update` @0x268E8; inhibit word RAM 0xFFFFB744.
-      NEXT: identify which channel index is purge (trace master-loop duty source @~0x11E84,
-      or find P0458/P0459 writer of a bit in 0xFFFFB744), then hijack that channel's duty
-      with a boost map + neutralize purge gating + mask P0458/P0459 (0x5BD85/0x5BD86).
+- [ ] **Boost repurpose of EVAP purge output** (see `boost_repurpose_notes.md`).
+      CORRECTION: the 6-channel PWM bank RE'd this session (`solenoid_pwm_channel_drive`
+      @0x96FC, `solenoid_channel_output_update` @0x268E8, ctrl reg 0xFFFFF602 / compare
+      0xFFFFF652+2n, structs @0xFFFFBFB8, inhibit word 0xFFFFB744) is **crank-angle-synced
+      (30°×24=720°, scheduler 0x263EE) → it is the AVCS/AVLS cam solenoid driver, NOT purge.**
+      Purge is a separate free-running PWM, still unlocated. NEXT: find purge duty computation
+      (airflow/purge-density map, ECT+CL gated, zeroed at idle/DFCO) → its PWM output pin; or
+      trace the P0458/P0459 output-driver diagnostic (DTCs 0x5BD85/0x5BD86).
+- [ ] AVLS physical OSV port write — **likely resolved**: OSV/OCV solenoids are driven by the
+      crank-angle-synced bank above (ATU-II compare 0xFFFFF652+2n, ctrl bit on 0xFFFFF602).
+      Confirm which of the 6 channels `avls_cam_mode_state_machine` (0x40168) commands.
 - [ ] Spare ADC channel (for external wideband input)
 - [ ] Airflow model (speed density — capstone)
 - [ ] Define 0x25F8/0x2628/0x2654 as functions in Ghidra and rename (interp_2axis_float32/s8/s16)
@@ -205,9 +209,10 @@ _(underscore names only — strict naming enforcement is ON)_
 - 0x000405CC → **avls_osv_actuation_gate**
 - 0x00040C94/40798/40CE6 → **cam_actuator_output_set_1/2/3**
 - 0x00022756 → **cl_ol_transition_delay_update**
-- 0x000096FC → **solenoid_pwm_channel_drive** (6-ch PWM HW driver; table @0xFAE8)
-- 0x000268E8 → **solenoid_channel_output_update** (per-solenoid duty→count + inhibit gate)
+- 0x000096FC → **solenoid_pwm_channel_drive** (crank-angle-synced 6-ch PWM HW driver; AVCS/AVLS; table @0xFAE8)
+- 0x000268E8 → **solenoid_channel_output_update** (per-channel duty→count + inhibit gate)
 - 0x00026DFC → **solenoid_status_word_read** (returns solenoid inhibit word @0xFFFFB744)
+  (Note: this bank is cam/valve-timing solenoids, not purge — scheduler 0x263EE, 30°×24 phase.)
 
 Decompiler comments set at: 0x209C, 0x2150, 0x28418, 0x284B8, 0x40168, 0x405CC, 0x281FC.
 
