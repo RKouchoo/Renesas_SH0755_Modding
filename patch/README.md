@@ -7,9 +7,11 @@ boost/wastegate solenoid driver. Background: [../docs/boost_repurpose_notes.md](
 ## Files
 | File | What |
 |---|---|
-| `patch_boost.py` | Phase 1 patcher — stock `.bin` → patched `.bin`. |
-| `sh2_disasm.py` | Minimal SH-2E disassembler used to build/verify the patch. |
-| `D2WD610H_boost_p1.bin` | Build output (generated; not the stock image). |
+| `patch_boost.py` | **Phase 1** patcher (open-loop RPM→duty) — stock `.bin` → patched `.bin`. |
+| `patch_boost_p2.py` | **Phase 2** patcher (closed-loop PI boost control) — stock `.bin` → patched `.bin`. |
+| `sh2_asm.py` | Minimal two-pass SH-2E assembler (labels + literal pool). Self-tests against the verified Phase-1 stub. |
+| `sh2_disasm.py` | Minimal SH-2E disassembler used to build/verify the patches. |
+| `D2WD610H_boost_p1.bin` / `_p2.bin` | Build outputs (generated; not the stock image). |
 
 ## Usage
 ```
@@ -48,3 +50,29 @@ stock value (guards against double-patching / wrong image).
   needs a different frequency.
 - Closed loop (target boost + Turbo Dynamics using MAP @0xFFFFABC4) = Phase 2, needs the EJ255
   sensor + 0x72810 rescale.
+
+## Phase 2 — closed-loop PI boost control (`patch_boost_p2.py`)
+Apply to the **stock** bin (not on top of Phase 1). Adds, in free space:
+- feed-forward base duty map (same table as Phase 1),
+- target boost map (RPM → target, float),
+- Kp / Ki / Integrator-Limit / Max-Duty-Ratio / Overboost gains (tunable floats),
+- a PI controller stub, hijacking the same literal @0x3FD8C.
+
+Controller each cycle: `ratio = clamp(base + Kp·err + I, 0, MaxRatio)`, `I = clamp(I + Ki·err, ±Ilim)`,
+`err = target − MAP(0xFFFFABC4)`; if `MAP > Overboost` → `ratio 0` and integrator reset. Integrator
+state in confirmed-free RAM **0xFFFFBFF0** (+ init-flag **0xFFFFBFF8**, self-zeroing at first run).
+
+**Ships safe:** default `Kp=Ki=0` ⇒ behaves as feed-forward (= Phase 1). Overboost cut active.
+
+**PREREQUISITE:** MAP (0xFFFFABC4) must read real boost — fit the **EJ255 (turbo) MAP sensor** and
+rescale table **0x72810** first. Do NOT raise Kp/Ki on the stock ~1-bar sensor. Binary-verified
+only; bench-validate and keep an independent overboost **fuel** cut. Tune in
+[../defs/D2WD610H_boost_patch.xml](../defs/D2WD610H_boost_patch.xml) (category "Boost Control (patch)").
+
+### Phase 2 layout (matches the def)
+| Item | Addr | | Item | Addr |
+|---|---|---|---|---|
+| base_desc | 0x7D790 | | target_data | 0x7D7E0 |
+| rpm_axis (shared) | 0x7D7A4 | | Kp/Ki/Ilim/MaxR/Overboost | 0x7D800..0x7D810 |
+| base_data | 0x7D7C4 | | PI stub | 0x7D814 |
+| target_desc | 0x7D7CC | | integrator / init-flag (RAM) | 0xFFFFBFF0 / 0xFFFFBFF8 |

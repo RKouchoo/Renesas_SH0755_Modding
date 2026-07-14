@@ -66,13 +66,13 @@ def dis_one(rom, o):
              0x5:"mov.w r%d,@-r%d",0x6:"mov.l r%d,@-r%d",0x7:"div0s r%d,r%d",0x8:"tst r%d,r%d",
              0x9:"and r%d,r%d",0xa:"xor r%d,r%d",0xb:"or r%d,r%d",0xc:"cmp/str r%d,r%d",
              0xd:"xtrct r%d,r%d",0xe:"mulu.w r%d,r%d",0xf:"muls.w r%d,r%d"}
-        return (t.get(lo, ".word 0x%04x") % ((m, n) if lo in t else ())), None
+        return ((t[lo] % (m, n)) if lo in t else (".word 0x%04x" % w)), None
     if hi == 0x3:
         t = {0x0:"cmp/eq r%d,r%d",0x2:"cmp/hs r%d,r%d",0x3:"cmp/ge r%d,r%d",0x4:"div1 r%d,r%d",
              0x5:"dmulu.l r%d,r%d",0x6:"cmp/hi r%d,r%d",0x7:"cmp/gt r%d,r%d",0x8:"sub r%d,r%d",
              0xa:"subc r%d,r%d",0xb:"subv r%d,r%d",0xc:"add r%d,r%d",0xd:"dmuls.l r%d,r%d",
              0xe:"addc r%d,r%d",0xf:"addv r%d,r%d"}
-        return (t.get(lo, ".word 0x%04x") % ((m, n) if lo in t else ())), None
+        return ((t[lo] % (m, n)) if lo in t else (".word 0x%04x" % w)), None
     if hi == 0x7: return "add #%d,r%d" % (s8(d8), n), None
     if hi == 0x5: return "mov.l @(0x%x,r%d),r%d" % (d*4, m, n), None
     if hi == 0x1: return "mov.l r%d,@(0x%x,r%d)" % (m, d*4, n), None

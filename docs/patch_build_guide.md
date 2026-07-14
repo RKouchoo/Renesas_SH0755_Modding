@@ -56,10 +56,25 @@ stage — driving the solenoid from the map without touching 0xFFFFCD54.
    toggle via RomRaider DTC switches if it does.
 
 ## Phase 2 — closed-loop (after EJ255 sensor + 0x72810 rescale)
-8. Target Boost map (RPM × load → kPa).
-9. Boost error = target − 0xFFFFABC4.
-10. Turbo Dynamics P/I correction → duty correction; final = clamp(base + corr, 0, max).
-Reuse the WRX scalings already present in the def (32BITBASE templates).
+**Status: implemented in `patch/patch_boost_p2.py`; binary-verified (PI stub disassembles
+correctly), not yet hardware-tested. Ships with Kp=Ki=0 (feed-forward) for a safe first flash.**
+
+Controller (runs at the slow-task rate, replacing the output tail-call like Phase 1):
+```
+base   = BaseDuty[rpm]                 (ratio, feed-forward)
+target = TargetBoost[rpm]              (MAP units)
+err    = target - MAP(0xFFFFABC4)
+I      = clamp(I + Ki*err, -Ilim, +Ilim)      # integrator @ RAM 0xFFFFBFF0
+ratio  = clamp(base + Kp*err + I, 0, MaxRatio)
+if MAP > Overboost: ratio = 0, I = 0          # actuator fail-safe
+-> output stage 0xE8C4
+```
+- Integrator state in confirmed-free RAM 0xFFFFBFF0; init-flag 0xFFFFBFF8 (self-zeroes first run).
+- Tunables (Boost Target, Kp, Ki, Integrator Limit, Max Duty Ratio, Overboost Cut) are RomRaider
+  tables in `defs/D2WD610H_boost_patch.xml` (category "Boost Control (patch)").
+- **Still to add**: a proper overboost FUEL/ignition cut (Phase 2's cut is actuator-level only);
+  2-axis target (RPM×load); loop-rate upgrade (~10 ms task) for tighter control.
+- Build helper: `patch/sh2_asm.py` (assembler, self-validates against the Phase-1 stub).
 
 ## Verification checklist (before flashing)
 - [ ] Datalog confirms purge duty tracks 0xFFFFCD54 (proves the output is the purge chain).

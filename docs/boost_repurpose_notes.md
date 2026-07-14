@@ -184,3 +184,19 @@ custom code in free space, driving the repurposed purge PWM output (0xFFFFF590).
   Tunable in RomRaider as "Boost Wastegate Duty (RPM)" in defs/D2WD610H_boost_patch.xml.
 - Binary-verified only (stub disassembles correctly, hijack + tables confirmed). NOT hardware-
   tested. Pending: overboost fuel cut (fail-safe), PWM-freq check, gating cleanup, Phase 2.
+
+================================================================================
+## PATCH STATUS (Phase 2 built — closed-loop PI)
+================================================================================
+- `patch/patch_boost_p2.py` implements WRX-style closed-loop boost; `patch/sh2_asm.py` is a
+  two-pass SH-2E assembler (self-validates by reproducing the verified Phase-1 stub byte-for-byte).
+  Output: `patch/D2WD610H_boost_p2.bin`.
+- PI stub @0x7D814 (hijack literal @0x3FD8C → stub, same as Phase 1). Verified by disassembly.
+  err = TargetBoost[rpm] − MAP(0xFFFFABC4); ratio = clamp(base + Kp·err + I, 0, MaxRatio);
+  I = clamp(I + Ki·err, ±Ilim); overboost → ratio 0. Integrator @ free RAM 0xFFFFBFF0, init-flag
+  @0xFFFFBFF8 (both confirmed unreferenced in Ghidra).
+- Free-space layout: base_desc 0x7D790 / rpm_axis 0x7D7A4 / base_data 0x7D7C4 / target_desc
+  0x7D7CC / target_data 0x7D7E0 / gains 0x7D800–0x7D810 / stub 0x7D814. Tunable via def tables.
+- Ships Kp=Ki=0 (feed-forward = Phase 1) for a safe first flash. PREREQUISITE for closed loop:
+  EJ255 MAP sensor + rescale 0x72810 so 0xFFFFABC4 reads boost. Binary-verified only; not
+  hardware-tested. TODO: hard fuel/ignition overboost cut, 2-axis target, faster loop rate.
