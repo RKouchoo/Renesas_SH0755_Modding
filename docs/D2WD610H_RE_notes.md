@@ -229,6 +229,8 @@ _(underscore names only — strict naming enforcement is ON)_
 - 0x0003F9E4 → **evap_purge_state_update** (purge enable/status byte 0xFFFFCD81)
 - 0x0000E8C4 → **evap_purge_pwm_output_write** (duty ratio → ATU-II reg 0xFFFFF590; period 0xFFFFAB84)
 - 0x00046748 → **evap_purge_flow_diagnostic** (rationality/circuit monitor → P0458/P0459)
+- 0x00007A14 → **map_sensor_process** (MAP sensor → RAM 0xFFFFABC4; boost feedback source)
+- 0x00002390 → **fixedpoint_mul_q16_sat** (generic 16.16 fixed-point multiply w/ saturation; PWM on-time)
 - 0x000114B0 → **slow_task_dispatcher** (~50 fn-ptr sequential caller, slow loop)
 - 0x0003F878 → **radiator_fan_mode_select** (fan mode 0-3 from ECT hysteresis; relay stages, not PWM)
 - 0x000263EE → **solenoid_phase_scheduler** (crank-angle 30°×24 scheduler for cam solenoid bank)
