@@ -1,10 +1,11 @@
 # patch/ — D2WD610H patch builders
 
-This directory contains the canonical boost-control patch and a separate single-front-A/F
-development patch. The boost patch repurposes the EVAP purge PWM output as an electronic
-boost-control solenoid driver. The front-A/F patch retains one factory pre-turbo A/F sensor for
-closed-loop control and mirrors its processed results into both bank paths. They are built
-independently from stock and are not yet a merged flash image.
+This directory contains the canonical boost-control patch, the single-front-A/F development
+patch, and a combined builder. The boost patch repurposes the EVAP purge PWM output as an
+electronic boost-control solenoid driver. The front-A/F patch retains one factory pre-turbo A/F
+sensor for closed-loop control and mirrors its processed results into both bank paths. Each
+standalone image and the combined image are built directly from fresh stock; generated images
+are never stacked.
 
 Background and commissioning details:
 [boost_repurpose_notes.md](../docs/boost_repurpose_notes.md),
@@ -15,9 +16,16 @@ Background and commissioning details:
 ## Stock-ROM rule
 
 `../2005 BLE MT.bin` is the canonical stock ROM and the Ghidra analysis image. Keep it stock.
-Both patchers always read that fixed file, verify its known SHA-256, patch an in-memory copy, and
-write a separate output. They refuse an output path that resolves to the stock file, including a
-hard link.
+All patchers always read that fixed file, verify its known SHA-256, patch an in-memory copy, and
+write a separate output. They refuse an output path that resolves to a protected stock source,
+including a hard link.
+
+The original ECU read is `../base_roms/2005 BLE MT.srf`. `extract_srf.py` parses its big-endian
+chunk structure and extracts the single `MEMD` payload at file offset `0x1CD`. The payload is
+exactly 512 KiB with SHA-256
+`ed0fe0341d97fb760c2cda3f07277f861495d32f6520e3ce8047b8b0f7bfd4ee`, byte-identical to both
+`../base_roms/2005 BLE MT.bin` and the canonical root stock image. The combined builder repeats
+this SRF provenance check before every build.
 
 Build the canonical boost image from the repository root:
 
@@ -39,6 +47,18 @@ python3 patch/patch_single_front_af.py
 python3 patch/verify_single_front_af.py
 python3 patch/verify_romraider_toggles.py
 ```
+
+Build and verify the combined image:
+
+```sh
+python3 patch/patch_combined.py
+python3 patch/verify_combined.py
+python3 patch/verify_romraider_toggles.py
+```
+
+The normal combined output is `patch/D2WD610H_boost_single_front_af.bin`. It is the exact
+non-overlapping union of both component patch sets applied to one fresh stock copy, not a patch
+applied to either standalone generated image.
 
 Never patch a previously patched image. Every build starts from the root stock ROM.
 
@@ -69,16 +89,20 @@ fuel-cut flag `0xFFFFBF6C` bit `0x80`, which is consumed by `fuel_cut_flag_aggre
 
 | File | Purpose |
 |---|---|
+| `extract_srf.py` | Parses the original SRF container, extracts/verifies its 512-KiB `MEMD` ROM, and refuses mismatched existing output. |
 | `patch_boost.py` | Canonical stock-ROM-to-boost-ROM patcher. |
+| `patch_combined.py` | Canonical stock-ROM-to-combined boost + single-front-A/F patcher; also verifies SRF provenance and zero byte overlap. |
 | `sh2_asm.py` | Minimal two-pass SH-2E assembler with known-encoding self-tests. |
 | `sh2_disasm.py` | Minimal SH-2E disassembler used for binary verification. |
 | `verify_regions.py` | Audits free-flash and scratch-RAM assumptions. |
 | `verify_boost_donor.py` | Re-extracts A2WC510N tables and verifies the generated 5 psi defaults and MAP scaling. |
-| `verify_romraider_toggles.py` | Parses both patch definitions and verifies target IDs, switch/table addresses, generated ON bytes, and isolated one-byte OFF edits. |
+| `verify_romraider_toggles.py` | Parses standalone and combined definitions and verifies target IDs, switch/table addresses, generated ON bytes, and isolated one-byte OFF edits. |
+| `verify_combined.py` | Regenerates the combined image, audits the exact union/change ownership, decodes all injected code, and checks retained sensor paths. |
 | `D2WD610H_boost.bin` | Generated boost-control ROM; never use it as patch input or as the Ghidra stock image. |
 | `patch_single_front_af.py` | Canonical stock-ROM-to-single-front-A/F patcher. |
 | `verify_single_front_af.py` | Audits front hooks, DTC edits, injected code, preserved rear paths, and every changed offset. |
-| `D2WD610H_single_front_af.bin` | Generated standalone front-A/F ROM; development image, not merged with boost. |
+| `D2WD610H_single_front_af.bin` | Generated standalone front-A/F development ROM. |
+| `D2WD610H_boost_single_front_af.bin` | Generated combined development ROM; both runtime switches default on. |
 
 RomRaider boost calibration entries are in
 [D2WD610H_AVLS_boost_patch.xml](../defs/D2WD610H_AVLS_boost_patch.xml), category
@@ -88,9 +112,14 @@ The matching front-A/F definition is
 `Single Front A/F Patch Enable` switch writes `01`/`00` at `0x7D91C`. Neither patch adds an
 aftermarket-wideband ECU/logger definition.
 
-Both generated images default to `ON`. Boost `OFF` forces zero EBCS duty and bypasses the added
-hard overboost cut while retaining the stock rev limiter; it does not revert the patched MAP
-scaling. Front-A/F `OFF` restores stock dual-front processing/readiness/inhibit behavior, but the
+The combined image must be opened with
+[D2WD610H_AVLS_boost_single_front_af_patch.xml](../defs/D2WD610H_AVLS_boost_single_front_af_patch.xml).
+It contains the boost tables and both enable switches at their unchanged component addresses.
+
+The relevant switches default to `ON` in every generated image. Boost `OFF` forces zero EBCS duty
+and bypasses the added hard overboost cut while retaining the stock rev limiter; it does not
+revert the patched MAP scaling. Front-A/F `OFF` restores stock dual-front
+processing/readiness/inhibit behavior, but the
 five generated DTC-byte edits remain off until P0051/P0052/P0151/P0152/P0154 are separately
 re-enabled in RomRaider.
 
@@ -147,5 +176,10 @@ as the mechanical fallback during commissioning.
 
 The single-front-A/F image is likewise binary-verified, not vehicle-verified. Verify the exact
 front-sensor connector variant, correct the checksum, and prove both-bank logging and retained
-sensor fault behavior without boost before considering a merged image. Confirm both stock rear
-sensors and their diagnostics still operate normally.
+sensor fault behavior without boost. Confirm both stock rear sensors and their diagnostics still
+operate normally.
+
+The combined artifact is structurally and binary verified, but it does not waive either
+standalone commissioning plan. Prove the front-A/F behavior without boost and prove the complete
+boost hardware/failsafe sequence separately before flashing the combined image. It also needs a
+valid `subarudbw` checksum.

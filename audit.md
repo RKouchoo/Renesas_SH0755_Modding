@@ -144,7 +144,7 @@ outside the ECU.
 
 This is binary verification, not vehicle validation. The retained sensor, both-bank behavior,
 exact harness variant, checksum, and rear-sensor operation still require physical testing before
-the patch is merged with boost control or flashed for road use.
+the patch is used alone or enabled in the combined image.
 
 ## Binary checks completed
 
@@ -212,7 +212,9 @@ the patch is merged with boost control or flashed for road use.
   `defs/D2WD610H_AVLS.xml` remains AVLS-only; and
   `defs/D2WD610H_AVLS_boost_patch.xml` remains AVLS plus only the canonical boost-patch
   calibrations/runtime switch. `defs/D2WD610H_AVLS_single_front_af_patch.xml` remains AVLS plus
-  only the single-front runtime switch.
+  only the single-front runtime switch. The combined
+  `defs/D2WD610H_AVLS_boost_single_front_af_patch.xml` contains the unchanged boost tables plus
+  both component runtime switches.
 - The stock reverse-engineering notes now describe `0xFFFFAB20/0xFFFFB098` and
   `0xFFFFAB0C/0xFFFFB09C` as the unmodified RH/LH rear narrowband paths.
 
@@ -239,5 +241,71 @@ Boost commissioning must therefore retain independent mechanical and ECU MAP-bas
 5. Confirm both stock rear sensors, heaters, and catalyst diagnostic behavior remain normal.
 6. Validate the external post-turbo lambda stream, its status indication, and timestamp alignment
    before using it for tuning decisions.
-7. Merge the independently verified boost and front-A/F builders only from a fresh copy of the
-   canonical root stock ROM. Repeat the complete binary audit and hardware tests as one system.
+7. After both standalone commissioning plans pass, rebuild and verify the combined image from the
+   canonical root stock ROM. Repeat the hardware tests with both systems enabled together.
+
+# Combined Boost + Single-Front-A/F Patch Audit
+
+Audit date: 2026-07-15. Target: D2WD610H / ECU ID `3C5A387116`, Renesas SH7055,
+stock image `2005 BLE MT.bin`.
+
+## Verdict
+
+`patch/patch_combined.py` produces one combined development image directly from a fresh copy of
+the canonical root stock ROM. It does not patch either generated standalone image. The generated
+ROM is the exact, non-overlapping union of the boost-control patch and the single-front-A/F patch.
+Its structure, changed-byte ownership, injected instructions, retained sensor paths, and both
+RomRaider switches are binary verified.
+
+This does not make the image vehicle-validated. The standalone front-A/F behavior must first be
+proven without boost, and the boost output/MAP/failsafe commissioning sequence must be completed
+before the combined image is flashed. The combined ROM still requires a valid `subarudbw`
+checksum.
+
+## Original SRF provenance and de-encapsulation
+
+- `base_roms/2005 BLE MT.srf` is 524,749 bytes with SHA-256
+  `05eae5322072449d90e20e20125d5333738675168d623a320735958bfc7619aa`.
+- `patch/extract_srf.py` parses the SRF as big-endian `INFO`, `DRMI`, `MEML`, and `MEMD` chunks;
+  it does not scan for a guessed ROM signature or use a hard-coded tail carve.
+- The single `MEMD` payload starts at file offset `0x1CD`, is exactly `0x80000` bytes, and contains
+  CALID `D2WD610H` at ROM address `0x2000`.
+- Its SHA-256 is
+  `ed0fe0341d97fb760c2cda3f07277f861495d32f6520e3ce8047b8b0f7bfd4ee`.
+- The extracted payload is byte-identical to both `base_roms/2005 BLE MT.bin` and the canonical
+  root `2005 BLE MT.bin`. The existing extracted BIN was therefore left unchanged.
+- The combined builder repeats the SRF parse and byte comparison before every output build and
+  rereads all protected stock sources afterward.
+
+## Combined binary checks completed
+
+- Generated artifact: `patch/D2WD610H_boost_single_front_af.bin`, 512 KiB, SHA-256
+  `044be5792333e053230a040ddecfd118ba8c6c06183c1d9a0373d274c7695bdf`.
+- Exactly 580 bytes differ from stock: 369 owned by the boost patch plus 211 owned by the
+  single-front-A/F patch, with zero overlapping offsets.
+- Before composing the image, the builder independently applies each component to stock and
+  rejects any intersecting changed-byte ownership. It then applies both guarded change sets to a
+  separate fresh stock copy and requires the result to equal their exact union.
+- Refactoring the component scripts to expose shared `apply_to_rom` functions did not change
+  either standalone artifact: boost remains SHA-256
+  `744f4c320f5097256af16101cbba1b71985d8c9dfa77805158a0c4e204fe4560`; single-front-A/F remains
+  SHA-256 `6df938627dfe3616e9fea78e7fa8dd2dffd1bc6651440407aad916e701dde3d8`.
+- `patch/verify_combined.py` regenerates the expected image from stock, checks every byte, pins all
+  five component hooks/task edits and all five enable-dependent branches, verifies the five removed
+  Bank-2 front-sensor DTC edits, and confirms the retained Bank-1 front and both rear paths.
+- All six injected code spans decode as 150 known SH-2E instructions with no unknown opcodes.
+- The retired external-wideband region `0x7DA60..0x7DB3F` remains erased stock flash. No
+  aftermarket-wideband input or logger publication was reintroduced.
+
+## Combined RomRaider definition
+
+- `defs/D2WD610H_AVLS_boost_single_front_af_patch.xml` is self-contained and contains only the
+  pruned metric `32BITBASE` plus the D2WD610H target ROM.
+- Target XMLID: `D2WD610H_AVLS_BOOST_SINGLE_FRONT_AF_PATCH`.
+- It exposes all canonical boost calibrations, `Boost Control Patch Enable` at `0x7D80C`, and
+  `Single Front A/F Patch Enable` at `0x7D91C`.
+- Both generated bytes default to `01`. XML parsing and byte simulation verify that changing
+  either switch to `00` changes only its own one-byte address before checksum handling.
+- Boost `OFF` retains the donor MAP scaling and bypasses the added hard overboost cut. Front-A/F
+  `OFF` does not re-enable P0051/P0052/P0151/P0152/P0154. The existing component caveats remain
+  unchanged in the combined image.

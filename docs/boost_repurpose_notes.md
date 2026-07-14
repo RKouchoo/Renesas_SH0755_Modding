@@ -167,8 +167,11 @@ custom code in free space, driving the repurposed purge PWM output (0xFFFFF590).
 - RomRaider def: **defs/D2WD610H_AVLS_boost_patch.xml** — self-contained metric D2WD610H
   definition with AVLS and category "Boost Control (patch)". Its xmlid is
   D2WD610H_AVLS_BOOST_PATCH while internalidstring remains D2WD610H for auto-detect. Load this
-  combined file for a patched ROM; use D2WD610H_AVLS.xml for an AVLS-only ROM. The definition
+  definition for the standalone boost ROM; use D2WD610H_AVLS.xml for an AVLS-only ROM. The definition
   exposes the one-byte `Boost Control Patch Enable` at 0x7D80C (`01` on, `00` off).
+- The combined boost + single-front-A/F image uses
+  **defs/D2WD610H_AVLS_boost_single_front_af_patch.xml**, which retains the same boost tables and
+  switch addresses and adds `Single Front A/F Patch Enable` at 0x7D91C.
 - Because 32BITBASE = WRX STi base, the WRX boost table TEMPLATES + scalings are already in the
   file (categories "Boost Control - Target/Wastegate/Turbo Dynamics/Limits"). Reuse those exact
   scalings when adding the patch overrides (e.g. Target Boost psi expr (x-760)*.01933677).
@@ -182,9 +185,12 @@ custom code in free space, driving the repurposed purge PWM output (0xFFFFF590).
 ================================================================================
 ## PATCH STATUS (single proportional + feed-forward controller)
 ================================================================================
-- `patch/patch_boost.py` is the only patcher. It always reads the root `2005 BLE MT.bin`, patches
-  a private copy, and writes `patch/D2WD610H_boost.bin` by default. The stock input path is fixed,
-  and the patcher refuses output paths that alias it.
+- `patch/patch_boost.py` is the canonical standalone boost patcher. It always reads the root
+  `2005 BLE MT.bin`, patches a private copy, and writes `patch/D2WD610H_boost.bin` by default. The
+  stock input path is fixed, and the patcher refuses output paths that alias it.
+- `patch/patch_combined.py` calls the same guarded boost apply function and the guarded
+  single-front-A/F apply function against one fresh stock copy. It verifies the original SRF
+  payload and rejects overlapping component byte ownership; it never stacks generated images.
 - `patch/sh2_asm.py` is a two-pass SH-2E assembler with a known-encoding self-test;
   `patch/sh2_disasm.py` supports binary inspection; `patch/verify_regions.py` audits free flash
   and RAM assumptions.

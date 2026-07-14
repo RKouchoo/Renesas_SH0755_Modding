@@ -185,24 +185,8 @@ def build_fuelcut_wrapper():
     return a.assemble()
 
 # ---------------- apply ----------------
-def main():
-    if os.path.realpath(OUT) == os.path.realpath(STOCK):
-        raise SystemExit("REFUSING: output path aliases the canonical stock ROM: %s" % STOCK)
-    if os.path.exists(OUT) and os.path.samefile(OUT, STOCK):
-        raise SystemExit("REFUSING: output file is the canonical stock ROM (or a hard link to it)")
-
-    with open(STOCK, "rb") as f:
-        stock_bytes = f.read()
-    stock_hash = hashlib.sha256(stock_bytes).hexdigest()
-    if stock_hash != STOCK_SHA256:
-        raise SystemExit("REFUSING: canonical stock ROM hash is %s (expected %s)"
-                         % (stock_hash, STOCK_SHA256))
-    rom = bytearray(stock_bytes)  # patch a private copy; never modify STOCK in place
-    assert len(rom) == 0x80000, "expected 512 KB stock image, got %d" % len(rom)
-    for addr in (BASE_DESC, RPM_AXIS, TARGET_DESC, STUB_ADDR, KP_ADDR):
-        assert addr % 4 == 0
-
-    blobs = [
+def build_blobs():
+    return [
         ("base_desc",   BASE_DESC,   desc_1axis(0x04, RPM_AXIS, BASE_DATA, DUTY_SCALE, 0.0)),
         ("rpm_axis",    RPM_AXIS,    b"".join(f32(x) for x in RPM_BREAKS)),
         ("base_data",   BASE_DATA,   bytes(BASE_DUTY)),
@@ -215,6 +199,22 @@ def main():
         ("overb_fc",    OVERB_FC_ADDR, f32(OVERBOOST_FUELCUT)),
         ("fuelcut_wrap",REVWRAP_ADDR,  build_fuelcut_wrapper()),
     ]
+
+
+def apply_to_rom(rom):
+    """Apply only the boost changes to a mutable stock-derived ROM image.
+
+    This function is shared by the standalone and combined builders.  Every
+    touched byte retains the same stock/free-space guard used by the original
+    standalone patcher.
+    """
+    if len(rom) != 0x80000:
+        raise SystemExit("REFUSING: expected a 512 KB stock-derived image, got %d bytes"
+                         % len(rom))
+    for addr in (BASE_DESC, RPM_AXIS, TARGET_DESC, STUB_ADDR, KP_ADDR):
+        assert addr % 4 == 0
+
+    blobs = build_blobs()
     map_scaling = f32(MAP_SENSOR_OFFSET) + f32(MAP_SENSOR_MULTIPLIER)
     stock_map_scaling = f32(STOCK_MAP_SENSOR_OFFSET) + f32(STOCK_MAP_SENSOR_MULTIPLIER)
     if rom[MAP_SCALING_ADDR:MAP_SCALING_ADDR+len(stock_map_scaling)] != stock_map_scaling:
@@ -241,6 +241,23 @@ def main():
     rom[MAP_SCALING_ADDR:MAP_SCALING_ADDR+len(map_scaling)] = map_scaling
     rom[HIJACK_LITERAL:HIJACK_LITERAL+4] = be32(STUB_ADDR)
     rom[REVLIM_FNPTR:REVLIM_FNPTR+4]     = be32(REVWRAP_ADDR)
+    return blobs
+
+
+def main():
+    if os.path.realpath(OUT) == os.path.realpath(STOCK):
+        raise SystemExit("REFUSING: output path aliases the canonical stock ROM: %s" % STOCK)
+    if os.path.exists(OUT) and os.path.samefile(OUT, STOCK):
+        raise SystemExit("REFUSING: output file is the canonical stock ROM (or a hard link to it)")
+
+    with open(STOCK, "rb") as f:
+        stock_bytes = f.read()
+    stock_hash = hashlib.sha256(stock_bytes).hexdigest()
+    if stock_hash != STOCK_SHA256:
+        raise SystemExit("REFUSING: canonical stock ROM hash is %s (expected %s)"
+                         % (stock_hash, STOCK_SHA256))
+    rom = bytearray(stock_bytes)  # patch a private copy; never modify STOCK in place
+    blobs = apply_to_rom(rom)
 
     with open(OUT, "wb") as f:
         f.write(rom)

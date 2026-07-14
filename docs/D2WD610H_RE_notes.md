@@ -148,12 +148,14 @@ Definition layout:
   canonical boost-patch tables and its one-byte runtime enable.
 - `defs/D2WD610H_AVLS_single_front_af_patch.xml` contains D2WD610H + AVLS plus the one-byte
   single-front-A/F runtime enable; existing DTC switches cover the five removed-sensor edits.
+- `defs/D2WD610H_AVLS_boost_single_front_af_patch.xml` is the combined-image variant containing
+  the canonical boost tables plus both unchanged runtime-enable switches.
 - `defs/romraider_ecu_defs.xml` is a clean upstream metric RomRaider snapshot and is not modified
   with project tables.
 
-All three custom RomRaider ROM files are self-contained. Their embedded metric `32BITBASE` is pruned
+All four custom RomRaider ROM files are self-contained. Their embedded metric `32BITBASE` is pruned
 to the 206 templates referenced by the 206 standard D2WD610H address overrides; the additions
-are seven AVLS tables and, in the patch variants, only the matching patch tables/switch. Load
+are seven AVLS tables and, in the patch variants, only the matching patch tables/switches. Load
 only the custom ROM variant matching the image being edited. Stock AVLS values were verified
 against the ROM image 2026-07-14.
 
@@ -207,8 +209,10 @@ data registers (datasheet) instead of descending the call tree.
       Confirm which of the 6 channels `avls_cam_mode_state_machine` (0x40168) commands.
 - [x] ECU-side aftermarket-wideband input retired. External lambda data will be timestamped and
       merged with the ECU log off-board; the ROM publishes no aftermarket-sensor value.
-- [ ] Merge the independently verified single-front-A/F and boost patches only after both pass
-      bench commissioning; their free-space allocations are non-overlapping.
+- [x] Combined stock-to-ROM builder and definition created. `patch/patch_combined.py` applies both
+      guarded components to one fresh stock copy; `verify_combined.py` proves the 580 changed bytes
+      are the exact 369 + 211 union with zero overlap. Hardware use remains gated on both standalone
+      commissioning plans.
 - [ ] Airflow model (speed density — capstone)
 - [ ] Define 0x25F8/0x2628/0x2654 as functions in Ghidra and rename (interp_2axis_float32/s8/s16)
 - [ ] Identify status fns feeding ign_base_timing_select (0x27088, 0x6504C) and the B/E map condition (cruise?)

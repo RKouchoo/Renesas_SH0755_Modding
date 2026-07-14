@@ -94,8 +94,8 @@ vehicle-variant wiring issues associated with feeding a controller into a stock 
 | Bank-2 inhibit runtime selector | `0x7DA20` |
 
 The standalone boost patch occupies `0x7D790..0x7D903`; this patch's injected blocks do not
-overlap it. A future merged image must still be produced from the root stock ROM and audited as a
-new combined system—never by stacking generated binaries.
+overlap it. `patch/patch_combined.py` now applies both guarded change sets to one fresh root-stock
+copy and audits the result as a new combined system. It never stacks generated binaries.
 
 ## Harness boundary
 

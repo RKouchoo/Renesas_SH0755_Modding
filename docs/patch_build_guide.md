@@ -40,6 +40,30 @@ python3 patch/patch_boost.py /tmp/D2WD610H_boost_test.bin
 
 There is no configurable input and no patch-stacking workflow.
 
+The original ECU read is `base_roms/2005 BLE MT.srf`. Run:
+
+```sh
+python3 patch/extract_srf.py
+```
+
+The extractor parses the SRF chunk table and verifies that its `MEMD` payload at offset `0x1CD`
+is exactly 512 KiB and byte-identical to both stock BIN copies. It leaves an already-identical
+`base_roms/2005 BLE MT.bin` untouched and refuses to overwrite a differing file.
+
+For the combined boost + single-front-A/F development image, use:
+
+```sh
+python3 patch/patch_combined.py
+python3 patch/verify_combined.py
+python3 patch/verify_romraider_toggles.py
+```
+
+This writes `patch/D2WD610H_boost_single_front_af.bin` from a fresh root-stock copy. The builder
+dry-applies both components independently, proves their changed-byte sets do not overlap, then
+requires the composed result to be their exact union. Open that image only with
+`defs/D2WD610H_AVLS_boost_single_front_af_patch.xml`. Both standalone commissioning plans still
+apply before the combined image is flashed.
+
 ## Controller behavior
 
 The tail-call pointer at `0x3FD8C` in `evap_purge_duty_compute` normally points to
@@ -144,7 +168,8 @@ These addresses must remain synchronized with
 - `patch/sh2_disasm.py`: injected-code disassembler.
 - `patch/verify_regions.py`: flash/RAM region audit.
 - `patch/verify_boost_donor.py`: donor-table and generated-default verifier.
-- `patch/verify_romraider_toggles.py`: XML/switch-address/default-byte verifier for both patches.
+- `patch/verify_romraider_toggles.py`: XML/switch-address/default-byte verifier for standalone and
+  combined patch definitions.
 - RomRaider/EcuFlash: calibration editing and a verified `subarudbw` checksum save before
   flashing.
 

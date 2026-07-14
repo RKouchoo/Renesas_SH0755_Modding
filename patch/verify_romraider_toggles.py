@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Audit the definition-backed runtime switches in both generated patch images."""
+"""Audit runtime switches in the standalone and combined patch images."""
 from pathlib import Path
 import xml.etree.ElementTree as ET
 
@@ -27,6 +27,36 @@ CASES = [
         "definition": ROOT / "defs/D2WD610H_AVLS_single_front_af_patch.xml",
         "image": ROOT / "patch/D2WD610H_single_front_af.bin",
         "xmlid": "D2WD610H_AVLS_SINGLE_FRONT_AF_PATCH",
+        "switch": "Single Front A/F Patch Enable",
+        "address": 0x7D91C,
+        "tables": {
+            "(P0051) HO2S CIRCUIT LOW B2 S1": 0x5BDB4,
+            "(P0052) HO2S CIRCUIT HIGH B2 S1": 0x5BDB3,
+            "(P0151) O2 SENSOR CIRCUIT LOW B2 S1": 0x5BDA1,
+            "(P0152) O2 SENSOR CIRCUIT HIGH B2 S1": 0x5BDA3,
+            "(P0154) O2 SENSOR CIRCUIT OPEN B2 S1": 0x5BDBC,
+        },
+    },
+    {
+        "definition": ROOT / "defs/D2WD610H_AVLS_boost_single_front_af_patch.xml",
+        "image": ROOT / "patch/D2WD610H_boost_single_front_af.bin",
+        "xmlid": "D2WD610H_AVLS_BOOST_SINGLE_FRONT_AF_PATCH",
+        "switch": "Boost Control Patch Enable",
+        "address": 0x7D80C,
+        "tables": {
+            "Boost Wastegate Duty (RPM)": 0x7D7C4,
+            "Boost Target (RPM)": 0x7D7E0,
+            "Boost Kp (proportional gain)": 0x7D800,
+            "Boost Max Duty Ratio": 0x7D804,
+            "Boost Overboost Cut (Duty, soft)": 0x7D808,
+            "Boost Minimum Throttle": 0x7D8BC,
+            "Boost Overboost Fuel Cut (hard)": 0x7D8C0,
+        },
+    },
+    {
+        "definition": ROOT / "defs/D2WD610H_AVLS_boost_single_front_af_patch.xml",
+        "image": ROOT / "patch/D2WD610H_boost_single_front_af.bin",
+        "xmlid": "D2WD610H_AVLS_BOOST_SINGLE_FRONT_AF_PATCH",
         "switch": "Single Front A/F Patch Enable",
         "address": 0x7D91C,
         "tables": {

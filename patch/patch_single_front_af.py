@@ -10,10 +10,10 @@ Both stock rear narrowband channels remain untouched. An aftermarket post-turbo
 wideband, if fitted, is external instrumentation and is not connected to or
 decoded by this ROM patch.
 
-This remains a separate development patch. Its runtime-enable byte is at 0x7D91C
-and its code starts at 0x7D920, after the boost patch's 0x7D790..0x7D903
-allocation, so both can later be merged from a fresh stock image without
-collision. Never use a generated image as patch input.
+This standalone development patch has a runtime-enable byte at 0x7D91C and its
+code starts at 0x7D920, after the boost patch's 0x7D790..0x7D903 allocation.
+patch_combined.py applies both guarded components to one fresh stock image with
+no collision. Never use a generated image as patch input.
 
 Usage:  python3 patch_single_front_af.py [out.bin]
 """
@@ -169,23 +169,8 @@ def merge_ranges(addresses):
     return out
 
 
-def main():
-    if os.path.realpath(OUT) == os.path.realpath(STOCK):
-        raise SystemExit("REFUSING: output path aliases the canonical stock ROM: %s" % STOCK)
-    if os.path.exists(OUT) and os.path.samefile(OUT, STOCK):
-        raise SystemExit("REFUSING: output file is the canonical stock ROM (or a hard link to it)")
-
-    with open(STOCK, "rb") as handle:
-        stock_bytes = handle.read()
-    stock_hash = hashlib.sha256(stock_bytes).hexdigest()
-    if stock_hash != STOCK_SHA256:
-        raise SystemExit("REFUSING: canonical stock ROM hash is %s (expected %s)"
-                         % (stock_hash, STOCK_SHA256))
-    if len(stock_bytes) != 0x80000:
-        raise SystemExit("REFUSING: expected a 512 KB stock image, got %d bytes" % len(stock_bytes))
-    rom = bytearray(stock_bytes)
-
-    blobs = [
+def build_blobs():
+    return [
         ("front_patch_enable", FRONT_AF_ENABLE_ADDR, b"\x01"),
         ("front_sensor_mirror_wrapper", FRONT_MIRROR_WRAPPER_ADDR,
          build_front_mirror_wrapper()),
@@ -196,6 +181,19 @@ def main():
         ("bank2_inhibit_selector", BANK2_INHIBIT_SELECTOR_ADDR,
          build_bank2_inhibit_selector()),
     ]
+
+
+def apply_to_rom(rom):
+    """Apply only the single-front-A/F changes to a stock-derived ROM image.
+
+    This is shared by the standalone and combined builders.  All stock hooks,
+    diagnostic bytes, and free-space allocations keep their original guards.
+    """
+    if len(rom) != 0x80000:
+        raise SystemExit("REFUSING: expected a 512 KB stock-derived image, got %d bytes"
+                         % len(rom))
+
+    blobs = build_blobs()
     limits = {
         "front_patch_enable": FRONT_MIRROR_WRAPPER_ADDR,
         "front_sensor_mirror_wrapper": FRONT_ORIGINAL_TRAMPOLINE_ADDR,
@@ -232,6 +230,25 @@ def main():
 
     for _, address, data in blobs:
         rom[address:address + len(data)] = data
+    return blobs
+
+
+def main():
+    if os.path.realpath(OUT) == os.path.realpath(STOCK):
+        raise SystemExit("REFUSING: output path aliases the canonical stock ROM: %s" % STOCK)
+    if os.path.exists(OUT) and os.path.samefile(OUT, STOCK):
+        raise SystemExit("REFUSING: output file is the canonical stock ROM (or a hard link to it)")
+
+    with open(STOCK, "rb") as handle:
+        stock_bytes = handle.read()
+    stock_hash = hashlib.sha256(stock_bytes).hexdigest()
+    if stock_hash != STOCK_SHA256:
+        raise SystemExit("REFUSING: canonical stock ROM hash is %s (expected %s)"
+                         % (stock_hash, STOCK_SHA256))
+    if len(stock_bytes) != 0x80000:
+        raise SystemExit("REFUSING: expected a 512 KB stock image, got %d bytes" % len(stock_bytes))
+    rom = bytearray(stock_bytes)
+    blobs = apply_to_rom(rom)
 
     with open(OUT, "wb") as handle:
         handle.write(rom)
