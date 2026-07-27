@@ -1,10 +1,17 @@
 #!/usr/bin/env python3
-"""Guarded speed-density component for Subaru EZ30R D2WD610H.
+"""MAFless speed-density component for Subaru EZ30R D2WD610H.
 
-The stock periodic airflow task (function pointer at 0x11D20) is replaced by a
-wrapper.  The wrapper always runs the complete stock airflow calculation first.
-When the calibration switch is exactly 01 and every input/calibration passes its
-validity gate, it replaces the final stock mass-airflow value at 0xFFFFB420 with:
+The stock periodic airflow/load task remains scheduled at function pointer
+0x11D20 so its downstream load, filtering, and state channels keep updating.
+Its final-airflow helper pointer at 0x1743C is replaced by an always-on
+speed-density calculation before the task stores 0xFFFFB420.  Both raw MAF
+conversion calls in the sensor-processing tasks are disabled.  The scheduled
+raw-MAF limit/filter update, MAF-input diagnostic task, and both scheduled calls
+to a mixed temperature/MAF diagnostic condition are bypassed, and the two
+D2WD610H MAF input DTC switches are cleared.
+
+When every input/calibration passes its validity gate, the replacement writes
+the final stock mass-airflow value at 0xFFFFB420 as:
 
     airflow_g_s =
         VE[MAP_abs_mmHg, RPM]
@@ -17,11 +24,12 @@ validity gate, it replaces the final stock mass-airflow value at 0xFFFFB420 with
 
 The IAT curve is 293.15 / (IAT_C + 273.15) by default.  This keeps the runtime
 stub division-free and makes both the VE surface and density correction visible
-in RomRaider.  Invalid inputs, invalid calibration values, RPM below the
-configured minimum, or any non-01 enable value retain the stock result.
+in RomRaider.  Exact zero RPM writes zero airflow.  Any other invalid sensor,
+calibration, lookup, or arithmetic state writes a fixed 500 g/s rich/high-load
+fail-safe; it never falls back to MAF or a stale MAF-derived value.
 
 The canonical stock ROM in the repository root is read only.  The generated
-standalone image defaults OFF and is not a flash-ready tune.
+standalone image is always MAFless and is not a flash-ready tune.
 """
 
 from __future__ import annotations
@@ -48,7 +56,25 @@ STOCK_SHA256 = "ed0fe0341d97fb760c2cda3f07277f861495d32f6520e3ce8047b8b0f7bfd4ee
 
 # Ghidra-verified stock task and signal path.
 AIRFLOW_TASK_PTR = 0x00011D20
-STOCK_AIRFLOW_TASK = 0x000172A4
+STOCK_MAF_AIRFLOW_TASK = 0x000172A4
+FINAL_AIRFLOW_CALL_SEQUENCE_ADDR = 0x00017398
+FINAL_AIRFLOW_CALL_SEQUENCE_STOCK = bytes.fromhex(
+    "420bf42c932cf30a"
+)  # jsr @r2; fmov fr2,fr4; load B420; fmov.s fr0,@r3
+FINAL_AIRFLOW_HELPER_PTR = 0x0001743C
+STOCK_FINAL_AIRFLOW_HELPER = 0x000024B0
+MAF_CONVERSION_CALL_ADDRS = (0x0000639C, 0x000066D8)
+MAF_CONVERSION_CALL_STOCK = bytes.fromhex("430b")  # jsr @r3; target loaded as 0x00007C30
+MAF_CONVERSION_CALL_PATCHED = bytes.fromhex("0009")  # nop
+MAF_LIMIT_UPDATE_CALL_ADDR = 0x000107F8
+MAF_LIMIT_UPDATE_CALL_STOCK = bytes.fromhex("420b")  # jsr @r2; target 0x00017726
+MAF_INPUT_DIAGNOSTIC_TASK_PTR = 0x00011804
+STOCK_MAF_INPUT_DIAGNOSTIC_TASK = 0x00061328
+TEMPERATURE_MAF_CONDITION_TASK_PTRS = (0x0001062C, 0x0001185C)
+STOCK_TEMPERATURE_MAF_CONDITION_TASK = 0x0007266C
+NOOP_TASK = 0x000066C2  # sensor_processing_return_stub: rts; nop
+P0102_SWITCH_ADDR = 0x0005BD57
+P0103_SWITCH_ADDR = 0x0005BD58
 TABLE_2D_LOOKUP = 0x0000209C
 TABLE_3D_LOOKUP = 0x00002150
 
@@ -56,13 +82,16 @@ MAP_ADDR = 0xFFFFABC4                 # float, mmHg absolute
 RPM_ADDR = 0xFFFFB544                 # float, RPM
 IAT_ADDR = 0xFFFFB3B8                 # float, degrees C
 FINAL_MASS_AIRFLOW_ADDR = 0xFFFFB420  # float, g/s; stock post-compensation channel
+SYNTHETIC_RAW_AIRFLOW_ADDR = 0xFFFFB448
+SYNTHETIC_FILTER_A_ADDR = 0xFFFFB458
+SYNTHETIC_FILTER_B_ADDR = 0xFFFFB45C
 
 # Free flash starts after the rotational-idle component's reserved ceiling.
 FREE_START = 0x0007DD00
 COMPONENT_END = 0x0007E3FF
 FREE_END = 0x0007FAF7
 
-SD_ENABLE_ADDR = 0x0007DD00           # uint8, exact 01 enables; default 00
+FAILSAFE_AIRFLOW_ADDR = 0x0007DD00     # fixed float, g/s; not exposed for tuning
 GLOBAL_MULTIPLIER_ADDR = 0x0007DD04   # float
 DISPLACEMENT_ADDR = 0x0007DD08        # float, litres
 MAX_AIRFLOW_ADDR = 0x0007DD0C         # float, g/s
@@ -121,9 +150,10 @@ IAT_DENSITY_CORRECTION = tuple(
 GLOBAL_MULTIPLIER = 1.0
 DISPLACEMENT_LITRES = 2.999
 MAX_AIRFLOW_G_S = 500.0
+FAILSAFE_AIRFLOW_G_S = 500.0
 MAP_MIN_MMHG = 100.0
 MAP_MAX_MMHG = 1600.0
-RPM_MIN = 100.0
+RPM_MIN = 0.0
 RPM_MAX = 7500.0
 IAT_MIN_C = -50.0
 IAT_MAX_C = 150.0
@@ -224,13 +254,20 @@ def emit_positive_calibration_gate(
 
 
 def build_wrapper() -> bytes:
-    """Run stock first, then conditionally replace final mass airflow."""
+    """Calculate MAFless airflow or write the deterministic fail-safe."""
     a = Asm(WRAPPER_ADDR)
     a.stsl_pr()
-    a.movl_pool(2, STOCK_AIRFLOW_TASK).jsr(2).nop()
 
-    a.movl_pool(1, SD_ENABLE_ADDR).movb_at(0, 1).cmp_eq_imm(0x01)
-    a.bf("invalid_inputs")
+    # Publish zero immediately while the engine is stopped, even if MAP/IAT or
+    # editable validity calibrations have not initialized yet.  A non-finite
+    # RPM still takes the deterministic fail-safe path.
+    a.movl_pool(1, RPM_ADDR).fmov_load(5, 1)
+    a.fcmpeq(5, 5).bf("early_invalid_rpm")
+    a.fldi0(3).fcmpeq(3, 5).bf("rpm_precheck_done")
+    a.bra("store_zero").nop()
+    a.label("early_invalid_rpm")
+    a.bra("failsafe").nop()
+    a.label("rpm_precheck_done")
 
     emit_float_range_gate(a, MAP_ADDR, MAP_MIN_ADDR, MAP_MAX_ADDR, 4, "invalid_inputs")
     emit_float_range_gate(a, RPM_ADDR, RPM_MIN_ADDR, RPM_MAX_ADDR, 5, "invalid_inputs")
@@ -240,7 +277,7 @@ def build_wrapper() -> bytes:
     emit_positive_calibration_gate(a, MAX_AIRFLOW_ADDR, 2, "invalid_inputs")
     a.bra("inputs_valid").nop()
     a.label("invalid_inputs")
-    a.bra("done").nop()
+    a.bra("failsafe").nop()
     a.label("inputs_valid")
 
     # VE = VE[MAP, RPM].
@@ -248,7 +285,11 @@ def build_wrapper() -> bytes:
     a.movl_pool(1, RPM_ADDR).fmov_load(5, 1)
     a.movl_pool(4, VE_DESC_ADDR)
     a.movl_pool(2, TABLE_3D_LOOKUP).jsr(2).nop()
-    emit_positive_finite_value_gate(a, 0, "done")
+    emit_positive_finite_value_gate(a, 0, "invalid_ve")
+    a.bra("ve_valid").nop()
+    a.label("invalid_ve")
+    a.bra("failsafe").nop()
+    a.label("ve_valid")
 
     # Base mass flow at 20 C.
     a.movl_pool(1, MAP_ADDR).fmov_load(2, 1).fmul(2, 0)
@@ -262,20 +303,42 @@ def build_wrapper() -> bytes:
     a.movl_pool(1, IAT_ADDR).fmov_load(4, 1)
     a.movl_pool(4, IAT_DESC_ADDR)
     a.movl_pool(2, TABLE_2D_LOOKUP).jsr(2).nop()
-    emit_positive_finite_value_gate(a, 0, "drop_and_done")
+    emit_positive_finite_value_gate(a, 0, "drop_and_failsafe")
     a.fpop(1).fmul(1, 0)
 
     # Reject an invalid product and cap the modeled airflow.
-    emit_positive_finite_value_gate(a, 0, "done")
+    emit_positive_finite_value_gate(a, 0, "invalid_product")
+    a.bra("product_valid").nop()
+    a.label("invalid_product")
+    a.bra("failsafe").nop()
+    a.label("product_valid")
     a.movl_pool(1, MAX_AIRFLOW_ADDR).fmov_load(2, 1)
     a.fcmpgt(2, 0).bf("store")
     a.fmov(2, 0)
     a.label("store")
-    a.movl_pool(1, FINAL_MASS_AIRFLOW_ADDR).fmov_store(0, 1)
-    a.bra("done").nop()
+    a.bra("store_all").nop()
 
-    a.label("drop_and_done")
+    a.label("drop_and_failsafe")
     a.fpop(1)
+    a.bra("failsafe").nop()
+
+    a.label("store_zero")
+    a.fldi0(0)
+    a.bra("store_all").nop()
+
+    a.label("failsafe")
+    a.movl_pool(1, FAILSAFE_AIRFLOW_ADDR).fmov_load(0, 1)
+
+    # The retained stock task stores FR0 to B420 immediately after this helper
+    # returns.  Mirror the same synthetic value into its three former raw-MAF
+    # state channels so the task's next-cycle internal state stays coherent
+    # without ever sampling the physical MAF.
+    a.label("store_all")
+    a.movl_pool(1, FINAL_MASS_AIRFLOW_ADDR).fmov_store(0, 1)
+    a.movl_pool(1, SYNTHETIC_RAW_AIRFLOW_ADDR).fmov_store(0, 1)
+    a.movl_pool(1, SYNTHETIC_FILTER_A_ADDR).fmov_store(0, 1)
+    a.movl_pool(1, SYNTHETIC_FILTER_B_ADDR).fmov_store(0, 1)
+
     a.label("done")
     a.ldsl_pr().rts().nop()
     return a.assemble()
@@ -298,7 +361,7 @@ def build_blobs() -> list[tuple[str, int, bytes]]:
         )
     )
     return [
-        ("speed_density_enable", SD_ENABLE_ADDR, b"\x00"),
+        ("speed_density_fixed_failsafe_airflow", FAILSAFE_AIRFLOW_ADDR, f32(FAILSAFE_AIRFLOW_G_S)),
         ("speed_density_calibrations", GLOBAL_MULTIPLIER_ADDR, calibrations),
         (
             "speed_density_ve_descriptor",
@@ -386,10 +449,56 @@ def apply_to_rom(rom: bytearray) -> list[tuple[str, int, bytes]]:
     checked_write(
         rom,
         AIRFLOW_TASK_PTR,
-        be32(STOCK_AIRFLOW_TASK),
-        be32(WRAPPER_ADDR),
-        "stock airflow periodic-task pointer",
+        be32(STOCK_MAF_AIRFLOW_TASK),
+        be32(STOCK_MAF_AIRFLOW_TASK),
+        "retained stock airflow/load periodic-task pointer",
     )
+    checked_write(
+        rom,
+        FINAL_AIRFLOW_CALL_SEQUENCE_ADDR,
+        FINAL_AIRFLOW_CALL_SEQUENCE_STOCK,
+        FINAL_AIRFLOW_CALL_SEQUENCE_STOCK,
+        "retained final-airflow call and B420 store sequence",
+    )
+    checked_write(
+        rom,
+        FINAL_AIRFLOW_HELPER_PTR,
+        be32(STOCK_FINAL_AIRFLOW_HELPER),
+        be32(WRAPPER_ADDR),
+        "stock final-airflow helper pointer",
+    )
+    for address in MAF_CONVERSION_CALL_ADDRS:
+        checked_write(
+            rom,
+            address,
+            MAF_CONVERSION_CALL_STOCK,
+            MAF_CONVERSION_CALL_PATCHED,
+            "raw MAF conversion call",
+        )
+    checked_write(
+        rom,
+        MAF_LIMIT_UPDATE_CALL_ADDR,
+        MAF_LIMIT_UPDATE_CALL_STOCK,
+        MAF_CONVERSION_CALL_PATCHED,
+        "stock MAF limit/filter update call",
+    )
+    checked_write(
+        rom,
+        MAF_INPUT_DIAGNOSTIC_TASK_PTR,
+        be32(STOCK_MAF_INPUT_DIAGNOSTIC_TASK),
+        be32(NOOP_TASK),
+        "MAF high/low input diagnostic task pointer",
+    )
+    for address in TEMPERATURE_MAF_CONDITION_TASK_PTRS:
+        checked_write(
+            rom,
+            address,
+            be32(STOCK_TEMPERATURE_MAF_CONDITION_TASK),
+            be32(NOOP_TASK),
+            "temperature/MAF diagnostic-condition task pointer",
+        )
+    checked_write(rom, P0102_SWITCH_ADDR, b"\x01", b"\x00", "P0102 MAF low-input switch")
+    checked_write(rom, P0103_SWITCH_ADDR, b"\x01", b"\x00", "P0103 MAF high-input switch")
     for _, address, data in blobs:
         rom[address : address + len(data)] = data
     return blobs
@@ -430,12 +539,18 @@ def main(argv: list[str] | None = None) -> None:
     print("  stock source   : %s (UNCHANGED, SHA-256 %s)" % (STOCK, stock_hash))
     print("  output SHA-256 : %s" % hashlib.sha256(rom).hexdigest())
     print(
-        "  task hook      : 0x%05X 0x%08X -> 0x%08X"
-        % (AIRFLOW_TASK_PTR, STOCK_AIRFLOW_TASK, WRAPPER_ADDR)
+        "  retained task  : 0x%05X -> 0x%08X"
+        % (AIRFLOW_TASK_PTR, STOCK_MAF_AIRFLOW_TASK)
     )
-    print("  runtime switch : 0x%05X=00 (OFF by default)" % SD_ENABLE_ADDR)
+    print(
+        "  airflow hook   : 0x%05X 0x%08X -> 0x%08X"
+        % (FINAL_AIRFLOW_HELPER_PTR, STOCK_FINAL_AIRFLOW_HELPER, WRAPPER_ADDR)
+    )
+    print("  MAF execution  : converter + raw limit/filter NOP; final MAF calculation replaced")
+    print("  MAF diagnostics: input + mixed temperature/MAF tasks bypassed; P0102/P0103 off")
     print("  modeled output : 0x%08X mass airflow, maximum %.1f g/s" %
           (FINAL_MASS_AIRFLOW_ADDR, MAX_AIRFLOW_G_S))
+    print("  fault output   : fixed %.1f g/s rich/high-load fail-safe" % FAILSAFE_AIRFLOW_G_S)
     print("  changed bytes  : %d" % len(changed))
     print(
         "  changed ranges : %s"
@@ -443,7 +558,7 @@ def main(argv: list[str] | None = None) -> None:
     )
     for name, address, data in blobs:
         print("  %-34s @0x%05X : %d bytes" % (name, address, len(data)))
-    print("\n*** STATIC DEVELOPMENT COMPONENT: verify checksum and dyno-calibrate before enabling. ***")
+    print("\n*** STATIC DEVELOPMENT COMPONENT: verify checksum and dyno-calibrate before use. ***")
 
 
 if __name__ == "__main__":

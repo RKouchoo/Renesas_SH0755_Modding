@@ -2,11 +2,13 @@
 """Generate the standalone D2WD610H AVLS + speed-density RomRaider definition.
 
 The project keeps the metric D2WD610H AVLS definition as the source template.
-This generator adds only the speed-density tables and target addresses; it does
-not pull unrelated ROM definitions into the output.
+This generator removes the now-unused MAF calibration/DTC entries, then adds
+only the MAFless speed-density tables and target addresses.  It does not pull
+unrelated ROM definitions into the output.
 """
 
 from pathlib import Path
+import re
 
 
 HERE = Path(__file__).resolve().parent
@@ -14,15 +16,18 @@ ROOT = HERE.parent
 SOURCE = ROOT / "defs" / "D2WD610H_AVLS.xml"
 OUTPUT = HERE / "D2WD610H_AVLS_speed_density_patch.xml"
 
-TEMPLATE_INSERT = """  <table type="Switch" name="Speed Density Patch Enable" category="Speed Density (patch)" sizey="1" userlevel="1">
-   <description>Exact 01 enables the speed-density airflow replacement after the complete stock airflow task. Every other value retains stock MAF behavior. This is a flash calibration switch, not a live control.</description>
-   <state name="on" data="01" />
-   <state name="off" data="00" />
-  </table>
-  <table type="2D" name="Speed Density Global Airflow Multiplier" category="Speed Density (patch)" storagetype="float" endian="little" sizey="1" userlevel="3">
+REMOVED_MAF_TABLES = {
+    "MAF Limit (Maximum) ",
+    "MAF Sensor Scaling",
+    "MAF Compensation (IAT)",
+    "(P0102) MAF SENSOR LOW INPUT",
+    "(P0103) MAF SENSOR HIGH INPUT",
+}
+
+TEMPLATE_INSERT = """  <table type="2D" name="Speed Density Global Airflow Multiplier" category="Speed Density (patch)" storagetype="float" endian="little" sizey="1" userlevel="3">
    <scaling units="multiplier" expression="x" to_byte="x" format="0.000" fineincrement=".005" coarseincrement=".02" />
    <table type="Static Y Axis" name="Global correction" sizey="1"><data>Multiplier</data></table>
-   <description>Final multiplier applied to modeled mass airflow. Values must be finite and greater than zero or the wrapper retains the stock result.</description>
+   <description>Final multiplier applied to modeled mass airflow. A non-positive or non-finite value invokes the fixed 500 g/s rich/high-load fail-safe.</description>
   </table>
   <table type="2D" name="Speed Density Engine Displacement" category="Speed Density (patch)" storagetype="float" endian="little" sizey="1" userlevel="3">
    <scaling units="litres" expression="x" to_byte="x" format="0.000" fineincrement=".001" coarseincrement=".01" />
@@ -32,22 +37,22 @@ TEMPLATE_INSERT = """  <table type="Switch" name="Speed Density Patch Enable" ca
   <table type="2D" name="Speed Density Maximum Airflow" category="Speed Density (patch)" storagetype="float" endian="little" sizey="1" userlevel="3">
    <scaling units="g/s" expression="x" to_byte="x" format="0.0" fineincrement="1" coarseincrement="10" />
    <table type="Static Y Axis" name="Safety cap" sizey="1"><data>Maximum</data></table>
-   <description>Maximum final speed-density airflow. A non-positive or non-finite value makes the wrapper retain stock airflow.</description>
+   <description>Maximum normal speed-density airflow. A non-positive or non-finite value invokes the fixed 500 g/s rich/high-load fail-safe.</description>
   </table>
   <table type="2D" name="Speed Density MAP Valid Range" category="Speed Density (patch)" storagetype="float" endian="little" sizey="2" userlevel="4">
    <scaling units="mmHg absolute" expression="x" to_byte="x" format="0.0" fineincrement="1" coarseincrement="10" />
    <table type="Static Y Axis" name="Gate" sizey="2"><data>Minimum</data><data>Maximum</data></table>
-   <description>Native absolute-MAP validity window. Outside it the wrapper retains stock airflow.</description>
+   <description>Native absolute-MAP validity window. Outside it the task writes the fixed 500 g/s rich/high-load fail-safe.</description>
   </table>
   <table type="2D" name="Speed Density RPM Valid Range" category="Speed Density (patch)" storagetype="float" endian="little" sizey="2" userlevel="4">
    <scaling units="RPM" expression="x" to_byte="x" format="#" fineincrement="10" coarseincrement="100" />
    <table type="Static Y Axis" name="Gate" sizey="2"><data>Minimum</data><data>Maximum</data></table>
-   <description>RPM validity window. Below or above it the wrapper retains stock airflow.</description>
+   <description>RPM validity window. Exact zero RPM writes zero airflow; other invalid values invoke the fixed 500 g/s rich/high-load fail-safe.</description>
   </table>
   <table type="2D" name="Speed Density IAT Valid Range" category="Speed Density (patch)" storagetype="float" endian="little" sizey="2" userlevel="4">
    <scaling units="Degrees C" expression="x" to_byte="x" format="0.0" fineincrement="1" coarseincrement="5" />
    <table type="Static Y Axis" name="Gate" sizey="2"><data>Minimum</data><data>Maximum</data></table>
-   <description>Intake-air-temperature validity window. Outside it the wrapper retains stock airflow.</description>
+   <description>Intake-air-temperature validity window. Outside it the task writes the fixed 500 g/s rich/high-load fail-safe.</description>
   </table>
   <table type="3D" name="Speed Density VE (MAP x RPM)" category="Speed Density (patch)" storagetype="float" endian="little" sizex="13" sizey="17" userlevel="2">
    <scaling units="VE fraction" expression="x" to_byte="x" format="0.000" fineincrement=".005" coarseincrement=".02" />
@@ -68,8 +73,7 @@ TEMPLATE_INSERT = """  <table type="Switch" name="Speed Density Patch Enable" ca
   </table>
 """
 
-TARGET_INSERT = """  <table name="Speed Density Patch Enable" storageaddress="0x7DD00" />
-  <table name="Speed Density Global Airflow Multiplier" storageaddress="0x7DD04" />
+TARGET_INSERT = """  <table name="Speed Density Global Airflow Multiplier" storageaddress="0x7DD04" />
   <table name="Speed Density Engine Displacement" storageaddress="0x7DD08" />
   <table name="Speed Density Maximum Airflow" storageaddress="0x7DD0C" />
   <table name="Speed Density MAP Valid Range" storageaddress="0x7DD10" />
@@ -85,10 +89,51 @@ TARGET_INSERT = """  <table name="Speed Density Patch Enable" storageaddress="0x
 """
 
 
+def remove_named_table_blocks(text: str, names: set[str]) -> str:
+    """Remove complete top-level table blocks while preserving source formatting."""
+    table_tags = re.compile(r"</?table\b[^>]*>")
+
+    def depth_delta(line: str) -> int:
+        delta = 0
+        for tag in table_tags.findall(line):
+            if tag.startswith("</"):
+                delta -= 1
+            elif not tag.rstrip().endswith("/>"):
+                delta += 1
+        return delta
+
+    lines = text.splitlines(keepends=True)
+    output: list[str] = []
+    index = 0
+    while index < len(lines):
+        line = lines[index]
+        matched = next(
+            (name for name in names if ('name="%s"' % name) in line and "<table" in line),
+            None,
+        )
+        if matched is None:
+            output.append(line)
+            index += 1
+            continue
+
+        depth = depth_delta(line)
+        index += 1
+        while depth > 0 and index < len(lines):
+            depth += depth_delta(lines[index])
+            index += 1
+        if depth != 0:
+            raise SystemExit("unterminated table block while removing %s" % matched)
+    return "".join(output)
+
+
 def render_definition() -> str:
     text = SOURCE.read_text(encoding="utf-8")
-    if "Speed Density Patch Enable" in text:
+    if "Speed Density Global Airflow Multiplier" in text:
         raise SystemExit("source definition already contains speed-density entries")
+    text = remove_named_table_blocks(text, REMOVED_MAF_TABLES)
+    for name in REMOVED_MAF_TABLES:
+        if ('name="%s"' % name) in text:
+            raise SystemExit("failed to remove inherited MAF table %s" % name)
 
     target_marker = ' <rom base="32BITBASE">\n'
     target_start = text.find(target_marker)
@@ -108,7 +153,7 @@ def render_definition() -> str:
 
     text = text.replace(
         "<xmlid>D2WD610H_AVLS</xmlid>",
-        "<xmlid>D2WD610H_AVLS_SPEED_DENSITY_PATCH</xmlid>",
+        "<xmlid>D2WD610H_AVLS_SPEED_DENSITY_ONLY</xmlid>",
         1,
     )
     return text

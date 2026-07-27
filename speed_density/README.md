@@ -1,30 +1,47 @@
-# D2WD610H speed-density component
+# D2WD610H MAFless speed-density component
 
-This folder contains a standalone, default-OFF firmware component for the 2005 ADM
-Liberty 3.0R BLE manual ROM `D2WD610H`.
+This folder contains the standalone, always-on MAFless speed-density firmware component for the
+2005 ADM Liberty 3.0R BLE manual ROM `D2WD610H`.
 
-It does not replace the stock ROM in the repository root. The builder always hashes and copies
-that stock image into a separate output.
+The builder never edits the canonical root ROM. It verifies the SHA-256 of
+`2005 BLE MT.bin`, copies it in memory, and writes a separate output.
 
 ## What it changes
 
-The Ghidra-verified periodic task pointer at `0x11D20` normally calls
-`maf_airflow_temperature_compensation_update` at `0x172A4`. The component repoints that one
-slot to `speed_density_airflow_wrapper` at `0x7E18C`.
+The live stock Ghidra project confirms that periodic task pointer `0x11D20` invokes
+`maf_airflow_temperature_compensation_update` at `0x172A4`. This component deliberately retains
+that task because its downstream half derives and filters the engine-load channels
+`0xFFFFB428..0xFFFFB440`.
 
-The wrapper:
+The stock task normally calls helper `0x24B0` through literal `0x1743C` immediately before storing
+final airflow to `0xFFFFB420`. The component redirects that one helper pointer to
+`speed_density_airflow_calculate` at `0x7E18C`. The returned SD value is therefore stored before
+the retained load/state calculations run.
 
-1. runs the complete stock airflow task;
-2. returns with the stock result unless the enable byte is exactly `01`;
-3. rejects NaN/out-of-window MAP, RPM, and IAT values and invalid calibrations;
-4. looks up VE from native absolute MAP and RPM;
-5. applies displacement, ideal-gas conversion, IAT density correction, and a global multiplier;
-6. caps the result at the configurable maximum; and
-7. writes modeled mass airflow to the stock post-compensation channel at `0xFFFFB420`.
+It also:
 
-All existing consumers—including fuel-trim range selection and the MAF-derived load/fueling
-pipeline—continue to use the same RAM signal. The wrapper is after the stock MAF compensation
-and limit logic, so the enabled result is not silently constrained by the stock MAF table format.
+- replaces both raw-MAF conversion calls, at `0x639C` and `0x66D8`, with `nop`;
+- replaces the only scheduled `maf_airflow_limit_update` call at `0x107F8` with `nop`;
+- redirects the high/low MAF-input diagnostic task at pointer `0x11804` to the stock no-op return
+  stub at `0x66C2`;
+- redirects both scheduled calls to the MAF-dependent temperature-plausibility condition
+  (`0x1062C` and `0x1185C`) to that same no-op stub;
+- clears D2WD610H diagnostic switches P0102 and P0103 at `0x5BD57..0x5BD58`; and
+- removes the MAF limit, scaling, compensation, P0102, and P0103 entries from this component's
+  generated RomRaider definition.
+
+The replacement helper validates native absolute MAP, RPM, IAT, and its calibration values, looks
+up a 13×17 VE surface, applies displacement and IAT-density corrections, caps normal output, and
+writes modeled mass airflow to the existing final channel at `0xFFFFB420`. Existing load,
+fueling, trim, timing, diagnostic, and logging consumers therefore receive speed-density airflow
+without being individually patched. It also mirrors the synthetic result to the former raw-MAF
+state channels `B448/B458/B45C`; this keeps the retained task's next-cycle internal state coherent
+without sampling the physical MAF.
+
+There is deliberately no stock-MAF fallback or runtime OFF switch. Exact zero RPM writes zero
+airflow. Any other invalid input, calibration, table result, or arithmetic state writes a fixed
+500 g/s value, selecting rich/high-load behavior rather than retaining stale or missing MAF data.
+That is an emergency indication, not a drivable limp mode.
 
 ## Build and verify
 
@@ -41,13 +58,11 @@ Outputs:
 - `speed_density/D2WD610H_speed_density.bin`
 - `speed_density/D2WD610H_AVLS_speed_density_patch.xml`
 
-The ROM defaults OFF at `0x7DD00`. Loading the XML does not enable the component by itself; set
-`Speed Density Patch Enable` to `on`, save a new working ROM, correct its Subaru checksum, and
-verify the changed file before use.
+The current deterministic standalone ROM SHA-256 is
+`548fc5353338248c683098507aed79a6c5f377bb2462b65a091a2f02b0899467`.
+It is not included in the main combined patch or base turbo map.
 
 ## Calibration model
-
-The runtime equation is:
 
 ```text
 airflow_g_s =
@@ -63,24 +78,28 @@ airflow_g_s =
 The fixed constant is the ideal-gas/four-stroke conversion per litre at 20 °C. The default IAT
 curve is `293.15 / (IAT_C + 273.15)`.
 
-The supplied VE table is a conservative mathematical starting surface, not measured EZ30R
-volumetric efficiency. Around high load it intentionally estimates on the rich/high-load side.
-It must be calibrated against synchronized MAP, RPM, IAT, ECU lambda, external post-turbo
-wideband lambda, fuel pressure, and the retained MAF before the MAF is treated as non-authoritative.
+The supplied VE surface is only a conservative mathematical starting point. It is not a measured
+EZ30R VE map and must be calibrated from synchronized lambda, MAP, RPM, IAT, fuel-pressure, and
+load data on a load-controlled dyno.
 
-## Hardware assumptions
+## Required hardware
 
-- The MAP signal must remain valid across vacuum and the intended positive-pressure range.
-- IAT must be measured after the intercooler in representative charge air. A MAF-integrated,
-  pre-compressor IAT invalidates the density correction under boost.
-- Keep the MAF electrically connected during initial commissioning. The wrapper deliberately
-  retains the full stock result on invalid speed-density input; it does not disable MAF DTCs.
-- The component does not change MAP scaling. A ROM combined with the existing boost component
-  uses that component's `-414.0 / 514.199951` native-mmHg scaling and therefore requires the
-  matching sensor and a pressure-calibration check.
+- The MAF may be physically removed; it is no longer an airflow input.
+- The original MAF assembly also carries IAT on common configurations. A standalone, fast-response
+  IAT sensor must therefore retain the ECU's IAT circuit and be located after the intercooler in
+  representative charge air. Confirm the actual vehicle harness and wiring diagram before wiring;
+  this patch does not assume a pinout.
+- MAP must be correctly scaled and valid throughout vacuum and the intended positive-pressure
+  range. This component does not alter MAP scaling. The existing boost component supplies its own
+  donor-derived scaling and requires the matching sensor plus a pressure-reference check.
+- Stock MAP and direct IAT diagnostics remain active. The MAF high/low monitor and its P0102/P0103
+  switches are disabled; one mixed temperature-plausibility condition is also bypassed because
+  its decision requires the removed MAF signal.
+- The shared ADC scan and raw MAF logger channel remain in stock code, but no patched airflow or
+  diagnostic decision consumes that value. A raw-MAF log from this image has no tuning meaning.
 
 ## Status
 
-Static implementation and binary verification are complete. Vehicle validation is not. Do not
-enable it for a boosted pull until the commissioning gates in [COMMISSIONING.md](COMMISSIONING.md)
-have passed on a load-controlled dyno.
+Static implementation, Ghidra tracing, deterministic rebuilding, opcode checks, definition checks,
+and multi-component overlap checks pass. Vehicle validation does not. Follow
+[COMMISSIONING.md](COMMISSIONING.md) before any boosted operation.

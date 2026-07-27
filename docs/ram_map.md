@@ -16,7 +16,7 @@ unless marked *(inferred)*. Cross-refs: [D2WD610H_RE_notes.md](D2WD610H_RE_notes
 | 0xFFFFAB04 | u16 | MAP raw ADC value | `map_sensor_voltage_to_pressure_process` input |
 | **0xFFFFB3AC** | float | **Coolant temp (ECT), °C** | read by ~100 fns; purge/thermal input |
 | **0xFFFFB3B8** | float | **Intake-air temperature (IAT), °C** | written by `intake_air_temperature_update` @0x16D1C; input to stock MAF-IAT compensation and the speed-density density curve |
-| **0xFFFFB420** | float | **Final post-compensation mass airflow, g/s** | written by `maf_airflow_temperature_compensation_update` @0x1739E; consumed by fuel/load logic and conditionally replaced by the speed-density wrapper |
+| **0xFFFFB420** | float | **Final mass airflow channel, g/s** | stock writes it in `maf_airflow_temperature_compensation_update` @0x1739E; the standalone MAFless image retains that task but replaces its immediately preceding final-airflow helper, so modeled speed-density airflow is stored here |
 | **0xFFFFB314** | float | **Processed throttle opening** | produced by `throttle_position_sensor_process` @0x14DCC; input to CL/OL throttle threshold and the boost-control demand gate |
 
 > Boost feedback for the WRX-style loop = **0xFFFFABC4**. The patch replaces the stock
@@ -25,9 +25,13 @@ unless marked *(inferred)*. Cross-refs: [D2WD610H_RE_notes.md](D2WD610H_RE_notes
 > pressure remains native mmHg absolute in RAM even though the patch definition displays psi
 > relative to its 760 mmHg sea-level reference.
 
-The standalone speed-density component always runs the stock airflow task first. Exact enable
-`01` conditionally replaces only `0xFFFFB420` after validating MAP, RPM, IAT, and its
-calibrations. Every other switch value or invalid input leaves the stock result in place.
+The standalone MAFless component retains the stock task at `0x172A4` for its downstream
+`B428..B440` load/filter/state calculations, but redirects its final-airflow helper at `0x1743C`
+to the SD model before the `B420` store. The helper prechecks exact zero RPM, then validates MAP,
+RPM, IAT, and calibration data; zero RPM writes zero and every other invalid state writes the fixed
+500 g/s rich/high-load fail-safe. Raw-MAF producers and known MAF-dependent diagnostics are
+bypassed. A separate post-intercooler IAT sensor is required when the MAF/IAT assembly is
+physically removed.
 
 ## Ignition timing (see notes §4)
 | RAM addr | Meaning |

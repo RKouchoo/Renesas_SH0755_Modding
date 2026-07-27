@@ -373,30 +373,6 @@
    </table>
    <description>These are the airflow ranges in which the different long-term fuel trims are calculated in closed loop and applied to the same airflow ranges for both closed loop and open loop.</description>
   </table>
-  <table type="2D" name="MAF Limit (Maximum) " category="Mass Airflow / Engine Load" storagetype="uint16" endian="big" sizey="2" userlevel="2" logparam="P12">
-   <scaling units="Mass Airflow (g/s)" expression="x*.004577637" to_byte="x/.004577637" format="0.00" fineincrement=".1" coarseincrement="1" />
-   <table type="Y Axis" name="Engine Speed" storagetype="float" endian="little" logparam="P8">
-    <scaling units="RPM" expression="x" to_byte="x" format="#" fineincrement="50" coarseincrement="100" />
-   </table>
-   <description>This is the maximum airflow that will be used by the ECU. Airflow will be capped at this limit regardless of the airflow values in the 'MAF Sensor Scaling' table.</description>
-  </table>
-  <table type="2D" name="MAF Sensor Scaling" category="Mass Airflow / Engine Load" storagetype="float" endian="little" sizey="54" userlevel="2" logparam="P12">
-   <scaling units="Mass Airflow (g/s)" expression="x" to_byte="x" format="0.00" fineincrement=".1" coarseincrement="1" />
-   <table type="Y Axis" name="MAF sensor" storagetype="float" endian="little" logparam="P18">
-    <scaling units="volts" expression="x" to_byte="x" format="0.00" fineincrement=".01" coarseincrement=".1" />
-   </table>
-   <description>This is the scaling for the mass airflow sensor.</description>
-  </table>
-  <table type="3D" name="MAF Compensation (IAT)" category="Mass Airflow / Engine Load" storagetype="uint8" endian="big" sizex="5" sizey="8" userlevel="3">
-   <scaling units="Mass Airflow Compensation (%)" expression="(x*.390625)-50" to_byte="(x+50)/.390625" format="0.0" fineincrement=".2" coarseincrement="1" />
-   <table type="X Axis" name="Intake Temperature" storagetype="float" endian="little" logparam="P11">
-    <scaling units="Degrees C" expression="x" to_byte="x" format="#" fineincrement="1" coarseincrement="5" />
-   </table>
-   <table type="Y Axis" name="Mass Airflow" storagetype="float" endian="little" logparam="P12">
-    <scaling units="g/s" expression="x" to_byte="x" format="0.00" fineincrement=".1" coarseincrement="1" />
-   </table>
-   <description>This is the compensation of airflow based on intake temp.</description>
-  </table>
   <table type="2D" name="Engine Load Limit (Maximum)" category="Mass Airflow / Engine Load" storagetype="float" endian="little" sizey="1" userlevel="3">
    <scaling units="Engine Load (g/rev)" expression="x" to_byte="x" format="0.00" fineincrement=".01" coarseincrement=".1" />
    <table type="Static Y Axis" name="Capped Limit" sizey="1">
@@ -989,16 +965,6 @@
    <state name="on" data="01" />
    <state name="off" data="00" />
   </table>
-  <table type="Switch" name="(P0102) MAF SENSOR LOW INPUT" category="Diagnostic Trouble Codes" sizey="1">
-   <description>MASS AIR FLOW CIRCUIT LOW INPUT. To disable this DTC, make sure the box above is unchecked. Off-road use only.</description>
-   <state name="on" data="01" />
-   <state name="off" data="00" />
-  </table>
-  <table type="Switch" name="(P0103) MAF SENSOR HIGH INPUT" category="Diagnostic Trouble Codes" sizey="1">
-   <description>MASS AIR FLOW CIRCUIT HIGH INPUT. To disable this DTC, make sure the box above is unchecked. Off-road use only.</description>
-   <state name="on" data="01" />
-   <state name="off" data="00" />
-  </table>
   <table type="Switch" name="(P0107) MAP SENSOR LOW INPUT" category="Diagnostic Trouble Codes" sizey="1">
    <description>PRESSURE SENSOR CIRCUIT LOW INPUT. To disable this DTC, make sure the box above is unchecked. Off-road use only.</description>
    <state name="on" data="01" />
@@ -1369,15 +1335,10 @@
    <state name="on" data="01" />
    <state name="off" data="00" />
   </table>
-  <table type="Switch" name="Speed Density Patch Enable" category="Speed Density (patch)" sizey="1" userlevel="1">
-   <description>Exact 01 enables the speed-density airflow replacement after the complete stock airflow task. Every other value retains stock MAF behavior. This is a flash calibration switch, not a live control.</description>
-   <state name="on" data="01" />
-   <state name="off" data="00" />
-  </table>
   <table type="2D" name="Speed Density Global Airflow Multiplier" category="Speed Density (patch)" storagetype="float" endian="little" sizey="1" userlevel="3">
    <scaling units="multiplier" expression="x" to_byte="x" format="0.000" fineincrement=".005" coarseincrement=".02" />
    <table type="Static Y Axis" name="Global correction" sizey="1"><data>Multiplier</data></table>
-   <description>Final multiplier applied to modeled mass airflow. Values must be finite and greater than zero or the wrapper retains the stock result.</description>
+   <description>Final multiplier applied to modeled mass airflow. A non-positive or non-finite value invokes the fixed 500 g/s rich/high-load fail-safe.</description>
   </table>
   <table type="2D" name="Speed Density Engine Displacement" category="Speed Density (patch)" storagetype="float" endian="little" sizey="1" userlevel="3">
    <scaling units="litres" expression="x" to_byte="x" format="0.000" fineincrement=".001" coarseincrement=".01" />
@@ -1387,22 +1348,22 @@
   <table type="2D" name="Speed Density Maximum Airflow" category="Speed Density (patch)" storagetype="float" endian="little" sizey="1" userlevel="3">
    <scaling units="g/s" expression="x" to_byte="x" format="0.0" fineincrement="1" coarseincrement="10" />
    <table type="Static Y Axis" name="Safety cap" sizey="1"><data>Maximum</data></table>
-   <description>Maximum final speed-density airflow. A non-positive or non-finite value makes the wrapper retain stock airflow.</description>
+   <description>Maximum normal speed-density airflow. A non-positive or non-finite value invokes the fixed 500 g/s rich/high-load fail-safe.</description>
   </table>
   <table type="2D" name="Speed Density MAP Valid Range" category="Speed Density (patch)" storagetype="float" endian="little" sizey="2" userlevel="4">
    <scaling units="mmHg absolute" expression="x" to_byte="x" format="0.0" fineincrement="1" coarseincrement="10" />
    <table type="Static Y Axis" name="Gate" sizey="2"><data>Minimum</data><data>Maximum</data></table>
-   <description>Native absolute-MAP validity window. Outside it the wrapper retains stock airflow.</description>
+   <description>Native absolute-MAP validity window. Outside it the task writes the fixed 500 g/s rich/high-load fail-safe.</description>
   </table>
   <table type="2D" name="Speed Density RPM Valid Range" category="Speed Density (patch)" storagetype="float" endian="little" sizey="2" userlevel="4">
    <scaling units="RPM" expression="x" to_byte="x" format="#" fineincrement="10" coarseincrement="100" />
    <table type="Static Y Axis" name="Gate" sizey="2"><data>Minimum</data><data>Maximum</data></table>
-   <description>RPM validity window. Below or above it the wrapper retains stock airflow.</description>
+   <description>RPM validity window. Exact zero RPM writes zero airflow; other invalid values invoke the fixed 500 g/s rich/high-load fail-safe.</description>
   </table>
   <table type="2D" name="Speed Density IAT Valid Range" category="Speed Density (patch)" storagetype="float" endian="little" sizey="2" userlevel="4">
    <scaling units="Degrees C" expression="x" to_byte="x" format="0.0" fineincrement="1" coarseincrement="5" />
    <table type="Static Y Axis" name="Gate" sizey="2"><data>Minimum</data><data>Maximum</data></table>
-   <description>Intake-air-temperature validity window. Outside it the wrapper retains stock airflow.</description>
+   <description>Intake-air-temperature validity window. Outside it the task writes the fixed 500 g/s rich/high-load fail-safe.</description>
   </table>
   <table type="3D" name="Speed Density VE (MAP x RPM)" category="Speed Density (patch)" storagetype="float" endian="little" sizex="13" sizey="17" userlevel="2">
    <scaling units="VE fraction" expression="x" to_byte="x" format="0.000" fineincrement=".005" coarseincrement=".02" />
@@ -1424,7 +1385,7 @@
  </rom>
  <rom base="32BITBASE">
   <romid>
-   <xmlid>D2WD610H_AVLS_SPEED_DENSITY_PATCH</xmlid>
+   <xmlid>D2WD610H_AVLS_SPEED_DENSITY_ONLY</xmlid>
    <internalidaddress>2000</internalidaddress>
    <internalidstring>D2WD610H</internalidstring>
    <ecuid>3C5A387116</ecuid>
@@ -1546,16 +1507,6 @@
    <table type="Y Axis" storageaddress="0x76514" />
   </table>
   <table name="A/F Learning Airflow Ranges" storageaddress="0x7616C" />
-  <table name="MAF Limit (Maximum) " storageaddress="0x73C68">
-   <table type="Y Axis" storageaddress="0x73C60" />
-  </table>
-  <table name="MAF Sensor Scaling" storageaddress="0x7B568" sizey="44">
-   <table type="Y Axis" storageaddress="0x7B4B8" />
-  </table>
-  <table name="MAF Compensation (IAT)" storageaddress="0x74368">
-   <table type="X Axis" storageaddress="0x74334" />
-   <table type="Y Axis" storageaddress="0x74348" />
-  </table>
   <table name="Engine Load Limit (Maximum)" storageaddress="0x17620" />
   <table name="Engine Load Compensation (MP)" storageaddress="0x742C8" sizex="9" sizey="12">
    <table type="X Axis" storageaddress="0x74274" />
@@ -1713,8 +1664,6 @@
   <table name="(P0077) INTAKE VALVE CONTROL HIGH (BANK 1)" storageaddress="0x5BDE4" />
   <table name="(P0082) INTAKE VALVE CONTROL LOW (BANK 2)" storageaddress="0x5BDE3" />
   <table name="(P0083) INTAKE VALVE CONTROL HIGH (BANK 2)" storageaddress="0x5BDE2" />
-  <table name="(P0102) MAF SENSOR LOW INPUT" storageaddress="0x5BD57" />
-  <table name="(P0103) MAF SENSOR HIGH INPUT" storageaddress="0x5BD58" />
   <table name="(P0107) MAP SENSOR LOW INPUT" storageaddress="0x5BDAF" />
   <table name="(P0108) MAP SENSOR HIGH INPUT" storageaddress="0x5BDB0" />
   <table name="(P0112) IAT SENSOR LOW INPUT" storageaddress="0x5BDA6" />
@@ -1824,7 +1773,6 @@
    <scaling units="RPM" expression="x" to_byte="x" format="#" fineincrement="50" coarseincrement="100" />
    <description>Minimum engine speed gate for OSV (oil switching valve) actuation, checked in avls_osv_actuation_gate @ 0x405CC. Below this the high-cam actuation is not commanded even if requested. Stock: 3000.</description>
   </table>
-  <table name="Speed Density Patch Enable" storageaddress="0x7DD00" />
   <table name="Speed Density Global Airflow Multiplier" storageaddress="0x7DD04" />
   <table name="Speed Density Engine Displacement" storageaddress="0x7DD08" />
   <table name="Speed Density Maximum Airflow" storageaddress="0x7DD0C" />

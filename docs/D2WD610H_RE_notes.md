@@ -249,15 +249,17 @@ data registers (datasheet) instead of descending the call tree.
       retard-only six-cylinder offsets only inside the calibrated warm/stationary idle window.
       `verify_rotational_idle.py` proves exact binary ownership and future three-component
       compatibility in memory. It is not yet installed in the combined patch or base turbo map.
-- [x] **Speed density — standalone development component built.** The stock MAF ADC conversion
-      at `maf_sensor_voltage_to_airflow_process` (`0x7C30`) writes raw airflow to
-      `0xFFFFABE4`; `maf_airflow_limit_update` (`0x17726`) and the full stock compensation path
-      feed final mass airflow `0xFFFFB420`. Periodic pointer `0x11D20` calls
-      `maf_airflow_temperature_compensation_update` (`0x172A4`). The component redirects that
-      pointer to a wrapper at `0x7E18C`, always runs stock first, then on exact enable `01`
-      replaces only B420 with a guarded MAP/RPM VE model and IAT density correction. It defaults
-      OFF, retains stock on invalid input, does not disable MAF DTCs, and is separate from the
-      current combined patch/base turbo map. See `../speed_density/README.md`.
+- [x] **MAFless speed density — standalone development component built.** The stock raw-MAF
+      converter `maf_sensor_voltage_to_airflow_process` (`0x7C30`) is no longer called from
+      `0x639C` or `0x66D8`; the scheduled raw-MAF limit/filter call at `0x107F8` is also removed.
+      Periodic pointer `0x11D20` retains `maf_airflow_temperature_compensation_update`
+      (`0x172A4`) for its downstream `B428..B440` load/filter state. Its final-airflow helper
+      pointer at `0x1743C` is redirected to the SD calculation at `0x7E18C` before the B420 store.
+      The helper uses a guarded MAP/RPM VE model and IAT density correction, with no MAF fallback
+      or runtime OFF state; exact zero RPM writes zero and other invalid states write a fixed
+      500 g/s rich/high-load fail-safe. The MAF high/low diagnostic task and both MAF-dependent
+      temperature-condition calls are bypassed, and P0102/P0103 are disabled. It remains separate
+      from the combined patch/base turbo map. See `../speed_density/README.md`.
 - [ ] Define 0x25F8/0x2628/0x2654 as functions in Ghidra and rename (interp_2axis_float32/s8/s16)
 - [ ] Identify status fns feeding ign_base_timing_select (0x27088, 0x6504C) and the B/E map condition (cruise?)
 
@@ -338,14 +340,99 @@ _(underscore names only — strict naming enforcement is ON)_
 - 0x00007C30 → **maf_sensor_voltage_to_airflow_process** (raw MAF ADC 0xFFFFAB06 through
   descriptor 0x60914 / scaling table 0x7B568 to raw airflow 0xFFFFABE4)
 - 0x000172A4 → **maf_airflow_temperature_compensation_update** (stock airflow/IAT/limit
-  processing; final post-compensation mass airflow write 0xFFFFB420 at 0x1739E)
+  processing retained for downstream load/state; helper literal 0x1743C is redirected to SD
+  immediately before final mass-airflow write 0xFFFFB420 at 0x1739E)
 - 0x00017726 → **maf_airflow_limit_update** (moves raw MAF into the stock filtered/fallback
   airflow channels before the main compensation task)
+- 0x000107EE → **periodic_airflow_sensor_task_dispatcher** (scheduled sensor/condition group;
+  contains the sole `maf_airflow_limit_update` call at 0x107F8, NOP'd by the MAFless image)
+- 0x00007C52 → **maf_sensor_input_range_classify** (returns high/normal/low classification from
+  raw MAF ADC 0xFFFFAB06 against the 0x7B29C/0x7B29E thresholds)
+- 0x00061328 → **maf_sensor_input_diagnostic_update** (common MAF input diagnostic entry)
+- 0x00061332 → **maf_sensor_high_input_diagnostic_update** (classification 1/high-input path;
+  mapped D2WD610H switch is P0103)
+- 0x000613AC → **maf_sensor_low_input_diagnostic_update** (classification 2/low-input path;
+  mapped D2WD610H switch is P0102)
+- 0x000066C2 → **sensor_processing_return_stub**
+- 0x00006328 → **sensor_processing_batch_task** (first sensor-processing batch containing the
+  raw MAF converter call at 0x639C; that call is NOP'd by the MAFless image)
+- 0x000066C6 → **sensor_adc_processing_task** (sensor conversion dispatcher containing the raw
+  MAF converter call at 0x66D8; that call is NOP'd by the MAFless image)
+- 0x000316A2 / 0x000316BA → **mass_airflow_logger_high_byte_get** /
+  **mass_airflow_logger_low_byte_get**
+- 0x00031790 → **maf_sensor_raw_adc_logger_value_get**
+- 0x0007266C → **diagnostic_temperature_maf_condition_flag_update** (diagnostic condition flag
+  using converted temperature signals, raw MAF ADC, and ADC status bits)
+- 0x0000786C → **intake_air_temperature_adc_conversion**
+- 0x00007974 → **engine_coolant_temperature_adc_conversion**
+- 0x00016CA4 → **engine_coolant_temperature_output_update**
+- 0x00013394 → **periodic_diagnostic_task_rate_dispatcher**
+- 0x000115EA → **diagnostic_task_list_dispatcher** (sequential diagnostic task-pointer caller;
+  MAF high/low entry is pointer 0x11804 and the mixed temperature/MAF condition is 0x1185C)
+- 0x0001785C → **airflow_state_coolant_initialization**
+- 0x000177BE → **mass_airflow_slow_filter_update** (retained downstream filter: final airflow
+  0xFFFFB420 to filtered airflow 0xFFFFB424; sole computed call is 0x114D2)
+- 0x0001F8CA → **closed_loop_fuel_control_airflow_tables_update**
+- 0x0001BAF0 → **fuel_trim_correction_mode_dispatch**
+- 0x0001BCCA → **fuel_trim_airflow_table_mode_update**
+- 0x0002300A → **airflow_monitor_periodic_update**
+- 0x000230E8 → **airflow_monitor_accumulator_update**
+- 0x0002333C → **airflow_based_monitor_conditions_update**
+- 0x000235D6 → **airflow_vehicle_speed_monitor_state_update**
+- 0x000374F0 → **airflow_rpm_diagnostic_monitor_update**
+- 0x00046A48 → **airflow_operating_condition_monitor_update**
+- 0x0004F014 → **mass_airflow_scaled_output_update**
+- 0x00070CD6 → **airflow_temperature_monitor_bit80_update**
+- 0x00071104 → **airflow_temperature_monitor_bit40_update**
 - 0x00016D1C → **intake_air_temperature_update** (updates IAT 0xFFFFB3B8 in degrees C)
 - 0x0001B800 → **engine_load_from_mass_airflow_calculate** (reads RPM 0xFFFFB544, final mass
   airflow 0xFFFFB420, and throttle 0xFFFFB314; confirms the SD write feeds stock load logic)
 - 0x00011AD0 → **periodic_engine_control_task_dispatcher** (computed-call dispatcher whose
   pointer array contains the stock airflow slot at 0x11D20)
+- Confirmed filtered-airflow `0xFFFFB424` consumers:
+  - 0x0002FFA8 → **filtered_mass_airflow_consumer_2ffa8**
+  - 0x0004F1FA → **filtered_mass_airflow_logger_convert**
+  - 0x000673C6 → **filtered_mass_airflow_consumer_673c6**
+  - 0x0002212C → **filtered_mass_airflow_consumer_2212c**
+  - 0x00021C50 → **filtered_mass_airflow_consumer_21c50**
+- Confirmed compensated-load `0xFFFFB430` consumer:
+  - 0x00012F10 → **compensated_engine_load_consumer_12f10**
+- Confirmed load `0xFFFFB438` consumers. These conservative names record the recovered channel
+  dependency without guessing a narrower subsystem purpose:
+  - 0x0003DA30 → **engine_load_dependent_update_3da30**
+  - 0x0003EA94 → **engine_load_dependent_update_3ea94**
+  - 0x0003DAA6 → **engine_load_dependent_update_3daa6**
+  - 0x0003E1C8 → **engine_load_dependent_update_3e1c8**
+  - 0x000289E0 → **engine_load_dependent_update_289e0**
+  - 0x000135C4 → **engine_load_dependent_update_135c4**
+  - 0x000498B0 → **engine_load_dependent_update_498b0**
+  - 0x00024CB0 → **engine_load_dependent_update_24cb0**
+  - 0x0003DA60 → **engine_load_dependent_update_3da60**
+  - 0x0003EACE → **engine_load_dependent_update_3eace**
+  - 0x000353B0 → **engine_load_dependent_update_353b0**
+  - 0x0003E20E → **engine_load_dependent_update_3e20e**
+  - 0x00029024 → **engine_load_dependent_update_29024**
+  - 0x00022454 → **engine_load_dependent_update_22454**
+  - 0x0002046C → **engine_load_dependent_update_2046c**
+  - 0x0001E0C8 → **engine_load_dependent_update_1e0c8**
+  - 0x0003DEF0 → **engine_load_dependent_update_3def0**
+  - 0x000666EC → **engine_load_and_delta_dependent_update_666ec**
+  - 0x000672E4 → **engine_load_dependent_update_672e4**
+  - 0x0002FB50 → **engine_load_dependent_update_2fb50**
+  - 0x0003EB68 → **engine_load_dependent_update_3eb68**
+  - 0x0001496C → **engine_load_dependent_update_1496c**
+  - 0x0003E7DC → **engine_load_dependent_update_3e7dc**
+  - 0x0003EBDC → **engine_load_dependent_update_3ebdc**
+  - 0x0001E7E8 → **engine_load_dependent_update_1e7e8**
+  - 0x00046D74 → **engine_load_dependent_update_46d74**
+  - 0x000217B8 → **engine_load_and_filtered_airflow_update_217b8**
+  - 0x0001E5E8 → **engine_load_dependent_update_1e5e8**
+  - 0x0006BBA2 → **engine_load_dependent_update_6bba2**
+  - 0x0006BFDC → **engine_load_dependent_update_6bfdc**
+- Other retained airflow/load-state consumers:
+  - 0x00023238 → **engine_load_delta_consumer_23238** (`0xFFFFB43C`)
+  - 0x0001AF80 → **filtered_engine_load_consumer_1af80** (`0xFFFFB440`)
+  - 0x000177DC → **airflow_state_flag_counter_update** (`0xFFFFB444`)
 - 0x0000B690 → **front_af_sensor_pair_signal_process** (stock two-channel front A/F processing;
   single-front patch runs the complete body, then mirrors Bank 1 into Bank 2)
 - 0x0000B8CC → **front_af_sensor_pump_current_diagnostic_update** (retained stock front-sensor
@@ -418,12 +505,20 @@ and 0x1B81E.
   all renamed with underscore names. The separate default-OFF wrapper now runs the stock task
   first and applies only gated, bounded, retard-only post-processing; compatibility with the two
   existing components is verified in memory, but no combined artifact was changed.
-- 2026-07-27: the speed-density airflow path was traced in the live stock Ghidra project. Raw MAF
-  conversion runs at `0x7C30` and writes `0xFFFFABE4`; the stock limit and temperature-compensation
-  chain ends at the final mass-airflow value `0xFFFFB420`. IAT is `0xFFFFB3B8`, MAP is
-  `0xFFFFABC4`, and the periodic task-pointer slot at `0x11D20` targets `0x172A4`. Every unnamed
-  function inspected during the trace was assigned an underscore-style name and the key producer,
-  write, and consumer sites were commented. The new `speed_density` component hooks that task slot,
-  calls the complete stock task first, and conditionally replaces only `0xFFFFB420`. It is
-  default-OFF, separately generated, and verified compatible with the boost, single-front/rear-
-  delete, and rotational-idle components; the combined patch and base turbo map remain unchanged.
+- 2026-07-27/28: the speed-density airflow path was traced in the live stock Ghidra project. Raw
+  MAF conversion runs at `0x7C30` from calls at `0x639C` and `0x66D8` and writes
+  `0xFFFFABE4`; the stock limit and compensation chain
+  ends at final-airflow RAM `0xFFFFB420`. IAT is `0xFFFFB3B8`, MAP is `0xFFFFABC4`, and periodic
+  slot `0x11D20` targets `0x172A4`. The final MAFless revision retains that task for its
+  downstream B428..B440 load/filter state, redirects final-airflow helper literal `0x1743C` to
+  the guarded SD model, and NOPs both raw conversion calls plus the only scheduled raw-input
+  `maf_airflow_limit_update` call. P0102/P0103 are disabled. The downstream
+  `mass_airflow_slow_filter_update` remains active to filter B420 into B424. The input-diagnostic
+  entries at `0x61328`, `0x61332`, and
+  `0x613AC` were traced and renamed; classification 1 is the high/P0103 path and classification 2
+  is the low/P0102 path. Their task pointer at `0x11804` is bypassed. Both task pointers to the
+  mixed temperature/MAF condition at `0x7266C` (`0x1062C` and `0x1185C`) are also bypassed, so no
+  diagnostic decision depends on the removed MAF ADC. Additional airflow consumers and monitor
+  routines were traced and renamed. The standalone image remains byte-disjoint from boost,
+  single-front/rear-delete, and rotational-idle components; the combined patch and base turbo map
+  remain unchanged.
