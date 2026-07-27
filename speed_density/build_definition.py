@@ -1,0 +1,123 @@
+#!/usr/bin/env python3
+"""Generate the standalone D2WD610H AVLS + speed-density RomRaider definition.
+
+The project keeps the metric D2WD610H AVLS definition as the source template.
+This generator adds only the speed-density tables and target addresses; it does
+not pull unrelated ROM definitions into the output.
+"""
+
+from pathlib import Path
+
+
+HERE = Path(__file__).resolve().parent
+ROOT = HERE.parent
+SOURCE = ROOT / "defs" / "D2WD610H_AVLS.xml"
+OUTPUT = HERE / "D2WD610H_AVLS_speed_density_patch.xml"
+
+TEMPLATE_INSERT = """  <table type="Switch" name="Speed Density Patch Enable" category="Speed Density (patch)" sizey="1" userlevel="1">
+   <description>Exact 01 enables the speed-density airflow replacement after the complete stock airflow task. Every other value retains stock MAF behavior. This is a flash calibration switch, not a live control.</description>
+   <state name="on" data="01" />
+   <state name="off" data="00" />
+  </table>
+  <table type="2D" name="Speed Density Global Airflow Multiplier" category="Speed Density (patch)" storagetype="float" endian="little" sizey="1" userlevel="3">
+   <scaling units="multiplier" expression="x" to_byte="x" format="0.000" fineincrement=".005" coarseincrement=".02" />
+   <table type="Static Y Axis" name="Global correction" sizey="1"><data>Multiplier</data></table>
+   <description>Final multiplier applied to modeled mass airflow. Values must be finite and greater than zero or the wrapper retains the stock result.</description>
+  </table>
+  <table type="2D" name="Speed Density Engine Displacement" category="Speed Density (patch)" storagetype="float" endian="little" sizey="1" userlevel="3">
+   <scaling units="litres" expression="x" to_byte="x" format="0.000" fineincrement=".001" coarseincrement=".01" />
+   <table type="Static Y Axis" name="Engine" sizey="1"><data>Displacement</data></table>
+   <description>Engine displacement used by the ideal-gas mass-flow model. Default is 2.999 litres for the EZ30R.</description>
+  </table>
+  <table type="2D" name="Speed Density Maximum Airflow" category="Speed Density (patch)" storagetype="float" endian="little" sizey="1" userlevel="3">
+   <scaling units="g/s" expression="x" to_byte="x" format="0.0" fineincrement="1" coarseincrement="10" />
+   <table type="Static Y Axis" name="Safety cap" sizey="1"><data>Maximum</data></table>
+   <description>Maximum final speed-density airflow. A non-positive or non-finite value makes the wrapper retain stock airflow.</description>
+  </table>
+  <table type="2D" name="Speed Density MAP Valid Range" category="Speed Density (patch)" storagetype="float" endian="little" sizey="2" userlevel="4">
+   <scaling units="mmHg absolute" expression="x" to_byte="x" format="0.0" fineincrement="1" coarseincrement="10" />
+   <table type="Static Y Axis" name="Gate" sizey="2"><data>Minimum</data><data>Maximum</data></table>
+   <description>Native absolute-MAP validity window. Outside it the wrapper retains stock airflow.</description>
+  </table>
+  <table type="2D" name="Speed Density RPM Valid Range" category="Speed Density (patch)" storagetype="float" endian="little" sizey="2" userlevel="4">
+   <scaling units="RPM" expression="x" to_byte="x" format="#" fineincrement="10" coarseincrement="100" />
+   <table type="Static Y Axis" name="Gate" sizey="2"><data>Minimum</data><data>Maximum</data></table>
+   <description>RPM validity window. Below or above it the wrapper retains stock airflow.</description>
+  </table>
+  <table type="2D" name="Speed Density IAT Valid Range" category="Speed Density (patch)" storagetype="float" endian="little" sizey="2" userlevel="4">
+   <scaling units="Degrees C" expression="x" to_byte="x" format="0.0" fineincrement="1" coarseincrement="5" />
+   <table type="Static Y Axis" name="Gate" sizey="2"><data>Minimum</data><data>Maximum</data></table>
+   <description>Intake-air-temperature validity window. Outside it the wrapper retains stock airflow.</description>
+  </table>
+  <table type="3D" name="Speed Density VE (MAP x RPM)" category="Speed Density (patch)" storagetype="float" endian="little" sizex="13" sizey="17" userlevel="2">
+   <scaling units="VE fraction" expression="x" to_byte="x" format="0.000" fineincrement=".005" coarseincrement=".02" />
+   <table type="X Axis" name="Manifold Pressure" storagetype="float" endian="little" logparam="E52">
+    <scaling units="mmHg absolute" expression="x" to_byte="x" format="0.0" fineincrement="1" coarseincrement="10" />
+   </table>
+   <table type="Y Axis" name="Engine Speed" storagetype="float" endian="little" logparam="P8">
+    <scaling units="RPM" expression="x" to_byte="x" format="#" fineincrement="50" coarseincrement="100" />
+   </table>
+   <description>Volumetric-efficiency fraction used to model mass airflow from absolute MAP and RPM. The supplied values are conservative commissioning estimates, not measured EZ30R data.</description>
+  </table>
+  <table type="2D" name="Speed Density IAT Density Correction" category="Speed Density (patch)" storagetype="float" endian="little" sizey="10" userlevel="2">
+   <scaling units="multiplier" expression="x" to_byte="x" format="0.000" fineincrement=".005" coarseincrement=".02" />
+   <table type="Y Axis" name="Intake Temperature" storagetype="float" endian="little" logparam="P11">
+    <scaling units="Degrees C" expression="x" to_byte="x" format="0.0" fineincrement="1" coarseincrement="5" />
+   </table>
+   <description>Density multiplier applied after the VE calculation. Defaults to 293.15/(IAT C + 273.15), referenced to 20 C.</description>
+  </table>
+"""
+
+TARGET_INSERT = """  <table name="Speed Density Patch Enable" storageaddress="0x7DD00" />
+  <table name="Speed Density Global Airflow Multiplier" storageaddress="0x7DD04" />
+  <table name="Speed Density Engine Displacement" storageaddress="0x7DD08" />
+  <table name="Speed Density Maximum Airflow" storageaddress="0x7DD0C" />
+  <table name="Speed Density MAP Valid Range" storageaddress="0x7DD10" />
+  <table name="Speed Density RPM Valid Range" storageaddress="0x7DD18" />
+  <table name="Speed Density IAT Valid Range" storageaddress="0x7DD20" />
+  <table name="Speed Density VE (MAP x RPM)" storageaddress="0x7DDC4" sizex="13" sizey="17">
+   <table type="X Axis" storageaddress="0x7DD4C" />
+   <table type="Y Axis" storageaddress="0x7DD80" />
+  </table>
+  <table name="Speed Density IAT Density Correction" storageaddress="0x7E160" sizey="10">
+   <table type="Y Axis" storageaddress="0x7E138" />
+  </table>
+"""
+
+
+def render_definition() -> str:
+    text = SOURCE.read_text(encoding="utf-8")
+    if "Speed Density Patch Enable" in text:
+        raise SystemExit("source definition already contains speed-density entries")
+
+    target_marker = ' <rom base="32BITBASE">\n'
+    target_start = text.find(target_marker)
+    if target_start < 0:
+        raise SystemExit("could not find D2WD610H target ROM block")
+
+    template_close = text.rfind(" </rom>\n", 0, target_start)
+    if template_close < 0:
+        raise SystemExit("could not find metric 32BITBASE template close")
+    text = text[:template_close] + TEMPLATE_INSERT + text[template_close:]
+
+    target_start = text.find(target_marker, template_close + len(TEMPLATE_INSERT))
+    target_close = text.find(" </rom>\n", target_start)
+    if target_close < 0:
+        raise SystemExit("could not find D2WD610H target ROM close")
+    text = text[:target_close] + TARGET_INSERT + text[target_close:]
+
+    text = text.replace(
+        "<xmlid>D2WD610H_AVLS</xmlid>",
+        "<xmlid>D2WD610H_AVLS_SPEED_DENSITY_PATCH</xmlid>",
+        1,
+    )
+    return text
+
+
+def main() -> None:
+    OUTPUT.write_text(render_definition(), encoding="utf-8")
+    print("Wrote %s from %s" % (OUTPUT, SOURCE))
+
+
+if __name__ == "__main__":
+    main()

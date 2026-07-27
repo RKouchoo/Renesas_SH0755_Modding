@@ -196,6 +196,8 @@ data registers (datasheet) instead of descending the call tree.
 |---|---|---|
 | **0xFFFFB544** | Engine RPM (float) | compared vs 4000/3800/512/510 rpm consts; input to switch tables; used across ign+AVLS |
 | **0xFFFFB538** | Vehicle speed (float, km/h) | `ign_idle_timing_target_update` compares it with stock 4.0-km/h idle-timing threshold @0x77E1C; also consumed by AVLS logic |
+| **0xFFFFB3B8** | Intake-air temperature (float, degrees C) | written by `intake_air_temperature_update` @0x16D1C; passed into stock MAF-IAT compensation descriptor 0x5EB88 |
+| **0xFFFFB420** | Final post-compensation mass airflow (float, g/s) | written at 0x1739E in `maf_airflow_temperature_compensation_update`; broad fuel/load consumer xrefs include 0x1B800 and 0x216EA |
 | **0xFFFFB46C** | Normal AVLS switchover load signal (float; snapshot of filtered 0xFFFFB4C8) | compared against state-selected curves in 0x40168 |
 | 0xFFFFCF94 | AVLS fallback load value | compared only against fixed 15.0 fallback threshold in 0x40168 |
 | 0xFFFFC17C | Ignition blend factor k (float 0..1) | written 0x28354 |
@@ -247,7 +249,15 @@ data registers (datasheet) instead of descending the call tree.
       retard-only six-cylinder offsets only inside the calibrated warm/stationary idle window.
       `verify_rotational_idle.py` proves exact binary ownership and future three-component
       compatibility in memory. It is not yet installed in the combined patch or base turbo map.
-- [ ] Airflow model (speed density — capstone)
+- [x] **Speed density — standalone development component built.** The stock MAF ADC conversion
+      at `maf_sensor_voltage_to_airflow_process` (`0x7C30`) writes raw airflow to
+      `0xFFFFABE4`; `maf_airflow_limit_update` (`0x17726`) and the full stock compensation path
+      feed final mass airflow `0xFFFFB420`. Periodic pointer `0x11D20` calls
+      `maf_airflow_temperature_compensation_update` (`0x172A4`). The component redirects that
+      pointer to a wrapper at `0x7E18C`, always runs stock first, then on exact enable `01`
+      replaces only B420 with a guarded MAP/RPM VE model and IAT density correction. It defaults
+      OFF, retains stock on invalid input, does not disable MAF DTCs, and is separate from the
+      current combined patch/base turbo map. See `../speed_density/README.md`.
 - [ ] Define 0x25F8/0x2628/0x2654 as functions in Ghidra and rename (interp_2axis_float32/s8/s16)
 - [ ] Identify status fns feeding ign_base_timing_select (0x27088, 0x6504C) and the B/E map condition (cruise?)
 
@@ -311,10 +321,31 @@ _(underscore names only — strict naming enforcement is ON)_
 - 0x00024570 → **solenoid_circuit_diagnostic** (sets circuit-fault byte 0xFFFFBF21)
 - 0x000182AC → **engine_load_compensation_update**
 - 0x00018A68 → **engine_load_signal_filter_update** (produces filtered load @0xFFFFB4C8)
+- 0x00009FEC → **float_3d_table_consumer_update**
+- 0x0000C5C8 → **cylinder_airflow_pair_update**
+- 0x00017B2A → **airflow_bank_charge_update**
+- 0x00017C40 → **airflow_bank_charge_diagnostic_update**
+- 0x000180C6 → **engine_load_from_airflow_calculate**
+- 0x000181EA → **engine_load_limit_update**
+- 0x000184CC → **engine_load_calculation_update**
+- 0x000188F4 → **engine_load_source_update**
+- 0x0001B15E → **fuel_system_monitor_enable_update**
+- 0x000216EA → **fueling_airflow_input_update**
 - 0x00018AEA → **engine_load_signal_snapshot_copy** (0xFFFFB4C8 → AVLS compare signal 0xFFFFB46C)
 - 0x00047000 → **engine_load_fallback_select** (selects 0xFFFFCF94 fallback value)
 - 0x00014DCC → **throttle_position_sensor_process** (DBW throttle sensor plausibility/processing;
   produces processed throttle opening @0xFFFFB314 used by CL/OL logic and boost demand gate)
+- 0x00007C30 → **maf_sensor_voltage_to_airflow_process** (raw MAF ADC 0xFFFFAB06 through
+  descriptor 0x60914 / scaling table 0x7B568 to raw airflow 0xFFFFABE4)
+- 0x000172A4 → **maf_airflow_temperature_compensation_update** (stock airflow/IAT/limit
+  processing; final post-compensation mass airflow write 0xFFFFB420 at 0x1739E)
+- 0x00017726 → **maf_airflow_limit_update** (moves raw MAF into the stock filtered/fallback
+  airflow channels before the main compensation task)
+- 0x00016D1C → **intake_air_temperature_update** (updates IAT 0xFFFFB3B8 in degrees C)
+- 0x0001B800 → **engine_load_from_mass_airflow_calculate** (reads RPM 0xFFFFB544, final mass
+  airflow 0xFFFFB420, and throttle 0xFFFFB314; confirms the SD write feeds stock load logic)
+- 0x00011AD0 → **periodic_engine_control_task_dispatcher** (computed-call dispatcher whose
+  pointer array contains the stock airflow slot at 0x11D20)
 - 0x0000B690 → **front_af_sensor_pair_signal_process** (stock two-channel front A/F processing;
   single-front patch runs the complete body, then mirrors Bank 1 into Bank 2)
 - 0x0000B8CC → **front_af_sensor_pump_current_diagnostic_update** (retained stock front-sensor
@@ -346,7 +377,8 @@ Decompiler comments set at: 0x209C, 0x2150, 0x28418, 0x284B8, 0x40168, 0x405CC, 
 0x27DE8, 0x27F3E, 0x28166, 0x279CC, 0x3D7E4, 0x3D824, 0x3D8E2, 0x3D916, 0x3D95A,
 0x3D980, 0x28C38, 0x2A2BC, 0x3E45C, 0x4F1C4, 0x482DC,
 0xB690, 0xE0D0, 0xB8CC, 0x64FD0, 0x6500C, 0x18DAC, 0x1917A, 0xDFB4, 0x33B12,
-0x33AAC, 0x33964, 0x33970, 0x34BE4, and 0x69568.
+0x33AAC, 0x33964, 0x33970, 0x34BE4, 0x69568, 0x172A4, 0x1739E, 0x16D1C,
+and 0x1B81E.
 
 ## 9. Session Log / Method Notes
 
@@ -386,3 +418,12 @@ Decompiler comments set at: 0x209C, 0x2150, 0x28418, 0x284B8, 0x40168, 0x405CC, 
   all renamed with underscore names. The separate default-OFF wrapper now runs the stock task
   first and applies only gated, bounded, retard-only post-processing; compatibility with the two
   existing components is verified in memory, but no combined artifact was changed.
+- 2026-07-27: the speed-density airflow path was traced in the live stock Ghidra project. Raw MAF
+  conversion runs at `0x7C30` and writes `0xFFFFABE4`; the stock limit and temperature-compensation
+  chain ends at the final mass-airflow value `0xFFFFB420`. IAT is `0xFFFFB3B8`, MAP is
+  `0xFFFFABC4`, and the periodic task-pointer slot at `0x11D20` targets `0x172A4`. Every unnamed
+  function inspected during the trace was assigned an underscore-style name and the key producer,
+  write, and consumer sites were commented. The new `speed_density` component hooks that task slot,
+  calls the complete stock task first, and conditionally replaces only `0xFFFFB420`. It is
+  default-OFF, separately generated, and verified compatible with the boost, single-front/rear-
+  delete, and rotational-idle components; the combined patch and base turbo map remain unchanged.

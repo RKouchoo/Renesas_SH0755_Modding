@@ -527,3 +527,117 @@ temperature, vibration, misfire behavior, checksum acceptance, or safe operation
 6. Merge the unchanged component API into the main patch only after standalone testing passes,
    then create a matching three-switch combined definition, checksum-valid output, and complete
    three-component regression audit.
+
+# Standalone Speed-Density Patch Audit
+
+Audit date: 2026-07-27. Target: D2WD610H / ECU ID `3C5A387116`, Renesas SH7055,
+stock image `2005 BLE MT.bin`.
+
+## Verdict
+
+`speed_density/patch_speed_density.py` produces a separate, default-OFF development image that
+implements a conventional MAP/RPM/VE speed-density model. The wrapper always runs the complete
+stock MAF task first. It replaces the final mass-airflow value only when the enable byte is exactly
+`01` and the runtime sensor inputs, scalar/gate calibrations, and lookup results pass their
+finite/range checks. OFF, malformed, or out-of-range cases retain the stock MAF result.
+
+The component uses the same guarded stock-to-ROM and `apply_to_rom()` framework as the other
+patches. Its changed-byte ownership is disjoint from boost control, single-front-A/F plus rear
+delete, and rotational idle, so it can be merged later without relocating any current component.
+It has deliberately not been added to `patch_combined.py` or `base_turbo_map`.
+
+This verdict is based on static reverse engineering, deterministic binary verification, and a
+software model of the injected policy. It does not prove volumetric-efficiency accuracy, transient
+fueling quality, checksum acceptance, or safe operation on the vehicle.
+
+## Ghidra verification and naming
+
+- Raw MAF conversion is performed by `maf_sensor_voltage_to_airflow_process` at `0x7C30`. It reads
+  ADC input `0xFFFFAB06`, uses the 44-point stock MAF curve at `0x7B4B8/0x7B568`, and writes raw
+  airflow to `0xFFFFABE4`.
+- `maf_airflow_limit_update` at `0x17726` moves the raw value into the stock filtered/fallback
+  airflow channels. `maf_airflow_temperature_compensation_update` at `0x172A4` performs the final
+  stock limit and IAT processing and writes the downstream mass-airflow value `0xFFFFB420` at
+  instruction `0x1739E`.
+- Periodic task slot `0x11D20` contains stock target `0x172A4` and is invoked by
+  `periodic_engine_control_task_dispatcher` at `0x11AD0`. This is the component's single hook.
+- `intake_air_temperature_update` at `0x16D1C` confirms `0xFFFFB3B8` is IAT in degrees Celsius.
+  Existing cross-references confirm native MAP `0xFFFFABC4` is absolute pressure in mmHg and RPM
+  is the float at `0xFFFFB544`.
+- `engine_load_from_mass_airflow_calculate` at `0x1B800` reads `0xFFFFB420` together with RPM and
+  throttle; `fueling_airflow_input_update` at `0x216EA` is another downstream consumer. Writing
+  after the stock task therefore supplies the existing load and fueling paths without replacing
+  their logic.
+- The stock float table helpers at `0x2150` (3D) and `0x209C` (2D) were rechecked and reused by the
+  wrapper. Their descriptor layouts and register calling conventions are recorded in Ghidra.
+- Every unnamed function opened during this trace was renamed in the live Ghidra project using
+  the project's underscore convention. Key code and data-flow sites were also commented. The exact
+  names and addresses are recorded in `docs/D2WD610H_RE_notes.md`.
+
+## Runtime design and calibration
+
+- The runtime switch is at `0x7DD00` and defaults to `00`. Only exact value `01` enables the
+  replacement; this is a flash calibration switch, not a live logger control.
+- The wrapper at `0x7E18C` calls stock `0x172A4` first, preserving stock MAF behavior as immediate
+  fallback. It writes only the final float at `0xFFFFB420` and allocates no RAM.
+- The model is:
+  `airflow_g/s = VE × MAP_mmHg × RPM × displacement_L × 1.3203052e-5 × IAT_correction × global`.
+  Default displacement is 2.999 L, global multiplier is 1.0, and maximum modeled airflow is
+  500 g/s.
+- The editable VE surface is 13 MAP columns by 17 RPM rows. Its default axes span 150–1500 mmHg
+  absolute and 0–7500 rpm. The conservative initial surface is bounded at 1.15 VE.
+- The editable ten-point IAT correction spans -50 to 150 C and defaults to the ideal-density ratio
+  `293.15 / (IAT_C + 273.15)`.
+- Runtime acceptance gates default to MAP 100–1600 mmHg absolute, RPM 100–7500, and IAT -50 to
+  150 C. All boundaries are inclusive. NaN and positive/negative infinity are rejected using
+  self-comparison, range logic, and a fixed IEEE-754 maximum-finite-float guard.
+- The component deliberately does not change MAP-sensor scaling, disable MAF DTCs, or remove the
+  MAF sensor. The existing sensor should remain connected and logged through commissioning so the
+  default VE table can be calibrated against measured airflow before boosted operation.
+
+## Binary and definition checks completed
+
+- The builder always reads the fixed root stock ROM, requires its exact 512-KiB length and
+  SHA-256 `ed0fe0341d97fb760c2cda3f07277f861495d32f6520e3ce8047b8b0f7bfd4ee`, patches an
+  in-memory copy, and refuses an output path that aliases the stock source.
+- Generated artifact: `speed_density/D2WD610H_speed_density.bin`, 512 KiB, SHA-256
+  `5fa26cbe2e1d8b6dbcbf60516c3a9695145974a08db4b91d2ac548f4bca6529f`.
+- Exactly 1,621 bytes differ from stock. Ownership is limited to the guarded task pointer and
+  dedicated calibration/table/wrapper allocation `0x7DD00..0x7E35F`; the wrapper is 468 bytes.
+- `verify_speed_density.py` deterministically rebuilds and compares the complete image, verifies
+  the hook, wrapper, descriptors, axes, constants, exact-enable branch, stock-first call, final
+  `0xFFFFB420` write, code/pool boundary, balanced return, and all allocated bytes.
+- The executable policy model covers OFF and all non-`01` switch values, each input and scalar
+  range boundary, NaN/infinity/invalid-calibration fallback, nominal vacuum and boosted samples,
+  and the 500-g/s output clamp.
+- Independent stock builds of boost, single-front-A/F, rotational-idle, and speed-density
+  components have pairwise disjoint changed-byte sets. Applying all four guarded APIs in memory
+  produces their exact byte-set union and preserves every independently generated component byte.
+- `speed_density/build_definition.py` reproducibly derives the self-contained metric definition
+  from `defs/D2WD610H_AVLS.xml`. The generated definition contains only the pruned metric
+  `32BITBASE` and target XMLID `D2WD610H_AVLS_SPEED_DENSITY_PATCH` for internal ID `D2WD610H`.
+- RomRaider exposes the enable switch, model scalars and acceptance gates, the 13x17 VE table, and
+  ten-point IAT correction. The verifier checks every address, table dimension, switch state, and
+  confirms the checked-in XML is not stale.
+- The canonical root ROM was re-read after build and verification and remains unchanged.
+
+## Remaining blockers and commissioning order
+
+1. Produce and independently verify a valid Subaru checksum; the standalone builder does not
+   correct it.
+2. Confirm the installed MAP sensor's absolute-pressure scaling in the ECU/logger. The defaults
+   require valid native mmHg absolute data through at least the intended boost range. Place the IAT
+   sensor after the intercooler so the model sees actual charge temperature.
+3. Flash/run the standalone image with the switch OFF first. Retain and log MAF, MAP, RPM, IAT,
+   throttle, calculated load, injector duty, fuel trims, timing, knock, lambda, and fuel pressure.
+4. Calibrate the VE surface in closed-loop vacuum operation against the retained MAF and an
+   independently logged wideband. Do not enable boost until the stock-result fallback and all
+   acceptance gates have been exercised and verified.
+5. Begin no-boost or wastegate-only tests with conservative fueling and timing. Abort for lean
+   lambda, unstable fuel pressure, unexpected load, knock, implausible MAP/IAT, or disagreement
+   between modeled and measured airflow.
+6. Complete steady-state, transient, restart, hot-soak, altitude, and dyno validation. The base
+   table is only a structurally safe starting point and is not a calibrated map for this engine.
+7. Merge the unchanged component API into the main patch only after standalone testing passes,
+   then add the matching switch/tables to the combined definition and extend the combined exact-
+   union verifier.
