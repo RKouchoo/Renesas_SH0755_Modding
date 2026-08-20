@@ -1,4 +1,6 @@
-# Boost-Control Patch Audit
+# D2WD610H Patch Audits
+
+# Standalone Boost-Control Patch Audit
 
 Audit date: 2026-07-14. Target: D2WD610H, Renesas SH7055, stock image
 `2005 BLE MT.bin`.
@@ -668,4 +670,133 @@ acceptance, hardware wiring correctness, or safe vehicle operation.
 7. Complete transient, restart, heat-soak, altitude, AVLS-transition, fuel-pressure, injector-duty,
    knock, and 5 psi wastegate validation before considering integration.
 8. Merge only after standalone testing, then extend the combined definition, checksum workflow,
-   and exact-union audit. A combined MAFless turbo image does not yet exist.
+   and exact-union audit. This was the status at the standalone audit date; the later integrated
+   master audit below now supersedes that merge-status statement.
+
+# Integrated Master Patch Audit
+
+Audit date: 2026-08-21. Target: D2WD610H / ECU ID `3C5A387116`, Renesas SH7055,
+canonical stock `2005 BLE MT.bin`.
+
+## Verdict
+
+`master_patch/build_master_patch.py` now creates the requested single integrated development
+image directly from canonical stock. It includes always-on MAFless speed density, exact Omni
+Power MAP-SUP-3BR scaling, EVAP-output boost control and safeties, a former-MAF AEM 30-0300
+lambda input, logical removal of both stock front A/F and both rear O2 paths, STI-pink factory
+donor injector data, a base VE surface, and the conservative 5 psi / 98 RON / early-AVLS /
+6800-RPM calibration.
+
+The binary, free-space ownership, injected opcodes, hooks, sensor policy, fuel/timing/injector/
+AVLS calibration, definition, logger fragment, checksum, and stock/SRF provenance pass static
+verification. This is not a vehicle-tested result. It must not be treated as safe to flash or
+enter boost solely because the automated audit passes.
+
+## Artifact and provenance
+
+- Input SHA-256: `ed0fe0341d97fb760c2cda3f07277f861495d32f6520e3ce8047b8b0f7bfd4ee`.
+- Output: `master_patch/D2WD610H_master_patch.bin`, 512 KiB, CALID `D2WD610H`.
+- Output SHA-256: `6557eda87eebaef51892b6607175cbd19b909565c3de6d9f90fe5e597aec0fac`.
+- Subaru additive checksum: `0xB87F6478`, verified.
+- The root stock BIN, `base_roms` copy, and original SRF `MEMD` payload are byte-identical.
+- The builder refuses generated inputs and protected-source output aliases; every component is
+  reconstructed on an in-memory copy of root stock.
+- Exactly 3,634 bytes differ from stock, all inside declared hooks, diagnostic switches,
+  calibration regions, and verified free flash. The separate rotational-idle reservation
+  `0x7DB40..0x7DCEB` remains byte-identical to stock.
+
+## Live Ghidra revalidation
+
+- `map_sensor_voltage_to_pressure_process` at `0x7A14` confirms offset-then-multiplier floats at
+  `0x72810` and native absolute-mmHg output at `0xFFFFABC4`.
+- `map_sensor_raw_adc_range_classify` at `0x7A56` confirms the separate raw limits at
+  `0x7B284/0x7B286`.
+- `injector_battery_voltage_latency_lookup` at `0x98CC` confirms descriptor `0x608D8`, voltage
+  axis `0x7B304`, and latency data `0x7B318`.
+- `injector_flow_scaling_factor_update` at `0x1E0C8` confirms D2WD flow scalar `0x76014`.
+- `ign_base_timing_map_blend` at `0x28418` and `ign_base_timing_select` at `0x284B8` confirm
+  A/D as normal-cam endpoints and C/F as AVLS-high-cam endpoints. B/E require the callback at
+  `0x27088`, renamed `constant_zero_return`, to return one; its exact body always returns zero.
+- `knock_correction_advance_max_select` at `0x3EB68` confirms KCA A normal cam and KCA B AVLS
+  high cam.
+- `front_af_sensor_pair_signal_process` at `0xB690`,
+  `front_af_sensor_lambda_condition_filter` at `0x18DAC`, and
+  `closed_loop_fuel_control_bank_update` at `0x1EE74` confirm the lambda/readiness values consumed
+  by stock closed-loop control.
+- Static rear-path xrefs confirm B098/B09C belonged to rear monitoring/logging rather than a
+  direct fuel consumer, allowing them to become explicit external-wideband logger mirrors.
+- Every function opened during this pass was renamed using the existing underscore convention.
+  The full list/evidence is in `master_patch/GHIDRA_AUDIT.md` and
+  `docs/D2WD610H_RE_notes.md`; `ApplyMasterNames.java` makes it reproducible.
+
+## MAP and speed density
+
+- The exact supplied Omni endpoints are 0.60 V at 30 kPa and 4.75 V at 300 kPa. The resulting
+  native transfer is approximately `487.991938 mmHg/V - 67.776658 mmHg`.
+- The low raw-input threshold is 0.30 V and the stock high threshold remains approximately
+  4.921 V. Output below the published 30-kPa endpoint is extrapolated and must be physically
+  characterized before road use.
+- The always-on 13x17 VE model uses MAP/RPM, 2.999 L displacement, a ten-point IAT-density curve,
+  and the retained stock downstream load/fueling pipeline. It has no MAF fallback.
+- Exact zero RPM returns zero airflow. Any other invalid input/calibration/arithmetic condition
+  selects fixed 500 g/s as a shutdown-indicating rich/high-load fail-safe.
+- Raw MAF conversion/filter paths, MAF diagnostic tasks, and P0102/P0103 switches are bypassed,
+  while AB06 remains live as a shared ADC channel for the new wideband input.
+
+## AEM input and four-stock-O2 removal
+
+- Default sensor is AEM X-Series 30-0300: `lambda = 0.1621*V + 0.4990`; only 0.50..4.50 V
+  inclusive is accepted.
+- Valid lambda is copied to both stock bank feedback values and both logger mirrors; readiness is
+  50.0. Invalid input publishes a 0.0 logger sentinel/readiness, inhibits both closed-loop bank
+  paths, and forces electronic boost duty to zero.
+- The original front conversion entry, both bank-inhibit helpers, front pump-diagnostic pointer,
+  rear conversion entry, five rear monitor-task pointers, and 18 mapped front/rear O2 DTC
+  switches are checked byte-for-byte by the verifier.
+- The former MAF connector mapping is B3-3/B136-23 signal and B3-2/B136-31 signal ground for AEM
+  white/brown. AEM power is separate switched/fused 12 V and power ground. B3-4/B136-13 plus
+  B3-5/B136-35 remain the post-intercooler IAT circuit.
+- Both front and both rear factory sensor connectors must be physically disconnected and sealed.
+  Their heater drivers are not electrically forced off by the firmware.
+- One post-turbo sensor feeds both banks and cannot identify bank-specific mixture imbalance;
+  exhaust transport delay and ground offset remain serious commissioning risks.
+
+## Base calibration and safeties
+
+- STI-pink scalar/deadtime data is translated from a SHA-pinned factory A4TE002B ROM. It displays
+  as an estimated 552.47 cc/min, not a bench-flow guarantee for injectors marketed as 565 cc/min.
+- Both Primary Open Loop maps and all timing/KCA load axes extend to 3.0 g/rev. High-load fuel is
+  capped rich, all six timing surfaces are only held or retarded, high-load positive KCA is
+  removed, and high-IAT retard is increased.
+- AVLS minimum/release/engage are 2500/3000/3200 RPM. Rev cut/resume is 6800/6770 RPM.
+- The target reaches 5 psi, but base WGDC, Kp, and final max duty are all zero. The generated
+  baseline therefore relies only on the 5 psi mechanical spring.
+- Throttle at/below native 30.0, invalid AEM readiness, MAP/RPM/IAT outside the SD windows, RPM
+  below the first 1500-RPM boost-axis point, a 500 g/s SD fault sentinel, or MAP over 5.5 psi
+  commands zero EBCS duty. MAP over 6.5 psi uses the verified stock fuel-cut aggregation path.
+  Boost thresholds are relative to a fixed 760 mmHg, not barometrically compensated.
+- None of these software checks can reduce boost below the physical spring or stop boost creep.
+
+## Definition, logger, and verification
+
+- `master_patch/D2WD610H_master_patch.xml` is self-contained and contains only metric base
+  templates plus D2WD610H target tables relevant to the master architecture. Stock MAF/O2,
+  diagnostic/readiness, fuel-temperature, and dormant timing B/E tuning entries are removed.
+- Active timing and KCA maps are renamed by their Ghidra-proven normal/high-cam roles. The XML
+  also exposes AVLS, SD, Omni MAP, injectors/fuel, active timing, boost, AEM transfer/range, and
+  retained engine controls.
+- `D2WD610H_master_logger_ecuparams.xml` exposes E500 lambda/estimated AFR, E501 raw ADC/volts,
+  and E502 readiness only for ECU ID `3C5A387116`. Its IDs, RAM addresses, lengths, storage
+  types, formulas, and fault descriptions are verifier-checked.
+- Run `python3 master_patch/verify_master_patch.py` from the repository root. A pass means the
+  checked development baseline matches this audit; it does not approve a later RomRaider edit.
+
+## Remaining physical work
+
+Follow `master_patch/WIRING.md` and `master_patch/COMMISSIONING.md`. In particular, continuity-
+check the actual market harness, bench-sweep both analog inputs, validate the Omni through vacuum
+and positive pressure, compare ECU lambda with the AEM and an independent reference, verify
+injectors/fuel pressure, scope the purge output and EBCS polarity/frequency, calibrate VE in
+vacuum before boost, simulate all gates/cuts without deliberately overboosting, and complete
+spring-only load-dyno validation. Stop on invalid airflow, sensor disagreement, lean mixture,
+knock, fuel-pressure loss, or boost creep.

@@ -25,12 +25,14 @@ class Asm:
     # --- moves / loads ---
     def movl_pool(self, rn, val): self.items.append(('pool', rn, val & 0xFFFFFFFF)); return self  # mov.l @(disp,pc),Rn
     def mov_reg(self, rm, rn):    return self._w(0x6003 | rn<<8 | rm<<4)   # mov Rm,Rn
+    def movw_at(self, rn, rm):    return self._w(0x6001 | rn<<8 | rm<<4)   # mov.w @Rm,Rn (sign-ext)
     def movl_at(self, rn, rm):    return self._w(0x6002 | rn<<8 | rm<<4)   # mov.l @Rm,Rn
     def movl_store(self, rm, rn): return self._w(0x2002 | rn<<8 | rm<<4)   # mov.l Rm,@Rn
     def push(self, rm):           return self._w(0x2006 | 15<<8 | rm<<4)   # mov.l Rm,@-r15
     def movb_at(self, rn, rm):    return self._w(0x6000 | rn<<8 | rm<<4)   # mov.b @Rm,Rn (sign-ext)
     def movb_store(self, rm, rn): return self._w(0x2000 | rn<<8 | rm<<4)   # mov.b Rm,@Rn (low byte)
     def mov_imm(self, imm, rn):   return self._w(0xE000 | rn<<8 | (imm & 0xFF)) # mov #imm,Rn (sign-ext)
+    def extu_w(self, rm, rn):     return self._w(0x600D | rn<<8 | rm<<4)   # extu.w Rm,Rn
     def and_imm(self, imm):       return self._w(0xC900 | (imm & 0xFF))    # and #imm,r0
     def or_imm(self, imm):        return self._w(0xCB00 | (imm & 0xFF))    # or #imm,r0
     def tst_imm(self, imm):       return self._w(0xC800 | (imm & 0xFF))    # tst #imm,r0
@@ -47,7 +49,10 @@ class Asm:
     def fpop(self, frn):           return self._w(0xF009 | frn<<8 | 15<<4) # fmov.s @r15+,FRn
     def fmov(self, frm, frn):      return self._w(0xF00C | frn<<8 | frm<<4)# fmov FRm,FRn
     def fldi0(self, frn):          return self._w(0xF08D | frn<<8)         # fldi0 FRn
+    def fldi1(self, frn):          return self._w(0xF09D | frn<<8)         # fldi1 FRn
     def fneg(self, frn):           return self._w(0xF04D | frn<<8)         # fneg FRn
+    def lds_fpul(self, rm):         return self._w(0x405A | rm<<8)          # lds Rm,FPUL
+    def float_fpul(self, frn):      return self._w(0xF02D | frn<<8)         # float FPUL,FRn
 
     # --- FP arith / compare ---
     def fadd(self, frm, frn):  return self._w(0xF000 | frn<<8 | frm<<4)
@@ -159,6 +164,13 @@ def _selftest_known_encoding():
     want6 = bytes.fromhex("f3340009")
     assert got6 == want6, "FP-equality SELFTEST FAIL: got=%s want=%s" % (got6.hex(), want6.hex())
     print("sh2_asm FP-equality encoding selftest OK")
+
+    g = Asm(0)
+    g.mov_imm(2, 0).movw_at(0, 1).extu_w(0, 0).lds_fpul(0).float_fpul(0).fldi1(1)
+    got7 = g.assemble()
+    want7 = bytes.fromhex("e0026011600d405af02df19d")
+    assert got7 == want7, "ADC-to-float SELFTEST FAIL: got=%s want=%s" % (got7.hex(), want7.hex())
+    print("sh2_asm ADC-to-float encoding selftest OK")
 
 if __name__ == "__main__":
     _selftest_known_encoding()

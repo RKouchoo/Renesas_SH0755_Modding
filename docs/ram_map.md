@@ -79,20 +79,21 @@ allocates no RAM and does not alter the stock correction array.
 | 0xFFFFBE2C / BE30 | CL/OL thresholds cached (throttle / BPW) |
 | 0xFFFFBE14/16/18/1A/28 | CL/OL delay counters |
 
-## Oxygen sensors / single-front-A/F patch
+## Oxygen sensors / current master patch
 | RAM addr | Type | Meaning |
 |---|---|---|
-| 0xFFFFAB18 / AB00 | u16 | Raw RH/Bank-1 and LH/Bank-2 front A/F channels; patch retains RH and mirrors its processed results into Bank 2 |
-| 0xFFFFAE60 / AE64 | float | Scaled front lambda Bank 1 / Bank 2; patch copies AE60 -> AE64 after stock processing |
-| 0xFFFFAE68 / AE6C | float | Front pump-current-like result Bank 1 / Bank 2; patch copies AE68 -> AE6C |
-| 0xFFFFAE70 / AE74 | float | Front readiness/diagnostic metric Bank 1 / Bank 2; patch refreshes AE70 -> AE74 after both relevant stock tasks |
-| 0xFFFFB4E8 / B4EC | float | Conditioned factory front-sensor values logged by RomRaider E91/E109; both follow the retained sensor after patching |
-| 0xFFFFAB20 / B098 | u16 / float | Raw/processed RH rear narrowband; stock chain when patch is off, conversion/monitoring bypassed when the single-front patch is on |
-| 0xFFFFAB0C / B09C | u16 / float | Raw/processed LH rear narrowband; stock chain when patch is off, conversion/monitoring bypassed when the single-front patch is on |
+| 0xFFFFAB06 | u16 | Former MAF raw ADC, still refreshed by the hardware scan; current master external-wideband 0--5 V input and logger E501 |
+| 0xFFFFAB18 / AB00 | u16 | Stock RH/LH front A/F raw channels; unused by the master feedback producer after both stock front sensors are disconnected |
+| 0xFFFFAE60 / AE64 | float | Master synthetic lambda Bank 1 / Bank 2, both written from the same valid former-MAF external-wideband input |
+| 0xFFFFAE68 / AE6C | float | Master pump-current placeholders, always 0.0 |
+| 0xFFFFAE70 / AE74 | float | Master readiness: 50.0 valid, 0.0 invalid; both bank-inhibit helpers require greater than 35.0, and this is one prerequisite of the wider EBCS sensor/SD gate |
+| 0xFFFFB4E8 / B4EC | float | Retained stock conditioned front feedback/logger paths; both ultimately follow the same synthetic lambda in the master image |
+| 0xFFFFAB20 / AB0C | u16 | Stock rear narrowband raw channels; master bypasses conversion and every traced rear monitor stage |
+| 0xFFFFB098 / B09C | float | Master external-wideband logger mirrors E500 (same lambda when valid, 0.0 fault sentinel); no longer rear-O2 results in the master image |
 
-The patch publishes no external-wideband value into ECU RAM. Post-turbo lambda is recorded by a
-separate logger and merged with the ECU log by timestamp. See
-[single_front_af_patch.md](single_front_af_patch.md) for the patch and logging boundary.
+The older standalone single-front-A/F patch has different semantics and remains documented in
+[single_front_af_patch.md](single_front_af_patch.md). For the current master image, use the logger
+fragment and installation script in `master_patch`; never treat E500 = 0.0 as a real lambda.
 
 ## Solenoid output subsystem (cam AVCS/AVLS bank — see solenoid_subsystem.md)
 | RAM addr | Meaning |

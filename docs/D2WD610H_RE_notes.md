@@ -8,6 +8,7 @@ This file is the canonical state doc. Companion references:
 - [boost_repurpose_notes.md](boost_repurpose_notes.md) — purge chain + boost-control design
 - [patch_build_guide.md](patch_build_guide.md) — boost-patch build/flash plan
 - [single_front_af_patch.md](single_front_af_patch.md) — retained factory A/F mirror design
+- [../master_patch/README.md](../master_patch/README.md) — current MAFless turbo master image
 - [readme.md](../readme.md) — project overview + goals
 
 ---
@@ -97,10 +98,16 @@ Verified: Base Timing A data 0x78AA0 → slot 0x60114 → desc 0x60108 → consu
   advance multiplier + step term), clamped; forced to 1.0 when a status check passes.
 - **Selection** (`0x284B8`) → selected base timing @ **0xFFFFC184**:
   - default: A/D blend (0xFFFFC16C)
-  - B/E (0xFFFFC170) when status fn==1 and bit 0x80 of flag byte 0xFFFFC180
+  - B/E (0xFFFFC170) requires callback `constant_zero_return` at **0x27088** to return 1
+    and bit 0x80 of flag byte 0xFFFFC180. Canonical D2WD610H implements that callback as
+    `rts; mov #0,r0`, so B/E is dormant/unreachable in the stock ROM.
   - **C/F (0xFFFFC174) when cam mode @0xFFFFCD86 == 3 (high cam) and debounced bit 0x40
     of 0xFFFFC180** → C/F are the AVLS high-cam maps (hence 20 rows).
   - Final (after extra 1-axis lookup, desc 0x5FC18) → 0xFFFFC150 and 0xFFFFC188.
+- Active definition identities are therefore **A/D = normal-cam advance/retard endpoints** and
+  **C/F = AVLS-high-cam advance/retard endpoints**. The master definition omits dormant B/E.
+- `knock_correction_advance_max_select` at **0x3EB68** independently selects KCA Max A for
+  normal cam and KCA Max B for the same verified AVLS-high-cam state.
 - Flag debounce (`0x281FC`): bit 0x40 set after mode==3 held for a delay from 2D u16 table
   desc **0x5FFF8**; cleared on 3→1. Bit 0x80 via counter vs ROM u16 @0x77D34.
 - The idle path was traced through `ign_idle_timing_blend_factor_update`,
@@ -176,14 +183,19 @@ Definition layout:
   rotational-idle switch, operating gates, safety limits, and six timing offsets.
 - `defs/D2WD610H_AVLS_boost_single_front_af_patch.xml` is the combined-image variant containing
   the canonical boost tables plus both unchanged runtime-enable switches.
+- `speed_density/D2WD610H_AVLS_speed_density_patch.xml` is the standalone always-on MAFless
+  definition and removes the inherited MAF tables/diagnostics.
+- `master_patch/D2WD610H_master_patch.xml` is the current focused integration definition. It
+  retains only relevant engine-tuning controls plus AVLS, SD/VE, exact Omni MAP, boost, and AEM
+  input calibration; it renames the active timing/KCA paths and removes obsolete MAF/O2/DTC,
+  readiness, fuel-temperature, and dormant B/E entries.
 - `defs/romraider_ecu_defs.xml` is a clean upstream metric RomRaider snapshot and is not modified
   with project tables.
 
-All five custom RomRaider ROM files are self-contained. Their embedded metric `32BITBASE` is pruned
-to the 206 templates referenced by the 206 standard D2WD610H address overrides; the additions
-are seven AVLS tables and, in the patch variants, only the matching patch tables/switches. Load
-only the custom ROM variant matching the image being edited. Stock AVLS values were verified
-against the ROM image 2026-07-14.
+All seven custom RomRaider ROM files are self-contained. The legacy variants embed metric
+`32BITBASE` pruned to the standard D2WD610H overrides; the master prunes that set further for its
+changed hardware architecture. Load only the custom ROM variant matching the image being edited.
+Stock AVLS values were verified against the ROM image 2026-07-14.
 
 **Open sub-item:** the final OSV port write. `cam_actuator_output_set_*` descend into
 float target/feedback layers (AVCS-style continuous control mixed in); the binary port
@@ -230,16 +242,19 @@ data registers (datasheet) instead of descending the call tree.
       Duty compute `evap_purge_duty_compute` @0x3FC0A (state m/c 0xFFFFCD77, ECT 0xFFFFB3AC, maps
       desc 0x609C4/0x609D8) → duty%% RAM 0xFFFFCD54 → output stage `evap_purge_pwm_output_write`
       @0xE8C4 → **physical PWM register 0xFFFFF590** (ATU-II), period RAM 0xFFFFAB84. Diagnostic
-      `evap_purge_flow_diagnostic` @0x46748. DTCs P0458 0x5BD85 / P0459 0x5BD86. Confidence HIGH;
-      confirm by datalogging purge duty. REMAINING for patch: build boost map (free space 0x7D790),
-      hijack duty at 0x3FC0A, neutralize ECT gating, check/retune PWM freq, mask DTCs, re-checksum.
+      `evap_purge_flow_diagnostic` @0x46748. DTCs P0458 0x5BD85 / P0459 0x5BD86. Confidence HIGH.
+      The controller/hijack, DTC handling, checksum, and master AEM/SD prerequisite gate are built;
+      remaining work is harness continuity, datalog/scope proof, PWM-frequency/polarity testing,
+      wastegate plumbing, and physical soft/hard-limit commissioning.
       NOTE: the crank-synced 6-ch bank (0x96FC/0x268E8, 0xFFFFF602/0xFFFFF652+2n) is AVCS/AVLS cam,
       NOT purge (earlier mis-ID, corrected).
 - [ ] AVLS physical OSV port write — **likely resolved**: OSV/OCV solenoids are driven by the
       crank-angle-synced bank above (ATU-II compare 0xFFFFF652+2n, ctrl bit on 0xFFFFF602).
       Confirm which of the 6 channels `avls_cam_mode_state_machine` (0x40168) commands.
-- [x] ECU-side aftermarket-wideband input retired. External lambda data will be timestamped and
-      merged with the ECU log off-board; the ROM publishes no aftermarket-sensor value.
+- [x] The earlier combined/single-front experiment retired its ECU-side aftermarket-wideband
+      input. This is retained as historical documentation only and is superseded by the current
+      `master_patch`, which deliberately uses the former MAF ADC for one external 0--5 V lambda
+      controller and publishes explicit lambda/raw/readiness logger parameters.
 - [x] Combined stock-to-ROM builder and definition created. `patch/patch_combined.py` applies both
       guarded components to one fresh stock copy; `verify_combined.py` proves the 811 changed bytes
       are the exact 369 + 442 union with zero overlap. Hardware use remains gated on both standalone
@@ -248,7 +263,8 @@ data registers (datasheet) instead of descending the call tree.
       stock task at 0x279CC through task-pointer slot 0x11E30, defaults OFF, and applies bounded
       retard-only six-cylinder offsets only inside the calibrated warm/stationary idle window.
       `verify_rotational_idle.py` proves exact binary ownership and future three-component
-      compatibility in memory. It is not yet installed in the combined patch or base turbo map.
+      compatibility in memory. It is not installed in the legacy combined patch, base turbo map,
+      or current master.
 - [x] **MAFless speed density — standalone development component built.** The stock raw-MAF
       converter `maf_sensor_voltage_to_airflow_process` (`0x7C30`) is no longer called from
       `0x639C` or `0x66D8`; the scheduled raw-MAF limit/filter call at `0x107F8` is also removed.
@@ -258,10 +274,19 @@ data registers (datasheet) instead of descending the call tree.
       The helper uses a guarded MAP/RPM VE model and IAT density correction, with no MAF fallback
       or runtime OFF state; exact zero RPM writes zero and other invalid states write a fixed
       500 g/s rich/high-load fail-safe. The MAF high/low diagnostic task and both MAF-dependent
-      temperature-condition calls are bypassed, and P0102/P0103 are disabled. It remains separate
-      from the combined patch/base turbo map. See `../speed_density/README.md`.
+      temperature-condition calls are bypassed, and P0102/P0103 are disabled. Its standalone
+      artifact remains separate from the legacy combined/base-turbo images; the unchanged
+      component API is now integrated by `master_patch`. See `../speed_density/README.md`.
+- [x] **Current master composition built and audited.** `master_patch` reconstructs only from
+      canonical stock, installs the MAFless model, Omni MAP-SUP-3BR transfer, EVAP-output boost
+      control and gates, one former-MAF external-wideband producer for both fuel banks, complete
+      traced four-stock-O2 signal/diagnostic removal, STI-pink injector data, base VE/fueling/
+      timing, early AVLS, and the 6800-RPM limiter. The focused definition exposes only active
+      A/D and C/F timing identities plus relevant tune/patch tables. This remains a static
+      development baseline requiring bench/dyno validation, not vehicle proof.
 - [ ] Define 0x25F8/0x2628/0x2654 as functions in Ghidra and rename (interp_2axis_float32/s8/s16)
-- [ ] Identify status fns feeding ign_base_timing_select (0x27088, 0x6504C) and the B/E map condition (cruise?)
+- [x] Identify status functions at 0x27088/0x6504C and B/E condition: 0x27088 is a constant-zero
+      return, making B/E unreachable; 0x6504C returns 2/0 from 0xFFFFD26D bit 0x20.
 
 ## 8. Rename Log (Ghidra, applied)
 
@@ -280,6 +305,10 @@ _(underscore names only — strict naming enforcement is ON)_
 - 0x00002684 → **interp_2axis_u8**, 0x26B0 → **interp_2axis_u16** (0x25F8/2628/2654 pending function definition)
 - 0x00028418 → **ign_base_timing_map_blend**
 - 0x000284B8 → **ign_base_timing_select**
+- 0x00027088 → **constant_zero_return** (exact `rts; mov #0,r0`; makes the B/E timing
+  selector condition unreachable in canonical stock)
+- 0x0006504C → **runtime_status_d26d_bit5_get** (returns 2 when 0xFFFFD26D bit 0x20 is set,
+  otherwise 0)
 - 0x00028354 → **ign_blend_factor_from_advance_multiplier**
 - 0x000281FC → **ign_map_switch_flag_debounce**
 - 0x00027DE8 → **ign_idle_timing_blend_factor_update**
@@ -311,6 +340,10 @@ _(underscore names only — strict naming enforcement is ON)_
 - 0x0000E8C4 → **evap_purge_pwm_output_write** (duty ratio → ATU-II reg 0xFFFFF590; period 0xFFFFAB84)
 - 0x00046748 → **evap_purge_flow_diagnostic** (rationality/circuit monitor → P0458/P0459)
 - 0x00007A14 → **map_sensor_voltage_to_pressure_process** (sensor voltage × multiplier + offset → native mmHg absolute at RAM 0xFFFFABC4; boost feedback source)
+- 0x00007A56 → **map_sensor_raw_adc_range_classify** (raw MAP ADC 0xFFFFABC8 against
+  0x7B284/0x7B286 high/low thresholds)
+- 0x000078AC → **analog_sensor_abac_range_classify**
+- 0x000079B4 → **analog_sensor_abbc_range_classify**
 - 0x00002390 → **fixedpoint_mul_q16_sat**
 - 0x00024B24 → **rev_limiter_fuel_cut** (RPM vs Rev Limit A/B → sets fuel-cut flag 0xFFFFBF6C bit0x80)
 - 0x00023FC0 → **fuel_cut_flag_aggregate** (ORs cut conditions → master fuel cut)
@@ -333,6 +366,11 @@ _(underscore names only — strict naming enforcement is ON)_
 - 0x000188F4 → **engine_load_source_update**
 - 0x0001B15E → **fuel_system_monitor_enable_update**
 - 0x000216EA → **fueling_airflow_input_update**
+- 0x000098CC → **injector_battery_voltage_latency_lookup** (descriptor 0x608D8; voltage
+  axis 0x7B304; latency data 0x7B318)
+- 0x0001E0C8 → **injector_flow_scaling_factor_update** (consumes flow scaling at 0x76014)
+- 0x0000A9A8 → **injector_control_lookup_sequence_a9a8**
+- 0x0003EB68 → **knock_correction_advance_max_select** (KCA A normal cam / KCA B AVLS high cam)
 - 0x00018AEA → **engine_load_signal_snapshot_copy** (0xFFFFB4C8 → AVLS compare signal 0xFFFFB46C)
 - 0x00047000 → **engine_load_fallback_select** (selects 0xFFFFCF94 fallback value)
 - 0x00014DCC → **throttle_position_sensor_process** (DBW throttle sensor plausibility/processing;
@@ -414,12 +452,10 @@ _(underscore names only — strict naming enforcement is ON)_
   - 0x00029024 → **engine_load_dependent_update_29024**
   - 0x00022454 → **engine_load_dependent_update_22454**
   - 0x0002046C → **engine_load_dependent_update_2046c**
-  - 0x0001E0C8 → **engine_load_dependent_update_1e0c8**
   - 0x0003DEF0 → **engine_load_dependent_update_3def0**
   - 0x000666EC → **engine_load_and_delta_dependent_update_666ec**
   - 0x000672E4 → **engine_load_dependent_update_672e4**
   - 0x0002FB50 → **engine_load_dependent_update_2fb50**
-  - 0x0003EB68 → **engine_load_dependent_update_3eb68**
   - 0x0001496C → **engine_load_dependent_update_1496c**
   - 0x0003E7DC → **engine_load_dependent_update_3e7dc**
   - 0x0003EBDC → **engine_load_dependent_update_3ebdc**
@@ -435,6 +471,10 @@ _(underscore names only — strict naming enforcement is ON)_
   - 0x000177DC → **airflow_state_flag_counter_update** (`0xFFFFB444`)
 - 0x0000B690 → **front_af_sensor_pair_signal_process** (stock two-channel front A/F processing;
   single-front patch runs the complete body, then mirrors Bank 1 into Bank 2)
+- 0x00001884 → **diagnostic_request_download_handle**
+- 0x00013330 → **runtime_status_b6c0_bit7_is_set**
+- 0x0001D228 → **runtime_status_b748_bit7_is_set**
+- 0x000192A8 → **front_af_sensor_pump_current_pair_offset_clamp_update**
 - 0x0000B8CC → **front_af_sensor_pump_current_diagnostic_update** (retained stock front-sensor
   diagnostic calculation; single-front task wrapper refreshes Bank-2 readiness afterward)
 - 0x00064FD0 / 0x0006500C → **front_af_sensor_bank1_inhibit_check** /
@@ -442,6 +482,8 @@ _(underscore names only — strict naming enforcement is ON)_
   runtime selector: patch on uses Bank 1; patch off reconstructs stock Bank-2 semantics)
 - 0x00018DAC → **front_af_sensor_lambda_condition_filter** (downstream conditioned factory
   lambda path producing the B4E8/B4EC logger values)
+- 0x0001EE74 → **closed_loop_fuel_control_bank_update** (retained per-bank consumer; master
+  patch deliberately feeds both banks from the same synthetic external-wideband lambda)
 - 0x0001917A → **front_af_sensor_ready_status_pair_update**
 - 0x0000B62A → **front_af_sensor_sample_task**
 - 0x0000E0C8 → **rear_o2_sensor_pair_adc_task_thunk**
@@ -522,3 +564,40 @@ and 0x1B81E.
   routines were traced and renamed. The standalone image remains byte-disjoint from boost,
   single-front/rear-delete, and rotational-idle components; the combined patch and base turbo map
   remain unchanged.
+- 2026-08-21: master-patch timing validation completed against canonical stock in the live Ghidra
+  project. `ign_base_timing_map_blend` still evaluates all A--F descriptors, but
+  `ign_base_timing_select` defaults to A/D, selects C/F only for the verified AVLS-high-cam mode,
+  and can select B/E only if callback 0x27088 returns 1. That callback was renamed
+  `constant_zero_return` after confirming its complete body is `rts; mov #0,r0`; B/E is therefore
+  unreachable in this stock calibration. Function 0x6504C was renamed
+  `runtime_status_d26d_bit5_get` after confirming its 2/0 result from D26D bit 0x20. KCA selector
+  0x3EB68 was renamed `knock_correction_advance_max_select`; it selects KCA A normally and KCA B
+  for AVLS high cam. The master definition labels A/D and C/F by these real roles and omits B/E.
+- 2026-08-21: MAP/injector validation completed. `map_sensor_voltage_to_pressure_process` reads
+  the offset/multiplier pair at 0x72810 and publishes native mmHg absolute at ABC4;
+  `map_sensor_raw_adc_range_classify` compares ABC8 with raw thresholds 0x7B284/286. The selected
+  Omni MAP-SUP-3BR transfer is derived from 0.60 V = 30 kPa and 4.75 V = 300 kPa, yielding
+  487.991938145 mmHg/V and -67.776658076 mmHg before float32 storage. The raw low-input CEL gate
+  is reduced to 0.30 V to permit the SD model's deep-vacuum window; output below the supplier's
+  published 30-kPa endpoint is extrapolated and must be pressure-tested. The stock 4.921 V high
+  gate remains.
+  Injector latency lookup 0x98CC and flow consumer 0x1E0C8 were renamed and tied directly to
+  0x7B304/0x7B318 and 0x76014 respectively. The installed starting values remain translated from
+  the hash-pinned factory STI A4TE002B donor rather than unverified catalogue data.
+- 2026-08-21: single-external-wideband substitution was rechecked. The hardware ADC scan continues
+  updating unsigned former-MAF word AB06 after the MAF conversion calls are removed. Master code
+  converts AB06 at 5/65536 V/count, applies the editable AEM lambda transfer, then writes the same
+  valid lambda to AE60/AE64 and logger mirrors B098/B09C. It writes readiness 50 to AE70/AE74;
+  invalid/rail input publishes logger sentinel 0, readiness 0, inhibits both stock bank feedback
+  helpers, and forces EBCS duty to zero. The EBCS guard also requires valid MAP/RPM/IAT, RPM at
+  or above the first boost-axis point, and a non-fault SD result. The retained lambda condition filter and per-bank
+  closed-loop consumer were rechecked. Front producer B690 and both inhibit helpers are hooked;
+  the pump diagnostic pointer, rear ADC converter, and all five traced rear monitor pointers are
+  no-ops; all 18 mapped front/rear O2 DTC switches are off. Heater output drivers remain stock and
+  disconnected connector terminals must be insulated.
+- 2026-08-21: `master_patch/verify_master_patch.py` independently composes every component from
+  immutable stock, decodes each new SH-2E executable region, checks hooks/task pointers/DTC bytes,
+  validates sensor math and tune policy, enforces free-space ownership (including leaving the
+  separate rotational-idle region untouched), regenerates the focused XML, and validates the
+  Subaru checksum. The generated ROM remains a development baseline requiring bench and dyno
+  validation.
