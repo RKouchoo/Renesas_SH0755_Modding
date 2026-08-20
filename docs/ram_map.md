@@ -38,8 +38,10 @@ physically removed.
 |---|---|
 | 0xFFFFC154–C168 | Base Timing raw results A,B,C,D,E,F |
 | 0xFFFFC16C / C170 / C174 | Blended timing (A·k+D·(1−k), etc.) |
-| 0xFFFFC17C | Ignition blend factor k (0..1) |
-| 0xFFFFC974 / C978 | Advance-multiplier terms summed into k |
+| 0xFFFFC17C | Ignition AVCS-tracking blend factor k (0..1) |
+| 0xFFFFC8C8 / C8CC | Measured intake AVCS angles, left / right |
+| 0xFFFFC974 / C978 | Conditioned/commanded intake AVCS targets, left / right |
+| 0xFFFFC984 | Common intake AVCS target selected from the current AVLS-mode map |
 | 0xFFFFC180 | Timing-map select bits (0x80, 0x40) |
 | 0xFFFFC184 | Selected base timing (deg) |
 | 0xFFFFC150 / C188 | Final base timing after extra lookup |

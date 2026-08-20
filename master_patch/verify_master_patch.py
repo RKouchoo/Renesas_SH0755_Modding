@@ -473,10 +473,10 @@ def verify_definition() -> None:
         fail("master definition retains diagnostic/readiness categories")
 
     expected_timing_addresses = {
-        "Base Timing - Normal Cam (Advance Multiplier 1.0)": 0x00078AA0,
-        "Base Timing - AVLS High Cam (Advance Multiplier 1.0)": 0x00078CD0,
-        "Base Timing - Normal Cam (Advance Multiplier 0.0)": 0x00078E34,
-        "Base Timing - AVLS High Cam (Advance Multiplier 0.0)": 0x00079064,
+        "Base Timing - Normal Cam (AVCS Tracking Ratio 1.0)": 0x00078AA0,
+        "Base Timing - AVLS High Cam (AVCS Tracking Ratio 1.0)": 0x00078CD0,
+        "Base Timing - Normal Cam (AVCS Tracking Ratio 0.0)": 0x00078E34,
+        "Base Timing - AVLS High Cam (AVCS Tracking Ratio 0.0)": 0x00079064,
         "Knock Correction Advance Max - Normal Cam": 0x0007924C,
         "Knock Correction Advance Max - AVLS High Cam": 0x000793AC,
     }
@@ -494,6 +494,62 @@ def verify_definition() -> None:
         description = parent_table.findtext("description", "")
         if "Ghidra" not in description and "Ghidra-verified" not in description:
             fail(f"timing identity evidence is absent from {name}")
+
+    expected_avcs_layout = {
+        "Intake AVCS Target - AVLS Low Cam": (
+            0x0007C5B0,
+            0x0007C54C,
+            0x0007C584,
+            (14, 11),
+        ),
+        "Intake AVCS Target - AVLS High Cam": (
+            0x0007C764,
+            0x0007C6E4,
+            0x0007C71C,
+            (14, 18),
+        ),
+    }
+    parent_tables = {
+        table.get("name"): table for table in roms[0].findall("table")
+    }
+    for name, (expected_address, expected_x, expected_y, expected_size) in (
+        expected_avcs_layout.items()
+    ):
+        table = tables.get(name)
+        if table is None:
+            fail(f"master definition is missing Ghidra-identified AVCS table {name}")
+        target_address = int(table.get("storageaddress", "0"), 0)
+        if target_address != expected_address:
+            fail(
+                f"master definition AVCS identity {name} points to "
+                f"0x{target_address:05X}, expected 0x{expected_address:05X}"
+            )
+        axes = {
+            child.get("type"): int(child.get("storageaddress", "0"), 0)
+            for child in table.findall("table")
+        }
+        if axes != {"X Axis": expected_x, "Y Axis": expected_y}:
+            fail(f"master definition AVCS axes are wrong for {name}: {axes}")
+        parent_table = parent_tables[name]
+        effective_size = (
+            int(table.get("sizex", parent_table.get("sizex", "0"))),
+            int(table.get("sizey", parent_table.get("sizey", "0"))),
+        )
+        if effective_size != expected_size:
+            fail(
+                f"master definition AVCS dimensions for {name} are "
+                f"{effective_size}, expected {expected_size}"
+            )
+        description = table.findtext("description", "")
+        if "not a left/right-bank map" not in description:
+            fail(f"AVCS A/B selector meaning is absent from {name}")
+
+    old_ambiguous_names = {
+        "Intake Cam Advance Angle A (AVCS)",
+        "Intake Cam Advance Angle B (AVCS)",
+    }
+    if old_ambiguous_names & (parent_names | target_names):
+        fail("master definition retains ambiguous AVCS A/B labels")
 
 
 def verify_logger_fragment() -> None:
@@ -679,7 +735,7 @@ def main() -> None:
     print("  wideband/O2       : former-MAF AEM input; four stock paths + 18 DTCs removed")
     print("  boost             : zero-duty spring baseline; throttle/SD/sensor/soft/hard gates")
     print("  injectors         : pinned A4TE002B STI-pink flow/deadtime translation")
-    print("  timing/AVLS       : cam + multiplier endpoints identified; conservative caps; early AVLS")
+    print("  timing/AVLS       : cam + AVCS-tracking endpoints identified; conservative caps; early AVLS")
     print("  definition        : focused master XML; dormant timing pair and obsolete defs omitted")
     print("  logger            : D2WD610H-only lambda/raw-ADC/readiness fragment validated")
     print("  provenance        : root stock, base copy, and SRF payload remain byte-identical")

@@ -60,12 +60,17 @@ AVLS_NAMES = (
 )
 
 TIMING_RENAMES = {
-    "Base Timing A": "Base Timing - Normal Cam (Advance Multiplier 1.0)",
-    "Base Timing C": "Base Timing - AVLS High Cam (Advance Multiplier 1.0)",
-    "Base Timing D": "Base Timing - Normal Cam (Advance Multiplier 0.0)",
-    "Base Timing F": "Base Timing - AVLS High Cam (Advance Multiplier 0.0)",
+    "Base Timing A": "Base Timing - Normal Cam (AVCS Tracking Ratio 1.0)",
+    "Base Timing C": "Base Timing - AVLS High Cam (AVCS Tracking Ratio 1.0)",
+    "Base Timing D": "Base Timing - Normal Cam (AVCS Tracking Ratio 0.0)",
+    "Base Timing F": "Base Timing - AVLS High Cam (AVCS Tracking Ratio 0.0)",
     "Knock Correction Advance Max A": "Knock Correction Advance Max - Normal Cam",
     "Knock Correction Advance Max B": "Knock Correction Advance Max - AVLS High Cam",
+}
+
+AVCS_RENAMES = {
+    "Intake Cam Advance Angle A (AVCS)": "Intake AVCS Target - AVLS Low Cam",
+    "Intake Cam Advance Angle B (AVCS)": "Intake AVCS Target - AVLS High Cam",
 }
 
 MAP_RENAMES = {
@@ -96,44 +101,47 @@ DROP_NAMES = {
 DROP_CATEGORIES = {"Diagnostic Trouble Codes", "OBD-II"}
 
 TIMING_DESCRIPTIONS = {
-    "Base Timing - Normal Cam (Advance Multiplier 1.0)": (
-        "Normal-cam base timing when the effective ignition advance multiplier "
-        "is 1.0. The stock code calculates: selected timing = this table * k + "
-        "the paired 0.0 table * (1-k), where k is the clamped factor at "
-        "0xFFFFC17C. Treat this as the normal-cam primary surface. Keep the "
-        "paired 0.0 surface equal or more retarded at every operating point. "
-        "Identity and formula were verified in live Ghidra at "
-        "ign_blend_factor_from_advance_multiplier @ 0x28354, "
-        "ign_base_timing_map_blend @ 0x28418, and "
-        "ign_base_timing_select @ 0x284B8."
+    "Base Timing - Normal Cam (AVCS Tracking Ratio 1.0)": (
+        "Normal/AVLS-low-cam base timing for an intake-AVCS tracking ratio of "
+        "1.0. The stock code calculates selected timing = this table * k + the "
+        "paired 0.0 table * (1-k). Live Ghidra shows that k at 0xFFFFC17C is "
+        "the clamped ratio of summed measured left/right intake-cam advance to "
+        "summed commanded advance; stock status logic can force it to 1.0. "
+        "This is AVCS phasing compensation, not an IAM endpoint. Tune it for "
+        "the cam angle actually achieved; there is no rule that it must be "
+        "more advanced than the paired 0.0 surface. Verified at "
+        "ign_avcs_tracking_blend_factor_update @ 0x28354, "
+        "ign_base_timing_map_blend @ 0x28418, and ign_base_timing_select @ "
+        "0x284B8."
     ),
-    "Base Timing - Normal Cam (Advance Multiplier 0.0)": (
-        "Normal-cam low-multiplier timing endpoint. The stock code calculates: "
-        "selected timing = the paired 1.0 table * k + this table * (1-k), "
-        "where k is the clamped effective ignition advance multiplier at "
-        "0xFFFFC17C. This is not a second freely selectable normal timing map; "
-        "it is the conservative endpoint approached as the multiplier falls. "
-        "Keep it equal or more retarded than the paired 1.0 surface. Identity "
+    "Base Timing - Normal Cam (AVCS Tracking Ratio 0.0)": (
+        "Normal/AVLS-low-cam base timing for an intake-AVCS tracking ratio of "
+        "0.0. The stock code calculates selected timing = the paired 1.0 table "
+        "* k + this table * (1-k). A near-zero summed command produces k=0; "
+        "partial cam tracking interpolates between the surfaces. This is not a "
+        "knock/IAM fallback and is not required to be more retarded than the "
+        "1.0 surface. Tune the pair to match actual intake-cam phasing. Identity "
         "and formula were verified against canonical stock D2WD610H in live "
         "Ghidra."
     ),
-    "Base Timing - AVLS High Cam (Advance Multiplier 1.0)": (
-        "AVLS-high-cam base timing when the effective ignition advance "
-        "multiplier is 1.0. It is selected only in the verified AVLS high-cam "
-        "state. The stock code calculates: selected timing = this table * k + "
-        "the paired 0.0 table * (1-k). Treat this as the high-cam primary "
-        "surface and keep the paired 0.0 surface equal or more retarded. The "
-        "cam selection and blend were verified in live Ghidra at 0x28418 and "
-        "0x284B8."
+    "Base Timing - AVLS High Cam (AVCS Tracking Ratio 1.0)": (
+        "AVLS-high-cam base timing for an intake-AVCS tracking ratio of 1.0. It "
+        "is selected only in the verified AVLS high-cam state. The stock code "
+        "calculates selected timing = this table * k + the paired 0.0 table * "
+        "(1-k), where k compares measured with commanded intake-cam advance. "
+        "This is AVCS phasing compensation, not an IAM endpoint; tune the pair "
+        "for the cam angle actually achieved without assuming a fixed timing "
+        "ordering. The cam selection and blend were verified in live Ghidra at "
+        "0x28354, 0x28418, and 0x284B8."
     ),
-    "Base Timing - AVLS High Cam (Advance Multiplier 0.0)": (
-        "AVLS-high-cam low-multiplier timing endpoint. It is selected only in "
-        "the verified AVLS high-cam state and is blended with the paired 1.0 "
-        "surface as: selected timing = 1.0 table * k + this table * (1-k). "
-        "This is a conservative fallback endpoint, not an independent high-cam "
-        "map. Keep it equal or more retarded than the paired 1.0 surface. The "
-        "cam selection and blend were verified in live Ghidra at 0x28418 and "
-        "0x284B8."
+    "Base Timing - AVLS High Cam (AVCS Tracking Ratio 0.0)": (
+        "AVLS-high-cam base timing for an intake-AVCS tracking ratio of 0.0. It "
+        "is selected only in the verified AVLS high-cam state and is blended "
+        "with the paired 1.0 surface as selected timing = 1.0 table * k + this "
+        "table * (1-k). A near-zero summed AVCS command produces k=0. This is "
+        "not a knock/IAM fallback and is not required to be more retarded than "
+        "the 1.0 surface. The cam selection and blend were verified in live "
+        "Ghidra at 0x28354, 0x28418, and 0x284B8."
     ),
     "Knock Correction Advance Max - Normal Cam": (
         "Normal-cam maximum positive knock-correction advance. Ghidra-verified "
@@ -144,6 +152,27 @@ TIMING_DESCRIPTIONS = {
         "AVLS-high-cam maximum positive knock-correction advance. "
         "Ghidra-verified knock_correction_advance_max_select @ 0x3EB68 selects "
         "this surface in the same high-cam state used by the timing selector."
+    ),
+}
+
+AVCS_DESCRIPTIONS = {
+    "Intake AVCS Target - AVLS Low Cam": (
+        "Intake-cam advance target, in degrees, selected while committed AVLS "
+        "cam mode 0xFFFFCD86 is 1 (low lift). Live Ghidra at "
+        "intake_avcs_target_by_avls_mode_update @ 0x353B0 selects descriptor "
+        "0x60C34 and data 0x7C5B0 in this state. Legacy table A is an AVLS-mode "
+        "map, not a left/right-bank map, and it is selected rather than blended "
+        "with the high-cam target. The load axis ends at 2.00 g/rev, so the "
+        "stock lookup uses its last column above that breakpoint."
+    ),
+    "Intake AVCS Target - AVLS High Cam": (
+        "Intake-cam advance target, in degrees, selected while committed AVLS "
+        "cam mode 0xFFFFCD86 is 3 (high lift). Live Ghidra at "
+        "intake_avcs_target_by_avls_mode_update @ 0x353B0 selects descriptor "
+        "0x60C50 and data 0x7C764 in this state. Legacy table B is an AVLS-mode "
+        "map, not a left/right-bank map, and it is selected rather than blended "
+        "with the low-cam target. The load axis ends at 2.00 g/rev, so the stock "
+        "lookup uses its last column above that breakpoint."
     ),
 }
 
@@ -231,11 +260,15 @@ def prune_and_rename(rom: ET.Element, inherited_drop_names: set[str] | None = No
             rom.remove(table)
             continue
         original = table.get("name")
-        replacement = TIMING_RENAMES.get(original, MAP_RENAMES.get(original))
+        replacement = TIMING_RENAMES.get(
+            original, AVCS_RENAMES.get(original, MAP_RENAMES.get(original))
+        )
         if replacement:
             table.set("name", replacement)
             if replacement in TIMING_DESCRIPTIONS:
                 set_description(table, TIMING_DESCRIPTIONS[replacement])
+            elif replacement in AVCS_DESCRIPTIONS:
+                set_description(table, AVCS_DESCRIPTIONS[replacement])
 
 
 def add_wideband_templates(parent: ET.Element, target: ET.Element) -> None:
@@ -352,7 +385,12 @@ def validate(root: ET.Element) -> None:
     if missing:
         raise SystemExit(f"master definition is missing custom tables: {missing}")
 
-    forbidden = DROP_NAMES | {"Base Timing B", "Base Timing E"}
+    forbidden = (
+        DROP_NAMES
+        | set(TIMING_RENAMES)
+        | set(AVCS_RENAMES)
+        | {"Base Timing B", "Base Timing E"}
+    )
     present_forbidden = sorted(forbidden & (parent_names | target_names))
     if present_forbidden:
         raise SystemExit(f"obsolete tables survived master pruning: {present_forbidden}")
@@ -360,12 +398,14 @@ def validate(root: ET.Element) -> None:
         raise SystemExit("diagnostic/readiness category survived parent pruning")
 
     expected_addresses = {
-        "Base Timing - Normal Cam (Advance Multiplier 1.0)": "0x78AA0",
-        "Base Timing - AVLS High Cam (Advance Multiplier 1.0)": "0x78CD0",
-        "Base Timing - Normal Cam (Advance Multiplier 0.0)": "0x78E34",
-        "Base Timing - AVLS High Cam (Advance Multiplier 0.0)": "0x79064",
+        "Base Timing - Normal Cam (AVCS Tracking Ratio 1.0)": "0x78AA0",
+        "Base Timing - AVLS High Cam (AVCS Tracking Ratio 1.0)": "0x78CD0",
+        "Base Timing - Normal Cam (AVCS Tracking Ratio 0.0)": "0x78E34",
+        "Base Timing - AVLS High Cam (AVCS Tracking Ratio 0.0)": "0x79064",
         "Knock Correction Advance Max - Normal Cam": "0x7924C",
         "Knock Correction Advance Max - AVLS High Cam": "0x793AC",
+        "Intake AVCS Target - AVLS Low Cam": "0x7C5B0",
+        "Intake AVCS Target - AVLS High Cam": "0x7C764",
         "Omni Power MAP-SUP-3BR Scaling": "0x72810",
         "External Wideband Lambda Transfer": "0x7E404",
         "External Wideband Valid Voltage Range": "0x7E40C",
@@ -423,7 +463,7 @@ def main() -> None:
     print(f"Wrote {OUTPUT}")
     print(f"  inherited tuning templates : {len(parent.findall('table'))}")
     print(f"  D2WD610H target tables      : {len(target.findall('table'))}")
-    print("  timing paths                : normal/high cam x multiplier 1.0/0.0; dormant pair omitted")
+    print("  timing paths                : normal/high cam x AVCS tracking ratio 1.0/0.0; dormant pair omitted")
     print("  removed                     : stock MAF/O2 scalings, DTC/readiness switches")
 
 

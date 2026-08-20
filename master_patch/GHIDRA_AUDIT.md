@@ -17,12 +17,19 @@ reproducible without importing a modified ROM into the stock analysis project.
 
 | Address | Ghidra name | Evidence used |
 |---:|---|---|
+| `0x2458` | `float_divide_guarded` | Guarded floating-point divide used by the AVCS tracking-ratio calculation. |
+| `0x24C0` | `float_clamp` | Bounds the calculated tracking ratio to 0..1. |
+| `0x24FC` | `float_difference_exceeds_tolerance` | Near-zero/tolerance test used by AVCS target and tracking logic. |
 | `0x27088` | `constant_zero_return` | Exact `rts; mov #0,r0`; makes timing B/E selector branch dormant. |
 | `0x6504C` | `runtime_status_d26d_bit5_get` | Timing selector status input. |
-| `0x28354` | `ign_blend_factor_from_advance_multiplier` | Builds and clamps effective advance-multiplier factor `k` at `0xFFFFC17C`. |
+| `0x28354` | `ign_avcs_tracking_blend_factor_update` | Builds and clamps the measured/commanded intake-AVCS tracking factor `k` at `0xFFFFC17C`. |
 | `0x28418` | `ign_base_timing_map_blend` | Looks up/blends all base-timing endpoints. |
 | `0x284B8` | `ign_base_timing_select` | A/D normal-cam, C/F AVLS-high-cam selection; B/E requires the constant-zero callback. |
+| `0x353B0` | `intake_avcs_target_by_avls_mode_update` | Selects AVCS A in committed low-lift mode and AVCS B in high-lift mode. |
+| `0x35750` | `intake_avcs_tracking_control_update` | Downstream per-bank AVCS target/tracking control. |
 | `0x3EB68` | `knock_correction_advance_max_select` | KCA A normal-cam versus B AVLS-high-cam selection. |
+| `0x3FFDA` | `avls_threshold_curve_selector_state_update` | Publishes internal AVLS curve-selector state 1/2/3. |
+| `0x400EE` | `avls_curve_selector_load_band_latches_update` | Builds selector latches from fallback-load bands 13/15 and 113/115. |
 | `0x7A14` | `map_sensor_voltage_to_pressure_process` | `MAP = voltage*multiplier + offset`; writes native absolute mmHg to `0xFFFFABC4`. |
 | `0x7A56` | `map_sensor_raw_adc_range_classify` | Raw `0xFFFFABC8` compared with thresholds at `0x7B284/0x7B286`. |
 | `0x78AC` | `analog_sensor_abac_range_classify` | Neighboring analog range path separated from MAP. |
@@ -50,17 +57,57 @@ Existing project names used by the integrated components include
 ### Timing
 
 The stock selection/blend path references all six legacy base maps. For the
-normal-cam path, address `0x78AA0` is the effective advance-multiplier-1.0
-endpoint and `0x78E34` is the multiplier-0.0 endpoint. For AVLS high cam,
-`0x78CD0` is the multiplier-1.0 endpoint and `0x79064` is the multiplier-0.0
-endpoint. `ign_base_timing_map_blend` calculates `high*k + low*(1-k)` using the
-clamped factor published at `0xFFFFC17C` by
-`ign_blend_factor_from_advance_multiplier`.
+normal/AVLS-low-cam path, address `0x78AA0` is the AVCS-tracking-ratio-1.0
+endpoint and `0x78E34` is the ratio-0.0 endpoint. For AVLS high cam, `0x78CD0`
+is the ratio-1.0 endpoint and `0x79064` is the ratio-0.0 endpoint.
+`ign_base_timing_map_blend` calculates `ratio_1.0*k + ratio_0.0*(1-k)` using the
+factor published at `0xFFFFC17C` by
+`ign_avcs_tracking_blend_factor_update`.
+
+The factor is not IAM. The code sums conditioned/commanded left and right AVCS
+targets at `0xFFFFC974/0xFFFFC978`, sums measured left and right intake-cam
+angles at `0xFFFFC8C8/0xFFFFC8CC`, divides measured by commanded, and clamps the
+result to 0..1. A near-zero commanded sum produces zero, while verified stock
+status paths can force one. These are cam-phasing endpoints; neither surface has
+a universal requirement to be more advanced or retarded than its partner.
 
 The two remaining legacy maps require a callback at `0x27088` to return one,
 but that function always returns zero in canonical D2WD610H. They are still
 conservatively calibrated in the binary but removed from the focused tuning
 definition. The two KCA surfaces select normal cam versus AVLS high cam.
+
+### AVCS target A/B meaning
+
+`intake_avcs_target_by_avls_mode_update` is the direct consumer of both target
+descriptors. Committed AVLS cam mode `0xFFFFCD86 == 1` selects descriptor
+`0x60C34`, data `0x7C5B0` (legacy AVCS A). Mode `3` selects descriptor `0x60C50`,
+data `0x7C764` (legacy AVCS B). Therefore A is the intake AVCS target for AVLS
+low lift and B is the target for AVLS high lift. They are not left/right-bank
+maps and are selected by lift state rather than blended with one another.
+
+Both maps share a 14-point 0.35..2.00 g/rev load axis. A has 11 RPM rows from
+500 through 4000 RPM; B has 18 rows from 1000 through 6800 RPM. The native
+lookup clamps above the final axis breakpoint, so loads above 2.00 g/rev use the
+last column unless the existing axis is rescaled.
+
+### How AVLS chooses low or high lift
+
+AVLS makes the lift decision before AVCS A/B selection. In the master baseline,
+high-lift OSV actuation is prohibited below 2500 RPM. Between 2500 and 3200 RPM,
+the state machine compares load `0xFFFFB46C` with the currently selected
+load-versus-RPM threshold curve. From low lift it requests high lift at
+`load >= curve + 10`; from high lift it requests low lift below the raw curve.
+At 3200 RPM the hard override requests high lift regardless of load and holds
+that override until RPM falls below 3000. The target mode is written at
+`0xFFFFCD87`; the committed mode at `0xFFFFCD86` changes after the existing
+timer, status, and OSV-actuation gates.
+
+The two switchover curves are not engage/release maps. Internal selector state
+`0xFFFFCD9C == 2` uses curve 1 and state 3 uses curve 2. The selector derives
+those states from hysteretic bands of fallback-load signal `0xFFFFCF94` (13/15
+and 113/115), plus runtime/delay gates. That signal's physical units and broader
+meaning are not yet proven, so commissioning must log the actual requested and
+committed transition rather than interpreting those numbers as g/rev.
 
 ### MAP and injectors
 

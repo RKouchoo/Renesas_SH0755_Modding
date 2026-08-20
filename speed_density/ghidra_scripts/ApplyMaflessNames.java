@@ -54,7 +54,7 @@ public class ApplyMaflessNames extends GhidraScript {
         createOrRename("00024cb0", "engine_load_dependent_update_24cb0");
         createOrRename("0003da60", "engine_load_dependent_update_3da60");
         createOrRename("0003eace", "engine_load_dependent_update_3eace");
-        createOrRename("000353b0", "engine_load_dependent_update_353b0");
+        createOrRename("000353b0", "intake_avcs_target_by_avls_mode_update");
         createOrRename("0003e20e", "engine_load_dependent_update_3e20e");
         createOrRename("00029024", "engine_load_dependent_update_29024");
         createOrRename("00022454", "engine_load_dependent_update_22454");

@@ -714,14 +714,25 @@ enter boost solely because the automated audit passes.
 - `injector_battery_voltage_latency_lookup` at `0x98CC` confirms descriptor `0x608D8`, voltage
   axis `0x7B304`, and latency data `0x7B318`.
 - `injector_flow_scaling_factor_update` at `0x1E0C8` confirms D2WD flow scalar `0x76014`.
-- `ign_blend_factor_from_advance_multiplier` at `0x28354` builds and clamps effective factor
-  `k` at `0xFFFFC17C`. `ign_base_timing_map_blend` at `0x28418` calculates each reachable pair as
-  multiplier-1.0 endpoint `* k` plus multiplier-0.0 endpoint `* (1-k)`.
+- `ign_avcs_tracking_blend_factor_update` at `0x28354` builds and clamps factor `k` at
+  `0xFFFFC17C` as summed measured left/right intake AVCS divided by summed commanded AVCS.
+  This corrects the earlier IAM/advance-multiplier interpretation. `ign_base_timing_map_blend`
+  at `0x28418` calculates each reachable pair as AVCS-tracking-ratio-1.0 endpoint `* k` plus
+  ratio-0.0 endpoint `* (1-k)`.
 - `ign_base_timing_select` at `0x284B8` confirms `0x78AA0/0x78E34` as the normal-cam pair and
   `0x78CD0/0x79064` as the AVLS-high-cam pair. The two other legacy surfaces require the callback
   at `0x27088`, renamed `constant_zero_return`, to return one; its exact body always returns zero.
 - `knock_correction_advance_max_select` at `0x3EB68` confirms KCA A normal cam and KCA B AVLS
   high cam.
+- `intake_avcs_target_by_avls_mode_update` at `0x353B0` confirms descriptor `0x60C34` / data
+  `0x7C5B0` (legacy AVCS A) is selected in committed AVLS mode 1, low lift; descriptor `0x60C50`
+  / data `0x7C764` (legacy AVCS B) is selected in mode 3, high lift. These are mode targets, not
+  left/right-bank maps, and the ECU selects rather than blends them.
+- `avls_threshold_curve_selector_state_update` at `0x3FFDA` and
+  `avls_curve_selector_load_band_latches_update` at `0x400EE` show how the internal curve
+  selector is formed. Fallback-load signal `0xFFFFCF94` drives hysteretic 13/15 and 113/115
+  bands; subject to runtime/delay gates, selector state 2 uses AVLS threshold curve 1 and state 3
+  uses curve 2. The signal's physical units remain unresolved.
 - `front_af_sensor_pair_signal_process` at `0xB690`,
   `front_af_sensor_lambda_condition_filter` at `0x18DAC`, and
   `closed_loop_fuel_control_bank_update` at `0x1EE74` confirm the lambda/readiness values consumed
@@ -785,10 +796,11 @@ enter boost solely because the automated audit passes.
 - `master_patch/D2WD610H_master_patch.xml` is self-contained and contains only metric base
   templates plus D2WD610H target tables relevant to the master architecture. Stock MAF/O2,
   diagnostic/readiness, fuel-temperature, and dormant timing B/E tuning entries are removed.
-- Active timing maps are named by both Ghidra-proven cam role and their exact effective
-  advance-multiplier endpoint (1.0 or 0.0); the two KCA maps are named by normal/high-cam role.
-  The XML also exposes AVLS, SD, Omni MAP, injectors/fuel, active timing, boost, AEM
-  transfer/range, and retained engine controls.
+- Active timing maps are named by both Ghidra-proven cam role and their exact intake-AVCS
+  tracking-ratio endpoint (1.0 or 0.0); the two KCA maps are named by normal/high-cam role. The
+  legacy AVCS A/B targets are named by AVLS low/high-lift selection. The XML also exposes AVLS,
+  SD, Omni MAP, injectors/fuel, active timing, boost, AEM transfer/range, and retained engine
+  controls.
 - All D2WD610H images retain the factory CALID. RomRaider must therefore be configured with the
   master XML alone for this image; selecting a standalone/legacy definition can make the same
   binary appear with anonymous A--F names and an incomplete table set.

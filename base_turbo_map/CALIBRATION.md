@@ -82,8 +82,8 @@ before positive manifold pressure.
 
 ## Base ignition timing
 
-All six maps are covered so AVLS state, map-selection flags, and advance-multiplier blending do
-not expose an unmodified high-load path:
+All six maps are covered so AVLS state, map-selection flags, and the measured/commanded
+intake-AVCS tracking blend do not expose an unmodified high-load path:
 
 | Map | Address | RPM rows |
 |---|---:|---:|

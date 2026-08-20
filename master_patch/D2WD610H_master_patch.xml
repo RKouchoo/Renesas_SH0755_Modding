@@ -363,7 +363,7 @@
    </table>
    <description>This is the compensation of engine load based on RPM and manifold pressure.</description>
   </table>
-  <table type="3D" name="Base Timing - Normal Cam (Advance Multiplier 1.0)" category="Ignition Timing - Advance" storagetype="uint8" endian="big" sizex="15" sizey="18" userlevel="1" logparam="E53">
+  <table type="3D" name="Base Timing - Normal Cam (AVCS Tracking Ratio 1.0)" category="Ignition Timing - Advance" storagetype="uint8" endian="big" sizex="15" sizey="18" userlevel="1" logparam="E53">
    <scaling units="Base Ignition Timing (degrees BTDC)" expression="(x*.3515625)-20" to_byte="(x+20)/.3515625" format="0.00" fineincrement=".2" coarseincrement="1" />
    <table type="X Axis" name="Engine Load" storagetype="float" endian="little" logparam="E32">
     <scaling units="g/rev" expression="x" to_byte="x" format="0.00" fineincrement=".01" coarseincrement=".1" />
@@ -371,9 +371,9 @@
    <table type="Y Axis" name="Engine Speed" storagetype="float" endian="little" logparam="P8">
     <scaling units="RPM" expression="x" to_byte="x" format="#" fineincrement="50" coarseincrement="100" />
    </table>
-   <description>Normal-cam base timing when the effective ignition advance multiplier is 1.0. The stock code calculates: selected timing = this table * k + the paired 0.0 table * (1-k), where k is the clamped factor at 0xFFFFC17C. Treat this as the normal-cam primary surface. Keep the paired 0.0 surface equal or more retarded at every operating point. Identity and formula were verified in live Ghidra at ign_blend_factor_from_advance_multiplier @ 0x28354, ign_base_timing_map_blend @ 0x28418, and ign_base_timing_select @ 0x284B8.</description>
+   <description>Normal/AVLS-low-cam base timing for an intake-AVCS tracking ratio of 1.0. The stock code calculates selected timing = this table * k + the paired 0.0 table * (1-k). Live Ghidra shows that k at 0xFFFFC17C is the clamped ratio of summed measured left/right intake-cam advance to summed commanded advance; stock status logic can force it to 1.0. This is AVCS phasing compensation, not an IAM endpoint. Tune it for the cam angle actually achieved; there is no rule that it must be more advanced than the paired 0.0 surface. Verified at ign_avcs_tracking_blend_factor_update @ 0x28354, ign_base_timing_map_blend @ 0x28418, and ign_base_timing_select @ 0x284B8.</description>
   </table>
-  <table type="3D" name="Base Timing - AVLS High Cam (Advance Multiplier 1.0)" category="Ignition Timing - Advance" storagetype="uint8" endian="big" sizex="15" sizey="18" userlevel="1" logparam="E53">
+  <table type="3D" name="Base Timing - AVLS High Cam (AVCS Tracking Ratio 1.0)" category="Ignition Timing - Advance" storagetype="uint8" endian="big" sizex="15" sizey="18" userlevel="1" logparam="E53">
    <scaling units="Base Ignition Timing (degrees BTDC)" expression="(x*.3515625)-20" to_byte="(x+20)/.3515625" format="0.00" fineincrement=".2" coarseincrement="1" />
    <table type="X Axis" name="Engine Load" storagetype="float" endian="little" logparam="E32">
     <scaling units="g/rev" expression="x" to_byte="x" format="0.00" fineincrement=".01" coarseincrement=".1" />
@@ -381,9 +381,9 @@
    <table type="Y Axis" name="Engine Speed" storagetype="float" endian="little" logparam="P8">
     <scaling units="RPM" expression="x" to_byte="x" format="#" fineincrement="50" coarseincrement="100" />
    </table>
-   <description>AVLS-high-cam base timing when the effective ignition advance multiplier is 1.0. It is selected only in the verified AVLS high-cam state. The stock code calculates: selected timing = this table * k + the paired 0.0 table * (1-k). Treat this as the high-cam primary surface and keep the paired 0.0 surface equal or more retarded. The cam selection and blend were verified in live Ghidra at 0x28418 and 0x284B8.</description>
+   <description>AVLS-high-cam base timing for an intake-AVCS tracking ratio of 1.0. It is selected only in the verified AVLS high-cam state. The stock code calculates selected timing = this table * k + the paired 0.0 table * (1-k), where k compares measured with commanded intake-cam advance. This is AVCS phasing compensation, not an IAM endpoint; tune the pair for the cam angle actually achieved without assuming a fixed timing ordering. The cam selection and blend were verified in live Ghidra at 0x28354, 0x28418, and 0x284B8.</description>
   </table>
-  <table type="3D" name="Base Timing - Normal Cam (Advance Multiplier 0.0)" category="Ignition Timing - Advance" storagetype="uint8" endian="big" sizex="15" sizey="18" userlevel="1" logparam="E53">
+  <table type="3D" name="Base Timing - Normal Cam (AVCS Tracking Ratio 0.0)" category="Ignition Timing - Advance" storagetype="uint8" endian="big" sizex="15" sizey="18" userlevel="1" logparam="E53">
    <scaling units="Base Ignition Timing (degrees BTDC)" expression="(x*.3515625)-20" to_byte="(x+20)/.3515625" format="0.00" fineincrement=".2" coarseincrement="1" />
    <table type="X Axis" name="Engine Load" storagetype="float" endian="little" logparam="E32">
     <scaling units="g/rev" expression="x" to_byte="x" format="0.00" fineincrement=".01" coarseincrement=".1" />
@@ -391,9 +391,9 @@
    <table type="Y Axis" name="Engine Speed" storagetype="float" endian="little" logparam="P8">
     <scaling units="RPM" expression="x" to_byte="x" format="#" fineincrement="50" coarseincrement="100" />
    </table>
-   <description>Normal-cam low-multiplier timing endpoint. The stock code calculates: selected timing = the paired 1.0 table * k + this table * (1-k), where k is the clamped effective ignition advance multiplier at 0xFFFFC17C. This is not a second freely selectable normal timing map; it is the conservative endpoint approached as the multiplier falls. Keep it equal or more retarded than the paired 1.0 surface. Identity and formula were verified against canonical stock D2WD610H in live Ghidra.</description>
+   <description>Normal/AVLS-low-cam base timing for an intake-AVCS tracking ratio of 0.0. The stock code calculates selected timing = the paired 1.0 table * k + this table * (1-k). A near-zero summed command produces k=0; partial cam tracking interpolates between the surfaces. This is not a knock/IAM fallback and is not required to be more retarded than the 1.0 surface. Tune the pair to match actual intake-cam phasing. Identity and formula were verified against canonical stock D2WD610H in live Ghidra.</description>
   </table>
-  <table type="3D" name="Base Timing - AVLS High Cam (Advance Multiplier 0.0)" category="Ignition Timing - Advance" storagetype="uint8" endian="big" sizex="15" sizey="18" userlevel="1" logparam="E53">
+  <table type="3D" name="Base Timing - AVLS High Cam (AVCS Tracking Ratio 0.0)" category="Ignition Timing - Advance" storagetype="uint8" endian="big" sizex="15" sizey="18" userlevel="1" logparam="E53">
    <scaling units="Base Ignition Timing (degrees BTDC)" expression="(x*.3515625)-20" to_byte="(x+20)/.3515625" format="0.00" fineincrement=".2" coarseincrement="1" />
    <table type="X Axis" name="Engine Load" storagetype="float" endian="little" logparam="E32">
     <scaling units="g/rev" expression="x" to_byte="x" format="0.00" fineincrement=".01" coarseincrement=".1" />
@@ -401,7 +401,7 @@
    <table type="Y Axis" name="Engine Speed" storagetype="float" endian="little" logparam="P8">
     <scaling units="RPM" expression="x" to_byte="x" format="#" fineincrement="50" coarseincrement="100" />
    </table>
-   <description>AVLS-high-cam low-multiplier timing endpoint. It is selected only in the verified AVLS high-cam state and is blended with the paired 1.0 surface as: selected timing = 1.0 table * k + this table * (1-k). This is a conservative fallback endpoint, not an independent high-cam map. Keep it equal or more retarded than the paired 1.0 surface. The cam selection and blend were verified in live Ghidra at 0x28418 and 0x284B8.</description>
+   <description>AVLS-high-cam base timing for an intake-AVCS tracking ratio of 0.0. It is selected only in the verified AVLS high-cam state and is blended with the paired 1.0 surface as selected timing = 1.0 table * k + this table * (1-k). A near-zero summed AVCS command produces k=0. This is not a knock/IAM fallback and is not required to be more retarded than the 1.0 surface. The cam selection and blend were verified in live Ghidra at 0x28354, 0x28418, and 0x284B8.</description>
   </table>
   <table type="2D" name="Base Timing Idle" category="Ignition Timing - Advance" storagetype="uint8" endian="big" sizey="16" userlevel="4" logparam="E53">
    <scaling units="Base Ignition Timing (degrees BTDC)" expression="(x*.3515625)-20" to_byte="(x+20)/.3515625" format="0.00" fineincrement=".2" coarseincrement="1" />
@@ -667,7 +667,7 @@
    </table>
    <description>This is the initial change in the ignition advance multiplier (IAM) when re-evaluation of the IAM begins during a rough correction learning session. When this starts, the IAM is reset to the 'Advance Multiplier (Initial)' value and the step value is added to or subtracted from this value depending on knock. The step value is reduced by half when, during this session, the IAM changes from increasing to decreasing, or vice versa. When the step value is 0, or the IAM hits 0 or 1.0 for a period of time, the IAM re-evaluation ends. This how the ECU determines that the IAM has settled on the appropriate value.</description>
   </table>
-  <table type="3D" name="Intake Cam Advance Angle A (AVCS)" category="Variable Valve Timing (AVCS)" storagetype="uint16" endian="big" sizex="14" sizey="18" userlevel="4">
+  <table type="3D" name="Intake AVCS Target - AVLS Low Cam" category="Variable Valve Timing (AVCS)" storagetype="uint16" endian="big" sizex="14" sizey="18" userlevel="4">
    <scaling units="Advance (degrees)" expression="x*.0054931640625" to_byte="x/.0054931640625" format="0.00" fineincrement=".5" coarseincrement="1" />
    <table type="X Axis" name="Engine Load" storagetype="float" endian="little" logparam="E32">
     <scaling units="g/rev" expression="x" to_byte="x" format="0.00" fineincrement=".01" coarseincrement=".1" />
@@ -675,9 +675,9 @@
    <table type="Y Axis" name="Engine Speed" storagetype="float" endian="little" logparam="P8">
     <scaling units="RPM" expression="x" to_byte="x" format="#" fineincrement="50" coarseincrement="100" />
    </table>
-   <description>This map selects the degree of intake cam advance for the variable valve timing system.</description>
+   <description>Intake-cam advance target, in degrees, selected while committed AVLS cam mode 0xFFFFCD86 is 1 (low lift). Live Ghidra at intake_avcs_target_by_avls_mode_update @ 0x353B0 selects descriptor 0x60C34 and data 0x7C5B0 in this state. Legacy table A is an AVLS-mode map, not a left/right-bank map, and it is selected rather than blended with the high-cam target. The load axis ends at 2.00 g/rev, so the stock lookup uses its last column above that breakpoint.</description>
   </table>
-  <table type="3D" name="Intake Cam Advance Angle B (AVCS)" category="Variable Valve Timing (AVCS)" storagetype="uint16" endian="big" sizex="14" sizey="18" userlevel="4">
+  <table type="3D" name="Intake AVCS Target - AVLS High Cam" category="Variable Valve Timing (AVCS)" storagetype="uint16" endian="big" sizex="14" sizey="18" userlevel="4">
    <scaling units="Advance (degrees)" expression="x*.0054931640625" to_byte="x/.0054931640625" format="0.00" fineincrement=".5" coarseincrement="1" />
    <table type="X Axis" name="Engine Load" storagetype="float" endian="little" logparam="E32">
     <scaling units="g/rev" expression="x" to_byte="x" format="0.00" fineincrement=".01" coarseincrement=".1" />
@@ -685,7 +685,7 @@
    <table type="Y Axis" name="Engine Speed" storagetype="float" endian="little" logparam="P8">
     <scaling units="RPM" expression="x" to_byte="x" format="#" fineincrement="50" coarseincrement="100" />
    </table>
-   <description>This map selects the degree of intake cam advance for the variable valve timing system.</description>
+   <description>Intake-cam advance target, in degrees, selected while committed AVLS cam mode 0xFFFFCD86 is 3 (high lift). Live Ghidra at intake_avcs_target_by_avls_mode_update @ 0x353B0 selects descriptor 0x60C50 and data 0x7C764 in this state. Legacy table B is an AVLS-mode map, not a left/right-bank map, and it is selected rather than blended with the low-cam target. The load axis ends at 2.00 g/rev, so the stock lookup uses its last column above that breakpoint.</description>
   </table>
   <table type="3D" name="Requested Torque (Accelerator Pedal)" category="Drive-by-Wire Throttle (DBW)" storagetype="uint16" endian="big" sizex="15" sizey="17" userlevel="4" logparam="E56">
    <scaling units="Requested Torque (raw ecu value)" expression="x*.0078125" to_byte="x/.0078125" format="0.0" fineincrement="1" coarseincrement="10" />
@@ -1024,25 +1024,25 @@
    <table type="X Axis" storageaddress="0x74274" />
    <table type="Y Axis" storageaddress="0x74298" />
   </table>
-  <table name="Base Timing - Normal Cam (Advance Multiplier 1.0)" storageaddress="0x78AA0" sizey="14">
+  <table name="Base Timing - Normal Cam (AVCS Tracking Ratio 1.0)" storageaddress="0x78AA0" sizey="14">
    <table type="X Axis" storageaddress="0x780BC" />
    <table type="Y Axis" storageaddress="0x78A68" />
-   <description>Normal-cam base timing when the effective ignition advance multiplier is 1.0. The stock code calculates: selected timing = this table * k + the paired 0.0 table * (1-k), where k is the clamped factor at 0xFFFFC17C. Treat this as the normal-cam primary surface. Keep the paired 0.0 surface equal or more retarded at every operating point. Identity and formula were verified in live Ghidra at ign_blend_factor_from_advance_multiplier @ 0x28354, ign_base_timing_map_blend @ 0x28418, and ign_base_timing_select @ 0x284B8.</description>
+   <description>Normal/AVLS-low-cam base timing for an intake-AVCS tracking ratio of 1.0. The stock code calculates selected timing = this table * k + the paired 0.0 table * (1-k). Live Ghidra shows that k at 0xFFFFC17C is the clamped ratio of summed measured left/right intake-cam advance to summed commanded advance; stock status logic can force it to 1.0. This is AVCS phasing compensation, not an IAM endpoint. Tune it for the cam angle actually achieved; there is no rule that it must be more advanced than the paired 0.0 surface. Verified at ign_avcs_tracking_blend_factor_update @ 0x28354, ign_base_timing_map_blend @ 0x28418, and ign_base_timing_select @ 0x284B8.</description>
   </table>
-  <table name="Base Timing - AVLS High Cam (Advance Multiplier 1.0)" storageaddress="0x78CD0" sizey="20">
+  <table name="Base Timing - AVLS High Cam (AVCS Tracking Ratio 1.0)" storageaddress="0x78CD0" sizey="20">
    <table type="X Axis" storageaddress="0x780BC" />
    <table type="Y Axis" storageaddress="0x78C80" />
-   <description>AVLS-high-cam base timing when the effective ignition advance multiplier is 1.0. It is selected only in the verified AVLS high-cam state. The stock code calculates: selected timing = this table * k + the paired 0.0 table * (1-k). Treat this as the high-cam primary surface and keep the paired 0.0 surface equal or more retarded. The cam selection and blend were verified in live Ghidra at 0x28418 and 0x284B8.</description>
+   <description>AVLS-high-cam base timing for an intake-AVCS tracking ratio of 1.0. It is selected only in the verified AVLS high-cam state. The stock code calculates selected timing = this table * k + the paired 0.0 table * (1-k), where k compares measured with commanded intake-cam advance. This is AVCS phasing compensation, not an IAM endpoint; tune the pair for the cam angle actually achieved without assuming a fixed timing ordering. The cam selection and blend were verified in live Ghidra at 0x28354, 0x28418, and 0x284B8.</description>
   </table>
-  <table name="Base Timing - Normal Cam (Advance Multiplier 0.0)" storageaddress="0x78E34" sizey="14">
+  <table name="Base Timing - Normal Cam (AVCS Tracking Ratio 0.0)" storageaddress="0x78E34" sizey="14">
    <table type="X Axis" storageaddress="0x780BC" />
    <table type="Y Axis" storageaddress="0x78DFC" />
-   <description>Normal-cam low-multiplier timing endpoint. The stock code calculates: selected timing = the paired 1.0 table * k + this table * (1-k), where k is the clamped effective ignition advance multiplier at 0xFFFFC17C. This is not a second freely selectable normal timing map; it is the conservative endpoint approached as the multiplier falls. Keep it equal or more retarded than the paired 1.0 surface. Identity and formula were verified against canonical stock D2WD610H in live Ghidra.</description>
+   <description>Normal/AVLS-low-cam base timing for an intake-AVCS tracking ratio of 0.0. The stock code calculates selected timing = the paired 1.0 table * k + this table * (1-k). A near-zero summed command produces k=0; partial cam tracking interpolates between the surfaces. This is not a knock/IAM fallback and is not required to be more retarded than the 1.0 surface. Tune the pair to match actual intake-cam phasing. Identity and formula were verified against canonical stock D2WD610H in live Ghidra.</description>
   </table>
-  <table name="Base Timing - AVLS High Cam (Advance Multiplier 0.0)" storageaddress="0x79064" sizey="20">
+  <table name="Base Timing - AVLS High Cam (AVCS Tracking Ratio 0.0)" storageaddress="0x79064" sizey="20">
    <table type="X Axis" storageaddress="0x780BC" />
    <table type="Y Axis" storageaddress="0x79014" />
-   <description>AVLS-high-cam low-multiplier timing endpoint. It is selected only in the verified AVLS high-cam state and is blended with the paired 1.0 surface as: selected timing = 1.0 table * k + this table * (1-k). This is a conservative fallback endpoint, not an independent high-cam map. Keep it equal or more retarded than the paired 1.0 surface. The cam selection and blend were verified in live Ghidra at 0x28418 and 0x284B8.</description>
+   <description>AVLS-high-cam base timing for an intake-AVCS tracking ratio of 0.0. It is selected only in the verified AVLS high-cam state and is blended with the paired 1.0 surface as selected timing = 1.0 table * k + this table * (1-k). A near-zero summed AVCS command produces k=0. This is not a knock/IAM fallback and is not required to be more retarded than the 1.0 surface. The cam selection and blend were verified in live Ghidra at 0x28354, 0x28418, and 0x284B8.</description>
   </table>
   <table name="Base Timing Idle" storageaddress="0x78298" sizey="9">
    <table type="Y Axis" storageaddress="0x78098" />
@@ -1107,13 +1107,15 @@
   </table>
   <table name="Advance Multiplier (Initial)" storageaddress="0x77FD8" />
   <table name="Advance Multiplier Step Value" storageaddress="0x78000" />
-  <table name="Intake Cam Advance Angle A (AVCS)" storageaddress="0x7C5B0" sizey="11">
+  <table name="Intake AVCS Target - AVLS Low Cam" storageaddress="0x7C5B0" sizey="11">
    <table type="X Axis" storageaddress="0x7C54C" />
    <table type="Y Axis" storageaddress="0x7C584" />
+   <description>Intake-cam advance target, in degrees, selected while committed AVLS cam mode 0xFFFFCD86 is 1 (low lift). Live Ghidra at intake_avcs_target_by_avls_mode_update @ 0x353B0 selects descriptor 0x60C34 and data 0x7C5B0 in this state. Legacy table A is an AVLS-mode map, not a left/right-bank map, and it is selected rather than blended with the high-cam target. The load axis ends at 2.00 g/rev, so the stock lookup uses its last column above that breakpoint.</description>
   </table>
-  <table name="Intake Cam Advance Angle B (AVCS)" storageaddress="0x7C764">
+  <table name="Intake AVCS Target - AVLS High Cam" storageaddress="0x7C764">
    <table type="X Axis" storageaddress="0x7C6E4" />
    <table type="Y Axis" storageaddress="0x7C71C" />
+   <description>Intake-cam advance target, in degrees, selected while committed AVLS cam mode 0xFFFFCD86 is 3 (high lift). Live Ghidra at intake_avcs_target_by_avls_mode_update @ 0x353B0 selects descriptor 0x60C50 and data 0x7C764 in this state. Legacy table B is an AVLS-mode map, not a left/right-bank map, and it is selected rather than blended with the low-cam target. The load axis ends at 2.00 g/rev, so the stock lookup uses its last column above that breakpoint.</description>
   </table>
   <table name="Requested Torque (Accelerator Pedal)" storageaddress="0x7AA2C" sizex="19" sizey="20">
    <table type="X Axis" storageaddress="0x7A990" />

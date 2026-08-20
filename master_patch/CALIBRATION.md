@@ -106,14 +106,14 @@ are never made leaner; high-load caps progress through lambda 0.93, 0.88, 0.83,
 1.22 g/rev. The stock atmospheric CL-to-OL delay is cleared. These values are
 command targets only.
 
-## Ignition, knock, and AVLS
+## Ignition, knock, AVCS, and AVLS
 
 All six stock base-timing surfaces are calibrated, even though live Ghidra
 proves B/E are dormant in the stock selector and the focused definition omits
 them. The active surfaces are:
 
-- normal-cam advance-multiplier 1.0 and 0.0 endpoints;
-- AVLS-high-cam advance-multiplier 1.0 and 0.0 endpoints; and
+- normal/AVLS-low-cam AVCS-tracking-ratio 1.0 and 0.0 endpoints;
+- AVLS-high-cam AVCS-tracking-ratio 1.0 and 0.0 endpoints; and
 - normal/high-cam KCA limits A and B.
 
 The letters in the source definition were anonymous reverse-engineering
@@ -121,17 +121,38 @@ placeholders, not six tune modes. Live stock code establishes this calculation
 for whichever cam path is active:
 
 ```text
-selected_base_timing = multiplier_1.0_table * k
-                     + multiplier_0.0_table * (1 - k)
+selected_base_timing = avcs_ratio_1.0_table * k
+                     + avcs_ratio_0.0_table * (1 - k)
+
+k = clamp((measured_intake_avcs_left + measured_intake_avcs_right)
+        / (commanded_intake_avcs_left + commanded_intake_avcs_right), 0, 1)
 ```
 
-Here `k` is the clamped effective ignition advance-multiplier factor at
-`0xFFFFC17C`. It normally follows the learned advance state but other stock
-status logic can force it to 1.0, so it is deliberately described as the
-effective multiplier rather than promising exact equality with every logged
-IAM sample. The normal-cam pair is used below the verified high-cam state; the
-AVLS pair is used in high cam. The definition hides the unreachable third
-legacy pair.
+Here `k` is the intake-AVCS tracking factor at `0xFFFFC17C`. A near-zero summed
+command produces zero; other verified stock status logic can force it to 1.0.
+It is not the learned Ignition Advance Multiplier (IAM). The normal-cam pair is
+used below the verified high-cam state; the AVLS pair is used in high cam. The
+definition hides the unreachable third legacy pair. Neither ratio endpoint has
+a universal requirement to be the more advanced or more retarded table: the
+pair compensates timing for the intake-cam angle actually achieved.
+
+The two intake AVCS target tables are a separate selector:
+
+- **Intake AVCS Target - AVLS Low Cam** is legacy table A at `0x7C5B0`, selected
+  when committed AVLS mode `0xFFFFCD86` is 1 (low lift).
+- **Intake AVCS Target - AVLS High Cam** is legacy table B at `0x7C764`, selected
+  when committed AVLS mode is 3 (high lift).
+
+They are not left/right-bank tables and the ECU does not blend A with B. It
+selects one target surface for the current AVLS lift state, then the downstream
+AVCS controller conditions that target for the two banks. Both target maps use
+the same 14-point load axis, ending at 2.00 g/rev. Above 2.00 g/rev the lookup
+uses the last column; RomRaider can rescale the existing axis breakpoints but
+cannot add columns without a firmware/layout change. The low-cam map has 11 RPM
+rows from 500 through 4000 RPM; the high-cam map has 18 rows from 1000 through
+6800 RPM. Leave the supplied stock AVCS targets unchanged during initial turbo
+commissioning; optimize them only after the sensor, VE, fuel, and ignition
+models are repeatable on a load-controlled dyno.
 
 Load axes extend to 3.0 g/rev. Timing is never increased by the builder. At
 1.60 g/rev and above the full-load ceiling rises from -2 degrees at 2000 RPM to
@@ -150,14 +171,17 @@ calibration.
    commanded lambda, and fuel pressure before attempting ignition optimization.
    An airflow or mixture error makes a timing result meaningless.
 2. Log engine speed, calculated load, MAP, IAT, lambda, final ignition timing,
-   effective IAM, feedback knock, fine-learning knock, and AVLS state. Use a
-   load-controlled dyno and independent knock monitoring.
-3. Tune the multiplier-1.0 surface for the cam state actually active in the
-   logged cell. Change only well-populated cells and smooth their neighbours;
-   use small changes, normally no more than about one degree per validated run.
-4. Treat the paired multiplier-0.0 surface as the conservative fallback. It
-   must stay equal to or more retarded than the paired 1.0 surface at every
-   RPM/load point. Do not copy an aggressive primary surface into it.
+   IAM, feedback knock, fine-learning knock, AVLS state, and left/right intake
+   VVT actual angle. Log commanded intake AVCS or the tracking factor if a
+   verified logger parameter is available. Use a load-controlled dyno and
+   independent knock monitoring.
+3. Tune the ratio endpoint that corresponds to the measured AVCS tracking in
+   the logged cell. Change only well-populated cells and smooth their
+   neighbours; use small changes, normally no more than about one degree per
+   validated run.
+4. Treat the ratio-0.0 and ratio-1.0 surfaces as a phasing-compensation pair,
+   not aggressive and fallback maps. Confirm the interpolated final timing at
+   intermediate tracking. Do not impose a fixed advance ordering between them.
 5. Check both sides of the AVLS transition under steady load. A step in torque,
    lambda, or final timing at the cam change means the normal/high-cam surfaces
    or the VE model need blending before another power run.

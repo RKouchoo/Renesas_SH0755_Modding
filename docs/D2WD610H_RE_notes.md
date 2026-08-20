@@ -80,7 +80,7 @@ Verified: Base Timing A data 0x78AA0 → slot 0x60114 → desc 0x60108 → consu
 |---|---|
 | 0x00028418 | `ign_base_timing_map_blend` |
 | 0x000284B8 | `ign_base_timing_select` |
-| 0x00028354 | `ign_blend_factor_from_advance_multiplier` |
+| 0x00028354 | `ign_avcs_tracking_blend_factor_update` |
 | 0x000281FC | `ign_map_switch_flag_debounce` |
 | 0x00027DE8 | `ign_idle_timing_blend_factor_update` |
 | 0x00027F3E | `ign_idle_timing_target_update` |
@@ -93,9 +93,13 @@ Verified: Base Timing A data 0x78AA0 → slot 0x60114 → desc 0x60108 → consu
 - Raw results → RAM 0xFFFFC154/C158/C15C (A,B,C) and 0xFFFFC160/C164/C168 (D,E,F).
 - **Blend:** k = float @ **0xFFFFC17C**; outputs
   `0xFFFFC16C = A*k + D*(1−k)`, `0xFFFFC170 = B*k + E*(1−k)`, `0xFFFFC174 = C*k + F*(1−k)`.
-  A/B/C = advance side (primary), D/E/F = retard side (reference).
-- **k computation** (`0x28354`): k = float@0xFFFFC974 + float@0xFFFFC978 (knock-learned
-  advance multiplier + step term), clamped; forced to 1.0 when a status check passes.
+  A/B/C are the AVCS-tracking-ratio-1.0 endpoints; D/E/F are the ratio-0.0 endpoints.
+- **k computation** (`0x28354`):
+  `k = clamp((float@0xFFFFC8C8 + float@0xFFFFC8CC) /
+  (float@0xFFFFC974 + float@0xFFFFC978), 0, 1)`. The numerator is summed measured
+  left/right intake AVCS angle and the denominator is summed conditioned/commanded target.
+  A near-zero target sum produces 0; verified status paths can force 1. This is AVCS
+  tracking, **not IAM**.
 - **Selection** (`0x284B8`) → selected base timing @ **0xFFFFC184**:
   - default: A/D blend (0xFFFFC16C)
   - B/E (0xFFFFC170) requires callback `constant_zero_return` at **0x27088** to return 1
@@ -104,10 +108,11 @@ Verified: Base Timing A data 0x78AA0 → slot 0x60114 → desc 0x60108 → consu
   - **C/F (0xFFFFC174) when cam mode @0xFFFFCD86 == 3 (high cam) and debounced bit 0x40
     of 0xFFFFC180** → C/F are the AVLS high-cam maps (hence 20 rows).
   - Final (after extra 1-axis lookup, desc 0x5FC18) → 0xFFFFC150 and 0xFFFFC188.
-- Active definition identities are therefore **A/D = normal-cam effective
-  advance-multiplier 1.0/0.0 endpoints** and **C/F = AVLS-high-cam effective
-  advance-multiplier 1.0/0.0 endpoints**. The master definition uses those functional names and
-  omits dormant B/E.
+- Active definition identities are therefore **A/D = normal/AVLS-low-cam
+  AVCS-tracking-ratio 1.0/0.0 endpoints** and **C/F = AVLS-high-cam
+  AVCS-tracking-ratio 1.0/0.0 endpoints**. The master definition uses those functional names and
+  omits dormant B/E. These are cam-phasing endpoints; neither member of a pair has a universal
+  requirement to be more advanced or retarded than the other.
 - `knock_correction_advance_max_select` at **0x3EB68** independently selects KCA Max A for
   normal cam and KCA Max B for the same verified AVLS-high-cam state.
 - Flag debounce (`0x281FC`): bit 0x40 set after mode==3 held for a delay from 2D u16 table
@@ -137,10 +142,29 @@ Verified: Base Timing A data 0x78AA0 → slot 0x60114 → desc 0x60108 → consu
 
 | Address | Name |
 |---|---|
+| 0x0003FFDA | `avls_threshold_curve_selector_state_update` |
+| 0x000400EE | `avls_curve_selector_load_band_latches_update` |
 | 0x00040168 | `avls_cam_mode_state_machine` |
 | 0x000405B2 | `avls_mode_commit_copy` (0xFFFFCD87 → 0xFFFFCD86) |
 | 0x000405CC | `avls_osv_actuation_gate` |
 | 0x00040C94/40798/40CE6 | `cam_actuator_output_set_1/2/3` (called with 0|1) |
+
+### Intake AVCS target maps A/B
+
+`intake_avcs_target_by_avls_mode_update` at **0x353B0** directly consumes both
+target descriptors. Committed AVLS mode **0xFFFFCD86 == 1** selects descriptor
+**0x60C34**, data **0x7C5B0** (legacy AVCS A); mode **3** selects descriptor
+**0x60C50**, data **0x7C764** (legacy AVCS B). A is therefore the intake AVCS
+target for AVLS low lift and B is the target for AVLS high lift. They are not
+left/right-bank maps and are selected by lift state, not blended together.
+
+Both maps use the same 14-point load axis at 0x7C54C/0x7C6E4:
+0.35, 0.45, 0.55, 0.70, 0.83, 0.96, 1.09, 1.22, 1.35, 1.48, 1.61, 1.74,
+1.87, and 2.00 g/rev. A has 11 RPM rows (500..4000) at **0x7C584**; B has 18
+rows (1000..6800) at **0x7C71C**. The native lookup clamps above the final axis
+breakpoint, so loads above 2.00 g/rev use the last column unless those 14
+breakpoints are rescaled. `intake_avcs_tracking_control_update` at **0x35750**
+is the downstream per-bank tracking/control path.
 
 **RAM cells:** target mode **0xFFFFCD87** (1=low cam, 3=high cam), committed **0xFFFFCD86**,
 operating state 0xFFFFCD9C (curve selector: 2=curve 1, 3=curve 2), mode timer 0xFFFFCD84
@@ -165,13 +189,22 @@ status latch 0xFFFFCD8F, threshold caches 0xFFFFCD94/0xFFFFCD98, defer flag 0xFF
 | Fallback thresholds | 0x7D4B0/0x7D4B4 | 15.0 / 15.0 |
 | Mode timer reload (u16) | 0x7D468 | — |
 
+`avls_curve_selector_load_band_latches_update` applies hysteresis to fallback-load signal
+**0xFFFFCF94**: the first latch sets at 15 and clears below 13; the second sets at 115 and clears
+below 113. Subject to runtime-status and delay gates,
+`avls_threshold_curve_selector_state_update` publishes selector state 1 below the first band,
+state 2 with the first latch set and the second clear, or state 3 with the second latch set. State
+1 uses the fallback branch; state 2 selects curve 1 and state 3 selects curve 2. The physical unit
+and wider semantic role of 0xFFFFCF94 remain unproven, so these bands should be logged rather than
+treated as g/rev.
+
 Descriptors: table 1 = **0x60F58**, table 2 = **0x60F64** (compact 0xC float type).
 RPM input is float @ **0xFFFFB544**. The normal curve path compares float load signal
 **0xFFFFB46C**: operating state **0xFFFFCD9C == 2** selects table 1 plus hysteresis A;
 state **3** selects table 2 plus hysteresis B. From low cam, high cam is requested at
 `load >= curve + 10`; from high cam, low cam is requested at `load < curve`. Thus the two
-tables are state-selected curves, **not** engage/release counterparts. **0xFFFFCF94** is used
-only by the fallback path against the fixed 15.0 thresholds at 0x7D4B0/0x7D4B4.
+tables are state-selected curves, **not** engage/release counterparts. State 1 uses the fallback
+path and its fixed thresholds at 0x7D4B0/0x7D4B4.
 
 Definition layout:
 
@@ -189,8 +222,9 @@ Definition layout:
   definition and removes the inherited MAF tables/diagnostics.
 - `master_patch/D2WD610H_master_patch.xml` is the current focused integration definition. It
   retains only relevant engine-tuning controls plus AVLS, SD/VE, exact Omni MAP, boost, and AEM
-  input calibration; it renames the active timing/KCA paths and removes obsolete MAF/O2/DTC,
-  readiness, fuel-temperature, and dormant B/E entries.
+  input calibration; it renames the active timing/KCA paths and the AVCS A/B targets by their
+  verified roles, and removes obsolete MAF/O2/DTC, readiness, fuel-temperature, and dormant B/E
+  entries.
 - `defs/romraider_ecu_defs.xml` is a clean upstream metric RomRaider snapshot and is not modified
   with project tables.
 
@@ -213,9 +247,11 @@ data registers (datasheet) instead of descending the call tree.
 | **0xFFFFB3B8** | Intake-air temperature (float, degrees C) | written by `intake_air_temperature_update` @0x16D1C; passed into stock MAF-IAT compensation descriptor 0x5EB88 |
 | **0xFFFFB420** | Final post-compensation mass airflow (float, g/s) | written at 0x1739E in `maf_airflow_temperature_compensation_update`; broad fuel/load consumer xrefs include 0x1B800 and 0x216EA |
 | **0xFFFFB46C** | Normal AVLS switchover load signal (float; snapshot of filtered 0xFFFFB4C8) | compared against state-selected curves in 0x40168 |
-| 0xFFFFCF94 | AVLS fallback load value | compared only against fixed 15.0 fallback threshold in 0x40168 |
-| 0xFFFFC17C | Ignition blend factor k (float 0..1) | written 0x28354 |
-| 0xFFFFC974/0xFFFFC978 | Advance-multiplier terms summed into k | 0x28354 |
+| 0xFFFFCF94 | AVLS fallback/curve-selector load signal; physical units unresolved | selector latches at 13/15 and 113/115 in 0x400EE; fallback use in 0x40168 |
+| 0xFFFFC17C | Ignition AVCS-tracking blend factor k (float 0..1) | written 0x28354 |
+| 0xFFFFC8C8/0xFFFFC8CC | Measured intake AVCS angles, left/right | numerator at 0x28354 |
+| 0xFFFFC974/0xFFFFC978 | Conditioned/commanded intake AVCS targets, left/right | denominator at 0x28354 |
+| 0xFFFFC984 | Common AVCS target selected by committed AVLS mode | written 0x353B0 |
 | 0xFFFFC184 | Selected base timing (deg, float) | 0x284B8 |
 | 0xFFFFC150 / 0xFFFFC188 | Final base timing after extra lookup | 0x284B8 |
 | 0xFFFFCCC8..0xFFFFCCDC | Six per-cylinder ignition correction floats | written/cleared by 0x3D824/0x3D980; consumed by 0x279CC |
@@ -311,7 +347,10 @@ _(underscore names only — strict naming enforcement is ON)_
   selector condition unreachable in canonical stock)
 - 0x0006504C → **runtime_status_d26d_bit5_get** (returns 2 when 0xFFFFD26D bit 0x20 is set,
   otherwise 0)
-- 0x00028354 → **ign_blend_factor_from_advance_multiplier**
+- 0x00002458 → **float_divide_guarded**
+- 0x000024C0 → **float_clamp**
+- 0x000024FC → **float_difference_exceeds_tolerance**
+- 0x00028354 → **ign_avcs_tracking_blend_factor_update**
 - 0x000281FC → **ign_map_switch_flag_debounce**
 - 0x00027DE8 → **ign_idle_timing_blend_factor_update**
 - 0x00027F3E → **ign_idle_timing_target_update**
@@ -373,6 +412,8 @@ _(underscore names only — strict naming enforcement is ON)_
 - 0x0001E0C8 → **injector_flow_scaling_factor_update** (consumes flow scaling at 0x76014)
 - 0x0000A9A8 → **injector_control_lookup_sequence_a9a8**
 - 0x0003EB68 → **knock_correction_advance_max_select** (KCA A normal cam / KCA B AVLS high cam)
+- 0x0003FFDA → **avls_threshold_curve_selector_state_update**
+- 0x000400EE → **avls_curve_selector_load_band_latches_update**
 - 0x00018AEA → **engine_load_signal_snapshot_copy** (0xFFFFB4C8 → AVLS compare signal 0xFFFFB46C)
 - 0x00047000 → **engine_load_fallback_select** (selects 0xFFFFCF94 fallback value)
 - 0x00014DCC → **throttle_position_sensor_process** (DBW throttle sensor plausibility/processing;
@@ -449,7 +490,7 @@ _(underscore names only — strict naming enforcement is ON)_
   - 0x00024CB0 → **engine_load_dependent_update_24cb0**
   - 0x0003DA60 → **engine_load_dependent_update_3da60**
   - 0x0003EACE → **engine_load_dependent_update_3eace**
-  - 0x000353B0 → **engine_load_dependent_update_353b0**
+  - 0x000353B0 → **intake_avcs_target_by_avls_mode_update**
   - 0x0003E20E → **engine_load_dependent_update_3e20e**
   - 0x00029024 → **engine_load_dependent_update_29024**
   - 0x00022454 → **engine_load_dependent_update_22454**
@@ -603,11 +644,14 @@ and 0x1B81E.
   separate rotational-idle region untouched), regenerates the focused XML, and validates the
   Subaru checksum. The generated ROM remains a development baseline requiring bench and dyno
   validation.
-- 2026-08-21: the timing-definition usability pass re-opened
-  `ign_blend_factor_from_advance_multiplier`, `ign_base_timing_map_blend`,
-  `ign_base_timing_select`, and `knock_correction_advance_max_select` in the live stock project;
-  all already carried project-convention names. The focused master definition now labels the
-  four reachable base surfaces by cam state and effective advance-multiplier endpoint (1.0/0.0),
-  documents `high*k + low*(1-k)`, and includes a paired-surface tuning workflow. A local
-  RomRaider check also showed that loading the standalone speed-density XML against the unchanged
-  `D2WD610H` CALID explains why the master binary can still appear with legacy A--F labels.
+- 2026-08-21: the AVCS/timing usability pass re-opened the target descriptors and their live
+  consumers. `intake_avcs_target_by_avls_mode_update` at 0x353B0 proves legacy AVCS A is selected
+  for committed AVLS mode 1 (low lift), while AVCS B is selected for mode 3 (high lift); they are
+  modes, not banks. `ign_avcs_tracking_blend_factor_update` at 0x28354 proves timing factor `k`
+  is measured/commanded intake AVCS tracking, not IAM. This corrects the earlier
+  advance-multiplier interpretation. The focused definition now labels both AVCS targets by lift
+  state and the four reachable timing surfaces by cam state plus AVCS-tracking-ratio endpoint,
+  documents `ratio_1.0*k + ratio_0.0*(1-k)`, and does not impose a false retard ordering. The
+  newly inspected math helpers and downstream controller were also assigned project-convention
+  names. A local RomRaider check showed that loading the standalone speed-density XML against the
+  unchanged `D2WD610H` CALID explains why the master binary can still appear with legacy labels.

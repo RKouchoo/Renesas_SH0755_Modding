@@ -29,6 +29,9 @@ public class ApplyMasterNames extends GhidraScript {
     @Override
     public void run() throws Exception {
         createOrRename("00001884", "diagnostic_request_download_handle");
+        createOrRename("00002458", "float_divide_guarded");
+        createOrRename("000024c0", "float_clamp");
+        createOrRename("000024fc", "float_difference_exceeds_tolerance");
         createOrRename("000078ac", "analog_sensor_abac_range_classify");
         createOrRename("000079b4", "analog_sensor_abbc_range_classify");
         createOrRename("00007a14", "map_sensor_voltage_to_pressure_process");
@@ -45,10 +48,14 @@ public class ApplyMasterNames extends GhidraScript {
         createOrRename("0001e0c8", "injector_flow_scaling_factor_update");
         createOrRename("0001ee74", "closed_loop_fuel_control_bank_update");
         createOrRename("00027088", "constant_zero_return");
-        createOrRename("00028354", "ign_blend_factor_from_advance_multiplier");
+        createOrRename("00028354", "ign_avcs_tracking_blend_factor_update");
         createOrRename("00028418", "ign_base_timing_map_blend");
         createOrRename("000284b8", "ign_base_timing_select");
+        createOrRename("000353b0", "intake_avcs_target_by_avls_mode_update");
+        createOrRename("00035750", "intake_avcs_tracking_control_update");
         createOrRename("0003eb68", "knock_correction_advance_max_select");
+        createOrRename("0003ffda", "avls_threshold_curve_selector_state_update");
+        createOrRename("000400ee", "avls_curve_selector_load_band_latches_update");
         createOrRename("00064fd0", "front_af_sensor_bank1_inhibit_check");
         createOrRename("0006500c", "front_af_sensor_bank2_inhibit_check");
         createOrRename("0006504c", "runtime_status_d26d_bit5_get");
@@ -61,15 +68,16 @@ public class ApplyMasterNames extends GhidraScript {
         );
         setPlateComment(
             toAddr("00028354"),
-            "Builds and clamps the effective ignition advance-multiplier blend " +
-            "factor published at 0xFFFFC17C. A factor of 1.0 selects the primary " +
-            "timing endpoint; 0.0 selects the conservative endpoint."
+            "Builds timing interpolation factor k at 0xFFFFC17C from intake " +
+            "AVCS tracking: k = clamp((actual left + actual right at C8C8/C8CC) / " +
+            "(commanded left + commanded right at C974/C978), 0, 1). A near-zero " +
+            "commanded sum yields 0; verified status paths can force 1."
         );
         setPlateComment(
             toAddr("00028418"),
             "Looks up the six legacy base maps. For each selectable cam path, " +
-            "timing = multiplier-1.0 endpoint * k + multiplier-0.0 endpoint * " +
-            "(1-k), using k at 0xFFFFC17C."
+            "timing = AVCS-tracking-ratio-1.0 endpoint * k + ratio-0.0 endpoint " +
+            "* (1-k), using k at 0xFFFFC17C. This is not an IAM blend."
         );
         setPlateComment(
             toAddr("000284b8"),
@@ -82,6 +90,34 @@ public class ApplyMasterNames extends GhidraScript {
             toAddr("0003eb68"),
             "Selects KCA Max A in normal cam and KCA Max B in the verified AVLS " +
             "high-cam state."
+        );
+        setPlateComment(
+            toAddr("000353b0"),
+            "Selects AVCS descriptor 0x60C34 / data 0x7C5B0 when committed AVLS " +
+            "cam mode 0xFFFFCD86 is 1 (low lift), or descriptor 0x60C50 / data " +
+            "0x7C764 when mode is 3 (high lift). Publishes the common target at " +
+            "0xFFFFC984. Legacy A/B identify AVLS modes, not cylinder banks."
+        );
+        setPlateComment(
+            toAddr("00035750"),
+            "Downstream intake AVCS tracking/control update using per-bank measured " +
+            "and conditioned target state. The legacy A/B target maps selected " +
+            "upstream are AVLS operating modes, not bank identities."
+        );
+        setPlateComment(
+            toAddr("0003ffda"),
+            "Updates AVLS threshold-curve selector state 0xFFFFCD9C. Normal valid " +
+            "operation uses hysteretic fallback-load bands: state 1 below the " +
+            "first band or when gated, state 2 after the 15-unit latch while the " +
+            "115-unit latch is clear, and state 3 after the 115-unit latch. " +
+            "Runtime-status, delay, and fault gates can force state 1."
+        );
+        setPlateComment(
+            toAddr("000400ee"),
+            "Updates two hysteretic latches in 0xFFFFCD9E from fallback load " +
+            "0xFFFFCF94: bit 0 sets at 15 and clears below 13; bit 1 sets at 115 " +
+            "and clears below 113. The selector update uses these to choose " +
+            "state 1, 2, or 3."
         );
         setPlateComment(
             toAddr("00007a14"),
