@@ -19,6 +19,7 @@ reproducible without importing a modified ROM into the stock analysis project.
 |---:|---|---|
 | `0x27088` | `constant_zero_return` | Exact `rts; mov #0,r0`; makes timing B/E selector branch dormant. |
 | `0x6504C` | `runtime_status_d26d_bit5_get` | Timing selector status input. |
+| `0x28354` | `ign_blend_factor_from_advance_multiplier` | Builds and clamps effective advance-multiplier factor `k` at `0xFFFFC17C`. |
 | `0x28418` | `ign_base_timing_map_blend` | Looks up/blends all base-timing endpoints. |
 | `0x284B8` | `ign_base_timing_select` | A/D normal-cam, C/F AVLS-high-cam selection; B/E requires the constant-zero callback. |
 | `0x3EB68` | `knock_correction_advance_max_select` | KCA A normal-cam versus B AVLS-high-cam selection. |
@@ -48,11 +49,18 @@ Existing project names used by the integrated components include
 
 ### Timing
 
-The stock selection/blend path references all six base maps. A/D are the normal
-cam endpoints. C/F are the AVLS-high-cam endpoints. B/E require a callback at
-`0x27088` to return one, but that function always returns zero in canonical
-D2WD610H. B/E are therefore still conservatively calibrated in the binary but
-removed from the focused tuning definition. KCA A/B select normal/high cam.
+The stock selection/blend path references all six legacy base maps. For the
+normal-cam path, address `0x78AA0` is the effective advance-multiplier-1.0
+endpoint and `0x78E34` is the multiplier-0.0 endpoint. For AVLS high cam,
+`0x78CD0` is the multiplier-1.0 endpoint and `0x79064` is the multiplier-0.0
+endpoint. `ign_base_timing_map_blend` calculates `high*k + low*(1-k)` using the
+clamped factor published at `0xFFFFC17C` by
+`ign_blend_factor_from_advance_multiplier`.
+
+The two remaining legacy maps require a callback at `0x27088` to return one,
+but that function always returns zero in canonical D2WD610H. They are still
+conservatively calibrated in the binary but removed from the focused tuning
+definition. The two KCA surfaces select normal cam versus AVLS high cam.
 
 ### MAP and injectors
 

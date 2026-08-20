@@ -112,9 +112,26 @@ All six stock base-timing surfaces are calibrated, even though live Ghidra
 proves B/E are dormant in the stock selector and the focused definition omits
 them. The active surfaces are:
 
-- normal-cam advance/retard endpoints A and D;
-- AVLS-high-cam advance/retard endpoints C and F; and
+- normal-cam advance-multiplier 1.0 and 0.0 endpoints;
+- AVLS-high-cam advance-multiplier 1.0 and 0.0 endpoints; and
 - normal/high-cam KCA limits A and B.
+
+The letters in the source definition were anonymous reverse-engineering
+placeholders, not six tune modes. Live stock code establishes this calculation
+for whichever cam path is active:
+
+```text
+selected_base_timing = multiplier_1.0_table * k
+                     + multiplier_0.0_table * (1 - k)
+```
+
+Here `k` is the clamped effective ignition advance-multiplier factor at
+`0xFFFFC17C`. It normally follows the learned advance state but other stock
+status logic can force it to 1.0, so it is deliberately described as the
+effective multiplier rather than promising exact equality with every logged
+IAM sample. The normal-cam pair is used below the verified high-cam state; the
+AVLS pair is used in high cam. The definition hides the unreachable third
+legacy pair.
 
 Load axes extend to 3.0 g/rev. Timing is never increased by the builder. At
 1.60 g/rev and above the full-load ceiling rises from -2 degrees at 2000 RPM to
@@ -126,6 +143,31 @@ AVLS actuation becomes eligible at 2500 RPM, releases at 3000 RPM, and forces
 the high-cam crossover at 3200 RPM with 10 RPM-equivalent stock-unit hysteresis.
 The RomRaider definition exposes all identified AVLS thresholds for dyno
 calibration.
+
+### How to tune the four exposed base-timing surfaces
+
+1. Calibrate the IAT sensor, MAP transfer, injector model, speed-density VE,
+   commanded lambda, and fuel pressure before attempting ignition optimization.
+   An airflow or mixture error makes a timing result meaningless.
+2. Log engine speed, calculated load, MAP, IAT, lambda, final ignition timing,
+   effective IAM, feedback knock, fine-learning knock, and AVLS state. Use a
+   load-controlled dyno and independent knock monitoring.
+3. Tune the multiplier-1.0 surface for the cam state actually active in the
+   logged cell. Change only well-populated cells and smooth their neighbours;
+   use small changes, normally no more than about one degree per validated run.
+4. Treat the paired multiplier-0.0 surface as the conservative fallback. It
+   must stay equal to or more retarded than the paired 1.0 surface at every
+   RPM/load point. Do not copy an aggressive primary surface into it.
+5. Check both sides of the AVLS transition under steady load. A step in torque,
+   lambda, or final timing at the cam change means the normal/high-cam surfaces
+   or the VE model need blending before another power run.
+6. Leave positive high-load KCA at the supplied zero baseline until fueling,
+   charge temperature, knock response, and repeatability are established. KCA
+   is additional advance authority; it is not another base-timing map.
+
+Stop adding timing if torque no longer rises, knock activity appears, lambda or
+fuel pressure moves out of bounds, or the result is not repeatable. The supplied
+timing is a conservative commissioning surface, not a finished optimum tune.
 
 ## Boost and RPM
 

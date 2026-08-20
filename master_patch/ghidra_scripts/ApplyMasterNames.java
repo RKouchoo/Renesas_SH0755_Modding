@@ -45,6 +45,7 @@ public class ApplyMasterNames extends GhidraScript {
         createOrRename("0001e0c8", "injector_flow_scaling_factor_update");
         createOrRename("0001ee74", "closed_loop_fuel_control_bank_update");
         createOrRename("00027088", "constant_zero_return");
+        createOrRename("00028354", "ign_blend_factor_from_advance_multiplier");
         createOrRename("00028418", "ign_base_timing_map_blend");
         createOrRename("000284b8", "ign_base_timing_select");
         createOrRename("0003eb68", "knock_correction_advance_max_select");
@@ -59,9 +60,16 @@ public class ApplyMasterNames extends GhidraScript {
             "unreachable in stock."
         );
         setPlateComment(
+            toAddr("00028354"),
+            "Builds and clamps the effective ignition advance-multiplier blend " +
+            "factor published at 0xFFFFC17C. A factor of 1.0 selects the primary " +
+            "timing endpoint; 0.0 selects the conservative endpoint."
+        );
+        setPlateComment(
             toAddr("00028418"),
-            "Looks up base maps A..F and forms A/D, B/E, and C/F endpoint blends " +
-            "using the factor at 0xFFFFC17C."
+            "Looks up the six legacy base maps. For each selectable cam path, " +
+            "timing = multiplier-1.0 endpoint * k + multiplier-0.0 endpoint * " +
+            "(1-k), using k at 0xFFFFC17C."
         );
         setPlateComment(
             toAddr("000284b8"),

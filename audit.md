@@ -714,9 +714,12 @@ enter boost solely because the automated audit passes.
 - `injector_battery_voltage_latency_lookup` at `0x98CC` confirms descriptor `0x608D8`, voltage
   axis `0x7B304`, and latency data `0x7B318`.
 - `injector_flow_scaling_factor_update` at `0x1E0C8` confirms D2WD flow scalar `0x76014`.
-- `ign_base_timing_map_blend` at `0x28418` and `ign_base_timing_select` at `0x284B8` confirm
-  A/D as normal-cam endpoints and C/F as AVLS-high-cam endpoints. B/E require the callback at
-  `0x27088`, renamed `constant_zero_return`, to return one; its exact body always returns zero.
+- `ign_blend_factor_from_advance_multiplier` at `0x28354` builds and clamps effective factor
+  `k` at `0xFFFFC17C`. `ign_base_timing_map_blend` at `0x28418` calculates each reachable pair as
+  multiplier-1.0 endpoint `* k` plus multiplier-0.0 endpoint `* (1-k)`.
+- `ign_base_timing_select` at `0x284B8` confirms `0x78AA0/0x78E34` as the normal-cam pair and
+  `0x78CD0/0x79064` as the AVLS-high-cam pair. The two other legacy surfaces require the callback
+  at `0x27088`, renamed `constant_zero_return`, to return one; its exact body always returns zero.
 - `knock_correction_advance_max_select` at `0x3EB68` confirms KCA A normal cam and KCA B AVLS
   high cam.
 - `front_af_sensor_pair_signal_process` at `0xB690`,
@@ -782,9 +785,13 @@ enter boost solely because the automated audit passes.
 - `master_patch/D2WD610H_master_patch.xml` is self-contained and contains only metric base
   templates plus D2WD610H target tables relevant to the master architecture. Stock MAF/O2,
   diagnostic/readiness, fuel-temperature, and dormant timing B/E tuning entries are removed.
-- Active timing and KCA maps are renamed by their Ghidra-proven normal/high-cam roles. The XML
-  also exposes AVLS, SD, Omni MAP, injectors/fuel, active timing, boost, AEM transfer/range, and
-  retained engine controls.
+- Active timing maps are named by both Ghidra-proven cam role and their exact effective
+  advance-multiplier endpoint (1.0 or 0.0); the two KCA maps are named by normal/high-cam role.
+  The XML also exposes AVLS, SD, Omni MAP, injectors/fuel, active timing, boost, AEM
+  transfer/range, and retained engine controls.
+- All D2WD610H images retain the factory CALID. RomRaider must therefore be configured with the
+  master XML alone for this image; selecting a standalone/legacy definition can make the same
+  binary appear with anonymous A--F names and an incomplete table set.
 - `D2WD610H_master_logger_ecuparams.xml` exposes E500 lambda/estimated AFR, E501 raw ADC/volts,
   and E502 readiness only for ECU ID `3C5A387116`. Its IDs, RAM addresses, lengths, storage
   types, formulas, and fault descriptions are verifier-checked.

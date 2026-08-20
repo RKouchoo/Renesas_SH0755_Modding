@@ -60,10 +60,10 @@ AVLS_NAMES = (
 )
 
 TIMING_RENAMES = {
-    "Base Timing A": "Base Timing - Normal Cam / Advance Endpoint",
-    "Base Timing C": "Base Timing - AVLS High Cam / Advance Endpoint",
-    "Base Timing D": "Base Timing - Normal Cam / Retard Endpoint",
-    "Base Timing F": "Base Timing - AVLS High Cam / Retard Endpoint",
+    "Base Timing A": "Base Timing - Normal Cam (Advance Multiplier 1.0)",
+    "Base Timing C": "Base Timing - AVLS High Cam (Advance Multiplier 1.0)",
+    "Base Timing D": "Base Timing - Normal Cam (Advance Multiplier 0.0)",
+    "Base Timing F": "Base Timing - AVLS High Cam (Advance Multiplier 0.0)",
     "Knock Correction Advance Max A": "Knock Correction Advance Max - Normal Cam",
     "Knock Correction Advance Max B": "Knock Correction Advance Max - AVLS High Cam",
 }
@@ -96,41 +96,54 @@ DROP_NAMES = {
 DROP_CATEGORIES = {"Diagnostic Trouble Codes", "OBD-II"}
 
 TIMING_DESCRIPTIONS = {
-    "Base Timing - Normal Cam / Advance Endpoint": (
-        "Normal-cam base-timing endpoint selected and blended by "
-        "ign_base_timing_map_blend @ 0x28418 and ign_base_timing_select @ "
-        "0x284B8. This is the advance-side A endpoint; it blends with the "
-        "normal-cam retard-side D endpoint using 0xFFFFC17C. Identity was "
-        "verified against canonical stock D2WD610H in live Ghidra."
+    "Base Timing - Normal Cam (Advance Multiplier 1.0)": (
+        "Normal-cam base timing when the effective ignition advance multiplier "
+        "is 1.0. The stock code calculates: selected timing = this table * k + "
+        "the paired 0.0 table * (1-k), where k is the clamped factor at "
+        "0xFFFFC17C. Treat this as the normal-cam primary surface. Keep the "
+        "paired 0.0 surface equal or more retarded at every operating point. "
+        "Identity and formula were verified in live Ghidra at "
+        "ign_blend_factor_from_advance_multiplier @ 0x28354, "
+        "ign_base_timing_map_blend @ 0x28418, and "
+        "ign_base_timing_select @ 0x284B8."
     ),
-    "Base Timing - Normal Cam / Retard Endpoint": (
-        "Normal-cam base-timing endpoint selected and blended by "
-        "ign_base_timing_map_blend @ 0x28418 and ign_base_timing_select @ "
-        "0x284B8. This is the retard-side D endpoint; it blends with the "
-        "normal-cam advance-side A endpoint using 0xFFFFC17C. Identity was "
-        "verified against canonical stock D2WD610H in live Ghidra."
+    "Base Timing - Normal Cam (Advance Multiplier 0.0)": (
+        "Normal-cam low-multiplier timing endpoint. The stock code calculates: "
+        "selected timing = the paired 1.0 table * k + this table * (1-k), "
+        "where k is the clamped effective ignition advance multiplier at "
+        "0xFFFFC17C. This is not a second freely selectable normal timing map; "
+        "it is the conservative endpoint approached as the multiplier falls. "
+        "Keep it equal or more retarded than the paired 1.0 surface. Identity "
+        "and formula were verified against canonical stock D2WD610H in live "
+        "Ghidra."
     ),
-    "Base Timing - AVLS High Cam / Advance Endpoint": (
-        "AVLS-high-cam base-timing endpoint selected when the Ghidra-verified cam "
-        "mode/status conditions at ign_base_timing_select @ 0x284B8 are met. "
-        "This is the advance-side C endpoint; it blends with the high-cam "
-        "retard-side F endpoint using 0xFFFFC17C."
+    "Base Timing - AVLS High Cam (Advance Multiplier 1.0)": (
+        "AVLS-high-cam base timing when the effective ignition advance "
+        "multiplier is 1.0. It is selected only in the verified AVLS high-cam "
+        "state. The stock code calculates: selected timing = this table * k + "
+        "the paired 0.0 table * (1-k). Treat this as the high-cam primary "
+        "surface and keep the paired 0.0 surface equal or more retarded. The "
+        "cam selection and blend were verified in live Ghidra at 0x28418 and "
+        "0x284B8."
     ),
-    "Base Timing - AVLS High Cam / Retard Endpoint": (
-        "AVLS-high-cam base-timing endpoint selected when the Ghidra-verified cam "
-        "mode/status conditions at ign_base_timing_select @ 0x284B8 are met. "
-        "This is the retard-side F endpoint; it blends with the high-cam "
-        "advance-side C endpoint using 0xFFFFC17C."
+    "Base Timing - AVLS High Cam (Advance Multiplier 0.0)": (
+        "AVLS-high-cam low-multiplier timing endpoint. It is selected only in "
+        "the verified AVLS high-cam state and is blended with the paired 1.0 "
+        "surface as: selected timing = 1.0 table * k + this table * (1-k). "
+        "This is a conservative fallback endpoint, not an independent high-cam "
+        "map. Keep it equal or more retarded than the paired 1.0 surface. The "
+        "cam selection and blend were verified in live Ghidra at 0x28418 and "
+        "0x284B8."
     ),
     "Knock Correction Advance Max - Normal Cam": (
         "Normal-cam maximum positive knock-correction advance. Ghidra-verified "
-        "knock_correction_advance_max_select @ 0x3EB68 selects this A surface "
+        "knock_correction_advance_max_select @ 0x3EB68 selects this surface "
         "outside the AVLS-high-cam state."
     ),
     "Knock Correction Advance Max - AVLS High Cam": (
         "AVLS-high-cam maximum positive knock-correction advance. "
         "Ghidra-verified knock_correction_advance_max_select @ 0x3EB68 selects "
-        "this B surface in the same high-cam state used by the timing selector."
+        "this surface in the same high-cam state used by the timing selector."
     ),
 }
 
@@ -347,10 +360,10 @@ def validate(root: ET.Element) -> None:
         raise SystemExit("diagnostic/readiness category survived parent pruning")
 
     expected_addresses = {
-        "Base Timing - Normal Cam / Advance Endpoint": "0x78AA0",
-        "Base Timing - AVLS High Cam / Advance Endpoint": "0x78CD0",
-        "Base Timing - Normal Cam / Retard Endpoint": "0x78E34",
-        "Base Timing - AVLS High Cam / Retard Endpoint": "0x79064",
+        "Base Timing - Normal Cam (Advance Multiplier 1.0)": "0x78AA0",
+        "Base Timing - AVLS High Cam (Advance Multiplier 1.0)": "0x78CD0",
+        "Base Timing - Normal Cam (Advance Multiplier 0.0)": "0x78E34",
+        "Base Timing - AVLS High Cam (Advance Multiplier 0.0)": "0x79064",
         "Knock Correction Advance Max - Normal Cam": "0x7924C",
         "Knock Correction Advance Max - AVLS High Cam": "0x793AC",
         "Omni Power MAP-SUP-3BR Scaling": "0x72810",
@@ -410,7 +423,7 @@ def main() -> None:
     print(f"Wrote {OUTPUT}")
     print(f"  inherited tuning templates : {len(parent.findall('table'))}")
     print(f"  D2WD610H target tables      : {len(target.findall('table'))}")
-    print("  timing paths                : A/D normal, C/F AVLS high; dormant B/E omitted")
+    print("  timing paths                : normal/high cam x multiplier 1.0/0.0; dormant pair omitted")
     print("  removed                     : stock MAF/O2 scalings, DTC/readiness switches")
 
 

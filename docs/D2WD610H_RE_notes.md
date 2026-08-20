@@ -104,8 +104,10 @@ Verified: Base Timing A data 0x78AA0 → slot 0x60114 → desc 0x60108 → consu
   - **C/F (0xFFFFC174) when cam mode @0xFFFFCD86 == 3 (high cam) and debounced bit 0x40
     of 0xFFFFC180** → C/F are the AVLS high-cam maps (hence 20 rows).
   - Final (after extra 1-axis lookup, desc 0x5FC18) → 0xFFFFC150 and 0xFFFFC188.
-- Active definition identities are therefore **A/D = normal-cam advance/retard endpoints** and
-  **C/F = AVLS-high-cam advance/retard endpoints**. The master definition omits dormant B/E.
+- Active definition identities are therefore **A/D = normal-cam effective
+  advance-multiplier 1.0/0.0 endpoints** and **C/F = AVLS-high-cam effective
+  advance-multiplier 1.0/0.0 endpoints**. The master definition uses those functional names and
+  omits dormant B/E.
 - `knock_correction_advance_max_select` at **0x3EB68** independently selects KCA Max A for
   normal cam and KCA Max B for the same verified AVLS-high-cam state.
 - Flag debounce (`0x281FC`): bit 0x40 set after mode==3 held for a delay from 2D u16 table
@@ -601,3 +603,11 @@ and 0x1B81E.
   separate rotational-idle region untouched), regenerates the focused XML, and validates the
   Subaru checksum. The generated ROM remains a development baseline requiring bench and dyno
   validation.
+- 2026-08-21: the timing-definition usability pass re-opened
+  `ign_blend_factor_from_advance_multiplier`, `ign_base_timing_map_blend`,
+  `ign_base_timing_select`, and `knock_correction_advance_max_select` in the live stock project;
+  all already carried project-convention names. The focused master definition now labels the
+  four reachable base surfaces by cam state and effective advance-multiplier endpoint (1.0/0.0),
+  documents `high*k + low*(1-k)`, and includes a paired-surface tuning workflow. A local
+  RomRaider check also showed that loading the standalone speed-density XML against the unchanged
+  `D2WD610H` CALID explains why the master binary can still appear with legacy A--F labels.

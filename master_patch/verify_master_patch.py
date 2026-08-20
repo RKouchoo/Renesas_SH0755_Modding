@@ -473,10 +473,10 @@ def verify_definition() -> None:
         fail("master definition retains diagnostic/readiness categories")
 
     expected_timing_addresses = {
-        "Base Timing - Normal Cam / Advance Endpoint": 0x00078AA0,
-        "Base Timing - AVLS High Cam / Advance Endpoint": 0x00078CD0,
-        "Base Timing - Normal Cam / Retard Endpoint": 0x00078E34,
-        "Base Timing - AVLS High Cam / Retard Endpoint": 0x00079064,
+        "Base Timing - Normal Cam (Advance Multiplier 1.0)": 0x00078AA0,
+        "Base Timing - AVLS High Cam (Advance Multiplier 1.0)": 0x00078CD0,
+        "Base Timing - Normal Cam (Advance Multiplier 0.0)": 0x00078E34,
+        "Base Timing - AVLS High Cam (Advance Multiplier 0.0)": 0x00079064,
         "Knock Correction Advance Max - Normal Cam": 0x0007924C,
         "Knock Correction Advance Max - AVLS High Cam": 0x000793AC,
     }
@@ -679,8 +679,8 @@ def main() -> None:
     print("  wideband/O2       : former-MAF AEM input; four stock paths + 18 DTCs removed")
     print("  boost             : zero-duty spring baseline; throttle/SD/sensor/soft/hard gates")
     print("  injectors         : pinned A4TE002B STI-pink flow/deadtime translation")
-    print("  timing/AVLS       : active paths identified; conservative caps; early AVLS")
-    print("  definition        : focused D2WD610H master XML, dormant B/E and obsolete defs omitted")
+    print("  timing/AVLS       : cam + multiplier endpoints identified; conservative caps; early AVLS")
+    print("  definition        : focused master XML; dormant timing pair and obsolete defs omitted")
     print("  logger            : D2WD610H-only lambda/raw-ADC/readiness fragment validated")
     print("  provenance        : root stock, base copy, and SRF payload remain byte-identical")
 

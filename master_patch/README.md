@@ -47,6 +47,17 @@ See [WIRING.md](WIRING.md) before altering the harness,
 for the required test sequence, and [GHIDRA_AUDIT.md](GHIDRA_AUDIT.md) for the
 stock-ROM evidence and remaining uncertainties.
 
+## RomRaider definition selection
+
+Load **only** `master_patch/D2WD610H_master_patch.xml` as the ECU definition for
+this image. The stock, standalone speed-density, and older component XML files
+share the unchanged factory CALID `D2WD610H`; if one of those files is selected,
+RomRaider can open the master binary with legacy names such as `Base Timing A`
+through `F` and without the complete master tables. The master definition shows
+the four reachable surfaces as normal/high cam and advance-multiplier 1.0/0.0,
+and omits the two unreachable surfaces. Restart RomRaider after changing the
+definition file so no old parsed definition remains in memory.
+
 ## Build and verify
 
 Run from the repository root:
