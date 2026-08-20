@@ -64,8 +64,9 @@ with table locations and conversions from
 - Caps all six base-timing maps, including both early-AVLS paths, with extra retard around torque
   onset; positive Knock Correction Advance is zero at 1.22 g/rev and above.
 - Adds stronger high-IAT timing retard from 80 to 110 degrees C.
-- Moves load-based AVLS eligibility to 2500 RPM and the forced high-cam crossover to 3200 RPM,
-  with a 3000 RPM release point and stock hysteresis.
+- Moves AVLS actuation eligibility to 2500 RPM and the forced high-cam crossover to 3200 RPM,
+  with a 3000 RPM release point. Below the hard crossover, stock logic uses an
+  engine-oil-temperature-selected vehicle-speed-versus-RPM boundary with 10 km/h hysteresis.
 - Sets the requested maximum to 6800 RPM cut / 6770 RPM resume. The 5 psi target does not taper
   before that limit, and the hard limiter is deliberately retained.
 - Installs the factory STI-pink scalar/deadtime curve and ratio-scales all four cranking-IPW maps,

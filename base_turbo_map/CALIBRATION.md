@@ -159,22 +159,25 @@ engine protection.
 
 ## Earlier AVLS
 
-The stock 10.0 load-unit hysteresis at `0x7D480`/`0x7D484` remains unchanged. The calibrated
-switching values are:
+The stock 10.0 km/h vehicle-speed hysteresis at `0x7D480`/`0x7D484` remains unchanged. The
+calibrated switching values are:
 
 | Calibration | Address | Stock | Base-turbo value |
 |---|---:|---:|---:|
 | OSV actuation minimum | `0x7D4AC` | 3000 RPM | 2500 RPM |
 | Forced high-cam release | `0x7D4B8` | 3800 RPM | 3000 RPM |
 | Forced high-cam engage | `0x7D4BC` | 4000 RPM | 3200 RPM |
-| Threshold 1 data | `0x7D67C` | 100,100,30,28,25,15,5 | 100,100,25,20,15,10,5 |
-| Threshold 2 data | `0x7D6B4` | 100,100,90,50,30,10,0 | 100,100,60,35,20,10,0 |
+| Normal-oil-temperature speed data (km/h) | `0x7D67C` | 100,100,30,28,25,15,5 | 100,100,25,20,15,10,5 |
+| High-oil-temperature speed data (km/h) | `0x7D6B4` | 100,100,90,50,30,10,0 | 100,100,60,35,20,10,0 |
 
-The RPM axes remain stock. This permits a load-requested high-cam transition from 2500 RPM and
-forces high cam at 3200 RPM; it does not force high cam at light load below that point. The load
-signal's physical unit has not been proven, so confirm the commanded/actual AVLS transition,
-oil-pressure behavior, lambda, torque, and knock on the engine. Engage remains above release, and
-all six ignition maps are covered by the conservative timing policy.
+The RPM axes remain stock. Between 2500 and 3200 RPM this permits a vehicle-speed-gated high-lift
+transition; high lift is forced at 3200 RPM regardless of road speed. Engine-oil temperature
+selects the curve: state 2 is the normal 15 to below 115 degrees C band, and state 3 is the hot
+band. The stock selector hysteresis is 13/15 and 113/115 degrees C, while an invalid oil-temperature
+path substitutes 70 degrees C. This is not a load-requested transition. Confirm requested/actual
+AVLS state, oil temperature/pressure behavior, vehicle speed, lambda, torque, and knock on the
+engine. Engage remains above release, and all six ignition maps are covered by the conservative
+timing policy.
 
 ## Deliberately unchanged
 

@@ -39,7 +39,30 @@ public class ApplyMasterNames extends GhidraScript {
         createOrRename("000098cc", "injector_battery_voltage_latency_lookup");
         createOrRename("0000a9a8", "injector_control_lookup_sequence_a9a8");
         createOrRename("0000b690", "front_af_sensor_pair_signal_process");
+        createOrRename("0000f474", "engine_oil_temperature_sensor_process");
         createOrRename("00013330", "runtime_status_b6c0_bit7_is_set");
+        createOrRename("000172a4", "maf_airflow_temperature_compensation_update");
+        createOrRename(
+            "00017984", "airflow_load_and_vehicle_speed_processing_sequence_update"
+        );
+        createOrRename("000179ee", "airflow_load_filter_state_initialize");
+        createOrRename(
+            "00017a24", "airflow_load_filter_state_requires_initialization"
+        );
+        createOrRename("00017b2a", "airflow_bank_charge_update");
+        createOrRename("000180c6", "engine_load_from_airflow_calculate");
+        createOrRename("000181ea", "engine_load_limit_update");
+        createOrRename("000182ac", "engine_load_compensation_update");
+        createOrRename("00018438", "vehicle_speed_conditioning_status_flags_update");
+        createOrRename(
+            "000184cc", "vehicle_speed_conditioning_coefficient_set_a_update"
+        );
+        createOrRename(
+            "0001873c", "vehicle_speed_conditioning_coefficient_set_b_update"
+        );
+        createOrRename("000188f4", "vehicle_speed_conditioned_source_update");
+        createOrRename("00018a68", "vehicle_speed_conditioned_filter_update");
+        createOrRename("00018aea", "vehicle_speed_conditioned_snapshot_copy");
         createOrRename("00018dac", "front_af_sensor_lambda_condition_filter");
         createOrRename(
             "000192a8", "front_af_sensor_pump_current_pair_offset_clamp_update"
@@ -51,11 +74,16 @@ public class ApplyMasterNames extends GhidraScript {
         createOrRename("00028354", "ign_avcs_tracking_blend_factor_update");
         createOrRename("00028418", "ign_base_timing_map_blend");
         createOrRename("000284b8", "ign_base_timing_select");
+        createOrRename("0003253c", "engine_oil_temperature_logger_convert");
         createOrRename("000353b0", "intake_avcs_target_by_avls_mode_update");
         createOrRename("00035750", "intake_avcs_tracking_control_update");
         createOrRename("0003eb68", "knock_correction_advance_max_select");
         createOrRename("0003ffda", "avls_threshold_curve_selector_state_update");
-        createOrRename("000400ee", "avls_curve_selector_load_band_latches_update");
+        createOrRename(
+            "000400ee", "avls_curve_selector_oil_temp_band_latches_update"
+        );
+        createOrRename("00040168", "avls_cam_mode_state_machine");
+        createOrRename("00047000", "engine_oil_temperature_fallback_select");
         createOrRename("00064fd0", "front_af_sensor_bank1_inhibit_check");
         createOrRename("0006500c", "front_af_sensor_bank2_inhibit_check");
         createOrRename("0006504c", "runtime_status_d26d_bit5_get");
@@ -96,7 +124,9 @@ public class ApplyMasterNames extends GhidraScript {
             "Selects AVCS descriptor 0x60C34 / data 0x7C5B0 when committed AVLS " +
             "cam mode 0xFFFFCD86 is 1 (low lift), or descriptor 0x60C50 / data " +
             "0x7C764 when mode is 3 (high lift). Publishes the common target at " +
-            "0xFFFFC984. Legacy A/B identify AVLS modes, not cylinder banks."
+            "0xFFFFC984. Both maps use genuine conditioned engine load 0xFFFFB438 " +
+            "in g/rev and RPM 0xFFFFB544. Legacy A/B identify AVLS modes, not " +
+            "cylinder banks."
         );
         setPlateComment(
             toAddr("00035750"),
@@ -106,18 +136,68 @@ public class ApplyMasterNames extends GhidraScript {
         );
         setPlateComment(
             toAddr("0003ffda"),
-            "Updates AVLS threshold-curve selector state 0xFFFFCD9C. Normal valid " +
-            "operation uses hysteretic fallback-load bands: state 1 below the " +
-            "first band or when gated, state 2 after the 15-unit latch while the " +
-            "115-unit latch is clear, and state 3 after the 115-unit latch. " +
-            "Runtime-status, delay, and fault gates can force state 1."
+            "Updates AVLS threshold-curve selector 0xFFFFCD9C from conditioned " +
+            "engine-oil temperature 0xFFFFCF94. Subject to runtime, delay, and " +
+            "fault gates: state 1 is cold/fallback, state 2 is the normal " +
+            "15..115 C band, and state 3 is the hot >=115 C band."
         );
         setPlateComment(
             toAddr("000400ee"),
-            "Updates two hysteretic latches in 0xFFFFCD9E from fallback load " +
-            "0xFFFFCF94: bit 0 sets at 15 and clears below 13; bit 1 sets at 115 " +
-            "and clears below 113. The selector update uses these to choose " +
-            "state 1, 2, or 3."
+            "Updates two hysteretic engine-oil-temperature latches in 0xFFFFCD9E " +
+            "from 0xFFFFCF94: bit 0 sets at 15 C and clears below 13 C; bit 1 " +
+            "sets at 115 C and clears below 113 C."
+        );
+        setPlateComment(
+            toAddr("00040168"),
+            "AVLS lift-mode state machine. Selector state 2 uses RPM-versus-" +
+            "vehicle-speed descriptor 0x60F58; state 3 uses 0x60F64. The " +
+            "compared 0xFFFFB46C signal is conditioned vehicle speed in km/h, " +
+            "not engine load. Low lift requests high at curve + 10 km/h; high " +
+            "lift releases below the raw curve. State 1 uses fixed 15 km/h " +
+            "thresholds. Stock hard-RPM override is 4000/3800 RPM."
+        );
+        setPlateComment(
+            toAddr("0000f474"),
+            "Processes raw ADC 0xFFFFAB12 through descriptor 0x60950 (voltage " +
+            "axis 0x7B748, temperature data 0x7B7C4) and publishes engine-oil " +
+            "temperature in degrees C at 0xFFFFB124. The table spans -40..150 C; " +
+            "P0197/P0198 identify this CALID's channel."
+        );
+        setPlateComment(
+            toAddr("00047000"),
+            "Validates engine-oil temperature 0xFFFFB124 and publishes the AVLS-" +
+            "facing value at 0xFFFFCF94. Fault/startup paths substitute the stock " +
+            "70.0 C fallback at 0x73B88/0x73B8C."
+        );
+        setPlateComment(
+            toAddr("000172a4"),
+            "Final mass airflow is written to 0xFFFFB420 in g/s. The retained " +
+            "stock path forms raw engine load 0xFFFFB428 as airflow_g_s * 60 / " +
+            "RPM, then conditions it into 0xFFFFB438 in g/rev. Master speed " +
+            "density replaces the final-airflow helper only, preserving this " +
+            "native load normalization."
+        );
+        setPlateComment(
+            toAddr("00017984"),
+            "Runs the stock airflow/load pipeline and, separately, vehicle-speed " +
+            "conditioning. The final chain publishes B4C0, B4C8, then AVLS speed " +
+            "snapshot B46C. Speed density changes upstream airflow, not this speed " +
+            "chain."
+        );
+        setPlateComment(
+            toAddr("000188f4"),
+            "Conditions vehicle speed 0xFFFFB538 in native km/h, caps it at " +
+            "100.0, and publishes 0xFFFFB4C0. No engine-load conversion occurs."
+        );
+        setPlateComment(
+            toAddr("00018a68"),
+            "Filters conditioned vehicle speed 0xFFFFB4C0 into 0xFFFFB4C8; " +
+            "units remain km/h."
+        );
+        setPlateComment(
+            toAddr("00018aea"),
+            "Copies filtered vehicle speed 0xFFFFB4C8 to AVLS compare signal " +
+            "0xFFFFB46C; units remain km/h."
         );
         setPlateComment(
             toAddr("00007a14"),

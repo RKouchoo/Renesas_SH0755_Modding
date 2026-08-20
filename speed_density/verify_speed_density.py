@@ -128,6 +128,13 @@ def policy_model(
     return min(airflow, maximum_airflow)
 
 
+def retained_stock_load_model(airflow_g_s: float, rpm: float) -> float:
+    """Model the Ghidra-verified B420 -> B428 normalization retained in stock code."""
+    if rpm <= 0.0:
+        return 0.0
+    return min(airflow_g_s * 60.0 / rpm, 4.0)
+
+
 def verify_policy_model() -> None:
     invalid_cases = (
         (math.nan, 3000.0, 20.0),
@@ -206,6 +213,19 @@ def verify_policy_model() -> None:
         if not math.isclose(actual, expected, rel_tol=2e-7, abs_tol=2e-5):
             raise SystemExit(
                 "FAIL: model sample %r = %.9f (expected %.9f)"
+                % (arguments, actual, expected)
+            )
+
+    load_samples = (
+        ((760.0, 3000.0, 20.0), 1.80557542),
+        ((1018.5747, 6800.0, 20.0), 2.39416176),
+    )
+    for arguments, expected in load_samples:
+        airflow = policy_model(*arguments)
+        actual = retained_stock_load_model(airflow, arguments[1])
+        if not math.isclose(actual, expected, rel_tol=2e-7, abs_tol=2e-6):
+            raise SystemExit(
+                "FAIL: retained calculated-load sample %r = %.9f g/rev (expected %.9f)"
                 % (arguments, actual, expected)
             )
 
@@ -364,6 +384,24 @@ def main(argv: list[str] | None = None) -> None:
         patch.FINAL_AIRFLOW_HELPER_PTR,
         patch.be32(patch.WRAPPER_ADDR),
         "final-airflow helper hook",
+    )
+    expect(
+        image,
+        patch.STOCK_ENGINE_LOAD_CALC_ADDR,
+        patch.STOCK_ENGINE_LOAD_CALC_SEQUENCE,
+        "retained B420 * 60 / RPM to B428 engine-load calculation",
+    )
+    expect(
+        image,
+        patch.ENGINE_LOAD_SCALE_ADDR,
+        patch.f32(60.0),
+        "retained g/s-to-g/rev load scale",
+    )
+    expect(
+        image,
+        patch.ENGINE_LOAD_LIMIT_ADDR,
+        patch.f32(4.0),
+        "retained 4.0 g/rev engine-load limit",
     )
     for address in patch.MAF_CONVERSION_CALL_ADDRS:
         expect(
@@ -533,7 +571,7 @@ def main(argv: list[str] | None = None) -> None:
     print("speed-density binary audit PASS")
     print("  stock SHA-256   : %s" % stock_hash)
     print("  output SHA-256  : %s" % hashlib.sha256(image).hexdigest())
-    print("  retained task   : 0x%05X -> 0x%05X; downstream load/state logic remains active"
+    print("  retained task   : 0x%05X -> 0x%05X; B420*60/RPM -> B428/B438 g/rev remains active"
           % (patch.AIRFLOW_TASK_PTR, patch.STOCK_MAF_AIRFLOW_TASK))
     print("  airflow hook    : helper pointer 0x%05X -> 0x%05X before B420 store"
           % (patch.FINAL_AIRFLOW_HELPER_PTR, patch.WRAPPER_ADDR))

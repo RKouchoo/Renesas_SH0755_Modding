@@ -120,8 +120,9 @@ TIP_IN_IPW_MAPS = (
 )
 MIN_TIP_IN_ACTIVATION_ADDR = 0x763E0
 
-# AVLS comes in under load from 2500 RPM and is forced onto high cam by 3200
-# RPM.  The stock 10-load-unit hysteresis is retained to avoid chatter.
+# AVLS actuation is permitted from 2500 RPM and forced onto high lift by 3200
+# RPM.  Below the hard override, stock logic uses an oil-temperature-selected
+# vehicle-speed-versus-RPM boundary.  The stock 10 km/h hysteresis is retained.
 AVLS_THRESHOLD_1_ADDR = 0x7D67C
 AVLS_THRESHOLD_2_ADDR = 0x7D6B4
 AVLS_THRESHOLD_1 = (100.0, 100.0, 25.0, 20.0, 15.0, 10.0, 5.0)
@@ -242,8 +243,8 @@ CALIBRATION_REGIONS = (
     *((name, addr, count * 2) for name, addr, count in CRANKING_IPW_MAPS),
     *((name, addr, count * 2) for name, addr, count in TIP_IN_IPW_MAPS),
     ("Minimum Tip-in Enrichment Activation", MIN_TIP_IN_ACTIVATION_ADDR, 4),
-    ("AVLS Switchover Load Threshold 1", AVLS_THRESHOLD_1_ADDR, len(AVLS_THRESHOLD_1) * 4),
-    ("AVLS Switchover Load Threshold 2", AVLS_THRESHOLD_2_ADDR, len(AVLS_THRESHOLD_2) * 4),
+    ("AVLS Vehicle Speed Threshold (Normal Oil Temperature)", AVLS_THRESHOLD_1_ADDR, len(AVLS_THRESHOLD_1) * 4),
+    ("AVLS Vehicle Speed Threshold (High Oil Temperature)", AVLS_THRESHOLD_2_ADDR, len(AVLS_THRESHOLD_2) * 4),
     ("AVLS Actuation Minimum RPM", AVLS_ACTUATION_MIN_RPM_ADDR, 4),
     ("AVLS High Cam Release RPM", AVLS_RELEASE_RPM_ADDR, 4),
     ("AVLS High Cam Engage RPM", AVLS_ENGAGE_RPM_ADDR, 4),
@@ -588,19 +589,20 @@ def apply_calibration(rom: bytearray, reference: bytes) -> dict[str, tuple[int, 
         f32(min_tip_in_raw * injector_ratio),
     )
 
-    # Earlier AVLS: retain stock hysteresis, allow oil-valve actuation at 2500,
-    # lower both load-dependent curves, and force high cam by 3200 RPM.
+    # Earlier AVLS: retain stock speed hysteresis, allow oil-valve actuation at
+    # 2500, lower both oil-temperature-selected road-speed boundaries, and
+    # force high lift by 3200 RPM.
     if read_floats(reference, AVLS_HYSTERESIS_A_ADDR, 1)[0] != AVLS_HYSTERESIS:
         raise SystemExit("REFUSING: AVLS hysteresis A is not the expected stock value")
     if read_floats(reference, AVLS_HYSTERESIS_B_ADDR, 1)[0] != AVLS_HYSTERESIS:
         raise SystemExit("REFUSING: AVLS hysteresis B is not the expected stock value")
     write(
-        "AVLS Switchover Load Threshold 1",
+        "AVLS Vehicle Speed Threshold (Normal Oil Temperature)",
         AVLS_THRESHOLD_1_ADDR,
         pack_floats(AVLS_THRESHOLD_1),
     )
     write(
-        "AVLS Switchover Load Threshold 2",
+        "AVLS Vehicle Speed Threshold (High Oil Temperature)",
         AVLS_THRESHOLD_2_ADDR,
         pack_floats(AVLS_THRESHOLD_2),
     )
@@ -743,7 +745,7 @@ def main() -> None:
         f"estimated (D2WD raw {pink_flow_raw:.6f})"
     )
     print(
-        f"  AVLS             : load-based from {AVLS_ACTUATION_MIN_RPM:.0f} RPM; "
+        f"  AVLS             : speed-gated from {AVLS_ACTUATION_MIN_RPM:.0f} RPM; "
         f"forced high cam {AVLS_ENGAGE_RPM:.0f}/{AVLS_RELEASE_RPM:.0f} RPM"
     )
     print(f"  checksum         : 0x{stored:08X} (valid={stored == calculated})")

@@ -143,7 +143,7 @@ Verified: Base Timing A data 0x78AA0 → slot 0x60114 → desc 0x60108 → consu
 | Address | Name |
 |---|---|
 | 0x0003FFDA | `avls_threshold_curve_selector_state_update` |
-| 0x000400EE | `avls_curve_selector_load_band_latches_update` |
+| 0x000400EE | `avls_curve_selector_oil_temp_band_latches_update` |
 | 0x00040168 | `avls_cam_mode_state_machine` |
 | 0x000405B2 | `avls_mode_commit_copy` (0xFFFFCD87 → 0xFFFFCD86) |
 | 0x000405CC | `avls_osv_actuation_gate` |
@@ -172,39 +172,53 @@ operating state 0xFFFFCD9C (curve selector: 2=curve 1, 3=curve 2), mode timer 0x
 (mask 0x04 = RPM>4000 latch, mask 0x10 = engine running),
 status latch 0xFFFFCD8F, threshold caches 0xFFFFCD94/0xFFFFCD98, defer flag 0xFFFFCD9D.
 
-**Switchover is a load-vs-RPM line, not a single RPM constant:**
+**Switchover is a vehicle-speed-vs-RPM boundary, not an engine-load map:**
 
 | Item | ROM addr | Value |
 |---|---|---|
-| Threshold table 1 data (7×float) | **0x7D67C** | 100,100,30,28,25,15,5 (load units) |
+| Normal-oil-temperature speed data (7×float) | **0x7D67C** | 100,100,30,28,25,15,5 km/h |
 | Table 1 X axis (RPM, 7×float) | 0x7D660 | 1600,2000,2400,2800,3200,3600,4000 |
-| Threshold table 2 data (7×float) | **0x7D6B4** | 100,100,90,50,30,10,0 |
+| High-oil-temperature speed data (7×float) | **0x7D6B4** | 100,100,90,50,30,10,0 km/h |
 | Table 2 X axis (RPM, 7×float) | 0x7D698 | 2000,2050,2400,2800,3200,3600,4000 |
 | Hard high-cam engage RPM | **0x7D4BC** | float 4000.0 |
 | Hard release RPM (hysteresis) | **0x7D4B8** | float 3800.0 |
-| Threshold hysteresis offsets | 0x7D480/0x7D484 | 10.0 / 10.0 |
+| Vehicle-speed hysteresis offsets | 0x7D480/0x7D484 | 10.0 / 10.0 km/h |
+| Oil-temperature selector bands | 0x7D488..0x7D494 | 13/15 and 113/115 degrees C |
 | Actuation RPM gate | 0x7D4AC | 3000.0 |
 | Engine-run RPM gate | 0x7D4A8/0x7D4A4 | 512.0 / 510.0 |
 | Sentinel band (table-result check) | 0x7D4A0/0x7D49C | 10000.0 / 9000.0 |
 | Fallback thresholds | 0x7D4B0/0x7D4B4 | 15.0 / 15.0 |
 | Mode timer reload (u16) | 0x7D468 | — |
 
-`avls_curve_selector_load_band_latches_update` applies hysteresis to fallback-load signal
-**0xFFFFCF94**: the first latch sets at 15 and clears below 13; the second sets at 115 and clears
-below 113. Subject to runtime-status and delay gates,
-`avls_threshold_curve_selector_state_update` publishes selector state 1 below the first band,
-state 2 with the first latch set and the second clear, or state 3 with the second latch set. State
-1 uses the fallback branch; state 2 selects curve 1 and state 3 selects curve 2. The physical unit
-and wider semantic role of 0xFFFFCF94 remain unproven, so these bands should be logged rather than
-treated as g/rev.
+`engine_oil_temperature_sensor_process` at **0xF474** converts ADC **0xFFFFAB12** through
+descriptor **0x60950** (voltage axis **0x7B748**, temperature data **0x7B7C4**) and writes
+**0xFFFFB124** in degrees C. The 31-point transfer spans -40 through 150 degrees C, and this
+CALID's P0197/P0198 switches identify it as engine-oil temperature. At **0x47000**,
+`engine_oil_temperature_fallback_select` validates that signal and publishes **0xFFFFCF94**;
+fault/startup paths substitute the stock 70 degrees C value at 0x73B88/0x73B8C.
+
+`avls_curve_selector_oil_temp_band_latches_update` applies oil-temperature hysteresis to
+**0xFFFFCF94**: the first latch sets at 15 degrees C and clears below 13; the second sets at 115
+and clears below 113. Subject to runtime-status and delay gates,
+`avls_threshold_curve_selector_state_update` publishes selector state 1 for cold/fallback,
+state 2 for the normal oil-temperature band, or state 3 for the hot band. State 1 uses fixed
+15 km/h fallback boundaries; state 2 selects the normal-temperature curve and state 3 selects
+the high-temperature curve.
 
 Descriptors: table 1 = **0x60F58**, table 2 = **0x60F64** (compact 0xC float type).
-RPM input is float @ **0xFFFFB544**. The normal curve path compares float load signal
-**0xFFFFB46C**: operating state **0xFFFFCD9C == 2** selects table 1 plus hysteresis A;
-state **3** selects table 2 plus hysteresis B. From low cam, high cam is requested at
-`load >= curve + 10`; from high cam, low cam is requested at `load < curve`. Thus the two
-tables are state-selected curves, **not** engage/release counterparts. State 1 uses the fallback
-path and its fixed thresholds at 0x7D4B0/0x7D4B4.
+RPM input is float @ **0xFFFFB544**. The curve path compares conditioned vehicle speed
+**0xFFFFB46C** in km/h: selector state **0xFFFFCD9C == 2** chooses the normal-temperature curve;
+state **3** chooses the high-temperature curve. From low lift, high lift is requested at
+`speed >= curve + 10 km/h`; from high lift, low lift is requested at `speed < curve`. Thus the
+two tables are oil-temperature-selected curves, **not** engage/release counterparts. State 1
+uses fixed 15 km/h thresholds at 0x7D4B0/0x7D4B4.
+
+The genuine table load signal is separate. `maf_airflow_temperature_compensation_update` writes
+mass airflow **0xFFFFB420** in g/s, calculates raw load **0xFFFFB428** as
+`airflow_g_s * 60 / RPM`, and conditions it into **0xFFFFB438** in g/rev. AVCS, ignition,
+fuel, and knock tables consume B438. The master speed-density helper supplies B420 in g/s and
+retains this stock normalization, so its g/rev load scaling remains correct; it simply does not
+control the AVLS lift-state boundary.
 
 Definition layout:
 
@@ -246,8 +260,9 @@ data registers (datasheet) instead of descending the call tree.
 | **0xFFFFB538** | Vehicle speed (float, km/h) | `ign_idle_timing_target_update` compares it with stock 4.0-km/h idle-timing threshold @0x77E1C; also consumed by AVLS logic |
 | **0xFFFFB3B8** | Intake-air temperature (float, degrees C) | written by `intake_air_temperature_update` @0x16D1C; passed into stock MAF-IAT compensation descriptor 0x5EB88 |
 | **0xFFFFB420** | Final post-compensation mass airflow (float, g/s) | written at 0x1739E in `maf_airflow_temperature_compensation_update`; broad fuel/load consumer xrefs include 0x1B800 and 0x216EA |
-| **0xFFFFB46C** | Normal AVLS switchover load signal (float; snapshot of filtered 0xFFFFB4C8) | compared against state-selected curves in 0x40168 |
-| 0xFFFFCF94 | AVLS fallback/curve-selector load signal; physical units unresolved | selector latches at 13/15 and 113/115 in 0x400EE; fallback use in 0x40168 |
+| **0xFFFFB46C** | Conditioned AVLS vehicle-speed signal in km/h (snapshot of filtered 0xFFFFB4C8) | compared against oil-temperature-selected curves in 0x40168 |
+| **0xFFFFB124** | Converted engine-oil temperature in degrees C | ADC AB12 through descriptor 0x60950 in 0xF474 |
+| **0xFFFFCF94** | Validated engine-oil temperature, or 70 C fallback | selector latches at 13/15 and 113/115 C in 0x400EE |
 | 0xFFFFC17C | Ignition AVCS-tracking blend factor k (float 0..1) | written 0x28354 |
 | 0xFFFFC8C8/0xFFFFC8CC | Measured intake AVCS angles, left/right | numerator at 0x28354 |
 | 0xFFFFC974/0xFFFFC978 | Conditioned/commanded intake AVCS targets, left/right | denominator at 0x28354 |
@@ -396,15 +411,20 @@ _(underscore names only — strict naming enforcement is ON)_
 - 0x0001C5D4 → **solenoid_inhibit_word_build** (builds inhibit word 0xFFFFB744 from per-ch faults)
 - 0x00024570 → **solenoid_circuit_diagnostic** (sets circuit-fault byte 0xFFFFBF21)
 - 0x000182AC → **engine_load_compensation_update**
-- 0x00018A68 → **engine_load_signal_filter_update** (produces filtered load @0xFFFFB4C8)
+- 0x00017984 → **airflow_load_and_vehicle_speed_processing_sequence_update**
+- 0x000179EE → **airflow_load_filter_state_initialize**
+- 0x00017A24 → **airflow_load_filter_state_requires_initialization**
+- 0x00018A68 → **vehicle_speed_conditioned_filter_update** (B4C0 → filtered km/h @0xFFFFB4C8)
 - 0x00009FEC → **float_3d_table_consumer_update**
 - 0x0000C5C8 → **cylinder_airflow_pair_update**
 - 0x00017B2A → **airflow_bank_charge_update**
 - 0x00017C40 → **airflow_bank_charge_diagnostic_update**
 - 0x000180C6 → **engine_load_from_airflow_calculate**
 - 0x000181EA → **engine_load_limit_update**
-- 0x000184CC → **engine_load_calculation_update**
-- 0x000188F4 → **engine_load_source_update**
+- 0x00018438 → **vehicle_speed_conditioning_status_flags_update**
+- 0x000184CC → **vehicle_speed_conditioning_coefficient_set_a_update**
+- 0x0001873C → **vehicle_speed_conditioning_coefficient_set_b_update**
+- 0x000188F4 → **vehicle_speed_conditioned_source_update** (B538 km/h → B4C0)
 - 0x0001B15E → **fuel_system_monitor_enable_update**
 - 0x000216EA → **fueling_airflow_input_update**
 - 0x000098CC → **injector_battery_voltage_latency_lookup** (descriptor 0x608D8; voltage
@@ -413,9 +433,11 @@ _(underscore names only — strict naming enforcement is ON)_
 - 0x0000A9A8 → **injector_control_lookup_sequence_a9a8**
 - 0x0003EB68 → **knock_correction_advance_max_select** (KCA A normal cam / KCA B AVLS high cam)
 - 0x0003FFDA → **avls_threshold_curve_selector_state_update**
-- 0x000400EE → **avls_curve_selector_load_band_latches_update**
-- 0x00018AEA → **engine_load_signal_snapshot_copy** (0xFFFFB4C8 → AVLS compare signal 0xFFFFB46C)
-- 0x00047000 → **engine_load_fallback_select** (selects 0xFFFFCF94 fallback value)
+- 0x000400EE → **avls_curve_selector_oil_temp_band_latches_update**
+- 0x00018AEA → **vehicle_speed_conditioned_snapshot_copy** (B4C8 → AVLS km/h compare B46C)
+- 0x0000F474 → **engine_oil_temperature_sensor_process** (AB12 → B124 degrees C)
+- 0x0003253C → **engine_oil_temperature_logger_convert**
+- 0x00047000 → **engine_oil_temperature_fallback_select** (B124 or 70 C → CF94)
 - 0x00014DCC → **throttle_position_sensor_process** (DBW throttle sensor plausibility/processing;
   produces processed throttle opening @0xFFFFB314 used by CL/OL logic and boost demand gate)
 - 0x00007C30 → **maf_sensor_voltage_to_airflow_process** (raw MAF ADC 0xFFFFAB06 through

@@ -777,6 +777,13 @@
    </table>
    <description>This is the scaling for the fuel temp sensor.</description>
   </table>
+  <table type="2D" name="Engine Oil Temperature Sensor Scaling" category="Miscellaneous - Sensor Scalings" storagetype="float" endian="little" sizey="31" userlevel="4">
+   <scaling units="Temperature (Degrees C)" expression="x" to_byte="x" format="0.0" fineincrement=".1" coarseincrement="1" />
+   <table type="Y Axis" name="Engine Oil Temperature Sensor" storagetype="float" endian="little">
+    <scaling units="volts" expression="x" to_byte="x" format="0.000" fineincrement=".01" coarseincrement=".1" />
+   </table>
+   <description>Engine-oil-temperature thermistor transfer used by the AVLS oil-temperature selector. Ghidra-verified descriptor 0x60950 uses voltage axis 0x7B748 and temperature data 0x7B7C4, spanning -40 to 150 degrees C.</description>
+  </table>
   <table type="2D" name="Intake Temp Sensor Scaling" category="Miscellaneous - Sensor Scalings" storagetype="float" endian="little" sizey="30" userlevel="4">
    <scaling units="Temperature (Degrees C)" expression="x" to_byte="x" format="0.0" fineincrement=".1" coarseincrement="1" />
    <table type="Y Axis" name="Intake Temp Sensor" storagetype="float" endian="little">
@@ -1618,6 +1625,9 @@
   <table name="Fuel Temp Sensor Scaling" storageaddress="0x7B3C0">
    <table type="Y Axis" storageaddress="0x7B348" />
   </table>
+  <table name="Engine Oil Temperature Sensor Scaling" storageaddress="0x7B7C4">
+   <table type="Y Axis" storageaddress="0x7B748" />
+  </table>
   <table name="Intake Temp Sensor Scaling" storageaddress="0x729D8">
    <table type="Y Axis" storageaddress="0x72960" />
   </table>
@@ -1739,19 +1749,19 @@
   <table name="(P2135) TPS A/B VOLTAGE" storageaddress="0x5BDD4" />
   <table name="(P2138) TPS D/E VOLTAGE" storageaddress="0x5BDCF" />
   <!-- D2WD610H AVLS tables -->
-  <table type="2D" name="AVLS Switchover Load Threshold 1" category="AVLS" storagetype="float" endian="big" sizey="7" userlevel="3" storageaddress="0x7D67C">
-   <scaling units="load" expression="x" to_byte="x" format="0.0" fineincrement="1" coarseincrement="5" />
+  <table type="2D" name="AVLS Vehicle Speed Threshold (Normal Oil Temperature)" category="AVLS" storagetype="float" endian="big" sizey="7" userlevel="3" storageaddress="0x7D67C">
+   <scaling units="km/h" expression="x" to_byte="x" format="0.0" fineincrement="1" coarseincrement="5" />
    <table type="Y Axis" name="Engine Speed" storagetype="float" endian="big" storageaddress="0x7D660">
     <scaling units="RPM" expression="x" to_byte="x" format="#" fineincrement="50" coarseincrement="100" />
    </table>
-   <description>AVLS switchover curve used when operating state 0xFFFFCD9C equals 2. RPM input is 0xFFFFB544 and the normal-path load signal compared is 0xFFFFB46C. From low cam, high cam is requested when load is at least curve + Hysteresis A (0x7D480). From high cam, low cam is requested when load drops below the raw curve. Stock: RPM 1600, 2000, 2400, 2800, 3200, 3600, 4000 -&gt; load 100, 100, 30, 28, 25, 15, 5.</description>
+   <description>AVLS road-speed boundary used in selector state 2, normally engine-oil temperature from 15 to below 115 degrees C. RPM input is 0xFFFFB544 and the compared signal 0xFFFFB46C is conditioned vehicle speed in km/h. From low lift, high lift is requested at speed greater than or equal to curve plus the normal-temperature speed hysteresis at 0x7D480. From high lift, low lift is requested below the raw curve. Stock RPM 1600, 2000, 2400, 2800, 3200, 3600, 4000 maps to 100, 100, 30, 28, 25, 15, 5 km/h.</description>
   </table>
-  <table type="2D" name="AVLS Switchover Load Threshold 2" category="AVLS" storagetype="float" endian="big" sizey="7" userlevel="3" storageaddress="0x7D6B4">
-   <scaling units="load" expression="x" to_byte="x" format="0.0" fineincrement="1" coarseincrement="5" />
+  <table type="2D" name="AVLS Vehicle Speed Threshold (High Oil Temperature)" category="AVLS" storagetype="float" endian="big" sizey="7" userlevel="3" storageaddress="0x7D6B4">
+   <scaling units="km/h" expression="x" to_byte="x" format="0.0" fineincrement="1" coarseincrement="5" />
    <table type="Y Axis" name="Engine Speed" storagetype="float" endian="big" storageaddress="0x7D698">
     <scaling units="RPM" expression="x" to_byte="x" format="#" fineincrement="50" coarseincrement="100" />
    </table>
-   <description>AVLS switchover curve used when operating state 0xFFFFCD9C equals 3. From low cam, high cam is requested when load 0xFFFFB46C is at least curve + Hysteresis B (0x7D484). From high cam, low cam is requested when load drops below the raw curve. Stock: RPM 2000, 2050, 2400, 2800, 3200, 3600, 4000 -&gt; load 100, 100, 90, 50, 30, 10, 0.</description>
+   <description>AVLS road-speed boundary used in selector state 3 when conditioned engine-oil temperature is at least 115 degrees C. The compared signal 0xFFFFB46C is vehicle speed in km/h, not engine load. From low lift, high lift is requested at speed greater than or equal to curve plus the high-temperature speed hysteresis at 0x7D484. From high lift, low lift is requested below the raw curve. Stock RPM 2000, 2050, 2400, 2800, 3200, 3600, 4000 maps to 100, 100, 90, 50, 30, 10, 0 km/h.</description>
   </table>
   <table type="1D" name="AVLS High Cam Engage RPM" category="AVLS" storagetype="float" endian="big" sizey="1" userlevel="3" storageaddress="0x7D4BC">
    <scaling units="RPM" expression="x" to_byte="x" format="#" fineincrement="50" coarseincrement="100" />
@@ -1759,15 +1769,25 @@
   </table>
   <table type="1D" name="AVLS High Cam Release RPM" category="AVLS" storagetype="float" endian="big" sizey="1" userlevel="3" storageaddress="0x7D4B8">
    <scaling units="RPM" expression="x" to_byte="x" format="#" fineincrement="50" coarseincrement="100" />
-   <description>Below this engine speed the hard high-cam RPM override is released (load-based curves take over again). Stock: 3800. Must stay below AVLS High Cam Engage RPM.</description>
+   <description>Below this engine speed the hard high-cam RPM override is released and the oil-temperature-selected vehicle-speed curve takes over again. Stock: 3800. Must stay below AVLS High Cam Engage RPM.</description>
   </table>
-  <table type="1D" name="AVLS Switchover Load Hysteresis A" category="AVLS" storagetype="float" endian="big" sizey="1" userlevel="4" storageaddress="0x7D480">
-   <scaling units="load" expression="x" to_byte="x" format="0.0" fineincrement="0.5" coarseincrement="1" />
-   <description>Engage hysteresis added to Threshold 1 when operating state 0xFFFFCD9C equals 2. High cam engages at curve + this value and releases below the raw curve. Stock: 10.0.</description>
+  <table type="1D" name="AVLS Vehicle Speed Hysteresis (Normal Oil Temperature)" category="AVLS" storagetype="float" endian="big" sizey="1" userlevel="4" storageaddress="0x7D480">
+   <scaling units="km/h" expression="x" to_byte="x" format="0.0" fineincrement="0.5" coarseincrement="1" />
+   <description>Engage hysteresis added to the normal-oil-temperature vehicle-speed curve in selector state 2. High lift engages at curve plus this value and releases below the raw curve. Stock: 10.0 km/h.</description>
   </table>
-  <table type="1D" name="AVLS Switchover Load Hysteresis B" category="AVLS" storagetype="float" endian="big" sizey="1" userlevel="4" storageaddress="0x7D484">
-   <scaling units="load" expression="x" to_byte="x" format="0.0" fineincrement="0.5" coarseincrement="1" />
-   <description>Engage hysteresis added to Threshold 2 when operating state 0xFFFFCD9C equals 3. High cam engages at curve + this value and releases below the raw curve. Stock: 10.0.</description>
+  <table type="1D" name="AVLS Vehicle Speed Hysteresis (High Oil Temperature)" category="AVLS" storagetype="float" endian="big" sizey="1" userlevel="4" storageaddress="0x7D484">
+   <scaling units="km/h" expression="x" to_byte="x" format="0.0" fineincrement="0.5" coarseincrement="1" />
+   <description>Engage hysteresis added to the high-oil-temperature vehicle-speed curve in selector state 3. High lift engages at curve plus this value and releases below the raw curve. Stock: 10.0 km/h.</description>
+  </table>
+  <table type="2D" name="AVLS Oil Temperature Selector Thresholds" category="AVLS" storagetype="float" endian="big" sizey="4" userlevel="4" storageaddress="0x7D488">
+   <scaling units="Degrees C" expression="x" to_byte="x" format="0.0" fineincrement="0.5" coarseincrement="1" />
+   <table type="Static Y Axis" name="Selector transition" sizey="4">
+    <data>Normal band clears below</data>
+    <data>Normal band sets at/above</data>
+    <data>High-temperature band clears below</data>
+    <data>High-temperature band sets at/above</data>
+   </table>
+   <description>Engine-oil-temperature hysteresis used to select the AVLS speed boundary. Stock values are 13/15 degrees C for entering the normal band and 113/115 degrees C for entering the high-temperature band. Runtime, delay, and fault gates can still force selector state 1.</description>
   </table>
   <table type="1D" name="AVLS Actuation Minimum RPM" category="AVLS" storagetype="float" endian="big" sizey="1" userlevel="4" storageaddress="0x7D4AC">
    <scaling units="RPM" expression="x" to_byte="x" format="#" fineincrement="50" coarseincrement="100" />

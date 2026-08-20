@@ -84,8 +84,8 @@ def verify_definition() -> None:
         "Throttle Tip-in Enrichment A": 0x7739C,
         "Throttle Tip-in Enrichment B": 0x773BC,
         "Minimum Tip-in Enrichment Activation": base.MIN_TIP_IN_ACTIVATION_ADDR,
-        "AVLS Switchover Load Threshold 1": base.AVLS_THRESHOLD_1_ADDR,
-        "AVLS Switchover Load Threshold 2": base.AVLS_THRESHOLD_2_ADDR,
+        "AVLS Vehicle Speed Threshold (Normal Oil Temperature)": base.AVLS_THRESHOLD_1_ADDR,
+        "AVLS Vehicle Speed Threshold (High Oil Temperature)": base.AVLS_THRESHOLD_2_ADDR,
         "AVLS Actuation Minimum RPM": base.AVLS_ACTUATION_MIN_RPM_ADDR,
         "AVLS High Cam Release RPM": base.AVLS_RELEASE_RPM_ADDR,
         "AVLS High Cam Engage RPM": base.AVLS_ENGAGE_RPM_ADDR,
@@ -346,7 +346,7 @@ def main() -> None:
     print("  fueling          : both-bank high-load caps, lambda 0.93 -> 0.78/0.77; no leaner cells")
     print("  injectors        : A4TE002B STI-pink flow/deadtime + ratio-scaled start/transient IPW")
     print("  ignition         : all six maps capped on expanded 3.0 g/rev axis; KCA zero >=1.22")
-    print("  AVLS             : load-based from 2500 RPM; forced high cam 3200/3000 RPM")
+    print("  AVLS             : speed-gated from 2500 RPM; forced high cam 3200/3000 RPM")
     print("  boost            : 5 psi spring only (zero duty/Kp/clamp), 6.5 psi hard cut")
     print("  operating range  : 6800/6770 RPM limiter; 5 psi target held to redline")
     print("  checksum         : valid Subaru 32-bit additive checksum")

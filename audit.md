@@ -404,8 +404,9 @@ scaling, MAP validation, post-turbo wideband logging, and physical boost tests r
 - The A4TE002B factory injector calibration translates to D2WD raw flow `3266.667236` (552.47
   cc/min estimated) and deadtimes 2.788/1.488/0.980/0.684/0.380 ms. The 0.4893883551 injector-scale
   ratio is applied to all absolute cranking/tip-in IPW starting values, rounding toward richer.
-- AVLS actuation is permitted at 2500 RPM; the load curves are lowered and the hard high-cam
-  engage/release points are 3200/3000 RPM with stock 10-unit hysteresis retained.
+- AVLS actuation is permitted at 2500 RPM; the oil-temperature-selected vehicle-speed curves are
+  lowered and the hard high-cam engage/release points are 3200/3000 RPM with the stock 10 km/h
+  hysteresis retained.
 - Both MAF arrays remain byte-identical. The MAF Limit is already max-encoded at about 300 g/s,
   and Engine Load Limit remains 4.0 g/rev above the expanded 3.0 g/rev calibration axes.
 
@@ -729,10 +730,29 @@ enter boost solely because the automated audit passes.
   / data `0x7C764` (legacy AVCS B) is selected in mode 3, high lift. These are mode targets, not
   left/right-bank maps, and the ECU selects rather than blends them.
 - `avls_threshold_curve_selector_state_update` at `0x3FFDA` and
-  `avls_curve_selector_load_band_latches_update` at `0x400EE` show how the internal curve
-  selector is formed. Fallback-load signal `0xFFFFCF94` drives hysteretic 13/15 and 113/115
-  bands; subject to runtime/delay gates, selector state 2 uses AVLS threshold curve 1 and state 3
-  uses curve 2. The signal's physical units remain unresolved.
+  `avls_curve_selector_oil_temp_band_latches_update` at `0x400EE` show how the internal curve
+  selector is formed. `engine_oil_temperature_sensor_process` at `0xF474` converts ADC AB12
+  through descriptor `0x60950` (axis `0x7B748`, data `0x7B7C4`) to `0xFFFFB124` in degrees C;
+  the table spans -40..150 C and P0197/P0198 identify the channel. Function `0x47000`, renamed
+  `engine_oil_temperature_fallback_select`, publishes valid B124 or the stock 70 C fallback to
+  `0xFFFFCF94`. Hysteretic 13/15 and 113/115 C bands select cold/fallback state 1, normal state 2,
+  or hot state 3 subject to runtime/delay gates.
+- `vehicle_speed_conditioned_source_update` at `0x188F4` starts with proven vehicle-speed signal
+  `0xFFFFB538`, keeps its km/h units, caps it at 100.0, and writes `0xFFFFB4C0`. Functions
+  `vehicle_speed_conditioned_filter_update` at `0x18A68` and
+  `vehicle_speed_conditioned_snapshot_copy` at `0x18AEA` publish B4C8 then AVLS compare signal
+  `0xFFFFB46C`. Therefore the `0x7D67C/0x7D6B4` AVLS tables are RPM-versus-vehicle-speed
+  boundaries, and `0x7D480/0x7D484` are 10 km/h hysteresis values; none is engine load.
+- Genuine table load is separate: the retained stock airflow task writes B420 in g/s, calculates
+  raw B428 as `airflow_g_s * 60 / RPM`, and conditions it into B438 in g/rev. AVCS, ignition,
+  fuel, and knock consumers use B438. The speed-density helper supplies B420 in g/s and retains
+  this stock normalization, so calculated-load scaling remains correct.
+- `speed_density/verify_speed_density.py` now pins the exact stock load instruction sequence at
+  `0x1753C`, the 60.0 g/s-to-g/rev factor at `0x1761C`, the 4.0 g/rev limit at `0x17620`, and
+  representative SD-to-load model samples. The standalone and master rebuilds retain all of them.
+- Every D2WD610H-derived definition now inherits the corrected km/h AVLS curve/hysteresis names,
+  the 13/15 and 113/115 degree-C selector table, and the 31-point engine-oil-temperature scaling
+  from `defs/D2WD610H_AVLS.xml`; `defs/sync_avls_metadata.py --check` and XML parsing pass.
 - `front_af_sensor_pair_signal_process` at `0xB690`,
   `front_af_sensor_lambda_condition_filter` at `0x18DAC`, and
   `closed_loop_fuel_control_bank_update` at `0x1EE74` confirm the lambda/readiness values consumed
@@ -782,7 +802,10 @@ enter boost solely because the automated audit passes.
 - Both Primary Open Loop maps and all timing/KCA load axes extend to 3.0 g/rev. High-load fuel is
   capped rich, all six timing surfaces are only held or retarded, high-load positive KCA is
   removed, and high-IAT retard is increased.
-- AVLS minimum/release/engage are 2500/3000/3200 RPM. Rev cut/resume is 6800/6770 RPM.
+- AVLS minimum/release/engage are 2500/3000/3200 RPM. Below the hard crossover, the tuned
+  oil-temperature-selected vehicle-speed curves are 100/100/25/20/15/10/5 km/h for normal oil
+  temperature and 100/100/60/35/20/10/0 km/h for hot oil; hysteresis is 10 km/h. Rev cut/resume
+  is 6800/6770 RPM.
 - The target reaches 5 psi, but base WGDC, Kp, and final max duty are all zero. The generated
   baseline therefore relies only on the 5 psi mechanical spring.
 - Throttle at/below native 30.0, invalid AEM readiness, MAP/RPM/IAT outside the SD windows, RPM

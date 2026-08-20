@@ -55,7 +55,8 @@ Log at minimum:
 - MAP, barometric pressure, RPM, IAT, modeled airflow, calculated load;
 - commanded fuel/lambda, short- and long-term correction, CL/OL state;
 - ignition timing, feedback knock, fine-learning knock, KCA, IAM;
-- AVLS state, throttle, injector duty/pulse width, battery voltage;
+- AVLS requested/committed state, vehicle speed, engine-oil temperature, throttle, injector
+  duty/pulse width, and battery voltage;
 - purge/repurposed EBCS duty; and
 - independently measured fuel pressure and wideband/controller status with a
   common timestamp.
@@ -72,7 +73,8 @@ sample or average it into tuning data.
    lambda reference. Resolve any offset before changing VE or injector data.
 4. Calibrate idle and vacuum VE cells on a load-controlled dyno. Confirm MAP,
    IAT, airflow, load, fuel correction, and injector pulse width are plausible.
-5. Validate deceleration, tip-in, heat soak, fan operation, and AVLS transition.
+5. Validate deceleration, tip-in, heat soak, fan operation, and the oil-temperature-selected,
+   vehicle-speed-gated AVLS transition.
    A 500 g/s airflow value while running is a fault indication: stop and find
    the invalid SD input rather than tuning around it.
 

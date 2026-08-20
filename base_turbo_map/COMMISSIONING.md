@@ -85,9 +85,10 @@ that may now identify a wiring problem in the repurposed solenoid circuit.
    repair a poor cruise calibration.
 6. Confirm open-loop state occurs before positive manifold pressure during a brief unloaded
    throttle test.
-7. Log AVLS command/feedback if available and confirm the load-requested transition can occur from
-   2500 RPM, with a clean forced transition at 3200 RPM and release at 3000 RPM. Stop for chatter,
-   oil-pressure concerns, a lambda step, or repeatable knock at crossover.
+7. Log AVLS command/feedback, vehicle speed, and engine-oil temperature if available. Confirm the
+   speed-boundary transition can occur from 2500 RPM, with a clean forced transition at 3200 RPM
+   and release at 3000 RPM. Stop for chatter, oil-pressure concerns, a lambda step, or repeatable
+   knock at crossover.
 
 ## 6. Spring-pressure dyno pulls
 
@@ -100,7 +101,7 @@ rate:
 - both front A/F channels and fuel corrections;
 - post-turbo wideband lambda plus validity/fault status;
 - ignition timing, IAM, feedback knock correction, fine knock correction;
-- AVLS command/state and the exact transition RPM/load;
+- AVLS command/state and the exact transition RPM/vehicle speed/oil temperature;
 - IAT, coolant temperature, battery voltage, vehicle speed;
 - fuel pressure and oil pressure through the external logger.
 

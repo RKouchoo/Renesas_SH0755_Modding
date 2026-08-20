@@ -44,7 +44,8 @@ first operation must be treated as controlled model validation.
 - commanded fueling, injector pulse width/duty estimate, closed/open-loop state, and trims;
 - retained factory front A/F channel plus external post-turbo wideband lambda and validity;
 - ignition timing, IAM, feedback knock correction, and fine knock learning;
-- AVLS command/state, especially through the 2500–3200 RPM region;
+- AVLS requested/committed state, vehicle speed, and engine-oil temperature, especially through
+  the 2500–3200 RPM region;
 - boost target/duty, fuel-pressure differential, oil pressure, coolant temperature, and battery
   voltage.
 

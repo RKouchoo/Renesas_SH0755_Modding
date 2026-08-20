@@ -18,6 +18,12 @@ final airflow to `0xFFFFB420`. The component redirects that one helper pointer t
 `speed_density_airflow_calculate` at `0x7E18C`. The returned SD value is therefore stored before
 the retained load/state calculations run.
 
+The retained stock normalization is Ghidra-verified: `0xFFFFB428 = 0xFFFFB420 [g/s] * 60 /
+0xFFFFB544 [RPM]`, followed by the stock conditioning path to `0xFFFFB438` in g/rev. AVCS,
+ignition, fueling, and knock maps continue to consume that conditioned g/rev value. The separate
+AVLS lift-switch state machine does not use it: its RPM curves compare conditioned vehicle speed
+in km/h and are selected by engine-oil temperature.
+
 It also:
 
 - replaces both raw-MAF conversion calls, at `0x639C` and `0x66D8`, with `nop`;
@@ -77,6 +83,21 @@ airflow_g_s =
 
 The fixed constant is the ideal-gas/four-stroke conversion per litre at 20 °C. The default IAT
 curve is `293.15 / (IAT_C + 273.15)`.
+
+The downstream stock load calculation therefore simplifies to:
+
+```text
+calculated_load_g_rev =
+    min(
+        VE × MAP_abs_mmHg × displacement_L × 1.3203052e-5 × 60
+        × IAT_density_multiplier × global_multiplier,
+        4.0 g/rev
+    )
+```
+
+At VE 1.0, 20 °C, and 2.999 L, this is approximately 1.81 g/rev at 760 mmHg absolute and
+2.42 g/rev at about 5 psi gauge. This confirms the scaling and dimensional path; it does not
+validate the supplied VE values for the real engine.
 
 The supplied VE surface is only a conservative mathematical starting point. It is not a measured
 EZ30R VE map and must be calibrated from synchronized lambda, MAP, RPM, IAT, fuel-pressure, and

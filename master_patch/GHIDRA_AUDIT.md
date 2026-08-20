@@ -29,7 +29,20 @@ reproducible without importing a modified ROM into the stock analysis project.
 | `0x35750` | `intake_avcs_tracking_control_update` | Downstream per-bank AVCS target/tracking control. |
 | `0x3EB68` | `knock_correction_advance_max_select` | KCA A normal-cam versus B AVLS-high-cam selection. |
 | `0x3FFDA` | `avls_threshold_curve_selector_state_update` | Publishes internal AVLS curve-selector state 1/2/3. |
-| `0x400EE` | `avls_curve_selector_load_band_latches_update` | Builds selector latches from fallback-load bands 13/15 and 113/115. |
+| `0x400EE` | `avls_curve_selector_oil_temp_band_latches_update` | Builds engine-oil-temperature selector latches at 13/15 and 113/115 degrees C. |
+| `0x40168` | `avls_cam_mode_state_machine` | Compares conditioned vehicle speed with the oil-temperature-selected RPM-versus-speed boundary. |
+| `0xF474` | `engine_oil_temperature_sensor_process` | Converts ADC AB12 through descriptor 0x60950 to B124 in degrees C. |
+| `0x3253C` | `engine_oil_temperature_logger_convert` | Logger conversion entry for B124. |
+| `0x47000` | `engine_oil_temperature_fallback_select` | Publishes valid B124 or the stock 70 C fallback to CF94. |
+| `0x17984` | `airflow_load_and_vehicle_speed_processing_sequence_update` | Orchestrates the distinct load and vehicle-speed chains. |
+| `0x179EE` | `airflow_load_filter_state_initialize` | Initializes airflow/load filter state. |
+| `0x17A24` | `airflow_load_filter_state_requires_initialization` | Checks that filter state before the processing sequence. |
+| `0x18438` | `vehicle_speed_conditioning_status_flags_update` | Status input for the speed conditioner. |
+| `0x184CC` | `vehicle_speed_conditioning_coefficient_set_a_update` | Produces B4A4/B4A8/B4AC coefficients. |
+| `0x1873C` | `vehicle_speed_conditioning_coefficient_set_b_update` | Produces B4B0/B4B4/B4B8 coefficients. |
+| `0x188F4` | `vehicle_speed_conditioned_source_update` | Conditions B538 km/h into B4C0 and caps it at 100.0. |
+| `0x18A68` | `vehicle_speed_conditioned_filter_update` | Filters B4C0 into B4C8 without changing units. |
+| `0x18AEA` | `vehicle_speed_conditioned_snapshot_copy` | Copies B4C8 to AVLS compare signal B46C. |
 | `0x7A14` | `map_sensor_voltage_to_pressure_process` | `MAP = voltage*multiplier + offset`; writes native absolute mmHg to `0xFFFFABC4`. |
 | `0x7A56` | `map_sensor_raw_adc_range_classify` | Raw `0xFFFFABC8` compared with thresholds at `0x7B284/0x7B286`. |
 | `0x78AC` | `analog_sensor_abac_range_classify` | Neighboring analog range path separated from MAP. |
@@ -94,20 +107,29 @@ last column unless the existing axis is rescaled.
 
 AVLS makes the lift decision before AVCS A/B selection. In the master baseline,
 high-lift OSV actuation is prohibited below 2500 RPM. Between 2500 and 3200 RPM,
-the state machine compares load `0xFFFFB46C` with the currently selected
-load-versus-RPM threshold curve. From low lift it requests high lift at
-`load >= curve + 10`; from high lift it requests low lift below the raw curve.
-At 3200 RPM the hard override requests high lift regardless of load and holds
+the state machine compares conditioned vehicle speed `0xFFFFB46C` in km/h with
+the currently selected RPM-versus-speed boundary. From low lift it requests high
+lift at `speed >= curve + 10 km/h`; from high lift it requests low lift below the
+raw curve. At 3200 RPM the hard override requests high lift regardless of speed and holds
 that override until RPM falls below 3000. The target mode is written at
 `0xFFFFCD87`; the committed mode at `0xFFFFCD86` changes after the existing
 timer, status, and OSV-actuation gates.
 
 The two switchover curves are not engage/release maps. Internal selector state
-`0xFFFFCD9C == 2` uses curve 1 and state 3 uses curve 2. The selector derives
-those states from hysteretic bands of fallback-load signal `0xFFFFCF94` (13/15
-and 113/115), plus runtime/delay gates. That signal's physical units and broader
-meaning are not yet proven, so commissioning must log the actual requested and
-committed transition rather than interpreting those numbers as g/rev.
+`0xFFFFCD9C == 2` uses the normal-oil-temperature curve and state 3 uses the
+high-oil-temperature curve. ADC AB12 is converted through descriptor `0x60950`
+(axis `0x7B748`, data `0x7B7C4`) to engine-oil temperature `0xFFFFB124` in
+degrees C. `engine_oil_temperature_fallback_select` publishes that value or a
+70 C fail-safe to `0xFFFFCF94`. The selector uses 13/15 and 113/115 C hysteretic
+bands, plus runtime/delay gates, to choose cold/fallback state 1, normal state 2,
+or hot state 3.
+
+This is separate from genuine engine load. The retained stock airflow task
+writes mass airflow `0xFFFFB420` in g/s, calculates raw load `0xFFFFB428` as
+`airflow_g_s * 60 / RPM`, and conditions it into `0xFFFFB438` in g/rev. AVCS,
+ignition, fuel, and knock tables use B438. The speed-density component supplies
+B420 in g/s and preserves that normalization, so calculated-load scaling remains
+correct even though load does not select AVLS lift mode.
 
 ### MAP and injectors
 

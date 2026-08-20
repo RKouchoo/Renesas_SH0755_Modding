@@ -161,9 +161,14 @@ Load axes extend to 3.0 g/rev. Timing is never increased by the builder. At
 up. High-IAT compensation reaches approximately -10.2 degrees at 110 C.
 
 AVLS actuation becomes eligible at 2500 RPM, releases at 3000 RPM, and forces
-the high-cam crossover at 3200 RPM with 10 RPM-equivalent stock-unit hysteresis.
-The RomRaider definition exposes all identified AVLS thresholds for dyno
-calibration.
+the high-cam crossover at 3200 RPM. Below that hard override, AVLS does not use
+engine load: it compares conditioned vehicle speed with an RPM-indexed boundary
+selected by engine-oil temperature. The normal-temperature and high-temperature
+curves retain 10 km/h engage hysteresis. Oil-temperature selector bands are
+13/15 and 113/115 degrees C, with a 70 C fallback when the sensor path is not
+valid. The RomRaider definition exposes the speed curves, speed hysteresis,
+oil-temperature selector thresholds, oil-temperature sensor scaling, RPM gates,
+and hard override.
 
 ### How to tune the four exposed base-timing surfaces
 

@@ -38,6 +38,8 @@ public class ApplyMaflessNames extends GhidraScript {
         createOrRename("000613ac", "maf_sensor_low_input_diagnostic_update");
         createOrRename("000115ea", "diagnostic_task_list_dispatcher");
         createOrRename("000107ee", "periodic_airflow_sensor_task_dispatcher");
+        createOrRename("000172a4", "maf_airflow_temperature_compensation_update");
+        createOrRename("0001b800", "engine_load_from_mass_airflow_calculate");
         createOrRename("0002ffa8", "filtered_mass_airflow_consumer_2ffa8");
         createOrRename("0004f1fa", "filtered_mass_airflow_logger_convert");
         createOrRename("000673c6", "filtered_mass_airflow_consumer_673c6");
@@ -106,7 +108,9 @@ public class ApplyMaflessNames extends GhidraScript {
             toAddr("000172a4"),
             "Retained airflow/load task. MAFless component disables raw-MAF producers and " +
             "redirects the final-airflow helper pointer at 0x1743C to 0x7E18C. " +
-            "Downstream B428..B440 calculations continue from the speed-density B420 result."
+            "It stores final mass airflow in B420 as g/s, forms raw engine load B428 " +
+            "as airflow_g_s * 60 / RPM, and conditions that into B438 in g/rev. " +
+            "Thus the stock load normalization remains active on the speed-density result."
         );
     }
 }

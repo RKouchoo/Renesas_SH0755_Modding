@@ -38,7 +38,7 @@ calibration delta: 1043 bytes across 39 owned writes
 fueling: no high-load cell made leaner; both banks matched
 injectors: A4TE002B STI-pink scalar/deadtime; ratio-scaled cranking/tip-in IPW
 ignition: no base/KCA cell made more advanced; axes extend to 3.0 g/rev
-AVLS: eligible at 2500 RPM; forced high cam 3200/3000 RPM
+AVLS: speed-gated from 2500 RPM by oil-temperature-selected curves; forced high cam 3200/3000 RPM
 boost: zero WGDC, Kp, and maximum duty; hard cut retained
 operating range: 6800/6770 RPM; 5 psi target held through redline
 MAF/load limits: MAF max-encoded; engine-load cap retained at 4.0 g/rev

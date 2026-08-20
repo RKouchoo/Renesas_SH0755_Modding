@@ -24,9 +24,12 @@ the final stock mass-airflow value at 0xFFFFB420 as:
 
 The IAT curve is 293.15 / (IAT_C + 273.15) by default.  This keeps the runtime
 stub division-free and makes both the VE surface and density correction visible
-in RomRaider.  Exact zero RPM writes zero airflow.  Any other invalid sensor,
-calibration, lookup, or arithmetic state writes a fixed 500 g/s rich/high-load
-fail-safe; it never falls back to MAF or a stale MAF-derived value.
+in RomRaider.  The retained stock task then calculates raw engine load as
+airflow_g_s * 60 / RPM, limits it to 4.0 g/rev, and conditions it for the stock
+g/rev table consumers.  Exact zero RPM writes zero airflow.  Any other invalid
+sensor, calibration, lookup, or arithmetic state writes a fixed 500 g/s
+rich/high-load fail-safe; it never falls back to MAF or a stale MAF-derived
+value.
 
 The canonical stock ROM in the repository root is read only.  The generated
 standalone image is always MAFless and is not a flash-ready tune.
@@ -63,6 +66,12 @@ FINAL_AIRFLOW_CALL_SEQUENCE_STOCK = bytes.fromhex(
 )  # jsr @r2; fmov fr2,fr4; load B420; fmov.s fr0,@r3
 FINAL_AIRFLOW_HELPER_PTR = 0x0001743C
 STOCK_FINAL_AIRFLOW_HELPER = 0x000024B0
+STOCK_ENGINE_LOAD_CALC_ADDR = 0x0001753C
+STOCK_ENGINE_LOAD_CALC_SEQUENCE = bytes.fromhex(
+    "9b5eff358f0d0009c735f2089359f138f122f41cf4f3f44cc732d333430bf508fb0a"
+)  # B420 * 60 / RPM, limited by 4.0, stored to B428
+ENGINE_LOAD_SCALE_ADDR = 0x0001761C
+ENGINE_LOAD_LIMIT_ADDR = 0x00017620
 MAF_CONVERSION_CALL_ADDRS = (0x0000639C, 0x000066D8)
 MAF_CONVERSION_CALL_STOCK = bytes.fromhex("430b")  # jsr @r3; target loaded as 0x00007C30
 MAF_CONVERSION_CALL_PATCHED = bytes.fromhex("0009")  # nop
@@ -82,6 +91,8 @@ MAP_ADDR = 0xFFFFABC4                 # float, mmHg absolute
 RPM_ADDR = 0xFFFFB544                 # float, RPM
 IAT_ADDR = 0xFFFFB3B8                 # float, degrees C
 FINAL_MASS_AIRFLOW_ADDR = 0xFFFFB420  # float, g/s; stock post-compensation channel
+RAW_ENGINE_LOAD_ADDR = 0xFFFFB428     # float, g/rev before retained conditioning
+ENGINE_LOAD_ADDR = 0xFFFFB438         # float, conditioned g/rev table input
 SYNTHETIC_RAW_AIRFLOW_ADDR = 0xFFFFB448
 SYNTHETIC_FILTER_A_ADDR = 0xFFFFB458
 SYNTHETIC_FILTER_B_ADDR = 0xFFFFB45C

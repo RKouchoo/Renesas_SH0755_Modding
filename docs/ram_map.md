@@ -10,13 +10,17 @@ unless marked *(inferred)*. Cross-refs: [D2WD610H_RE_notes.md](D2WD610H_RE_notes
 |---|---|---|---|
 | **0xFFFFB544** | float | **Engine RPM** | compared vs 4000/3800/512/510; table input; ign+AVLS |
 | **0xFFFFB538** | float | **Vehicle speed, km/h** | `ign_idle_timing_target_update` compares it with the stock 4.0-km/h threshold at 0x77E1C; also consumed by AVLS logic |
-| 0xFFFFB46C | float | engine param | AVLS state machine compare |
+| **0xFFFFB420** | float | **Final mass airflow, g/s** | stock final-airflow store; master speed density replaces its producer |
+| **0xFFFFB428** | float | **Raw engine load, g/rev** | stock calculation is `B420 * 60 / B544` before conditioning |
+| **0xFFFFB438** | float | **Conditioned engine load, g/rev** | load axis input for AVCS, ignition, fuel, and knock consumers |
+| **0xFFFFB46C** | float | **Conditioned vehicle speed, km/h** | snapshot of B4C8 compared with the AVLS RPM-versus-speed boundary; not engine load |
+| **0xFFFFB124** | float | **Engine-oil temperature, degrees C** | AB12 thermistor conversion through descriptor 0x60950; source for the AVLS selector |
+| **0xFFFFCF94** | float | **Conditioned/fallback engine-oil temperature, degrees C** | valid B124 or stock 70 C fallback; selects AVLS cold/normal/hot state |
 | **0xFFFFABC4** | float | **Manifold pressure (MAP), native mmHg absolute** | `map_sensor_voltage_to_pressure_process` @0x7A14 output; `MAP = voltage × scaling[1] + scaling[0]` |
 | 0xFFFFABC8 | — | MAP filtered/scaled intermediate | `map_sensor_voltage_to_pressure_process` |
 | 0xFFFFAB04 | u16 | MAP raw ADC value | `map_sensor_voltage_to_pressure_process` input |
 | **0xFFFFB3AC** | float | **Coolant temp (ECT), °C** | read by ~100 fns; purge/thermal input |
 | **0xFFFFB3B8** | float | **Intake-air temperature (IAT), °C** | written by `intake_air_temperature_update` @0x16D1C; input to stock MAF-IAT compensation and the speed-density density curve |
-| **0xFFFFB420** | float | **Final mass airflow channel, g/s** | stock writes it in `maf_airflow_temperature_compensation_update` @0x1739E; the standalone MAFless image retains that task but replaces its immediately preceding final-airflow helper, so modeled speed-density airflow is stored here |
 | **0xFFFFB314** | float | **Processed throttle opening** | produced by `throttle_position_sensor_process` @0x14DCC; input to CL/OL throttle threshold and the boost-control demand gate |
 
 > Boost feedback for the WRX-style loop = **0xFFFFABC4**. The patch replaces the stock
@@ -60,8 +64,9 @@ allocates no RAM and does not alter the stock correction array.
 | 0xFFFFCD9C | AVLS operating state / curve selector (2=curve 1, 3=curve 2) |
 | 0xFFFFCD9E | AVLS flags (mask 0x04 = hard-RPM high-cam latch; mask 0x10 = engine running) |
 | 0xFFFFCD84 | Mode timer |
-| 0xFFFFB46C | Normal load signal compared to the state-selected switchover curve |
-| 0xFFFFCF94 | Fallback load value compared to the fixed 15.0 threshold only |
+| 0xFFFFB46C | Conditioned vehicle speed in km/h compared to the oil-temperature-selected RPM-versus-speed curve |
+| 0xFFFFB124 | Converted engine-oil temperature in degrees C |
+| 0xFFFFCF94 | Validated oil temperature, or stock 70 C fallback, used by the 13/15 and 113/115 C selector bands |
 | 0xFFFFB528 | Phase/crank counter (OSV actuation sync) |
 
 ## EVAP purge / boost-patch target (see boost_repurpose_notes.md)

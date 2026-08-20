@@ -50,12 +50,13 @@ WIDEBAND_NAMES = (
 )
 
 AVLS_NAMES = (
-    "AVLS Switchover Load Threshold 1",
-    "AVLS Switchover Load Threshold 2",
+    "AVLS Vehicle Speed Threshold (Normal Oil Temperature)",
+    "AVLS Vehicle Speed Threshold (High Oil Temperature)",
     "AVLS High Cam Engage RPM",
     "AVLS High Cam Release RPM",
-    "AVLS Switchover Load Hysteresis A",
-    "AVLS Switchover Load Hysteresis B",
+    "AVLS Vehicle Speed Hysteresis (Normal Oil Temperature)",
+    "AVLS Vehicle Speed Hysteresis (High Oil Temperature)",
+    "AVLS Oil Temperature Selector Thresholds",
     "AVLS Actuation Minimum RPM",
 )
 
