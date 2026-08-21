@@ -9,8 +9,8 @@ firmware work into one deterministic stock-to-output build:
 - Omni Power `MAP-SUP-3BR` 3-bar MAP scaling;
 - EVAP-output boost control with throttle, wideband, speed-density-input/result,
   soft-overboost, and hard fuel-cut gates;
-- the former MAF ADC repurposed for an AEM X-Series `30-0300` 0-5 V lambda
-  signal;
+- the former MAF ADC repurposed for the supplied seller-labelled `AEM 50-4110`
+  / 30-4110-style P0/P1 0-5 V lambda signal;
 - both stock front A/F paths and both rear O2 paths removed from feedback and
   diagnostics;
 - a factory-ROM-derived STI pink injector scalar/deadtime starting point;
@@ -19,13 +19,14 @@ firmware work into one deterministic stock-to-output build:
 - a focused, self-contained D2WD610H RomRaider definition and logger fragment.
 
 The generated baseline is `D2WD610H_master_patch.bin`, SHA-256
-`6557eda87eebaef51892b6607175cbd19b909565c3de6d9f90fe5e597aec0fac`.
+`00c34efc18ca65e0fd2619ed722b0bac236013b296adea7baf84ac9bf887a76b`.
 It is 512 KiB, contains CALID `D2WD610H`, and has a valid Subaru additive
-checksum (`0xB87F6478`). It is a development artifact, not a vehicle-tested tune.
+checksum (`0xB86A1DE4`). It is a development artifact, not a vehicle-tested tune.
 
 Only `Boost Control Patch Enable` remains a RomRaider firmware toggle. MAFless
-airflow and the AEM/four-stock-O2 replacement are intentionally permanent in
-this image because its physical architecture has no MAF or stock O2 fallback.
+airflow and the external-wideband/four-stock-O2 replacement are intentionally
+permanent in this image because its physical architecture has no MAF or stock
+O2 fallback.
 
 ## Exact hardware assumptions
 
@@ -35,12 +36,15 @@ The MAP transfer comes from the supplied
 Subaru fitment does not specifically name the EZ30R application, so connector
 keying and terminal continuity still require physical confirmation.
 
-The only supported wideband transfer in this baseline is the
-[AEM X-Series 30-0300](https://documents.aemelectronics.com/techlibrary_30-0300.pdf):
-`lambda = 0.1621 * volts + 0.4990`. The firmware accepts 0.50 through 4.50 V
-inclusive. A different controller must not be connected until its transfer and
-fault voltages have been entered and the image rebuilt or edited with the
-matching definition.
+The only supported wideband transfer in this baseline is the P0/P1 table in the
+instruction sheet supplied with the seller-labelled `AEM 50-4110` unit:
+`gasoline AFR = 2*volts + 10` and
+`lambda = (2*volts + 10)/14.64`. P0 displays AFR and P1 displays lambda while
+producing the same analog output; P2/P3 are incompatible. Firmware retains a
+conservative 0.50-4.50 V operating-plausibility window (11-19 gasoline AFR).
+That window is not proof of sensor/controller health, because a fault may still
+produce a midscale voltage. A different controller or calibration mode must not
+be connected until its transfer has been entered and the image rebuilt.
 
 See [WIRING.md](WIRING.md) before altering the harness,
 [CALIBRATION.md](CALIBRATION.md) for exact defaults, [COMMISSIONING.md](COMMISSIONING.md)
@@ -86,7 +90,7 @@ and checksum.
 | File | Purpose |
 |---|---|
 | `build_master_patch.py` | Deterministic stock-to-master builder. |
-| `wideband_component.py` | Permanent four-stock-O2 delete and former-MAF AEM input firmware. |
+| `wideband_component.py` | Permanent four-stock-O2 delete and former-MAF external-wideband input firmware. |
 | `verify_master_patch.py` | Independent binary, opcode, calibration, XML, logger, and provenance audit. |
 | `build_definition.py` | Generates the focused D2WD610H RomRaider definition. |
 | `D2WD610H_master_patch.xml` | Matching self-contained metric RomRaider definition. |
@@ -99,6 +103,9 @@ and checksum.
 - The base VE table is mathematical, not measured on this engine.
 - One post-turbo sensor now represents both banks; it cannot detect a bank-only
   mixture fault and has more transport delay than either original pre-cat sensor.
+- The supplied four-wire controller has a single-ended analog output and no
+  separate analog ground. Ground offset and in-range fault output must be
+  physically characterized; the firmware validity window cannot prove health.
 - The stock oxygen-sensor heater outputs are not electrically disabled. Removed
   sensor connectors must be unplugged, sealed, and prevented from shorting.
 - A valid checksum and passing static audit do not prove ADC voltage tolerance,

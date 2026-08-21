@@ -233,7 +233,7 @@ def main(argv: list[str] | None = None) -> None:
     print("  speed density     : always-on MAFless, 13x17 base VE, 2.999 L")
     print("  boost             : EVAP PWM + throttle/SD-input/wideband/soft/hard gates")
     print("  default boost cmd : spring-only (WGDC/Kp/max duty all zero), 5 psi targets")
-    print("  oxygen sensors    : four stock paths removed; former MAF ADC -> external wideband")
+    print("  oxygen sensors    : four stock paths removed; former MAF ADC -> 50-4110 P0/P1")
     print(
         "  injectors         : pinned STI-pink factory donor, %.2f cc/min estimate "
         "(D2WD raw %.6f)" % (pink_display, pink_raw)

@@ -150,7 +150,8 @@ condition are bypassed. The shared ADC scan remains, so former-MAF ADC RAM
 ### One external wideband replacing four stock paths
 
 The hook at original front-pair entry `0xB690` converts unsigned AB06 ADC counts
-to volts and AEM lambda, then writes both bank lambda/readiness paths. Both
+to volts and the configured external-wideband lambda, then writes both bank
+lambda/readiness paths. Both
 closed-loop inhibit helpers at `0x64FD0/0x6500C` are redirected to the common
 readiness test. The front pump diagnostic task pointer at `0x6A6C` is moved to
 the stock return stub.
@@ -188,6 +189,10 @@ addresses, stock/SRF provenance drift, and checksum failure.
 - AB06 is proven as the continuing former-MAF ADC channel in firmware, but its
   allowable source impedance, protection behavior, and real harness voltage
   offset still require bench measurement.
+- The supplied 50-4110-style four-wire controller is single-ended: white is the
+  only analog signal and black carries controller/heater return current. Its
+  warm-up and disconnected-sensor output may remain inside the firmware's
+  plausibility window, so readiness is not a hardware-health indication.
 - The four stock heater drivers remain electrically active even though their
   sensor tasks and mapped DTCs are removed.
 - A single post-turbo sensor cannot detect per-bank mixture imbalance and adds

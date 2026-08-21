@@ -11,10 +11,10 @@
     </ecu>
     <conversions>
       <conversion units="lambda" storagetype="float" expr="x" format="0.000" gauge_min="0.5" gauge_max="1.3" gauge_step="0.1" />
-      <conversion units="estimated AFR (14.7 stoich)" storagetype="float" expr="x*14.7" format="0.00" gauge_min="7" gauge_max="19" gauge_step="1" />
+      <conversion units="estimated AFR (14.64 stoich)" storagetype="float" expr="x*14.64" format="0.00" gauge_min="7" gauge_max="19" gauge_step="1" />
     </conversions>
   </ecuparam>
-  <ecuparam id="E501" name="External Wideband Input ADC (D2WD610H master)*" desc="Unsigned former-MAF ADC at FFFFAB06. Use counts/volts to compare the ECU input with the controller analog output and diagnose wiring, ground offset, clipping, or a controller fault; it is not itself lambda." target="1">
+  <ecuparam id="E501" name="External Wideband Input ADC (D2WD610H master)*" desc="Unsigned former-MAF ADC at FFFFAB06. Use counts/volts to compare the ECU-referenced B136-23 input with the controller's white-to-black output and diagnose wiring, ground offset, or clipping; an in-range value does not prove controller health." target="1">
     <ecu id="3C5A387116">
       <address length="2">0xFFAB06</address>
     </ecu>
@@ -23,7 +23,7 @@
       <conversion units="Volts" storagetype="uint16" expr="x*0.0000762939453125" format="0.000" gauge_min="0" gauge_max="5" gauge_step="0.5" />
     </conversions>
   </ecuparam>
-  <ecuparam id="E502" name="External Wideband Ready Metric (D2WD610H master)*" desc="Master-patch synthetic readiness metric at FFFFAE70. Firmware publishes 50.0 for a valid configured input and 0.0 for an invalid input. Closed-loop feedback requires this value to be greater than 35.0; EBCS duty requires it too, plus valid MAP/RPM/IAT, minimum control RPM, and a non-fault speed-density result." target="1">
+  <ecuparam id="E502" name="External Wideband Ready Metric (D2WD610H master)*" desc="Master-patch synthetic voltage-window metric at FFFFAE70. Firmware publishes 50.0 for an input inside the configured plausibility window and 0.0 outside it. It is not controller/sensor health. Closed-loop feedback requires greater than 35.0; EBCS duty additionally requires valid MAP/RPM/IAT, minimum control RPM, and a non-fault speed-density result." target="1">
     <ecu id="3C5A387116">
       <address length="4">0xFFAE70</address>
     </ecu>

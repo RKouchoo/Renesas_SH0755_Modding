@@ -683,8 +683,9 @@ canonical stock `2005 BLE MT.bin`.
 
 `master_patch/build_master_patch.py` now creates the requested single integrated development
 image directly from canonical stock. It includes always-on MAFless speed density, exact Omni
-Power MAP-SUP-3BR scaling, EVAP-output boost control and safeties, a former-MAF AEM 30-0300
-lambda input, logical removal of both stock front A/F and both rear O2 paths, STI-pink factory
+Power MAP-SUP-3BR scaling, EVAP-output boost control and safeties, a former-MAF input calibrated
+for the supplied seller-labelled 50-4110/30-4110-style P0/P1 output, logical removal of both
+stock front A/F and both rear O2 paths, STI-pink factory
 donor injector data, a base VE surface, and the conservative 5 psi / 98 RON / early-AVLS /
 6800-RPM calibration.
 
@@ -697,12 +698,12 @@ enter boost solely because the automated audit passes.
 
 - Input SHA-256: `ed0fe0341d97fb760c2cda3f07277f861495d32f6520e3ce8047b8b0f7bfd4ee`.
 - Output: `master_patch/D2WD610H_master_patch.bin`, 512 KiB, CALID `D2WD610H`.
-- Output SHA-256: `6557eda87eebaef51892b6607175cbd19b909565c3de6d9f90fe5e597aec0fac`.
-- Subaru additive checksum: `0xB87F6478`, verified.
+- Output SHA-256: `00c34efc18ca65e0fd2619ed722b0bac236013b296adea7baf84ac9bf887a76b`.
+- Subaru additive checksum: `0xB86A1DE4`, verified.
 - The root stock BIN, `base_roms` copy, and original SRF `MEMD` payload are byte-identical.
 - The builder refuses generated inputs and protected-source output aliases; every component is
   reconstructed on an in-memory copy of root stock.
-- Exactly 3,634 bytes differ from stock, all inside declared hooks, diagnostic switches,
+- Exactly 3,635 bytes differ from stock, all inside declared hooks, diagnostic switches,
   calibration regions, and verified free flash. The separate rotational-idle reservation
   `0x7DB40..0x7DCEB` remains byte-identical to stock.
 
@@ -777,19 +778,25 @@ enter boost solely because the automated audit passes.
 - Raw MAF conversion/filter paths, MAF diagnostic tasks, and P0102/P0103 switches are bypassed,
   while AB06 remains live as a shared ADC channel for the new wideband input.
 
-## AEM input and four-stock-O2 removal
+## External-wideband input and four-stock-O2 removal
 
-- Default sensor is AEM X-Series 30-0300: `lambda = 0.1621*V + 0.4990`; only 0.50..4.50 V
-  inclusive is accepted.
+- The supplied controller's P0/P1 table is `gasoline AFR = 2*V + 10` and
+  `lambda = (2*V + 10)/14.64`; P2/P3 are unsupported. Firmware accepts 0.50..4.50 V
+  inclusive as an 11..19 gasoline-AFR plausibility window.
 - Valid lambda is copied to both stock bank feedback values and both logger mirrors; readiness is
   50.0. Invalid input publishes a 0.0 logger sentinel/readiness, inhibits both closed-loop bank
   paths, and forces electronic boost duty to zero.
 - The original front conversion entry, both bank-inhibit helpers, front pump-diagnostic pointer,
   rear conversion entry, five rear monitor-task pointers, and 18 mapped front/rear O2 DTC
   switches are checked byte-for-byte by the verifier.
-- The former MAF connector mapping is B3-3/B136-23 signal and B3-2/B136-31 signal ground for AEM
-  white/brown. AEM power is separate switched/fused 12 V and power ground. B3-4/B136-13 plus
-  B3-5/B136-35 remain the post-intercooler IAT circuit.
+- The four-wire controller is single-ended: white alone connects to B3-3/B136-23. Red uses a
+  separate switched 10-18 V supply through a 10 A fuse; black carries gauge/heater current to a
+  clean power/engine ground; blue is unused serial output. B3-2/B136-31 must not be connected to
+  black. B3-4/B136-13 plus B3-5/B136-35 remain the post-intercooler IAT circuit.
+- The supplied instruction sheet is not identical to genuine AEM 30-4110 documentation and no
+  separate analog ground or dedicated fault output is present. In-range voltage/readiness cannot
+  prove sensor health; cold, warmed-free-air, disconnected-sensor, and installed ground-offset
+  measurements remain mandatory commissioning evidence.
 - Both front and both rear factory sensor connectors must be physically disconnected and sealed.
   Their heater drivers are not electrically forced off by the firmware.
 - One post-turbo sensor feeds both banks and cannot identify bank-specific mixture imbalance;
@@ -808,7 +815,8 @@ enter boost solely because the automated audit passes.
   is 6800/6770 RPM.
 - The target reaches 5 psi, but base WGDC, Kp, and final max duty are all zero. The generated
   baseline therefore relies only on the 5 psi mechanical spring.
-- Throttle at/below native 30.0, invalid AEM readiness, MAP/RPM/IAT outside the SD windows, RPM
+- Throttle at/below native 30.0, rejected external-wideband voltage, MAP/RPM/IAT outside the SD
+  windows, RPM
   below the first 1500-RPM boost-axis point, a 500 g/s SD fault sentinel, or MAP over 5.5 psi
   commands zero EBCS duty. MAP over 6.5 psi uses the verified stock fuel-cut aggregation path.
   Boost thresholds are relative to a fixed 760 mmHg, not barometrically compensated.
@@ -822,7 +830,7 @@ enter boost solely because the automated audit passes.
 - Active timing maps are named by both Ghidra-proven cam role and their exact intake-AVCS
   tracking-ratio endpoint (1.0 or 0.0); the two KCA maps are named by normal/high-cam role. The
   legacy AVCS A/B targets are named by AVLS low/high-lift selection. The XML also exposes AVLS,
-  SD, Omni MAP, injectors/fuel, active timing, boost, AEM transfer/range, and retained engine
+  SD, Omni MAP, injectors/fuel, active timing, boost, external-wideband transfer/range, and retained engine
   controls.
 - All D2WD610H images retain the factory CALID. RomRaider must therefore be configured with the
   master XML alone for this image; selecting a standalone/legacy definition can make the same
@@ -837,7 +845,7 @@ enter boost solely because the automated audit passes.
 
 Follow `master_patch/WIRING.md` and `master_patch/COMMISSIONING.md`. In particular, continuity-
 check the actual market harness, bench-sweep both analog inputs, validate the Omni through vacuum
-and positive pressure, compare ECU lambda with the AEM and an independent reference, verify
+and positive pressure, compare ECU lambda with the controller gauge and an independent reference, verify
 injectors/fuel pressure, scope the purge output and EBCS polarity/frequency, calibrate VE in
 vacuum before boost, simulate all gates/cuts without deliberately overboosting, and complete
 spring-only load-dyno validation. Stop on invalid airflow, sensor disagreement, lean mixture,

@@ -56,15 +56,19 @@ rich/high-load regions rather than using stale airflow.
 
 ## Wideband and stock-O2 replacement
 
-The default AEM transfer is:
+The supplied seller-labelled 50-4110 instruction sheet gives the same 0-5 V
+output in P0 (AFR display) and P1 (lambda display):
 
 ```text
-lambda = 0.1621 * volts + 0.4990
-valid voltage = 0.50..4.50 V inclusive
+gasoline AFR = 2.0 * volts + 10.0
+lambda = (2.0 * volts + 10.0) / 14.64
+       = 0.136612... * volts + 0.683060...
+accepted voltage = 0.50..4.50 V inclusive
 ```
 
 RomRaider exposes the slope/offset at `0x7E404` and voltage limits at
-`0x7E40C`; do not edit them for the selected AEM unit. At each valid sample,
+`0x7E40C`; do not edit them for this unit in P0/P1. P2/P3 require different
+transfers and are unsupported. At each accepted sample,
 the patch writes the same lambda to the two stock bank inputs at
 `0xFFFFAE60/AE64`, zeroes the obsolete pump-current pair at `AE68/AE6C`, and
 sets both readiness values at `AE70/AE74` to 50.0. It mirrors lambda to
@@ -74,6 +78,12 @@ For an invalid sample it publishes 1.0 only as an internal placeholder, writes
 0.0 to the logger mirrors and readiness values, returns the stock inhibited
 state from both closed-loop bank gates, and forces EBCS duty to zero. The 0.0
 logger value is a fault sentinel, not a physical lambda.
+
+The controller advertises a legitimate 0-5 V span. The narrower 0.50-4.50 V
+range is an operating plausibility gate corresponding to 11-19 gasoline AFR;
+it is not a sensor-health diagnostic. A disconnected or warming controller can
+still produce an accepted voltage. Its physical fault outputs and installed
+white-to-black versus ECU-reference offset must be measured during commissioning.
 
 One sensor feeds both banks. No calibration can recover per-bank fault
 detection, and the post-turbo location adds delay that must be represented when

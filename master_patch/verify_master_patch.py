@@ -33,7 +33,7 @@ import sh2_disasm  # noqa: E402
 OUTPUT = HERE / "D2WD610H_master_patch.bin"
 DEFINITION = HERE / "D2WD610H_master_patch.xml"
 LOGGER_FRAGMENT = HERE / "D2WD610H_master_logger_ecuparams.xml"
-EXPECTED_OUTPUT_SHA256 = "6557eda87eebaef51892b6607175cbd19b909565c3de6d9f90fe5e597aec0fac"
+EXPECTED_OUTPUT_SHA256 = "00c34efc18ca65e0fd2619ed722b0bac236013b296adea7baf84ac9bf887a76b"
 ROTATIONAL_IDLE_RESERVED_START = 0x0007DB40
 ROTATIONAL_IDLE_RESERVED_END = 0x0007DCEB
 
@@ -378,9 +378,16 @@ def verify_wideband(image: bytes) -> None:
         fail("wideband policy accepts an ADC count below its minimum")
     if wideband_policy(maximum_valid + 1) is not None:
         fail("wideband policy accepts an ADC count above its maximum")
+    if not math.isclose(
+        wideband.LAMBDA_SLOPE, 2.0 / 14.64, rel_tol=0.0, abs_tol=1e-12
+    ) or not math.isclose(
+        wideband.LAMBDA_OFFSET, 10.0 / 14.64, rel_tol=0.0, abs_tol=1e-12
+    ):
+        fail("wideband constants do not match the supplied 50-4110 P0/P1 table")
     sample = wideband_policy(round(2.5 / wideband.RAW_ADC_TO_VOLTS))
-    if sample is None or not math.isclose(sample[1], 0.90425, abs_tol=2e-5):
-        fail("wideband policy does not reproduce the AEM 2.5 V lambda value")
+    expected_lambda = 15.0 / 14.64
+    if sample is None or not math.isclose(sample[1], expected_lambda, abs_tol=2e-5):
+        fail("wideband policy does not reproduce 15.00 AFR at 2.50 V")
 
     nominal_guard = (50.0, 1019.0, 3500.0, 30.0, 250.0)
     if not boost_guard_policy(*nominal_guard):
@@ -563,7 +570,7 @@ def verify_logger_fragment() -> None:
         fail(f"master logger fragment root is <{root.tag}>, expected <ecuparams>")
 
     expected = {
-        "E500": ("0xFFB098", "4", "float", {"x", "x*14.7"}),
+        "E500": ("0xFFB098", "4", "float", {"x", "x*14.64"}),
         "E501": (
             "0xFFAB06",
             "2",
@@ -732,7 +739,7 @@ def main() -> None:
     print(f"  checksum          : 0x{stored:08X} (valid={stored == calculated})")
     print("  air model         : always-on MAFless 13x17 VE speed density")
     print("  MAP               : Omni MAP-SUP-3BR 30..300 kPa / 0.60..4.75 V")
-    print("  wideband/O2       : former-MAF AEM input; four stock paths + 18 DTCs removed")
+    print("  wideband/O2       : former-MAF 50-4110 P0/P1 input; four stock paths removed")
     print("  boost             : zero-duty spring baseline; throttle/SD/sensor/soft/hard gates")
     print("  injectors         : pinned A4TE002B STI-pink flow/deadtime translation")
     print("  timing/AVLS       : cam + AVCS-tracking endpoints identified; conservative caps; early AVLS")

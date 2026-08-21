@@ -15,51 +15,62 @@ Service-manual references:
 
 | B3 terminal | D2WD610H circuit | ECM terminal | Master-patch use |
 |---:|---|---|---|
-| 1 | Stock MAF power from the main relay | — | Do not use for the AEM or IAT; isolate. |
-| 2 | Airflow signal ground | B136-31 | AEM analog negative/brown only. |
-| 3 | Airflow signal | B136-23 | AEM analog positive/white. |
+| 1 | Stock MAF power from the main relay | — | Do not use for the wideband or IAT; isolate. |
+| 2 | Airflow signal ground | B136-31 | No wideband connection; insulate. Never connect controller black here. |
+| 3 | Airflow signal | B136-23 | Wideband single-ended 0-5 V analog output/white. |
 | 4 | Intake-air-temperature signal | B136-13 | Retain for a separate post-intercooler IAT sensor. |
 | 5 | Sensor ground | B136-35 | Retain for the IAT sensor return. |
 
-The airflow cable shield terminates at ECM B136-32; it is not an AEM power
+The airflow cable shield terminates at ECM B136-32; it is not a controller power
 ground. The old MAF element is removed, but B3-4/B3-5 remain the live factory
 IAT circuit. A replacement thermistor must have the stock transfer or its ECU
 calibration must be changed before the speed-density result can be trusted.
 
-## AEM X-Series 30-0300
+## Seller-labelled AEM 50-4110 / 30-4110-style controller
 
-The [AEM instruction manual](https://documents.aemelectronics.com/techlibrary_30-0300.pdf)
-defines Connector A as follows:
+The instruction sheet supplied with the purchased unit documents a four-wire,
+single-ended controller and a selectable rear calibration switch. This is not
+the differential AEM X-Series 30-0300 interface previously assumed by the
+project. Use only P0 (AFR display) or P1 (lambda display); their 0-5 V output
+tables are identical. P2 and P3 do not match this firmware calibration.
 
-| AEM terminal | Wire | Connection |
-|---:|---|---|
-| 1 | Red | Separate switched 12 V supply through a 5 A fuse. |
-| 2 | Black | Proper controller power/engine ground. |
-| 9 | White | 0-5 V analog positive to B3-3 / ECM B136-23. |
-| 10 | Brown | 0-5 V analog negative to B3-2 / ECM B136-31. |
+| Wire | Supplied function | Connection |
+|---|---|---|
+| Red | Gauge and sensor power | Separate switched 10-18 V supply through a 10 A fuse. Do not use B3-1. |
+| Black | Gauge and sensor power ground | Clean power/engine ground sized for controller and heater current. Do not use B3-2 or another ECU sensor ground. |
+| White | Single-ended 0-5 V analog output | B3-3 / ECM B136-23 only. |
+| Blue | Serial output | Not used by this firmware. Insulate it unless its electrical standard is separately verified for an external logger. |
 
-The AEM output is differential. The stock MAF ADC is single-ended, so the AEM
-brown analog-negative wire goes to the former MAF signal ground. Do not use
-B3-2 to power the controller and do not join AEM red to B3-1. Keep the white
-and brown signal pair routed together, away from injectors, ignition wiring,
-the boost solenoid, and exhaust heat.
+The white output is referenced to controller black, while the ECU measures
+B136-23 relative to its own internal sensor-ground domain. Ground the controller
+at a clean engine/ECU power-ground location, route white in the retained shielded
+signal circuit, and keep it away from injectors, ignition wiring, the boost
+solenoid, and exhaust heat. Never join black to B3-2: black also returns gauge
+and LSU-heater current, whereas B3-2/B136-31 is a low-current sensor ground.
 
 Before connecting the ECU, power the controller independently and measure
-white relative to brown. Then verify the voltage at B136-23 relative to B136-31
-with the controller connected; a ground offset here directly changes commanded
-fuel. The AEM transfer used by the firmware is:
+white relative to black. Then, with the controller connected, compare that
+reading with B136-23 relative to B136-31 at key-on, warm idle, and with normal
+electrical loads operating. Their difference is the installed ground offset and
+directly changes the ECU's calculated lambda. The transfer used by firmware is:
 
 ```text
-lambda = 0.1621 * volts + 0.4990
-valid  = 0.50 V through 4.50 V inclusive
+gasoline AFR = 2.0 * volts + 10.0
+lambda       = (2.0 * volts + 10.0) / 14.64
+             = 0.136612... * volts + 0.683060...
+accepted     = 0.50 V through 4.50 V inclusive
 ```
 
-Below 0.50 V is treated as not ready and above 4.50 V as an error. Either state
-inhibits the patched closed-loop feedback and commands zero electronic boost
-duty. It does not create a fully validated limp-home strategy.
+The unit advertises a legitimate 0-5 V output. The narrower accepted window is
+a conservative operating plausibility gate corresponding to 11-19 gasoline
+AFR, not a controller-health flag. Outside it, firmware inhibits patched
+closed-loop feedback and commands zero electronic boost duty. A disconnected,
+warming, or failed controller may still produce an in-window voltage, so bench
+record its cold, warmed-free-air, and unplugged-sensor outputs before relying on
+it. This does not create a fully validated limp-home strategy.
 
-Mount the Bosch LSU 4.9 in the post-turbo downpipe as planned and follow AEM's
-orientation, heat, condensation, and harness instructions. Because it is the
+Mount the supplied LSU 4.9-type sensor in the post-turbo downpipe as planned and
+follow the supplied orientation, heat, condensation, and harness instructions. Because it is the
 only feedback source for both banks, place it upstream of any point where
 outside air can enter and account for exhaust transport delay during control
 and log analysis.
@@ -92,8 +103,8 @@ can contact ground, battery voltage, the exhaust, or another terminal. The
 firmware removes their conversion/monitor tasks and 18 mapped DTC switches, but
 does not force the four stock heater output drivers electrically off.
 
-Do not connect the AEM to any original oxygen-sensor signal or heater wire. Its
-only ECU signal connection for this patch is the former MAF signal pair.
+Do not connect the wideband to any original oxygen-sensor signal or heater wire.
+Its only ECU connection for this patch is white to former-MAF signal B3-3.
 
 ## EVAP output used for the EBCS
 

@@ -26,16 +26,22 @@ Use a fused, current-limited setup and do not backfeed an unpowered ECU.
 1. Pressure-test the Omni MAP across vacuum, local atmospheric pressure, and
    the intended positive-pressure range. Compare `0xFFFFABC4` against the
    calibrated reference, not only the sensor endpoints.
-2. Power the AEM from its own switched/fused supply. Compare white-to-brown
-   voltage at the controller and at ECU terminals B136-23/B136-31.
+2. Set the supplied 50-4110-style controller to P0 or P1. Power red from its own
+   switched 10-18 V / 10 A fused supply and ground black at a clean power/engine
+   ground. Never connect black to B3-2/B136-31. Compare white-to-black voltage
+   with B136-23-to-B136-31 voltage under normal electrical loads to quantify
+   ground offset.
 3. Sweep a protected 0-5 V source through the former-MAF input and verify:
    - below 0.50 V: logger lambda 0.0, ready 0.0, EBCS command zero;
-   - 0.50..4.50 V: `lambda = 0.1621*V + 0.4990`, ready 50.0;
+   - 0.50..4.50 V: `lambda = (2*V + 10)/14.64`, ready 50.0;
    - above 4.50 V: logger lambda 0.0, ready 0.0, EBCS command zero.
-4. Confirm both patched bank feedback values are identical and both inhibit
+4. With the actual controller, record display and white-to-black voltage during
+   cold warm-up, warmed free air, and a disconnected sensor. An in-window result
+   is not proof of controller health and must not be presented as such.
+5. Confirm both patched bank feedback values are identical and both inhibit
    helpers switch together. Do not substitute a 5 V rail directly without
    current limiting and a proven common reference.
-5. With wideband input valid, separately move MAP, RPM, and IAT outside each SD
+6. With wideband input valid, separately move MAP, RPM, and IAT outside each SD
    validity window, below the first 1500-RPM boost breakpoint, and force the
    500 g/s SD fault sentinel. Every case must leave EBCS command at zero.
 
@@ -69,7 +75,7 @@ sample or average it into tuning data.
 1. Keep the engine physically unable to enter boost and force open-loop where
    appropriate for controlled commissioning.
 2. Validate cranking and hot/cold restart pulse widths before extended running.
-3. Compare the AEM gauge, ECU lambda, raw ADC voltage, and an independent dyno
+3. Compare the controller gauge, ECU lambda, raw ADC voltage, and an independent dyno
    lambda reference. Resolve any offset before changing VE or injector data.
 4. Calibrate idle and vacuum VE cells on a load-controlled dyno. Confirm MAP,
    IAT, airflow, load, fuel correction, and injector pulse width are plausible.

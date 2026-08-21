@@ -7,16 +7,23 @@ ADC channel, leaves the stock lambda conditioning/closed-loop consumers in
 place, bypasses the stock front pump-current diagnostic and every traced rear
 O2 processing stage, and clears all 18 mapped D2WD610H O2 DTC switches.
 
-The default calibration is the AEM X-Series 30-0300 analog output:
+The default calibration is the P0/P1 analog output documented by the supplied,
+seller-labelled AEM 50-4110 / 30-4110-style controller:
 
-    lambda = 0.1621 * volts + 0.4990
+    gasoline AFR = 2.0 * volts + 10.0
+    lambda = (2.0 * volts + 10.0) / 14.64
 
-Only 0.50--4.50 V is accepted.  Invalid input publishes 1.0 lambda to the
+The controller advertises a legitimate 0--5 V span.  Firmware deliberately
+accepts only 0.50--4.50 V (11--19 gasoline AFR) as a conservative operating
+plausibility window.  This is not a controller-health test: the supplied unit's
+warm-up and disconnected-sensor voltages remain physically unverified and may
+fall inside the window.  An out-of-window input publishes 1.0 lambda to the
 front-sensor paths but forces both readiness metrics to zero, which makes the
-Ghidra-verified bank inhibit helpers return the stock inhibited value (2).
-The logger value at 0xFFFFB098 becomes 0.0 on a fault.  A master-only guard also
-forces boost-solenoid duty to zero whenever the wideband, MAP/RPM/IAT validity,
-minimum boost RPM, or speed-density result is not ready for electronic control.
+Ghidra-verified bank inhibit helpers return the stock inhibited value (2).  The
+logger value at 0xFFFFB098 becomes 0.0 on such a rejection.  A master-only guard
+also forces boost-solenoid duty to zero whenever the wideband voltage, MAP/RPM/
+IAT validity, minimum boost RPM, or speed-density result is not ready for
+electronic control.
 """
 
 from __future__ import annotations
@@ -116,8 +123,13 @@ INHIBIT_HELPER_ADDR = 0x0007E520
 BOOST_READY_GUARD_ADDR = 0x0007E560
 COMPONENT_END = 0x0007E6FF
 
-LAMBDA_SLOPE = 0.1621
-LAMBDA_OFFSET = 0.4990
+# Supplied P0/P1 table: 0 V = 10.00 gasoline AFR and each 0.125 V step adds
+# 0.25 AFR.  The same sheet defines gasoline AFR as lambda * 14.64.
+GASOLINE_STOICH_AFR = 14.64
+AFR_SLOPE_PER_VOLT = 2.0
+AFR_OFFSET = 10.0
+LAMBDA_SLOPE = AFR_SLOPE_PER_VOLT / GASOLINE_STOICH_AFR
+LAMBDA_OFFSET = AFR_OFFSET / GASOLINE_STOICH_AFR
 VALID_MIN_VOLTS = 0.50
 VALID_MAX_VOLTS = 4.50
 READY_VALID_VALUE = 50.0
@@ -155,7 +167,7 @@ def build_wideband_update() -> bytes:
     a.movl_pool(1, RAW_TO_VOLTS_ADDR).fmov_load(1, 1).fmul(1, 0)
     a.fcmpeq(0, 0).bf("invalid")
 
-    # Inclusive 0.50--4.50 V validity window.  NaN calibration constants fail.
+    # Inclusive 0.50--4.50 V plausibility window. NaN constants fail closed.
     a.movl_pool(1, VALID_MIN_VOLTS_ADDR).fmov_load(1, 1)
     a.fcmpeq(1, 1).bf("invalid")
     a.fcmpgt(0, 1).bt("invalid")  # minimum > volts
@@ -163,7 +175,7 @@ def build_wideband_update() -> bytes:
     a.fcmpeq(1, 1).bf("invalid")
     a.fcmpgt(1, 0).bt("invalid")  # volts > maximum
 
-    # AEM X-Series analog transfer.  Reject NaN, non-positive, and +infinity.
+    # Supplied 50-4110 P0/P1 analog transfer. Reject NaN/non-positive/infinite.
     a.movl_pool(1, LAMBDA_SLOPE_ADDR).fmov_load(1, 1).fmul(1, 0)
     a.movl_pool(1, LAMBDA_OFFSET_ADDR).fmov_load(1, 1).fadd(1, 0)
     a.fcmpeq(0, 0).bf("invalid")
@@ -240,7 +252,7 @@ def build_boost_ready_guard() -> bytes:
     """Tail-gate boost on wideband and current speed-density prerequisites."""
     a = Asm(BOOST_READY_GUARD_ADDR)
 
-    # Both fuel-feedback banks are usable only while the AEM voltage is valid.
+    # Both feedback banks are usable only while voltage passes plausibility.
     a.movl_pool(1, FRONT_READY_METRIC_BANK1).fmov_load(0, 1)
     a.movl_pool(1, READY_THRESHOLD_ADDR).fmov_load(1, 1)
     a.fcmpgt(1, 0).bf("invalid")

@@ -183,8 +183,8 @@ BOOST_DESCRIPTIONS = {
         "fuel cut. Any other value forces zero EBCS duty and runs only the "
         "stock RPM limiter. This does not restore the removed MAF/O2 logic or "
         "the stock MAP scaling. The master prerequisite guard still forces "
-        "zero duty unless the AEM input is ready, MAP/RPM/IAT are inside their "
-        "speed-density validity windows, RPM is at least the first shared "
+        "zero duty unless the external-wideband input is ready, MAP/RPM/IAT "
+        "are inside their speed-density validity windows, RPM is at least the first shared "
         "boost-axis breakpoint, and modeled airflow is not the 500 g/s fault "
         "sentinel."
     ),
@@ -306,9 +306,10 @@ def add_wideband_templates(parent: ET.Element, target: ET.Element) -> None:
     set_description(
         transfer,
         "Former-MAF-input conversion: lambda = slope * input volts + offset. "
-        "Defaults 0.1621 and 0.4990 match the AEM X-Series 30-0300 analog "
-        "output. A different controller requires both its verified transfer "
-        "and valid-voltage window; do not enter AFR-domain coefficients here.",
+        "Defaults 2/14.64 (0.136612...) and 10/14.64 (0.683060...) match the "
+        "supplied seller-labelled AEM 50-4110 P0/P1 table: gasoline AFR = "
+        "2*V + 10. P2/P3 are incompatible. Do not enter AFR-domain "
+        "coefficients here.",
     )
 
     valid_range = ET.SubElement(
@@ -343,12 +344,13 @@ def add_wideband_templates(parent: ET.Element, target: ET.Element) -> None:
     ET.SubElement(axis, "data").text = "Maximum valid voltage"
     set_description(
         valid_range,
-        "Inclusive input-validity window. Default is 0.50 to 4.50 V. Outside "
-        "this window the ECU marks the synthetic front feedback unavailable, "
-        "publishes a zero logger sentinel, inhibits closed-loop feedback, and "
-        "forces EBCS duty to zero. Valid wideband voltage is necessary but not "
-        "sufficient for duty; the separate MAP/RPM/IAT, minimum-RPM, and SD "
-        "fault-sentinel prerequisites must also pass.",
+        "Inclusive operating-plausibility window. Default 0.50 to 4.50 V "
+        "corresponds to 11.00 to 19.00 gasoline AFR on the supplied P0/P1 "
+        "curve. Outside it the ECU publishes a zero logger sentinel, inhibits "
+        "closed-loop feedback, and forces EBCS duty to zero. In-range voltage "
+        "does not prove controller or sensor health; a warm-up/disconnected "
+        "output may remain in range. MAP/RPM/IAT, minimum-RPM, and SD-result "
+        "prerequisites must also pass.",
     )
 
     ET.SubElement(target, "table", {"name": WIDEBAND_NAMES[0], "storageaddress": "0x7E404"})
