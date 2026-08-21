@@ -17,26 +17,51 @@ def read_float(image: bytes, address: int) -> float:
     return struct.unpack_from(">f", image, address)[0]
 
 
-def interpolated_reference_raw(source: bytes, rpm: float, column: int) -> int:
-    """Independent executable specification of conservative RPM resampling."""
-    axis = base.STOCK_FUEL_RPM_AXIS
-    if rpm <= axis[0]:
-        left = right = 0
-        fraction = 0.0
-    elif rpm >= axis[-1]:
-        left = right = len(axis) - 1
-        fraction = 0.0
-    else:
-        left = next(
-            index
-            for index in range(len(axis) - 1)
-            if axis[index] <= rpm <= axis[index + 1]
-        )
-        right = left + 1
-        fraction = (rpm - axis[left]) / (axis[right] - axis[left])
-    low = source[left * base.PRIMARY_OL_X + column]
-    high = source[right * base.PRIMARY_OL_X + column]
-    return math.ceil(low + (high - low) * fraction - 1e-12)
+def bracket(axis: tuple[float, ...], value: float) -> tuple[int, int, float]:
+    if value <= axis[0]:
+        return 0, 0, 0.0
+    if value >= axis[-1]:
+        last = len(axis) - 1
+        return last, last, 0.0
+    left = next(
+        index
+        for index in range(len(axis) - 1)
+        if axis[index] <= value <= axis[index + 1]
+    )
+    right = left + 1
+    return left, right, (value - axis[left]) / (axis[right] - axis[left])
+
+
+def sampled_reference_raw(
+    source: bytes,
+    source_x_axis: tuple[float, ...],
+    source_y_axis: tuple[float, ...],
+    target_x: float,
+    target_y: float,
+    bits: int,
+    rounding: str,
+) -> int:
+    """Independent executable specification of clamped bilinear resampling."""
+    format_code = "B" if bits == 8 else "H"
+    count = len(source_x_axis) * len(source_y_axis)
+    values = struct.unpack(">" + format_code * count, source)
+    x0, x1, xf = bracket(source_x_axis, target_x)
+    y0, y1, yf = bracket(source_y_axis, target_y)
+    width = len(source_x_axis)
+    top = values[y0 * width + x0] + (
+        values[y0 * width + x1] - values[y0 * width + x0]
+    ) * xf
+    bottom = values[y1 * width + x0] + (
+        values[y1 * width + x1] - values[y1 * width + x0]
+    ) * xf
+    value = top + (bottom - top) * yf
+    if rounding == "ceil":
+        return math.ceil(value - 1e-12)
+    if rounding == "floor":
+        return math.floor(value + 1e-12)
+    if rounding == "nearest":
+        return math.floor(value + 0.5)
+    raise AssertionError(f"unknown verifier rounding policy: {rounding}")
 
 
 def raw_to_lambda(raw: int) -> float:
@@ -68,11 +93,17 @@ def verify_fueling(reference: bytes, image: bytes) -> None:
     out_a = image[base.PRIMARY_OL_A_ADDR:base.PRIMARY_OL_A_ADDR + data_size]
     out_b = image[base.PRIMARY_OL_B_ADDR:base.PRIMARY_OL_B_ADDR + data_size]
 
-    for y_index, rpm in enumerate(rpm_axis):
-        for x_index, load in enumerate(load_axis):
+    for y_index, rpm in enumerate(base.TUNED_FUEL_RPM_AXIS):
+        for x_index, load in enumerate(base.TUNED_FUEL_LOAD_AXIS):
             offset = y_index * base.PRIMARY_OL_X + x_index
-            expected_a = interpolated_reference_raw(ref_a, rpm, x_index)
-            expected_b = interpolated_reference_raw(ref_b, rpm, x_index)
+            expected_a = sampled_reference_raw(
+                ref_a, base.STOCK_FUEL_LOAD_AXIS, base.STOCK_FUEL_RPM_AXIS,
+                load, rpm, 8, "ceil",
+            )
+            expected_b = sampled_reference_raw(
+                ref_b, base.STOCK_FUEL_LOAD_AXIS, base.STOCK_FUEL_RPM_AXIS,
+                load, rpm, 8, "ceil",
+            )
             rounded_load = round(load, 2)
             if rounded_load not in base.FUEL_LAMBDA_CAPS:
                 if out_a[offset] != expected_a or out_b[offset] != expected_b:
@@ -90,9 +121,34 @@ def verify_fueling(reference: bytes, image: bytes) -> None:
                 lambda_cap -= 0.01
             if raw_to_lambda(out_a[offset]) > lambda_cap + 1e-9:
                 fail(f"Primary OL exceeds lambda cap at {rpm:.0f} RPM/{load:.2f}")
+            required = base.fuel_raw_for_lambda(lambda_cap)
+            if out_a[offset] != max(expected_a, expected_b, required):
+                fail(f"Primary OL does not match exact fuel policy at {rpm:.0f} RPM/{load:.2f}")
 
     if struct.unpack_from(">HH", image, base.CL_OL_DELAY_ADDR) != (0, 0):
         fail("CL-to-OL atmospheric delay is not zeroed")
+
+
+def verify_cl_fueling(reference: bytes, image: bytes) -> None:
+    load_axis = base.read_floats(image, base.CL_FUEL_LOAD_AXIS_ADDR, base.CL_FUEL_X)
+    if any(abs(a - b) > 1e-5 for a, b in zip(load_axis, base.TUNED_CL_FUEL_LOAD_AXIS)):
+        fail(f"closed-loop fueling load axis is not extended to 4.0 g/rev: {load_axis}")
+    rpm_axis = base.read_floats(image, base.CL_FUEL_RPM_AXIS_ADDR, base.CL_FUEL_Y)
+    source_size = base.CL_FUEL_X * base.CL_FUEL_Y * 2
+    source = reference[base.CL_FUEL_DATA_ADDR:base.CL_FUEL_DATA_ADDR + source_size]
+    output = struct.unpack_from(">" + "H" * (base.CL_FUEL_X * base.CL_FUEL_Y), image,
+                                base.CL_FUEL_DATA_ADDR)
+    for y_index, rpm in enumerate(rpm_axis):
+        for x_index, load in enumerate(base.TUNED_CL_FUEL_LOAD_AXIS):
+            expected = sampled_reference_raw(
+                source, base.STOCK_CL_FUEL_LOAD_AXIS, rpm_axis,
+                load, rpm, 16, "nearest",
+            )
+            if output[y_index * base.CL_FUEL_X + x_index] != expected:
+                fail(
+                    "closed-loop fueling compensation does not match load resampling at "
+                    f"{rpm:.0f} RPM/{load:.2f}"
+                )
 
 
 def verify_base_timing(reference: bytes, image: bytes) -> None:
@@ -105,19 +161,28 @@ def verify_base_timing(reference: bytes, image: bytes) -> None:
         old = reference[address:address + size]
         new = image[address:address + size]
         for y_index, rpm in enumerate(rpm_axis):
-            for x_index, load in enumerate(load_axis):
+            for x_index, load in enumerate(base.TUNED_TIMING_LOAD_AXIS):
                 offset = y_index * base.TIMING_X + x_index
-                if new[offset] > old[offset]:
-                    fail(f"{label} advanced at {rpm:.0f} RPM/{load:.2f}")
+                expected = sampled_reference_raw(
+                    old, base.STOCK_TIMING_LOAD_AXIS, rpm_axis,
+                    load, rpm, 8, "floor",
+                )
+                if new[offset] > expected:
+                    fail(f"{label} advanced relative to resampled stock at "
+                         f"{rpm:.0f} RPM/{load:.2f}")
                 rounded_load = round(load, 2)
                 in_policy = rpm >= 2000.0 and rounded_load in base.TIMING_LOAD_OFFSETS
-                if not in_policy and new[offset] != old[offset]:
-                    fail(f"{label} changed outside boost region at {rpm:.0f} RPM/{load:.2f}")
+                if not in_policy and new[offset] != expected:
+                    fail(f"{label} differs from resampled stock outside boost region at "
+                         f"{rpm:.0f} RPM/{load:.2f}")
                 if in_policy:
                     cap = (base.interpolate(base.FULL_BOOST_TIMING_CAP, rpm)
                            + base.TIMING_LOAD_OFFSETS[rounded_load])
                     if raw_to_base_timing(new[offset]) > cap + 1e-9:
                         fail(f"{label} exceeds timing cap at {rpm:.0f} RPM/{load:.2f}")
+                    if new[offset] != min(expected, base.timing_raw_at_or_below(cap)):
+                        fail(f"{label} does not match exact timing policy at "
+                             f"{rpm:.0f} RPM/{load:.2f}")
 
 
 def verify_kca(reference: bytes, image: bytes) -> None:
@@ -130,18 +195,47 @@ def verify_kca(reference: bytes, image: bytes) -> None:
         old = reference[address:address + size]
         new = image[address:address + size]
         for y_index, rpm in enumerate(rpm_axis):
-            for x_index, load in enumerate(load_axis):
+            for x_index, load in enumerate(base.TUNED_TIMING_LOAD_AXIS):
                 offset = y_index * base.TIMING_X + x_index
-                if new[offset] > old[offset]:
-                    fail(f"{label} increased at {rpm:.0f} RPM/{load:.2f}")
+                expected = sampled_reference_raw(
+                    old, base.STOCK_TIMING_LOAD_AXIS, rpm_axis,
+                    load, rpm, 8, "floor",
+                )
+                if new[offset] > expected:
+                    fail(f"{label} increased relative to resampled stock at "
+                         f"{rpm:.0f} RPM/{load:.2f}")
                 rounded_load = round(load, 2)
                 in_policy = rpm >= 2000.0 and rounded_load >= 1.09
-                if not in_policy and new[offset] != old[offset]:
-                    fail(f"{label} changed outside boost region at {rpm:.0f} RPM/{load:.2f}")
+                if not in_policy and new[offset] != expected:
+                    fail(f"{label} differs from resampled stock outside boost region at "
+                         f"{rpm:.0f} RPM/{load:.2f}")
                 if in_policy:
                     cap = 2.0 if rounded_load == 1.09 else 0.0
                     if raw_to_kca(new[offset]) > cap + 1e-9:
                         fail(f"{label} exceeds KCA cap at {rpm:.0f} RPM/{load:.2f}")
+                    if new[offset] != min(expected, base.kca_raw_at_or_below(cap)):
+                        fail(f"{label} does not match exact KCA policy at "
+                             f"{rpm:.0f} RPM/{load:.2f}")
+
+
+def verify_avcs(reference: bytes, image: bytes) -> None:
+    for label, address, load_axis_address, rpm_axis_address, rows in base.AVCS_MAPS:
+        load_axis = base.read_floats(image, load_axis_address, base.AVCS_X)
+        if any(abs(a - b) > 1e-5 for a, b in zip(load_axis, base.TUNED_AVCS_LOAD_AXIS)):
+            fail(f"{label} load axis is not extended to 4.0 g/rev: {load_axis}")
+        rpm_axis = base.read_floats(image, rpm_axis_address, rows)
+        source_size = base.AVCS_X * rows * 2
+        source = reference[address:address + source_size]
+        output = struct.unpack_from(">" + "H" * (base.AVCS_X * rows), image, address)
+        for y_index, rpm in enumerate(rpm_axis):
+            for x_index, load in enumerate(base.TUNED_AVCS_LOAD_AXIS):
+                expected = sampled_reference_raw(
+                    source, base.STOCK_AVCS_LOAD_AXIS, rpm_axis,
+                    load, rpm, 16, "nearest",
+                )
+                if output[y_index * base.AVCS_X + x_index] != expected:
+                    fail(f"{label} does not match load resampling at "
+                         f"{rpm:.0f} RPM/{load:.2f}")
 
 
 def verify_injectors(reference: bytes, image: bytes) -> None:

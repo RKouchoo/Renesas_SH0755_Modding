@@ -37,7 +37,7 @@ import verify_fueling_safety as fueling_safety_verify  # noqa: E402
 OUTPUT = HERE / "D2WD610H_master_patch.bin"
 DEFINITION = HERE / "D2WD610H_master_patch.xml"
 LOGGER_FRAGMENT = HERE / "D2WD610H_master_logger_ecuparams.xml"
-EXPECTED_OUTPUT_SHA256 = "3e5a18d495e567e121f6692f0f8939b8a4dc8bf22f479186c56f66b82cf993a2"
+EXPECTED_OUTPUT_SHA256 = "71095d0e72dca8bb5493e694426e0172bcf7d19d0c560c98abfa0f518dfb215f"
 
 
 def fail(message: str) -> None:
@@ -1072,11 +1072,14 @@ def main() -> None:
         fail(f"fueling-safety audit: {exc}")
 
     # Run the independent calibration policy checks against the master
-    # component stage: fueling, all six calibrated timing surfaces (including
-    # dormant B/E), KCA, injectors, spring-only boost, rev limit, and checksum.
+    # component stage: OL/CL fueling, all six calibrated timing surfaces
+    # (including dormant B/E), KCA, AVCS, injectors, spring-only boost, rev
+    # limit, and checksum.
     calibration_verify.verify_fueling(component_stage, image)
+    calibration_verify.verify_cl_fueling(component_stage, image)
     calibration_verify.verify_base_timing(component_stage, image)
     calibration_verify.verify_kca(component_stage, image)
+    calibration_verify.verify_avcs(component_stage, image)
     calibration_verify.verify_injectors(component_stage, image)
     calibration_verify.verify_auxiliary(component_stage, image)
     verify_definition()
@@ -1096,6 +1099,7 @@ def main() -> None:
     print("  MAP               : Omni MAP-SUP-3BR 30..300 kPa / 0.60..4.75 V")
     print("  wideband/O2       : former-MAF 50-4110 P0/P1 input; four stock paths removed")
     print("  boost             : EBCS OFF; independent hard cut ON; zero-duty spring baseline")
+    print("  load axes         : all eight active axes extend to 4.0 g/rev")
     print("  primary OL        : exact 1000..6800 RPM axes; conservative resample verified")
     print("  injectors         : pinned A4TE002B STI-pink flow/deadtime translation")
     print("  timing/AVLS       : dual VE; fixed 3200/3000 lift switch; cam timing endpoints identified")

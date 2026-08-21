@@ -399,8 +399,10 @@ scaling, MAP validation, post-turbo wideband logging, and physical boost tests r
   stock-bank/new-cap comparison, so no row is merely relabelled and no cell becomes leaner than
   the resampled source. Banks then match at each capped cell. Caps progress from lambda 0.93 at
   0.96 g/rev
-  to 0.78 at 1.60+ g/rev, with 0.77 at 6000+ RPM. Both fuel-load axes, the shared timing axis, and
-  both KCA axes now end at 3.0 g/rev rather than 2.0.
+  to 0.78 at 1.60+ g/rev, with 0.77 at 6000+ RPM. Both fuel-load axes, the closed-loop
+  compensation axis, the shared timing axis, both KCA axes, and both AVCS axes now end at
+  4.0 g/rev. Each associated surface is resampled in load; values above its stock maximum hold
+  the final stock column before the turbo fuel/timing/KCA safety policy is applied.
 - Both atmospheric CL-to-OL delay counters are zero, making the enriched Primary OL result decide
   the transition instead of the stock delayed threshold path.
 - All six base-timing maps are capped from 1.09 g/rev / 2000 RPM up, including the two high-cam
@@ -417,7 +419,7 @@ scaling, MAP validation, post-turbo wideband logging, and physical boost tests r
   lowered and the hard high-cam engage/release points are 3200/3000 RPM with the stock 10 km/h
   hysteresis retained.
 - Both MAF arrays remain byte-identical. The MAF Limit is already max-encoded at about 300 g/s,
-  and Engine Load Limit remains 4.0 g/rev above the expanded 3.0 g/rev calibration axes.
+  and Engine Load Limit remains 4.0 g/rev, matching the expanded calibration axes.
 
 ## Remaining flash blockers
 
@@ -818,9 +820,10 @@ enter boost solely because the automated audit passes.
 
 - STI-pink scalar/deadtime data is translated from a SHA-pinned factory A4TE002B ROM. It displays
   as an estimated 552.47 cc/min, not a bench-flow guarantee for injectors marketed as 565 cc/min.
-- Both Primary Open Loop maps use a corrected 1000--6800 RPM axis, and their load axes plus all
-  timing/KCA load axes extend to 3.0 g/rev. High-load fuel is capped rich, all six timing surfaces
-  are only held or retarded, high-load positive KCA is
+- Both Primary Open Loop maps use a corrected 1000--6800 RPM axis. Their load axes, the
+  closed-loop compensation axis, and all timing/KCA/AVCS load axes extend to 4.0 g/rev with the
+  associated surfaces resampled from their stock load coordinates. High-load fuel is capped rich,
+  all six timing surfaces are only held or retarded, high-load positive KCA is
   removed, and high-IAT retard is increased.
 - AVLS minimum/release/engage are 2500/3000/3200 RPM. Below the hard crossover, the tuned
   oil-temperature-selected vehicle-speed curves are 100/100/25/20/15/10/5 km/h for normal oil

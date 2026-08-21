@@ -106,7 +106,9 @@ maps and are selected by lift state rather than blended with one another.
 Both maps share a 14-point 0.35..2.00 g/rev load axis. A has 11 RPM rows from
 500 through 4000 RPM; B has 18 rows from 1000 through 6800 RPM. The native
 lookup clamps above the final axis breakpoint, so loads above 2.00 g/rev use the
-last column unless the existing axis is rescaled.
+last column unless the existing axis is rescaled. The master calibration
+resamples those existing columns onto a 0.35..4.00 g/rev axis and preserves the
+same final-column target above the stock 2.00 g/rev limit.
 
 ### How AVLS chooses low or high lift
 

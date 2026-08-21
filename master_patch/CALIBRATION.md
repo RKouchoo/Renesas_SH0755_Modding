@@ -142,15 +142,16 @@ maps, both tip-in maps, and the tip-in activation threshold as starting values.
 Confirm part numbers, base differential pressure, condition, flow spread, and
 fuel compatibility before use.
 
-Both Primary Open Loop maps use load axes extended to 3.0 g/rev and an exact
+Both Primary Open Loop maps use load axes extended to 4.0 g/rev and an exact
 `1000, 1500, 2000, 2500, 3000, 3500, 4000, 5000, 6000, 6800` RPM grid. The
-builder resamples each original stock bank surface from its 3200--6800 RPM grid,
-clamping below the first stock point and rounding interpolation toward richer
-enrichment, before applying the caps. Existing cells are never made leaner than
-that conservative resample; high-load caps progress through lambda 0.93, 0.88,
-0.83,
-0.80, and 0.78, with another 0.01 enrichment at 6000 RPM and above from
-1.22 g/rev. The stock atmospheric CL-to-OL delay is cleared. These values are
+builder bilinearly resamples each original stock bank surface in load and RPM,
+clamps beyond the stock endpoints, and rounds toward richer enrichment before
+applying the caps. Existing cells are never made leaner than that conservative
+resample; high-load caps progress through lambda 0.93, 0.88, 0.83, 0.80, and
+0.78, with another 0.01 enrichment at 6000 RPM and above from 1.22 g/rev. The
+closed-loop fueling-compensation load axis also reaches 4.0 g/rev; its stock
+surface is resampled through 1.80 g/rev and holds the final stock column above
+that point. The stock atmospheric CL-to-OL delay is cleared. These values are
 command targets only.
 
 ## Ignition, knock, AVCS, and AVLS
@@ -193,15 +194,18 @@ The two intake AVCS target tables are a separate selector:
 They are not left/right-bank tables and the ECU does not blend A with B. It
 selects one target surface for the current AVLS lift state, then the downstream
 AVCS controller conditions that target for the two banks. Both target maps use
-the same 14-point load axis, ending at 2.00 g/rev. Above 2.00 g/rev the lookup
-uses the last column; RomRaider can rescale the existing axis breakpoints but
-cannot add columns without a firmware/layout change. The low-cam map has 11 RPM
-rows from 500 through 4000 RPM; the high-cam map has 18 rows from 1000 through
-6800 RPM. Leave the supplied stock AVCS targets unchanged during initial turbo
-commissioning; optimize them only after the sensor, VE, fuel, and ignition
-models are repeatable on a load-controlled dyno.
+the same 14-point load axis, now extended to 4.00 g/rev. The builder resamples
+the stock targets through their original 2.00 g/rev limit and repeats the final
+stock-column target above that point. The low-cam map has 11 RPM rows from 500
+through 4000 RPM; the high-cam map has 18 rows from 1000 through 6800 RPM. Leave
+the supplied starting AVCS targets unchanged during initial turbo commissioning;
+optimize them only after the sensor, VE, fuel, and ignition models are repeatable
+on a load-controlled dyno.
 
-Load axes extend to 3.0 g/rev. Timing is never increased by the builder. At
+The Primary Open Loop, closed-loop compensation, base timing, KCA, and AVCS
+load axes all extend to 4.0 g/rev. Timing/KCA surfaces are resampled in load,
+rounding toward less advance, before their safety ceilings are applied. Timing
+is never increased relative to the resampled stock surface. At
 1.60 g/rev and above the full-load ceiling rises from -2 degrees at 2000 RPM to
 13 degrees at 6800 RPM, with extra conservative offsets in the 1.09, 1.22, and
 1.40 g/rev columns. Positive Knock Correction Advance is zero from 1.22 g/rev

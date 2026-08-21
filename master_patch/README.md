@@ -19,13 +19,13 @@ firmware work into one deterministic stock-to-output build:
   a delayed, confirmed, pressure-release-latched 13.0-AFR fuel cut;
 - a factory-ROM-derived STI pink injector scalar/deadtime starting point;
 - a conservative 5 psi / 98 RON fuel, ignition, AVLS, and 6800 RPM starting
-  calibration; and
+  calibration with every active engine-load axis extended to 4.0 g/rev; and
 - a focused, self-contained D2WD610H RomRaider definition and logger fragment.
 
 The generated baseline is `D2WD610H_master_patch.bin`, SHA-256
-`3e5a18d495e567e121f6692f0f8939b8a4dc8bf22f479186c56f66b82cf993a2`.
+`71095d0e72dca8bb5493e694426e0172bcf7d19d0c560c98abfa0f518dfb215f`.
 It is 512 KiB, contains CALID `D2WD610H`, and has a valid Subaru additive
-checksum (`0xB0B76582`). It is a development artifact, not a vehicle-tested tune.
+checksum (`0x80ED1E3A`). It is a development artifact, not a vehicle-tested tune.
 
 Two independent boost switches remain in RomRaider. `Electronic Boost Control
 Enable` defaults OFF and forces zero actuator duty for direct wastegate-spring
@@ -118,8 +118,8 @@ provenance and checksum.
 | File | Purpose |
 |---|---|
 | `build_master_patch.py` | Deterministic stock-to-master builder. |
-| `master_calibration.py` | Fuel, timing, STI-pink injector, spring-only boost, rev-limit, and Subaru-checksum implementation. |
-| `verify_master_calibration.py` | Independent fuel, timing, injector, boost, limiter, and checksum policy checks used by the master verifier. |
+| `master_calibration.py` | Fuel, timing, KCA, AVCS, STI-pink injector, spring-only boost, rev-limit, and Subaru-checksum implementation. |
+| `verify_master_calibration.py` | Independent fuel, timing, KCA, AVCS, injector, boost, limiter, and checksum policy checks used by the master verifier. |
 | `../speed_density/patch_speed_density.py` | Single MAFless SD component containing committed-state dual VE and predictable 3200/3000 RPM AVLS calibration. |
 | `wideband_component.py` | Permanent four-stock-O2 delete and former-MAF external-wideband input firmware. |
 | `../fueling_safety/fueling_safety_component.py` | Pressure-forced-open-loop and latched lean-cut component. |

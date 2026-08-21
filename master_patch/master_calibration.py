@@ -7,7 +7,7 @@ stage and mutates only the declared calibration regions. The 5 psi wastegate
 spring remains the only source of commanded boost: EBCS, base WGDC,
 proportional gain, and the duty clamp are disabled/zero while the independent
 hard MAP cut stays active. Injector data is translated from the hash-pinned
-A4TE002B factory STI-pink ROM, tune axes extend to 3.0 g/rev, and the limiter is
+A4TE002B factory STI-pink ROM, tune axes extend to 4.0 g/rev, and the limiter is
 6800/6770 RPM.
 """
 
@@ -52,6 +52,12 @@ PRIMARY_OL_B_RPM_AXIS = 0x77840
 PRIMARY_OL_X = 14
 PRIMARY_OL_Y = 10
 
+CL_FUEL_LOAD_AXIS_ADDR = 0x77958
+CL_FUEL_RPM_AXIS_ADDR = 0x7797C
+CL_FUEL_DATA_ADDR = 0x779B0
+CL_FUEL_X = 9
+CL_FUEL_Y = 13
+
 CL_OL_DELAY_ADDR = 0x772DC
 
 TIMING_LOAD_AXIS_ADDR = 0x780BC
@@ -68,6 +74,12 @@ TIMING_MAPS = (
 KCA_MAPS = (
     ("Knock Correction Advance Max A", 0x7924C, 0x791D8, 0x79214, 14),
     ("Knock Correction Advance Max B", 0x793AC, 0x79320, 0x7935C, 20),
+)
+
+AVCS_X = 14
+AVCS_MAPS = (
+    ("Intake AVCS Target - AVLS Low Cam", 0x7C5B0, 0x7C54C, 0x7C584, 11),
+    ("Intake AVCS Target - AVLS High Cam", 0x7C764, 0x7C6E4, 0x7C71C, 18),
 )
 
 IAT_TIMING_COMP_ADDR = 0x7834C
@@ -117,7 +129,13 @@ STOCK_FUEL_LOAD_AXIS = (
 )
 TUNED_FUEL_LOAD_AXIS = (
     0.15, 0.35, 0.55, 0.70, 0.83, 0.96, 1.09,
-    1.22, 1.40, 1.60, 1.85, 2.15, 2.50, 3.00,
+    1.22, 1.40, 1.60, 2.00, 2.50, 3.20, 4.00,
+)
+STOCK_CL_FUEL_LOAD_AXIS = (
+    0.20, 0.40, 0.60, 0.80, 1.00, 1.20, 1.40, 1.60, 1.80,
+)
+TUNED_CL_FUEL_LOAD_AXIS = (
+    0.20, 0.40, 0.60, 0.80, 1.00, 1.20, 1.60, 2.50, 4.00,
 )
 STOCK_FUEL_RPM_AXIS = (
     3200.0, 3600.0, 4000.0, 4400.0, 4800.0,
@@ -133,7 +151,15 @@ STOCK_TIMING_LOAD_AXIS = (
 )
 TUNED_TIMING_LOAD_AXIS = (
     0.15, 0.35, 0.45, 0.55, 0.70, 0.83, 0.96, 1.09,
-    1.22, 1.40, 1.60, 1.85, 2.15, 2.50, 3.00,
+    1.22, 1.40, 1.60, 2.00, 2.50, 3.20, 4.00,
+)
+STOCK_AVCS_LOAD_AXIS = (
+    0.35, 0.45, 0.55, 0.70, 0.83, 0.96, 1.09,
+    1.22, 1.35, 1.48, 1.61, 1.74, 1.87, 2.00,
+)
+TUNED_AVCS_LOAD_AXIS = (
+    0.35, 0.45, 0.55, 0.70, 0.83, 0.96, 1.09,
+    1.22, 1.40, 1.60, 2.00, 2.50, 3.20, 4.00,
 )
 
 # Richest permitted target (lambda) at each high-load column.  Existing cells
@@ -145,10 +171,10 @@ FUEL_LAMBDA_CAPS = {
     1.22: 0.83,
     1.40: 0.80,
     1.60: 0.78,
-    1.85: 0.78,
-    2.15: 0.78,
+    2.00: 0.78,
     2.50: 0.78,
-    3.00: 0.78,
+    3.20: 0.78,
+    4.00: 0.78,
 }
 
 # Full-boost base-timing ceiling for load >=1.60 g/rev.  Torque-onset timing is
@@ -176,10 +202,10 @@ TIMING_LOAD_OFFSETS = {
     1.22: 4.0,
     1.40: 2.0,
     1.60: 0.0,
-    1.85: 0.0,
-    2.15: 0.0,
+    2.00: 0.0,
     2.50: 0.0,
-    3.00: 0.0,
+    3.20: 0.0,
+    4.00: 0.0,
 }
 
 # More assertive high-IAT retard than stock, still using the stock 50..110 C
@@ -203,12 +229,17 @@ CALIBRATION_REGIONS = (
     ("Primary Open Loop RPM Axis B", PRIMARY_OL_B_RPM_AXIS, PRIMARY_OL_Y * 4),
     ("Primary Open Loop Fueling A", PRIMARY_OL_A_ADDR, PRIMARY_OL_X * PRIMARY_OL_Y),
     ("Primary Open Loop Fueling B", PRIMARY_OL_B_ADDR, PRIMARY_OL_X * PRIMARY_OL_Y),
+    ("CL Fueling Load Axis", CL_FUEL_LOAD_AXIS_ADDR, CL_FUEL_X * 4),
+    ("CL Fueling Target Compensation", CL_FUEL_DATA_ADDR, CL_FUEL_X * CL_FUEL_Y * 2),
     ("CL to OL Delay", CL_OL_DELAY_ADDR, 4),
     ("Base Timing Load Axis", TIMING_LOAD_AXIS_ADDR, TIMING_X * 4),
     *((name, addr, TIMING_X * rows) for name, addr, _, rows in TIMING_MAPS),
     *((name + " Load Axis", load_addr, TIMING_X * 4)
       for name, _, load_addr, _, _ in KCA_MAPS),
     *((name, addr, TIMING_X * rows) for name, addr, _, _, rows in KCA_MAPS),
+    *((name + " Load Axis", load_addr, AVCS_X * 4)
+      for name, _, load_addr, _, _ in AVCS_MAPS),
+    *((name, addr, AVCS_X * rows * 2) for name, addr, _, _, rows in AVCS_MAPS),
     ("Timing Compensation IAT", IAT_TIMING_COMP_ADDR, len(IAT_TIMING_COMP_RAW)),
     ("Rev Limit A", REV_LIMIT_A_ADDR, 8),
     ("Injector Flow Scaling", INJECTOR_FLOW_ADDR, 4),
@@ -317,6 +348,75 @@ def interpolate(points: tuple[tuple[float, float], ...], value: float) -> float:
     raise AssertionError("interpolation range failure")
 
 
+def axis_bracket(axis: tuple[float, ...], value: float) -> tuple[int, int, float]:
+    """Return clamped interpolation indices and fraction for one monotonic axis."""
+    if value <= axis[0]:
+        return 0, 0, 0.0
+    if value >= axis[-1]:
+        last = len(axis) - 1
+        return last, last, 0.0
+    left = next(
+        index
+        for index in range(len(axis) - 1)
+        if axis[index] <= value <= axis[index + 1]
+    )
+    right = left + 1
+    fraction = (value - axis[left]) / (axis[right] - axis[left])
+    return left, right, fraction
+
+
+def resample_integer_surface(
+    source: bytes,
+    source_x_axis: tuple[float, ...],
+    source_y_axis: tuple[float, ...],
+    target_x_axis: tuple[float, ...],
+    target_y_axis: tuple[float, ...],
+    bits: int,
+    rounding: str,
+) -> bytes:
+    """Bilinearly resample a row-major unsigned table with clamped endpoints."""
+    if bits == 8:
+        item_size, format_code, maximum = 1, "B", 0xFF
+    elif bits == 16:
+        item_size, format_code, maximum = 2, "H", 0xFFFF
+    else:
+        raise ValueError(f"unsupported integer table width: {bits}")
+    count = len(source_x_axis) * len(source_y_axis)
+    if len(source) != count * item_size:
+        raise AssertionError("integer surface dimensions changed")
+    values = struct.unpack(">" + format_code * count, source)
+
+    def quantize(value: float) -> int:
+        if rounding == "ceil":
+            rounded = math.ceil(value - 1e-12)
+        elif rounding == "floor":
+            rounded = math.floor(value + 1e-12)
+        elif rounding == "nearest":
+            rounded = math.floor(value + 0.5)
+        else:
+            raise ValueError(f"unsupported resampling rounding: {rounding}")
+        return max(0, min(maximum, rounded))
+
+    output: list[int] = []
+    source_width = len(source_x_axis)
+    for target_y in target_y_axis:
+        y0, y1, y_fraction = axis_bracket(source_y_axis, target_y)
+        for target_x in target_x_axis:
+            x0, x1, x_fraction = axis_bracket(source_x_axis, target_x)
+            top = (
+                values[y0 * source_width + x0]
+                + (values[y0 * source_width + x1] - values[y0 * source_width + x0])
+                * x_fraction
+            )
+            bottom = (
+                values[y1 * source_width + x0]
+                + (values[y1 * source_width + x1] - values[y1 * source_width + x0])
+                * x_fraction
+            )
+            output.append(quantize(top + (bottom - top) * y_fraction))
+    return struct.pack(">" + format_code * len(output), *output)
+
+
 def fuel_raw_for_lambda(lambda_target: float) -> int:
     # Primary OL lambda = 1 / (1 + raw/128).  Round toward richer so the
     # encoded cell cannot be leaner than the requested cap.
@@ -338,38 +438,6 @@ def kca_raw_at_or_below(degrees: float) -> int:
     return max(0, min(255, raw))
 
 
-def resample_primary_open_loop_rpm(
-    source: bytes,
-    source_axis: tuple[float, ...],
-    target_axis: tuple[float, ...],
-) -> bytes:
-    """Resample one row-major uint8 table, rounding toward richer enrichment."""
-    if len(source) != PRIMARY_OL_X * len(source_axis):
-        raise AssertionError("Primary OL source dimensions changed")
-    result = bytearray()
-    for rpm in target_axis:
-        if rpm <= source_axis[0]:
-            left = right = 0
-            fraction = 0.0
-        elif rpm >= source_axis[-1]:
-            left = right = len(source_axis) - 1
-            fraction = 0.0
-        else:
-            left = next(
-                index
-                for index in range(len(source_axis) - 1)
-                if source_axis[index] <= rpm <= source_axis[index + 1]
-            )
-            right = left + 1
-            fraction = (rpm - source_axis[left]) / (source_axis[right] - source_axis[left])
-        for column in range(PRIMARY_OL_X):
-            low = source[left * PRIMARY_OL_X + column]
-            high = source[right * PRIMARY_OL_X + column]
-            interpolated = low + (high - low) * fraction
-            result.append(max(0, min(255, math.ceil(interpolated - 1e-12))))
-    return bytes(result)
-
-
 def build_primary_open_loop(reference: bytes) -> tuple[bytes, bytes]:
     assert_axis(
         reference, PRIMARY_OL_A_LOAD_AXIS, STOCK_FUEL_LOAD_AXIS, "Primary OL A load axis"
@@ -387,10 +455,26 @@ def build_primary_open_loop(reference: bytes) -> tuple[bytes, bytes]:
     old_a = reference[PRIMARY_OL_A_ADDR:PRIMARY_OL_A_ADDR + PRIMARY_OL_X * PRIMARY_OL_Y]
     old_b = reference[PRIMARY_OL_B_ADDR:PRIMARY_OL_B_ADDR + PRIMARY_OL_X * PRIMARY_OL_Y]
     new_a = bytearray(
-        resample_primary_open_loop_rpm(old_a, STOCK_FUEL_RPM_AXIS, TUNED_FUEL_RPM_AXIS)
+        resample_integer_surface(
+            old_a,
+            STOCK_FUEL_LOAD_AXIS,
+            STOCK_FUEL_RPM_AXIS,
+            TUNED_FUEL_LOAD_AXIS,
+            TUNED_FUEL_RPM_AXIS,
+            8,
+            "ceil",
+        )
     )
     new_b = bytearray(
-        resample_primary_open_loop_rpm(old_b, STOCK_FUEL_RPM_AXIS, TUNED_FUEL_RPM_AXIS)
+        resample_integer_surface(
+            old_b,
+            STOCK_FUEL_LOAD_AXIS,
+            STOCK_FUEL_RPM_AXIS,
+            TUNED_FUEL_LOAD_AXIS,
+            TUNED_FUEL_RPM_AXIS,
+            8,
+            "ceil",
+        )
     )
 
     for y_index, rpm in enumerate(TUNED_FUEL_RPM_AXIS):
@@ -405,7 +489,7 @@ def build_primary_open_loop(reference: bytes) -> tuple[bytes, bytes]:
             offset = y_index * PRIMARY_OL_X + x_index
             # Use the richer stock bank as the common minimum, then apply the
             # turbo cap.  This avoids introducing a leaner bank target.
-            common = max(old_a[offset], old_b[offset], required)
+            common = max(new_a[offset], new_b[offset], required)
             new_a[offset] = common
             new_b[offset] = common
 
@@ -424,7 +508,17 @@ def build_timing_map(
     )
     rpm_axis = read_floats(reference, rpm_axis_address, rows)
     old = reference[data_address:data_address + TIMING_X * rows]
-    new = bytearray(old)
+    new = bytearray(
+        resample_integer_surface(
+            old,
+            STOCK_TIMING_LOAD_AXIS,
+            rpm_axis,
+            TUNED_TIMING_LOAD_AXIS,
+            rpm_axis,
+            8,
+            "floor",
+        )
+    )
 
     for y_index, rpm in enumerate(rpm_axis):
         if rpm < 2000.0:
@@ -437,7 +531,7 @@ def build_timing_map(
             cap = full_boost_cap + TIMING_LOAD_OFFSETS[rounded_load]
             cap_raw = timing_raw_at_or_below(cap)
             offset = y_index * TIMING_X + x_index
-            new[offset] = min(old[offset], cap_raw)
+            new[offset] = min(new[offset], cap_raw)
 
     if len(new) != TIMING_X * rows:
         raise AssertionError(f"{label} size changed")
@@ -457,7 +551,17 @@ def build_kca_map(
     )
     rpm_axis = read_floats(reference, rpm_axis_address, rows)
     old = reference[data_address:data_address + TIMING_X * rows]
-    new = bytearray(old)
+    new = bytearray(
+        resample_integer_surface(
+            old,
+            STOCK_TIMING_LOAD_AXIS,
+            rpm_axis,
+            TUNED_TIMING_LOAD_AXIS,
+            rpm_axis,
+            8,
+            "floor",
+        )
+    )
 
     for y_index, rpm in enumerate(rpm_axis):
         if rpm < 2000.0:
@@ -471,11 +575,55 @@ def build_kca_map(
             else:
                 continue
             offset = y_index * TIMING_X + x_index
-            new[offset] = min(old[offset], cap_raw)
+            new[offset] = min(new[offset], cap_raw)
 
     if len(new) != TIMING_X * rows:
         raise AssertionError(f"{label} size changed")
     return bytes(new)
+
+
+def build_cl_fuel_compensation(reference: bytes) -> bytes:
+    assert_axis(
+        reference,
+        CL_FUEL_LOAD_AXIS_ADDR,
+        STOCK_CL_FUEL_LOAD_AXIS,
+        "closed-loop fueling compensation load axis",
+    )
+    rpm_axis = read_floats(reference, CL_FUEL_RPM_AXIS_ADDR, CL_FUEL_Y)
+    old = reference[
+        CL_FUEL_DATA_ADDR:CL_FUEL_DATA_ADDR + CL_FUEL_X * CL_FUEL_Y * 2
+    ]
+    return resample_integer_surface(
+        old,
+        STOCK_CL_FUEL_LOAD_AXIS,
+        rpm_axis,
+        TUNED_CL_FUEL_LOAD_AXIS,
+        rpm_axis,
+        16,
+        "nearest",
+    )
+
+
+def build_avcs_map(
+    reference: bytes,
+    data_address: int,
+    load_axis_address: int,
+    rpm_axis_address: int,
+    rows: int,
+    label: str,
+) -> bytes:
+    assert_axis(reference, load_axis_address, STOCK_AVCS_LOAD_AXIS, f"{label} load axis")
+    rpm_axis = read_floats(reference, rpm_axis_address, rows)
+    old = reference[data_address:data_address + AVCS_X * rows * 2]
+    return resample_integer_surface(
+        old,
+        STOCK_AVCS_LOAD_AXIS,
+        rpm_axis,
+        TUNED_AVCS_LOAD_AXIS,
+        rpm_axis,
+        16,
+        "nearest",
+    )
 
 
 def checksum_value(image: bytes | bytearray) -> tuple[int, int, int]:
@@ -518,6 +666,17 @@ def apply_calibration(rom: bytearray, reference: bytes) -> dict[str, tuple[int, 
     write("Primary Open Loop Fueling A", PRIMARY_OL_A_ADDR, fuel_a)
     write("Primary Open Loop Fueling B", PRIMARY_OL_B_ADDR, fuel_b)
 
+    write(
+        "CL Fueling Load Axis",
+        CL_FUEL_LOAD_AXIS_ADDR,
+        pack_floats(TUNED_CL_FUEL_LOAD_AXIS),
+    )
+    write(
+        "CL Fueling Target Compensation",
+        CL_FUEL_DATA_ADDR,
+        build_cl_fuel_compensation(reference),
+    )
+
     # A zero delay makes the enriched Primary OL target decide the transition,
     # avoiding the stock high-load delay path below the original 3600/4000 RPM
     # thresholds.
@@ -537,6 +696,16 @@ def apply_calibration(rom: bytearray, reference: bytes) -> dict[str, tuple[int, 
             label,
             data_address,
             build_kca_map(
+                reference, data_address, load_axis_address, rpm_axis_address, rows, label
+            ),
+        )
+
+    for label, data_address, load_axis_address, rpm_axis_address, rows in AVCS_MAPS:
+        write(label + " Load Axis", load_axis_address, pack_floats(TUNED_AVCS_LOAD_AXIS))
+        write(
+            label,
+            data_address,
+            build_avcs_map(
                 reference, data_address, load_axis_address, rpm_axis_address, rows, label
             ),
         )
@@ -607,8 +776,8 @@ def apply_calibration(rom: bytearray, reference: bytes) -> dict[str, tuple[int, 
         raise SystemExit("REFUSING: master wideband/O2 architecture signature is not enabled")
 
     # The master no longer consumes these MAF tables, so calibration must not
-    # repurpose them accidentally. The 4.0 g/rev engine-load limit remains
-    # above the expanded 3.0 g/rev tune axes.
+    # repurpose them accidentally. The expanded tune axes now meet the retained
+    # 4.0 g/rev engine-load limit.
     for address, size, label in (
         (INJECTOR_VOLTAGE_AXIS_ADDR, len(EXPECTED_INJECTOR_VOLTAGE_AXIS) * 4,
          "injector voltage axis"),

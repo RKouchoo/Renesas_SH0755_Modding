@@ -305,8 +305,9 @@ AVCS_DESCRIPTIONS = {
         "intake_avcs_target_by_avls_mode_update @ 0x353B0 selects descriptor "
         "0x60C34 and data 0x7C5B0 in this state. Legacy table A is an AVLS-mode "
         "map, not a left/right-bank map, and it is selected rather than blended "
-        "with the high-cam target. The load axis ends at 2.00 g/rev, so the "
-        "stock lookup uses its last column above that breakpoint."
+        "with the high-cam target. The master load axis is resampled through "
+        "the stock 2.00 g/rev range and extended to 4.00 g/rev; higher-load "
+        "columns retain the stock final-column target as a safe starting point."
     ),
     "Intake AVCS Target - AVLS High Cam": (
         "Intake-cam advance target, in degrees, selected while committed AVLS "
@@ -314,8 +315,9 @@ AVCS_DESCRIPTIONS = {
         "intake_avcs_target_by_avls_mode_update @ 0x353B0 selects descriptor "
         "0x60C50 and data 0x7C764 in this state. Legacy table B is an AVLS-mode "
         "map, not a left/right-bank map, and it is selected rather than blended "
-        "with the low-cam target. The load axis ends at 2.00 g/rev, so the stock "
-        "lookup uses its last column above that breakpoint."
+        "with the low-cam target. The master load axis is resampled through "
+        "the stock 2.00 g/rev range and extended to 4.00 g/rev; higher-load "
+        "columns retain the stock final-column target as a safe starting point."
     ),
 }
 
