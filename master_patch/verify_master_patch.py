@@ -16,9 +16,8 @@ HERE = Path(__file__).resolve().parent
 ROOT = HERE.parent
 PATCH_DIR = ROOT / "patch"
 SD_DIR = ROOT / "speed_density"
-BASE_TURBO_DIR = ROOT / "base_turbo_map"
 FUEL_SAFETY_DIR = ROOT / "fueling_safety"
-for directory in (PATCH_DIR, SD_DIR, BASE_TURBO_DIR, FUEL_SAFETY_DIR, HERE):
+for directory in (PATCH_DIR, SD_DIR, FUEL_SAFETY_DIR, HERE):
     sys.path.insert(0, str(directory))
 
 import build_definition as definition  # noqa: E402
@@ -28,8 +27,8 @@ import patch_boost as boost  # noqa: E402
 import patch_speed_density as speed_density  # noqa: E402
 import patch_rotational_idle as rotational_idle  # noqa: E402
 import verify_rotational_idle as rotational_idle_verify  # noqa: E402
-import build_base_turbo_map as base_turbo  # noqa: E402
-import verify_base_turbo_map as base_turbo_verify  # noqa: E402
+import master_calibration as calibration  # noqa: E402
+import verify_master_calibration as calibration_verify  # noqa: E402
 import sh2_disasm  # noqa: E402
 import fueling_safety_component as fueling_safety  # noqa: E402
 import verify_fueling_safety as fueling_safety_verify  # noqa: E402
@@ -142,7 +141,7 @@ def verify_layout(
     # descriptors, SD data, wideband data, or dual-VE data.
     expected_component_calibration = set()
     for address, size in (
-        (boost.TARGET_DATA, len(base_turbo.BOOST_TARGET_NATIVE) * 4),
+        (boost.TARGET_DATA, len(calibration.BOOST_TARGET_NATIVE) * 4),
         (boost.BASE_DATA, len(boost.BASE_DUTY)),
         (boost.KP_ADDR, 4),
         (boost.MAXR_ADDR, 4),
@@ -237,7 +236,7 @@ def verify_omni_map(image: bytes) -> None:
         )
     if not (
         speed_density.MAP_MIN_MMHG
-        < max(base_turbo.BOOST_TARGET_NATIVE)
+        < max(calibration.BOOST_TARGET_NATIVE)
         < speed_density.MAP_MAX_MMHG
     ):
         fail("5 psi target is outside the speed-density MAP validity window")
@@ -1020,7 +1019,7 @@ def main() -> None:
     stock, expected, _, calibration_writes = master.build_image()
     component_stage, blobs = rebuild_component_stage(stock)
     independently_calibrated = bytearray(component_stage)
-    independent_writes = base_turbo.apply_calibration(
+    independent_writes = calibration.apply_calibration(
         independently_calibrated, component_stage
     )
     independent_writes.update(
@@ -1029,11 +1028,11 @@ def main() -> None:
     speed_density.fix_checksum(independently_calibrated)
     checksum_data = bytes(
         independently_calibrated[
-            base_turbo.CHECKSUM_TABLE_ADDR + 8 : base_turbo.CHECKSUM_TABLE_ADDR + 12
+            calibration.CHECKSUM_TABLE_ADDR + 8 : calibration.CHECKSUM_TABLE_ADDR + 12
         ]
     )
     independent_writes["Subaru checksum"] = (
-        base_turbo.CHECKSUM_TABLE_ADDR + 8,
+        calibration.CHECKSUM_TABLE_ADDR + 8,
         checksum_data,
     )
     if bytes(independently_calibrated) != expected:
@@ -1072,14 +1071,14 @@ def main() -> None:
     except AssertionError as exc:
         fail(f"fueling-safety audit: {exc}")
 
-    # Reuse the already-audited tune-policy verifier against the new master
+    # Run the independent calibration policy checks against the master
     # component stage: fueling, all six calibrated timing surfaces (including
-    # dormant B/E), KCA, injectors, AVLS, spring-only boost, rev limit/checksum.
-    base_turbo_verify.verify_fueling(component_stage, image)
-    base_turbo_verify.verify_base_timing(component_stage, image)
-    base_turbo_verify.verify_kca(component_stage, image)
-    base_turbo_verify.verify_injectors(component_stage, image)
-    base_turbo_verify.verify_auxiliary(component_stage, image)
+    # dormant B/E), KCA, injectors, spring-only boost, rev limit, and checksum.
+    calibration_verify.verify_fueling(component_stage, image)
+    calibration_verify.verify_base_timing(component_stage, image)
+    calibration_verify.verify_kca(component_stage, image)
+    calibration_verify.verify_injectors(component_stage, image)
+    calibration_verify.verify_auxiliary(component_stage, image)
     verify_definition()
     verify_logger_fragment()
 
@@ -1088,7 +1087,7 @@ def main() -> None:
     if master.extract_srf.extract_memd(master.SOURCE_SRF)[0] != stock:
         fail("original SRF payload changed during verification")
 
-    stored, calculated, _ = base_turbo.checksum_value(image)
+    stored, calculated, _ = calibration.checksum_value(image)
     print("master patch audit PASS")
     print(f"  stock SHA-256     : {master.STOCK_SHA256}")
     print(f"  output SHA-256    : {output_hash}")

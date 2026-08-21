@@ -103,15 +103,17 @@ separate output. Generated ROMs are never accepted as build inputs.
 
 `verify_master_patch.py` independently reconstructs the image, audits changed
 regions, disassembles new firmware, tests sensor boundary policy, checks every
-hook and diagnostic switch, reuses the complete base-turbo calibration audit,
-validates the RomRaider definition and logger fragment, and verifies provenance
-and checksum.
+hook and diagnostic switch, runs the independent master-calibration policy
+checks, validates the RomRaider definition and logger fragment, and verifies
+provenance and checksum.
 
 ## Files
 
 | File | Purpose |
 |---|---|
 | `build_master_patch.py` | Deterministic stock-to-master builder. |
+| `master_calibration.py` | Fuel, timing, STI-pink injector, spring-only boost, rev-limit, and Subaru-checksum implementation. |
+| `verify_master_calibration.py` | Independent fuel, timing, injector, boost, limiter, and checksum policy checks used by the master verifier. |
 | `../speed_density/patch_speed_density.py` | Single MAFless SD component containing committed-state dual VE and predictable 3200/3000 RPM AVLS calibration. |
 | `wideband_component.py` | Permanent four-stock-O2 delete and former-MAF external-wideband input firmware. |
 | `../fueling_safety/fueling_safety_component.py` | Pressure-forced-open-loop and latched lean-cut component. |

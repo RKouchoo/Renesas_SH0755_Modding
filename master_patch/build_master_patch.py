@@ -31,16 +31,15 @@ HERE = Path(__file__).resolve().parent
 ROOT = HERE.parent
 PATCH_DIR = ROOT / "patch"
 SD_DIR = ROOT / "speed_density"
-BASE_TURBO_DIR = ROOT / "base_turbo_map"
 FUEL_SAFETY_DIR = ROOT / "fueling_safety"
-for directory in (PATCH_DIR, SD_DIR, BASE_TURBO_DIR, FUEL_SAFETY_DIR, HERE):
+for directory in (PATCH_DIR, SD_DIR, FUEL_SAFETY_DIR, HERE):
     sys.path.insert(0, str(directory))
 
 import extract_srf  # noqa: E402
 import patch_boost as boost  # noqa: E402
 import patch_speed_density as speed_density  # noqa: E402
 import patch_rotational_idle as rotational_idle  # noqa: E402
-import build_base_turbo_map as base_turbo  # noqa: E402
+import master_calibration as calibration  # noqa: E402
 import wideband_component as wideband  # noqa: E402
 import fueling_safety_component as fueling_safety  # noqa: E402
 
@@ -160,7 +159,7 @@ def refuse_output_alias(output: Path) -> None:
         STOCK,
         BASE_STOCK,
         SOURCE_SRF,
-        base_turbo.PINK_INJECTOR_DONOR.resolve(),
+        calibration.PINK_INJECTOR_DONOR.resolve(),
     )
     output_real = Path(os.path.realpath(output))
     for source in protected:
@@ -190,33 +189,31 @@ def build_image() -> tuple[
 
     # Pin the exact firmware-component stage before applying any tune tables.
     component_reference = bytes(rom)
-    calibration_writes = base_turbo.apply_calibration(rom, component_reference)
+    calibration_writes = calibration.apply_calibration(rom, component_reference)
 
-    # The legacy base-turbo calibration predates committed-state dual VE and
-    # intentionally requested early AVLS through vehicle speed.  Master now
-    # replaces those values with the deterministic 3200/3000 RPM policy.  The
-    # component's standalone image uses the same helper.
+    # The speed-density component owns the deterministic committed-state AVLS
+    # policy and its exact 3200/3000 RPM hysteresis.
     predictable_avls = speed_density.apply_predictable_avls_calibration(rom)
     calibration_writes.update(predictable_avls)
-    _, calculated, _ = base_turbo.checksum_value(rom)
+    _, calculated, _ = calibration.checksum_value(rom)
     checksum_data = struct.pack(">I", calculated)
     rom[
-        base_turbo.CHECKSUM_TABLE_ADDR + 8 : base_turbo.CHECKSUM_TABLE_ADDR + 12
+        calibration.CHECKSUM_TABLE_ADDR + 8 : calibration.CHECKSUM_TABLE_ADDR + 12
     ] = checksum_data
     calibration_writes["Subaru checksum"] = (
-        base_turbo.CHECKSUM_TABLE_ADDR + 8,
+        calibration.CHECKSUM_TABLE_ADDR + 8,
         checksum_data,
     )
     output = bytes(rom)
 
-    stored, calculated, _ = base_turbo.checksum_value(output)
+    stored, calculated, _ = calibration.checksum_value(output)
     if stored != calculated:
         raise AssertionError("master image Subaru checksum is invalid")
     if STOCK.read_bytes() != stock or BASE_STOCK.read_bytes() != stock:
         raise RuntimeError("protected stock ROM changed during master build")
     if extract_srf.extract_memd(SOURCE_SRF)[0] != stock:
         raise RuntimeError("protected SRF payload changed during master build")
-    base_turbo.pink_injector_calibration()  # repeat donor hash/CALID/value checks
+    calibration.pink_injector_calibration()  # repeat donor hash/CALID/value checks
     return stock, output, component_blobs, calibration_writes
 
 
@@ -239,8 +236,8 @@ def main(argv: list[str] | None = None) -> None:
         for index, (before, after) in enumerate(zip(stock, output))
         if before != after
     }
-    stored, calculated, _ = base_turbo.checksum_value(output)
-    pink_raw, _, pink_display = base_turbo.pink_injector_calibration()
+    stored, calculated, _ = calibration.checksum_value(output)
+    pink_raw, _, pink_display = calibration.pink_injector_calibration()
 
     print("D2WD610H master patch written: %s" % output_path)
     print("  stock source      : %s (UNCHANGED, SHA-256 %s)" % (STOCK, sha256(stock)))

@@ -322,9 +322,9 @@ data registers (datasheet) instead of descending the call tree.
       The helper uses guarded committed-AVLS low/high MAP/RPM VE surfaces and IAT density correction, with no MAF fallback
       or runtime OFF state; exact zero RPM writes zero and other invalid states write a fixed
       500 g/s rich/high-load fail-safe. The MAF high/low diagnostic task and both MAF-dependent
-      temperature-condition calls are bypassed, and P0102/P0103 are disabled. Its standalone
-      artifact remains separate from the legacy combined/base-turbo images; the unchanged
-      component API is now integrated by `master_patch`. See `../speed_density/README.md`.
+      temperature-condition calls are bypassed, and P0102/P0103 are disabled. Its reusable
+      component API is integrated by `master_patch`; standalone output is only a local regression.
+      See `../speed_density/README.md`.
 - [x] **Current master composition built and audited.** `master_patch` reconstructs only from
       canonical stock, installs the MAFless model, Omni MAP-SUP-3BR transfer, EVAP-output boost
       control and gates, one former-MAF external-wideband producer for both fuel banks, complete

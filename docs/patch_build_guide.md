@@ -68,11 +68,10 @@ non-overlap, and regenerates its focused RomRaider definition. The master uses t
 for the external wideband, removes all four stock O2 paths, adds MAFless speed density and fueling
 safeties, and includes rotational idle default OFF.
 
-The conservative 5 psi / 98 RON calibration is already applied by that master build. Its reusable
-calibration recipe remains in `base_turbo_map`; do not flash its superseded standalone output.
-It uses the 5 psi wastegate spring with zero electronic duty. Read
-[`base_turbo_map/README.md`](../base_turbo_map/README.md) and its commissioning checklist before
-using the master. The pinned A4TE002B factory calibration supplies the STI-pink injector starting
+The conservative 5 psi / 98 RON calibration is applied directly by the master build through
+`master_patch/master_calibration.py`; there is no separate base-map artifact. It uses the 5 psi
+wastegate spring with zero electronic duty. Read the master calibration and commissioning
+documents before use. The pinned A4TE002B factory calibration supplies the STI-pink injector starting
 values, but injector identity/condition, MAP/IAT/wideband wiring, fuel-system capacity, and physical tests
 remain intentional flash blockers.
 

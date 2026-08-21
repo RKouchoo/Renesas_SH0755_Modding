@@ -1,8 +1,8 @@
 # Rotational-Idle Component and Master Integration
 
-Target: D2WD610H / ECU ID `3C5A387116`, Renesas SH7055. The guarded component is now
-integrated into `master_patch` and defaults OFF. It remains absent from the historical
-combined patch and `base_turbo_map` calibration source.
+Target: D2WD610H / ECU ID `3C5A387116`, Renesas SH7055. The guarded component is
+integrated into `master_patch` and defaults OFF. It remains absent only from the historical
+combined patch.
 
 ## What it does
 

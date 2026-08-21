@@ -36,7 +36,6 @@ full **ignition-timing** blend/selection logic. See the notes.
 | [single_front_af_patch.md](docs/single_front_af_patch.md) | One-factory-A/F architecture, rear-narrowband logical deletion, external logging boundary, and commissioning limits. |
 | [rotational_idle_patch.md](docs/rotational_idle_patch.md) | Integrated default-OFF per-cylinder retard component, operating gates, allocation, verifier, and commissioning limits. |
 | [speed_density/README.md](speed_density/README.md) | Single always-on MAFless MAP/RPM/IAT component with committed-state low/high-lift VE, Ghidra trace, verifier, and commissioning boundary. |
-| [base_turbo_map/README.md](base_turbo_map/README.md) | Reusable calibration recipe imported by the master: conservative 5 psi / 98 RON fuel, ignition, injectors, AVLS, spring-only boost, and commissioning documentation. |
 | [master_patch/README.md](master_patch/README.md) | **Current integrated target** — architecture, exact hardware assumptions, deterministic builder, artifact, definition, logger, and limitations. |
 | [master_patch/GHIDRA_AUDIT.md](master_patch/GHIDRA_AUDIT.md) | Stock-ROM function evidence, injected layout, verified decisions, and unresolved physical risks for the master. |
 | [solenoid_subsystem.md](docs/solenoid_subsystem.md) | The two PWM output subsystems: crank-synced AVCS/AVLS cam bank vs. the purge PWM (boost target). |

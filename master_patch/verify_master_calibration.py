@@ -1,25 +1,12 @@
 #!/usr/bin/env python3
-"""Local regression verifier for the superseded pre-master base-map recipe."""
+"""Independent policy checks for the master fuel/timing calibration."""
 
 from __future__ import annotations
 
-from pathlib import Path
 import math
 import struct
-import sys
 
-
-HERE = Path(__file__).resolve().parent
-ROOT = HERE.parent
-sys.path.insert(0, str(HERE))
-
-import build_base_turbo_map as base  # noqa: E402
-
-
-if len(sys.argv) > 2:
-    raise SystemExit("usage: python3 base_turbo_map/verify_base_turbo_map.py [image.bin]")
-OUTPUT = Path(sys.argv[1]).resolve() if len(sys.argv) == 2 else HERE / "D2WD610H_5psi_98RON_base_turbo.bin"
-EXPECTED_OUTPUT_SHA256 = "e26a2c5ef25aa6585aca0bf915c7077f89392d71fbcd1f615a069c133ebc5f28"
+import master_calibration as base
 
 
 def fail(message: str) -> None:
@@ -62,16 +49,6 @@ def raw_to_base_timing(raw: int) -> float:
 
 def raw_to_kca(raw: int) -> float:
     return raw * 0.3515625
-
-
-def allowed_offsets() -> set[int]:
-    allowed: set[int] = set()
-    for _, address, size in base.CALIBRATION_REGIONS:
-        region = set(range(address, address + size))
-        if allowed & region:
-            fail(f"declared calibration regions overlap at 0x{min(allowed & region):05X}")
-        allowed.update(region)
-    return allowed
 
 
 def verify_fueling(reference: bytes, image: bytes) -> None:
@@ -200,30 +177,6 @@ def verify_injectors(reference: bytes, image: bytes) -> None:
         fail("minimum tip-in activation does not match the injector-ratio multiplier")
 
 
-def verify_avls(reference: bytes, image: bytes) -> None:
-    if base.read_floats(image, base.AVLS_THRESHOLD_1_ADDR, 7) != base.AVLS_THRESHOLD_1:
-        fail("AVLS threshold 1 does not match the early high-cam policy")
-    if base.read_floats(image, base.AVLS_THRESHOLD_2_ADDR, 7) != base.AVLS_THRESHOLD_2:
-        fail("AVLS threshold 2 does not match the early high-cam policy")
-    for label, address, expected in (
-        ("actuation minimum", base.AVLS_ACTUATION_MIN_RPM_ADDR, base.AVLS_ACTUATION_MIN_RPM),
-        ("release", base.AVLS_RELEASE_RPM_ADDR, base.AVLS_RELEASE_RPM),
-        ("engage", base.AVLS_ENGAGE_RPM_ADDR, base.AVLS_ENGAGE_RPM),
-    ):
-        if read_float(image, address) != expected:
-            fail(f"AVLS {label} RPM is {read_float(image, address)}, expected {expected}")
-    if not base.AVLS_ACTUATION_MIN_RPM < base.AVLS_RELEASE_RPM < base.AVLS_ENGAGE_RPM:
-        fail("AVLS RPM ordering is not minimum < release < engage")
-    for address, label in (
-        (base.AVLS_HYSTERESIS_A_ADDR, "A"),
-        (base.AVLS_HYSTERESIS_B_ADDR, "B"),
-    ):
-        if read_float(image, address) != base.AVLS_HYSTERESIS:
-            fail(f"AVLS hysteresis {label} changed from the intended stock value")
-        if image[address:address + 4] != reference[address:address + 4]:
-            fail(f"AVLS hysteresis {label} changed relative to the combined reference")
-
-
 def verify_auxiliary(reference: bytes, image: bytes) -> None:
     if image[base.IAT_TIMING_COMP_ADDR:
              base.IAT_TIMING_COMP_ADDR + len(base.IAT_TIMING_COMP_RAW)] != base.IAT_TIMING_COMP_RAW:
@@ -257,7 +210,8 @@ def verify_auxiliary(reference: bytes, image: bytes) -> None:
         fail("boost target is not flat at 5 psi from 2500 RPM through redline")
 
     # The target is calibrated above, but at max-ratio zero it cannot command
-    # duty.  RPM axis, throttle gate, and MAF/housing data remain unchanged.
+    # duty. RPM axis, throttle gate, obsolete MAF tables, and the retained load
+    # ceiling remain unchanged by this calibration layer.
     for address, size, label in (
         (base.boost.RPM_AXIS, len(base.boost.RPM_BREAKS) * 4, "boost RPM axis"),
         (base.boost.THROTTLE_GATE_ADDR, 4, "boost throttle gate"),
@@ -278,53 +232,3 @@ def verify_auxiliary(reference: bytes, image: bytes) -> None:
     stored, calculated, _ = base.checksum_value(image)
     if stored != calculated:
         fail(f"Subaru checksum invalid: stored 0x{stored:08X}, calculated 0x{calculated:08X}")
-
-
-def main() -> None:
-    stock, reference, expected, writes = base.build_image()
-    if base.sha256(stock) != base.STOCK_SHA256:
-        fail("stock hash changed")
-    if base.sha256(reference) != base.COMBINED_SHA256:
-        fail("combined-stage hash changed")
-    if base.sha256(expected) != EXPECTED_OUTPUT_SHA256:
-        fail(
-            "generated output hash changed; audit the calibration and update the pinned hash only intentionally"
-        )
-    if not OUTPUT.exists():
-        fail(f"missing generated artifact {OUTPUT}")
-    image = OUTPUT.read_bytes()
-    if image != expected:
-        fail("generated artifact is not byte-identical to a fresh verified rebuild")
-
-    changed = {
-        index for index, (before, after) in enumerate(zip(reference, image)) if before != after
-    }
-    if not changed:
-        fail("output has no calibration changes beyond the combined stage")
-    outside = changed - allowed_offsets()
-    if outside:
-        fail(f"unexpected output change at 0x{min(outside):05X}")
-
-    verify_fueling(reference, image)
-    verify_base_timing(reference, image)
-    verify_kca(reference, image)
-    verify_injectors(reference, image)
-    verify_avls(reference, image)
-    verify_auxiliary(reference, image)
-    print("base turbo map binary audit PASS")
-    print(f"  stock SHA-256    : {base.sha256(stock)}")
-    print(f"  combined stage   : {base.sha256(reference)}")
-    print(f"  output SHA-256   : {base.sha256(image)}")
-    print(f"  calibration delta: {len(changed)} bytes across {len(writes)} owned writes")
-    print("  fueling          : OL RPM 1000..6800; conservative resample + both-bank rich caps")
-    print("  injectors        : A4TE002B STI-pink flow/deadtime + ratio-scaled start/transient IPW")
-    print("  ignition         : all six maps capped on expanded 3.0 g/rev axis; KCA zero >=1.22")
-    print("  AVLS             : speed-gated from 2500 RPM; forced high cam 3200/3000 RPM")
-    print("  boost            : 5 psi spring only (zero duty/Kp/clamp), 6.5 psi hard cut")
-    print("  operating range  : 6800/6770 RPM limiter; 5 psi target held to redline")
-    print("  checksum         : valid Subaru 32-bit additive checksum")
-    print("  MAF/load limits  : MAF cap already max-encoded; load limit retained at 4.0 g/rev")
-
-
-if __name__ == "__main__":
-    main()

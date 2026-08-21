@@ -1,19 +1,14 @@
 #!/usr/bin/env python3
-"""Build the D2WD610H conservative 5 psi / 98 RON base-turbo calibration.
+"""Conservative fuel, timing, injector, boost, and RPM calibration.
 
-The image is not stacked onto a generated ROM.  It reconstructs the verified
-combined boost + single-front-A/F/rear-O2-delete image from the hash-pinned root
-stock ROM, proves that stage is byte-identical to the canonical combined
-artifact, then applies calibration-only changes to an in-memory copy.
-
-This is a spring-pressure commissioning baseline, not a finished tune.  The
-5 psi wastegate spring is the only source of boost: electronic control, base
-WGDC, proportional gain, and the final duty clamp are all disabled/zero while
-the independent hard MAP fuel cut remains active. Injector data is translated
-from a hash-pinned A4TE002B factory STI-pink ROM; AVLS is brought in earlier,
-tuned load axes extend to 3.0 g/rev, and the operating limiter is set to 6800/6770 RPM.
-
-Usage: python3 base_turbo_map/build_base_turbo_map.py [out.bin]
+This module is part of the focused master builder; it is not a standalone ROM
+builder. ``apply_calibration`` receives the fully composed master component
+stage and mutates only the declared calibration regions. The 5 psi wastegate
+spring remains the only source of commanded boost: EBCS, base WGDC,
+proportional gain, and the duty clamp are disabled/zero while the independent
+hard MAP cut stays active. Injector data is translated from the hash-pinned
+A4TE002B factory STI-pink ROM, tune axes extend to 3.0 g/rev, and the limiter is
+6800/6770 RPM.
 """
 
 from __future__ import annotations
@@ -21,7 +16,6 @@ from __future__ import annotations
 from pathlib import Path
 import hashlib
 import math
-import os
 import struct
 import sys
 
@@ -31,22 +25,13 @@ ROOT = HERE.parent
 PATCH_DIR = ROOT / "patch"
 sys.path.insert(0, str(PATCH_DIR))
 
-import extract_srf  # noqa: E402
 import patch_boost as boost  # noqa: E402
-import patch_combined as combined_patch  # noqa: E402
 
 
-STOCK = ROOT / "2005 BLE MT.bin"
-BASE_STOCK = ROOT / "base_roms" / "2005 BLE MT.bin"
-SOURCE_SRF = ROOT / "base_roms" / "2005 BLE MT.srf"
 PINK_INJECTOR_DONOR = (
     ROOT / "base_roms" / "A4TE002B-2003-JDM-Subaru-Impreza-STi.hex"
 )
-DEFAULT_OUT = HERE / "D2WD610H_5psi_98RON_base_turbo.bin"
 
-ROM_SIZE = 0x80000
-STOCK_SHA256 = boost.STOCK_SHA256
-COMBINED_SHA256 = "71b28714106dcc1eb7adfe59738fc8c6e968b2b94ca9337158f4442f46fcc1fe"
 PINK_INJECTOR_DONOR_SIZE = 0x30000
 PINK_INJECTOR_DONOR_SHA256 = (
     "e3cc868a51476aaa25c1ffb63e8af8ba3e35ca4ace404e842f193bf117754b44"
@@ -57,7 +42,7 @@ PINK_INJECTOR_DONOR_SHA256 = (
 CHECKSUM_TABLE_ADDR = 0x7FB80
 CHECKSUM_TOTAL = 0x5AA5A55A
 
-# Calibration table locations from the matching combined RomRaider definition.
+# Calibration table locations in D2WD610H.
 PRIMARY_OL_A_ADDR = 0x7777C
 PRIMARY_OL_B_ADDR = 0x77868
 PRIMARY_OL_A_LOAD_AXIS = 0x7771C
@@ -119,24 +104,7 @@ TIP_IN_IPW_MAPS = (
 )
 MIN_TIP_IN_ACTIVATION_ADDR = 0x763E0
 
-# AVLS actuation is permitted from 2500 RPM and forced onto high lift by 3200
-# RPM.  Below the hard override, stock logic uses an oil-temperature-selected
-# vehicle-speed-versus-RPM boundary.  The stock 10 km/h hysteresis is retained.
-AVLS_THRESHOLD_1_ADDR = 0x7D67C
-AVLS_THRESHOLD_2_ADDR = 0x7D6B4
-AVLS_THRESHOLD_1 = (100.0, 100.0, 25.0, 20.0, 15.0, 10.0, 5.0)
-AVLS_THRESHOLD_2 = (100.0, 100.0, 60.0, 35.0, 20.0, 10.0, 0.0)
-AVLS_HYSTERESIS_A_ADDR = 0x7D480
-AVLS_HYSTERESIS_B_ADDR = 0x7D484
-AVLS_ACTUATION_MIN_RPM_ADDR = 0x7D4AC
-AVLS_RELEASE_RPM_ADDR = 0x7D4B8
-AVLS_ENGAGE_RPM_ADDR = 0x7D4BC
-AVLS_HYSTERESIS = 10.0
-AVLS_ACTUATION_MIN_RPM = 2500.0
-AVLS_RELEASE_RPM = 3000.0
-AVLS_ENGAGE_RPM = 3200.0
-
-# Hardware-dependent MAF calibration remains unchanged and verified.
+# Obsolete MAF calibration remains untouched; the master uses speed density.
 MAF_VOLTAGE_AXIS_ADDR = 0x7B4B8
 MAF_SCALING_ADDR = 0x7B568
 MAF_SCALING_COUNT = 44
@@ -248,11 +216,6 @@ CALIBRATION_REGIONS = (
     *((name, addr, count * 2) for name, addr, count in CRANKING_IPW_MAPS),
     *((name, addr, count * 2) for name, addr, count in TIP_IN_IPW_MAPS),
     ("Minimum Tip-in Enrichment Activation", MIN_TIP_IN_ACTIVATION_ADDR, 4),
-    ("AVLS Vehicle Speed Threshold (Normal Oil Temperature)", AVLS_THRESHOLD_1_ADDR, len(AVLS_THRESHOLD_1) * 4),
-    ("AVLS Vehicle Speed Threshold (High Oil Temperature)", AVLS_THRESHOLD_2_ADDR, len(AVLS_THRESHOLD_2) * 4),
-    ("AVLS Actuation Minimum RPM", AVLS_ACTUATION_MIN_RPM_ADDR, 4),
-    ("AVLS High Cam Release RPM", AVLS_RELEASE_RPM_ADDR, 4),
-    ("AVLS High Cam Engage RPM", AVLS_ENGAGE_RPM_ADDR, 4),
     ("Boost Target", boost.TARGET_DATA, len(BOOST_TARGET_NATIVE) * 4),
     ("Boost Wastegate Duty", boost.BASE_DATA, len(boost.BASE_DUTY)),
     ("Boost Kp", boost.KP_ADDR, 4),
@@ -373,20 +336,6 @@ def kca_raw_at_or_below(degrees: float) -> int:
     # KCA max = raw*0.3515625.  Floor toward less positive advance.
     raw = math.floor(degrees / 0.3515625 + 1e-12)
     return max(0, min(255, raw))
-
-
-def merge_ranges(addresses: set[int]) -> list[tuple[int, int]]:
-    if not addresses:
-        return []
-    result: list[tuple[int, int]] = []
-    start = previous = min(addresses)
-    for address in sorted(addresses)[1:]:
-        if address != previous + 1:
-            result.append((start, previous))
-            start = address
-        previous = address
-    result.append((start, previous))
-    return result
 
 
 def resample_primary_open_loop_rpm(
@@ -544,7 +493,7 @@ def checksum_value(image: bytes | bytearray) -> tuple[int, int, int]:
 
 def apply_calibration(rom: bytearray, reference: bytes) -> dict[str, tuple[int, bytes]]:
     if bytes(rom) != reference:
-        raise SystemExit("REFUSING: calibration input differs from pinned combined reference")
+        raise SystemExit("REFUSING: calibration input differs from the pinned component stage")
 
     writes: dict[str, tuple[int, bytes]] = {}
     owned: set[int] = set()
@@ -632,27 +581,6 @@ def apply_calibration(rom: bytearray, reference: bytes) -> dict[str, tuple[int, 
         f32(min_tip_in_raw * injector_ratio),
     )
 
-    # Earlier AVLS: retain stock speed hysteresis, allow oil-valve actuation at
-    # 2500, lower both oil-temperature-selected road-speed boundaries, and
-    # force high lift by 3200 RPM.
-    if read_floats(reference, AVLS_HYSTERESIS_A_ADDR, 1)[0] != AVLS_HYSTERESIS:
-        raise SystemExit("REFUSING: AVLS hysteresis A is not the expected stock value")
-    if read_floats(reference, AVLS_HYSTERESIS_B_ADDR, 1)[0] != AVLS_HYSTERESIS:
-        raise SystemExit("REFUSING: AVLS hysteresis B is not the expected stock value")
-    write(
-        "AVLS Vehicle Speed Threshold (Normal Oil Temperature)",
-        AVLS_THRESHOLD_1_ADDR,
-        pack_floats(AVLS_THRESHOLD_1),
-    )
-    write(
-        "AVLS Vehicle Speed Threshold (High Oil Temperature)",
-        AVLS_THRESHOLD_2_ADDR,
-        pack_floats(AVLS_THRESHOLD_2),
-    )
-    write("AVLS Actuation Minimum RPM", AVLS_ACTUATION_MIN_RPM_ADDR, f32(AVLS_ACTUATION_MIN_RPM))
-    write("AVLS High Cam Release RPM", AVLS_RELEASE_RPM_ADDR, f32(AVLS_RELEASE_RPM))
-    write("AVLS High Cam Engage RPM", AVLS_ENGAGE_RPM_ADDR, f32(AVLS_ENGAGE_RPM))
-
     # Five-psi spring-only commissioning: no electronic duty can be produced,
     # even if a table or gain is accidentally non-zero. The component has
     # independent switches: keep EBCS explicitly OFF and the hard cut ON.
@@ -672,15 +600,15 @@ def apply_calibration(rom: bytearray, reference: bytes) -> dict[str, tuple[int, 
     )
 
     if rom[boost.EBCS_ENABLE_ADDR] != 0x00:
-        raise SystemExit("REFUSING: EBCS actuator is not disabled in combined reference")
+        raise SystemExit("REFUSING: EBCS actuator is not disabled in the master component stage")
     if rom[boost.OVERBOOST_ENABLE_ADDR] != 0x01:
-        raise SystemExit("REFUSING: hard overboost cut is not enabled in combined reference")
+        raise SystemExit("REFUSING: hard overboost cut is not enabled in the master component stage")
     if rom[0x7D91C] != 0x01:
-        raise SystemExit("REFUSING: single-front-A/F patch is not enabled in combined reference")
+        raise SystemExit("REFUSING: master wideband/O2 architecture signature is not enabled")
 
-    # Air-metering data cannot be guessed without the installed MAF/housing.
-    # The MAF limiter is already at its uint16 encoding maximum, and the 4.0
-    # g/rev engine-load limit remains above the expanded 3.0 g/rev tune axes.
+    # The master no longer consumes these MAF tables, so calibration must not
+    # repurpose them accidentally. The 4.0 g/rev engine-load limit remains
+    # above the expanded 3.0 g/rev tune axes.
     for address, size, label in (
         (INJECTOR_VOLTAGE_AXIS_ADDR, len(EXPECTED_INJECTOR_VOLTAGE_AXIS) * 4,
          "injector voltage axis"),
@@ -692,7 +620,7 @@ def apply_calibration(rom: bytearray, reference: bytes) -> dict[str, tuple[int, 
         if rom[address:address + size] != reference[address:address + size]:
             raise AssertionError(f"hardware-specific {label} changed unexpectedly")
     if reference[MAF_LIMIT_ADDR:MAF_LIMIT_ADDR + 4] != b"\xFF\xFF\xFF\xFF":
-        raise SystemExit("REFUSING: MAF limit is not already at maximum encoding")
+        raise SystemExit("REFUSING: obsolete MAF limit is not at its expected maximum encoding")
     if read_floats(reference, ENGINE_LOAD_LIMIT_ADDR, 1)[0] != 4.0:
         raise SystemExit("REFUSING: engine-load limit is not the expected 4.0 g/rev")
 
@@ -709,88 +637,3 @@ def apply_calibration(rom: bytearray, reference: bytes) -> dict[str, tuple[int, 
     if stored != recalculated:
         raise AssertionError("Subaru checksum correction did not validate")
     return writes
-
-
-def refuse_output_alias(output: Path) -> None:
-    protected = (STOCK, BASE_STOCK, SOURCE_SRF, PINK_INJECTOR_DONOR)
-    output_real = Path(os.path.realpath(output))
-    for path in protected:
-        if output_real == Path(os.path.realpath(path)):
-            raise SystemExit(f"REFUSING: output aliases protected source: {path}")
-        if output.exists() and path.exists() and os.path.samefile(output, path):
-            raise SystemExit(f"REFUSING: output is a hard link to protected source: {path}")
-
-
-def build_image() -> tuple[bytes, bytes, bytes, dict[str, tuple[int, bytes]]]:
-    stock = STOCK.read_bytes()
-    if len(stock) != ROM_SIZE or sha256(stock) != STOCK_SHA256:
-        raise SystemExit("REFUSING: root stock ROM is not the pinned D2WD610H image")
-    if BASE_STOCK.read_bytes() != stock:
-        raise SystemExit("REFUSING: base_roms stock BIN differs from canonical root stock ROM")
-
-    try:
-        srf_payload, _, _, _ = extract_srf.extract_memd(SOURCE_SRF)
-    except (OSError, ValueError) as exc:
-        raise SystemExit(f"REFUSING: SRF provenance check failed: {exc}") from exc
-    if srf_payload != stock:
-        raise SystemExit("REFUSING: original SRF MEMD payload differs from canonical stock ROM")
-
-    rebuilt, _, _, _, _ = combined_patch.build_combined(stock)
-    combined_reference = bytes(rebuilt)
-    if sha256(combined_reference) != COMBINED_SHA256:
-        raise SystemExit("REFUSING: reconstructed combined stage has an unexpected SHA-256")
-    rom = bytearray(combined_reference)
-    writes = apply_calibration(rom, combined_reference)
-    return stock, combined_reference, bytes(rom), writes
-
-
-def main() -> None:
-    if len(sys.argv) > 2:
-        raise SystemExit("usage: python3 base_turbo_map/build_base_turbo_map.py [out.bin]")
-    output = Path(sys.argv[1]).resolve() if len(sys.argv) == 2 else DEFAULT_OUT.resolve()
-    refuse_output_alias(output)
-
-    stock, combined_reference, output_bytes, writes = build_image()
-    output.parent.mkdir(parents=True, exist_ok=True)
-    output.write_bytes(output_bytes)
-
-    # Re-read every protected source after output generation.
-    if STOCK.read_bytes() != stock or BASE_STOCK.read_bytes() != stock:
-        raise RuntimeError("protected stock BIN changed during base-map build")
-    if extract_srf.extract_memd(SOURCE_SRF)[0] != stock:
-        raise RuntimeError("protected SRF provenance changed during base-map build")
-    # Re-run all size, hash, CALID, and source-byte checks on the injector donor.
-    pink_injector_calibration()
-
-    changed = {
-        index for index, (before, after) in enumerate(zip(combined_reference, output_bytes))
-        if before != after
-    }
-    stored, calculated, _ = checksum_value(output_bytes)
-    print(f"Base turbo calibration written: {output}")
-    print(f"  stock source     : {STOCK} (UNCHANGED, SHA-256 {sha256(stock)})")
-    print(f"  combined stage   : SHA-256 {sha256(combined_reference)} (reconstructed from stock)")
-    print(f"  output SHA-256   : {sha256(output_bytes)}")
-    print(f"  changed bytes    : {len(changed)} beyond combined stage")
-    print("  changed ranges   : " + ", ".join(
-        f"0x{start:05X}..0x{end:05X}" for start, end in merge_ranges(changed)
-    ))
-    print(f"  owned tables     : {len(writes)}")
-    print("  boost command    : spring-only; WGDC=0%, Kp=0, max ratio=0")
-    print(f"  overboost limits : soft {SOFT_OVERBOOST_PSI:.1f} psi / hard {HARD_OVERBOOST_PSI:.1f} psi")
-    print(f"  rev limit A      : cut {REV_LIMIT_CUT_RPM:.0f} / resume {REV_LIMIT_RESUME_RPM:.0f} RPM")
-    pink_flow_raw, _, pink_flow_display = pink_injector_calibration()
-    print(
-        f"  injectors        : STI pink OEM calibration; {pink_flow_display:.2f} cc/min "
-        f"estimated (D2WD raw {pink_flow_raw:.6f})"
-    )
-    print(
-        f"  AVLS             : speed-gated from {AVLS_ACTUATION_MIN_RPM:.0f} RPM; "
-        f"forced high cam {AVLS_ENGAGE_RPM:.0f}/{AVLS_RELEASE_RPM:.0f} RPM"
-    )
-    print(f"  checksum         : 0x{stored:08X} (valid={stored == calculated})")
-    print("\n*** NOT FLASH-READY until injector identity, fuel-pressure, MAF, MAP, and wideband checks in README.md pass. ***")
-
-
-if __name__ == "__main__":
-    main()

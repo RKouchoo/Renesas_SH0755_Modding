@@ -343,10 +343,13 @@ checksum.
   `OFF` restores stock front/rear runtime logic but does not re-enable the 13 removed-sensor DTC
   bytes. The existing component caveats remain unchanged in the combined image.
 
-# Five-Psi / 98 RON Base Turbo Map Audit
+# Historical Five-Psi / 98 RON Base Turbo Map Audit
 
-Audit date: 2026-07-15. Output:
-`base_turbo_map/D2WD610H_5psi_98RON_base_turbo.bin`.
+Audit date: 2026-07-15. The audited standalone output is retired and no longer committed.
+
+This section records the superseded pre-master artifact. The folder and standalone output were
+later removed; the applicable calibration logic and policy checks now live in
+`master_patch/master_calibration.py` and `master_patch/verify_master_calibration.py`.
 
 ## Verdict
 
@@ -359,7 +362,7 @@ scaling, MAP validation, post-turbo wideband logging, and physical boost tests r
 
 ## Build provenance and binary checks
 
-- `build_base_turbo_map.py` reads the pinned root stock ROM, verifies both stock BIN copies and the
+- The historical builder read the pinned root stock ROM, verified both stock BIN copies and the
   original SRF `MEMD` payload, and reconstructs the combined patch in memory.
 - That intermediate stage must be byte-identical to
   `patch/D2WD610H_boost_single_front_af.bin`, SHA-256
@@ -429,8 +432,8 @@ scaling, MAP validation, post-turbo wideband logging, and physical boost tests r
    timestamps/status.
 5. Pressure-test the 45 mm wastegate and prove direct-reference spring pressure, zero-duty
    polarity, PWM behavior, boost-creep margin, and the simulated hard-cut response.
-6. Use a load-controlled dyno, monitor fuel/oil pressure externally, and follow
-   `base_turbo_map/COMMISSIONING.md`; stop rather than tuning around a failed hardware gate.
+6. Use a load-controlled dyno, monitor fuel/oil pressure externally, and follow the current
+   `master_patch/COMMISSIONING.md`; stop rather than tuning around a failed hardware gate.
 
 The stock `axis_index_search_float` function at `0x26E0` was rechecked in live Ghidra for this
 revision and was already named to project convention. Its below-first-breakpoint return of index 0
@@ -452,7 +455,8 @@ force AVLS, disable misfire detection, alter the limiter, or allocate RAM.
 The component follows the same guarded stock-to-ROM and `apply_to_rom()` framework as the boost
 and front-A/F components. Its allocation and changed-byte ownership are disjoint, making it ready
 for a later combined-patch integration. That integration has deliberately not been performed:
-`patch_combined.py`, the existing combined binary, and `base_turbo_map` remain unchanged.
+`patch_combined.py`, the existing combined binary, and the historical calibration derivative
+remain unchanged.
 
 This verdict is static and binary only. It does not prove idle quality, sound, exhaust/turbo
 temperature, vibration, misfire behavior, checksum acceptance, or safe operation on the vehicle.
@@ -560,7 +564,7 @@ indication, not a validated limp mode.
 The component retains the guarded stock-to-ROM and `apply_to_rom()` framework. Its changed-byte
 ownership is disjoint from boost control, single-front-A/F plus rear delete, and rotational idle,
 so it remains mergeable without relocating a current component. It has not been added to
-`patch_combined.py` or `base_turbo_map`.
+`patch_combined.py` or the historical calibration derivative.
 
 This verdict is static. It does not establish VE accuracy, transient fueling quality, checksum
 acceptance, hardware wiring correctness, or safe vehicle operation.
@@ -988,9 +992,17 @@ enable byte, ten scalar gates/limits, and six per-cylinder offsets at their exac
 
 Repository cleanup makes `master_patch/D2WD610H_master_patch.bin` and its matching XML the only
 committed generated tuning target. Reproducible standalone boost, front-A/F, rotational-idle,
-speed-density, old combined, and pre-master base-turbo BINs were removed, along with their obsolete
+speed-density, old combined, and pre-master calibration BINs were removed, along with their obsolete
 single-purpose XML outputs. Source component builders/verifiers and the two XML inputs actually
 used by the master definition generator remain. Python caches, macOS metadata, temporary workshop
 manual extracts, and Ghidra lock files were removed and are now ignored. The immutable root stock
 ROM, its `base_roms` copy, original SRF, Ghidra project database, engineering documentation, and
 current master artifacts remain tracked.
+
+The remaining historical calibration packaging was subsequently removed. Its required
+calibration/checksum implementation was reduced to `master_patch/master_calibration.py`; the
+independent policy functions used by the master verifier moved to
+`master_patch/verify_master_calibration.py`. Redundant pre-master AVLS writes, the standalone
+builder/output verifier, and duplicated/outdated calibration, manifest, and commissioning files
+were not carried forward. The master continues to source predictable AVLS exclusively from the
+speed-density component. A before/after rebuild retained the exact master SHA-256 and checksum.
