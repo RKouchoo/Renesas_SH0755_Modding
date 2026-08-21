@@ -8,8 +8,9 @@ Order is deliberate and deterministic:
 3. replace its donor MAP transfer with the exact Omni Power MAP-SUP-3BR data;
 4. install always-on mafless speed density with committed-state dual VE;
 5. install the permanent four-stock-O2 delete / former-MAF wideband component;
-6. apply the conservative 5 psi / 98 RON / STI-pink / 6800-RPM calibration;
-7. apply the speed-density component's predictable 3200/3000-RPM AVLS policy
+6. install barometrically referenced forced-open-loop and latched lean-cut safety;
+7. apply the conservative 5 psi / 98 RON / STI-pink / 6800-RPM calibration;
+8. apply the speed-density component's predictable 3200/3000-RPM AVLS policy
    and write/verify the Subaru checksum.
 
 Generated ROMs are never accepted as input.  The root stock ROM is never
@@ -30,7 +31,8 @@ ROOT = HERE.parent
 PATCH_DIR = ROOT / "patch"
 SD_DIR = ROOT / "speed_density"
 BASE_TURBO_DIR = ROOT / "base_turbo_map"
-for directory in (PATCH_DIR, SD_DIR, BASE_TURBO_DIR, HERE):
+FUEL_SAFETY_DIR = ROOT / "fueling_safety"
+for directory in (PATCH_DIR, SD_DIR, BASE_TURBO_DIR, FUEL_SAFETY_DIR, HERE):
     sys.path.insert(0, str(directory))
 
 import extract_srf  # noqa: E402
@@ -38,6 +40,7 @@ import patch_boost as boost  # noqa: E402
 import patch_speed_density as speed_density  # noqa: E402
 import build_base_turbo_map as base_turbo  # noqa: E402
 import wideband_component as wideband  # noqa: E402
+import fueling_safety_component as fueling_safety  # noqa: E402
 
 
 STOCK = (ROOT / "2005 BLE MT.bin").resolve()
@@ -180,6 +183,7 @@ def build_image() -> tuple[
     apply_omni_map_calibration(rom)
     component_blobs["speed_density"] = speed_density.apply_to_rom(rom)
     component_blobs["wideband_O2_delete"] = wideband.apply_to_rom(rom)
+    component_blobs["fueling_safety"] = fueling_safety.apply_to_rom(rom)
 
     # Pin the exact firmware-component stage before applying any tune tables.
     component_reference = bytes(rom)
@@ -255,6 +259,8 @@ def main(argv: list[str] | None = None) -> None:
     print("  boost switches    : EBCS OFF; independent hard overboost cut ON")
     print("  default boost cmd : spring-only (WGDC/Kp/max duty all zero), 5 psi targets")
     print("  oxygen sensors    : four stock paths removed; former MAF ADC -> 50-4110 P0/P1")
+    print("  pressure OL guard : ON; baro-referenced, 0.5 psi pre-boost margin")
+    print("  lean fuel cut     : ON; 13.0 AFR, delayed/confirmed, boost-release latched")
     print(
         "  injectors         : pinned STI-pink factory donor, %.2f cc/min estimate "
         "(D2WD raw %.6f)" % (pink_display, pink_raw)

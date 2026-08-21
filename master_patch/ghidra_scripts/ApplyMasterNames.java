@@ -5,6 +5,7 @@
 import ghidra.app.script.GhidraScript;
 import ghidra.program.model.address.Address;
 import ghidra.program.model.listing.Function;
+import ghidra.program.model.symbol.Symbol;
 import ghidra.program.model.symbol.SourceType;
 
 public class ApplyMasterNames extends GhidraScript {
@@ -26,6 +27,17 @@ public class ApplyMasterNames extends GhidraScript {
         println(addressText + " -> " + function.getName());
     }
 
+    private void createOrRenameData(String addressText, String name) throws Exception {
+        Address address = toAddr(addressText);
+        Symbol symbol = getSymbolAt(address);
+        if (symbol == null) {
+            createLabel(address, name, true);
+        } else if (!symbol.getName().equals(name)) {
+            symbol.setName(name, SourceType.USER_DEFINED);
+        }
+        println(addressText + " -> " + getSymbolAt(address).getName());
+    }
+
     @Override
     public void run() throws Exception {
         createOrRename("00001884", "diagnostic_request_download_handle");
@@ -38,6 +50,7 @@ public class ApplyMasterNames extends GhidraScript {
         createOrRename("00007a14", "map_sensor_voltage_to_pressure_process");
         createOrRename("00007a56", "map_sensor_raw_adc_range_classify");
         createOrRename("000098cc", "injector_battery_voltage_latency_lookup");
+        createOrRename("00010a28", "engine_control_periodic_task_dispatch");
         createOrRename("0000a9a8", "injector_control_lookup_sequence_a9a8");
         createOrRename("0000b690", "front_af_sensor_pair_signal_process");
         createOrRename("0000f474", "engine_oil_temperature_sensor_process");
@@ -71,11 +84,24 @@ public class ApplyMasterNames extends GhidraScript {
         createOrRename("0001d228", "runtime_status_b748_bit7_is_set");
         createOrRename("0001e0c8", "injector_flow_scaling_factor_update");
         createOrRename("0001ee74", "closed_loop_fuel_control_bank_update");
+        createOrRename("00022454", "primary_open_loop_fueling_target_update");
+        createOrRename("00022756", "cl_ol_transition_delay_update");
+        createOrRename("00022948", "cl_ol_delay_condition_and_counter_update");
+        createOrRename("00022aae", "cl_ol_transition_state_update");
+        createOrRename("00022ac2", "cl_ol_transition_state_initialize");
+        createOrRename("0002331e", "fueling_state_flag_clear_on_condition");
+        createOrRename("00023fc0", "fuel_cut_flag_aggregate");
+        createOrRename("00024b24", "rev_limiter_fuel_cut");
         createOrRename("00027088", "constant_zero_return");
         createOrRename("00028354", "ign_avcs_tracking_blend_factor_update");
         createOrRename("00028418", "ign_base_timing_map_blend");
         createOrRename("000284b8", "ign_base_timing_select");
         createOrRename("0003253c", "engine_oil_temperature_logger_convert");
+        createOrRename(
+            "00033964", "rear_o2_sensor_response_integrator_initialize"
+        );
+        createOrRename("00033970", "rear_o2_sensor_response_integrator_update");
+        createOrRename("00034be4", "rear_o2_sensor_response_ratio_update");
         createOrRename("000353b0", "intake_avcs_target_by_avls_mode_update");
         createOrRename("00035750", "intake_avcs_tracking_control_update");
         createOrRename("0003eb68", "knock_correction_advance_max_select");
@@ -88,9 +114,51 @@ public class ApplyMasterNames extends GhidraScript {
         createOrRename("000405b2", "avls_mode_commit_copy");
         createOrRename("000405cc", "avls_osv_actuation_gate");
         createOrRename("00047000", "engine_oil_temperature_fallback_select");
+        createOrRename("00047db2", "atmospheric_pressure_source_select_update");
         createOrRename("00064fd0", "front_af_sensor_bank1_inhibit_check");
         createOrRename("0006500c", "front_af_sensor_bank2_inhibit_check");
         createOrRename("0006504c", "runtime_status_d26d_bit5_get");
+        createOrRenameData("ffffcfbc", "atmospheric_pressure_native");
+
+        setPlateComment(
+            toAddr("00022454"),
+            "Primary open-loop fueling target lookup. Uses RPM 0xFFFFB544 and " +
+            "conditioned load 0xFFFFB438 with descriptors 0x5FA9C/0x5FAB8, then " +
+            "publishes the target through 0xFFFFBE20/BE24/BE00. State byte " +
+            "0xFFFFBE38 bit 0x80 is set when closed-loop is permitted and cleared " +
+            "for open-loop enrichment. Master pressure safety calls this stock " +
+            "routine first and may only clear that bit afterward. Task pointer " +
+            "slot is 0x11D78."
+        );
+        setPlateComment(
+            toAddr("00022948"),
+            "CL/OL delay condition and counter update. Reads native atmospheric " +
+            "pressure at 0xFFFFCFBC for descriptor 0x5F8FC (axis 0x772D4, data " +
+            "0x772DC), confirming the signal's mmHg-absolute barometric role."
+        );
+        setPlateComment(
+            toAddr("00047db2"),
+            "Selects the live atmospheric-pressure source from 0xFFFF8E04 or " +
+            "0xFFFFB3A8 and publishes native mmHg absolute at 0xFFFFCFBC."
+        );
+        setPlateComment(
+            toAddr("00024b24"),
+            "Stock RPM limiter sets fuel-cut status 0xFFFFBF6C bit 0x80. The " +
+            "periodic task pointer at 0x11D3C is the verified composition point " +
+            "for hard-overboost and latched-lean cuts."
+        );
+        setPlateComment(
+            toAddr("00033964"),
+            "Initialization-only task writes float 1.0 to rear-O2 integrator " +
+            "RAM 0xFFFFC85C and 0xFFFFC860. Master fueling safety repoints its " +
+            "task slot at 0x1055C to an explicit zero initializer before " +
+            "reclaiming those words as lean-cut counter/state."
+        );
+        setPlateComment(
+            toAddr("00023fc0"),
+            "Aggregates the stock fuel-cut flags, including 0xFFFFBF6C bit 0x80, " +
+            "into the downstream injector-cut decision."
+        );
 
         setPlateComment(
             toAddr("00027088"),

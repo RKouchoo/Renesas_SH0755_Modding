@@ -201,8 +201,9 @@ the patch is used alone or enabled in the combined image.
   `rear_o2_sensor_response_ratio_update` (`0x34BE4`), then
   `rear_o2_sensor_voltage_diagnostic_dispatch` (`0x69568`) and its low/high pair functions.
 - The initialization-only `rear_o2_sensor_response_integrator_initialize` (`0x33964`) writes
-  1.0 to both integrators. It remains stock; all runtime consumers of those integrators are
-  bypassed while the delete is enabled.
+  1.0 to both integrators. The older delete leaves it stock because all consumers are bypassed;
+  the current master fueling-safety component instead repoints its task to an explicit zeroer
+  before reclaiming those words as state.
 - Every function inspected in this pass was renamed in the live Ghidra project using underscore
   conventions. Comments at the converter/getter and five patched stages were updated to record
   the switch behavior and task-pointer locations.
@@ -842,8 +843,8 @@ enter boost solely because the automated audit passes.
 - All D2WD610H images retain the factory CALID. RomRaider must therefore be configured with the
   master XML alone for this image; selecting a standalone/legacy definition can make the same
   binary appear with anonymous A--F names and an incomplete table set.
-- `D2WD610H_master_logger_ecuparams.xml` exposes E500 lambda/estimated AFR, E501 raw ADC/volts,
-  and E502 readiness only for ECU ID `3C5A387116`. Its IDs, RAM addresses, lengths, storage
+- `D2WD610H_master_logger_ecuparams.xml` exposes E500 AFR/raw lambda, E501 raw ADC/volts,
+  E502 readiness, E503 committed AVLS state, and E504--E506 lean-cut/CL-OL state only for ECU ID `3C5A387116`. Its IDs, RAM addresses, lengths, storage
   types, formulas, and fault descriptions are verifier-checked.
 - Run `python3 master_patch/verify_master_patch.py` from the repository root. A pass means the
   checked development baseline matches this audit; it does not approve a later RomRaider edit.
@@ -901,8 +902,8 @@ vehicle-speed-selected AVLS descriptions for the current master image.
   `9cfcf45d075818c1a8320e540eb855979289ce25a6e03b8879a0c4767db49d16`,
   checksum `0x051694B7`.
 - Master: `master_patch/D2WD610H_master_patch.bin`, SHA-256
-  `99f1e67932a001679117101ce09384ed1011331de99684410bae57bb94d91813`,
-  checksum `0xFA3C453B`.
+  `2950f98360aba3c47d3aeed072104141d506a8e070b14efb5e7e29e2517821eb`,
+  checksum `0xBAF9F280`.
 - Both generated XML files use the project's RomRaider SH float-endianness
   convention and omit the obsolete full-range VE entry and inoperative
   variable AVLS controls. The legacy single-VE bytes remain inert in flash but
@@ -930,3 +931,39 @@ handling, Ghidra naming, and verifier are now part of `speed_density` itself.
 `master_patch` calls only that one SD/VE component. The former `avls_ve` package
 and duplicate ROM/XML artifacts were removed. This reorganization is byte-neutral
 for the master ROM and retains its pinned hash and checksum.
+
+# Pressure-forced open loop and lean-cut audit
+
+Audit date: 2026-08-22.
+
+The current master adds `fueling_safety` after boost, speed density, and the
+former-MAF wideband/O2-delete component. Live stock Ghidra inspection renamed
+and traced `primary_open_loop_fueling_target_update` (`0x22454`), the CL/OL
+transition helpers at `0x22756`, `0x22948`, `0x22AAE`, and `0x22AC2`, the stock
+rev limiter/fuel-cut aggregation at `0x24B24`/`0x23FC0`, and the live barometric
+source writer at `0x47DB2`.
+
+The pressure wrapper at `0x7EB20` occupies stock task pointer `0x11D78`. It calls
+the complete stock primary-target routine before clearing only the verified
+closed-loop-permission bit `0x80` in `0xFFFFBE38` when MAP reaches live barometric
+pressure minus the default 0.5-psi margin. The comparison uses native absolute
+MAP `0xFFFFABC4` and native absolute atmospheric pressure `0xFFFFCFBC`; it does
+not use a fixed sea-level assumption.
+
+The lean wrapper at `0x7EC00` occupies the composed rev-limit task pointer
+`0x11D3C`. It first calls the existing stock-limiter/hard-overboost wrapper at
+`0x7D8C4`, then may add `0xFFFFBF6C` bit `0x80`. Default policy arms above +0.5
+psi gauge, waits 50 task calls, requires eight consecutive invalid/not-ready or
+leaner-than-13.0-AFR samples, latches the cut, and releases only below -0.5 psi
+gauge. AFR is ignored while latched to avoid self-induced cut chatter.
+
+State/counter RAM `0xFFFFC860`/`0xFFFFC85C` is reclaimed from the deleted rear-O2
+response integrator only after guarded confirmation that every traced rear-O2
+runtime task pointer is the stock return stub. Because the stock initialization
+task writes float 1.0, task pointer `0x1055C` is separately redirected to an
+explicit zero initializer at `0x7EBA0`. The component has its own opcode,
+literal-pool, boundary, exact-count, latch, and release-policy verifier. The
+master verifier additionally audits flash/hook ownership, XML controls, logger
+addresses, fresh-build identity, checksum, and pinned hash. These checks are
+static; sensor transport delay and cut behavior still require controlled
+physical validation.

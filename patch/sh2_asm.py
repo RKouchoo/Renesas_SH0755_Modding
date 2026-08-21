@@ -27,6 +27,7 @@ class Asm:
     def mov_reg(self, rm, rn):    return self._w(0x6003 | rn<<8 | rm<<4)   # mov Rm,Rn
     def movw_at(self, rn, rm):    return self._w(0x6001 | rn<<8 | rm<<4)   # mov.w @Rm,Rn (sign-ext)
     def movl_at(self, rn, rm):    return self._w(0x6002 | rn<<8 | rm<<4)   # mov.l @Rm,Rn
+    def movw_store(self, rm, rn): return self._w(0x2001 | rn<<8 | rm<<4)   # mov.w Rm,@Rn (low word)
     def movl_store(self, rm, rn): return self._w(0x2002 | rn<<8 | rm<<4)   # mov.l Rm,@Rn
     def push(self, rm):           return self._w(0x2006 | 15<<8 | rm<<4)   # mov.l Rm,@-r15
     def movb_at(self, rn, rm):    return self._w(0x6000 | rn<<8 | rm<<4)   # mov.b @Rm,Rn (sign-ext)
@@ -39,6 +40,7 @@ class Asm:
     def tst_reg(self, rm, rn):    return self._w(0x2008 | rn<<8 | rm<<4)   # tst Rm,Rn
     def cmp_eq_imm(self, imm):    return self._w(0x8800 | (imm & 0xFF))    # cmp/eq #imm,r0
     def cmp_eq(self, rm, rn):     return self._w(0x3000 | rn<<8 | rm<<4)   # cmp/eq Rm,Rn (T=Rn==Rm)
+    def cmp_hs(self, rm, rn):     return self._w(0x3002 | rn<<8 | rm<<4)   # cmp/hs Rm,Rn (T=unsigned Rn>=Rm)
     def add_imm(self, imm, rn):   return self._w(0x7000 | rn<<8 | (imm & 0xFF)) # add #imm,Rn
     def dt(self, rn):             return self._w(0x4010 | rn<<8)            # Rn--; T=(Rn==0)
 
@@ -171,6 +173,13 @@ def _selftest_known_encoding():
     want7 = bytes.fromhex("e0026011600d405af02df19d")
     assert got7 == want7, "ADC-to-float SELFTEST FAIL: got=%s want=%s" % (got7.hex(), want7.hex())
     print("sh2_asm ADC-to-float encoding selftest OK")
+
+    h = Asm(0)
+    h.movw_store(0, 1).cmp_hs(0, 2)
+    got8 = h.assemble()
+    want8 = bytes.fromhex("21013202")
+    assert got8 == want8, "word-store/unsigned-compare SELFTEST FAIL: got=%s want=%s" % (got8.hex(), want8.hex())
+    print("sh2_asm word-store/unsigned-compare encoding selftest OK")
 
 if __name__ == "__main__":
     _selftest_known_encoding()

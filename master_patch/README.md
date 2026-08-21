@@ -13,15 +13,17 @@ firmware work into one deterministic stock-to-output build:
   / 30-4110-style P0/P1 0-5 V lambda signal;
 - both stock front A/F paths and both rear O2 paths removed from feedback and
   diagnostics;
+- a live-barometric pressure failsafe that requests open loop before boost and
+  a delayed, confirmed, pressure-release-latched 13.0-AFR fuel cut;
 - a factory-ROM-derived STI pink injector scalar/deadtime starting point;
 - a conservative 5 psi / 98 RON fuel, ignition, AVLS, and 6800 RPM starting
   calibration; and
 - a focused, self-contained D2WD610H RomRaider definition and logger fragment.
 
 The generated baseline is `D2WD610H_master_patch.bin`, SHA-256
-`99f1e67932a001679117101ce09384ed1011331de99684410bae57bb94d91813`.
+`2950f98360aba3c47d3aeed072104141d506a8e070b14efb5e7e29e2517821eb`.
 It is 512 KiB, contains CALID `D2WD610H`, and has a valid Subaru additive
-checksum (`0xFA3C453B`). It is a development artifact, not a vehicle-tested tune.
+checksum (`0xBAF9F280`). It is a development artifact, not a vehicle-tested tune.
 
 Two independent boost switches remain in RomRaider. `Electronic Boost Control
 Enable` defaults OFF and forces zero actuator duty for direct wastegate-spring
@@ -29,6 +31,14 @@ control. `Overboost Fuel Cut Enable` defaults ON and independently retains the
 6.5 psi hard MAP cut. MAFless airflow and the external-wideband/four-stock-O2
 replacement are intentionally permanent because this architecture has no MAF
 or stock-O2 fallback.
+
+Two independent fueling-safety switches also default ON. The pressure guard
+calls the original Primary Open Loop target routine and then revokes closed-loop
+permission at live barometric pressure minus 0.5 psi. The lean guard arms above
+0.5 psi gauge, waits 50 periodic task calls for the post-turbo sensor, confirms
+eight consecutive invalid or leaner-than-13.0-AFR samples, and latches the stock
+fuel-cut path until pressure falls below -0.5 psi gauge. The call-count defaults
+are not time-calibrated and require controlled validation from logs.
 
 ## Exact hardware assumptions
 
@@ -95,11 +105,12 @@ and checksum.
 | `build_master_patch.py` | Deterministic stock-to-master builder. |
 | `../speed_density/patch_speed_density.py` | Single MAFless SD component containing committed-state dual VE and predictable 3200/3000 RPM AVLS calibration. |
 | `wideband_component.py` | Permanent four-stock-O2 delete and former-MAF external-wideband input firmware. |
+| `../fueling_safety/fueling_safety_component.py` | Pressure-forced-open-loop and latched lean-cut component. |
 | `verify_master_patch.py` | Independent binary, opcode, calibration, XML, logger, and provenance audit. |
 | `MEMORY_LAYOUT.md` | Exact injected-flash boundaries and collision policy. |
 | `build_definition.py` | Generates the focused D2WD610H RomRaider definition. |
 | `D2WD610H_master_patch.xml` | Matching self-contained metric RomRaider definition. |
-| `D2WD610H_master_logger_ecuparams.xml` | Four D2WD610H-only RomRaider logger parameters, including committed AVLS state. |
+| `D2WD610H_master_logger_ecuparams.xml` | Seven D2WD610H-only RomRaider logger parameters, including AFR, AVLS state, and lean-cut state/counter. |
 | `install_master_logger.py` | Adds those parameters to a copy of a normal SSM logger definition. |
 | `ghidra_scripts/ApplyMasterNames.java` | Reproducibly reapplies the names/comments confirmed in live Ghidra. |
 

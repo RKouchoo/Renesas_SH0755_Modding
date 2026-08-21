@@ -199,6 +199,10 @@ sentinel. Only a fully valid state tail-calls the existing boost controller.
 | `0x7E640..0x7E667` | Low/high VE descriptors. |
 | `0x7E668..0x7E6B7` | Low 0..3200 and high 3000..7500 RPM axes. |
 | `0x7E6B8..0x7EAC7` | Low 13x9 and high 13x11 VE surfaces. |
+| `0x7EAC8..0x7EAEB` | Pressure/open-loop and lean-cut switches/calibration. |
+| `0x7EB20..0x7EB9B` | Pressure-forced-open-loop wrapper. |
+| `0x7EBA0..0x7EBB7` | Explicit lean-state zero initializer. |
+| `0x7EC00..0x7EDE7` | Composed latched-lean-cut wrapper. |
 
 The verifier rejects overlap, writes outside declared stock hooks/calibration
 regions, unknown injected opcodes, stale generated XML, unexpected logger RAM
@@ -220,6 +224,53 @@ selects index 0. Stock axes A/B at `0x77754`/`0x77840` therefore held their
 `1000, 1500, 2000, 2500, 3000, 3500, 4000, 5000, 6000, 6800` RPM and
 conservatively resamples the complete original bank surfaces onto those points
 before applying high-load caps. Descriptor sizes and table storage do not move.
+
+## Pressure-based open-loop and lean-cut trace
+
+Live canonical-stock Ghidra inspection identified and renamed these additional
+functions while designing the safety component:
+
+- `engine_control_periodic_task_dispatch` at `0x10A28`;
+- `primary_open_loop_fueling_target_update` at `0x22454`;
+- `cl_ol_transition_delay_update` at `0x22756`;
+- `cl_ol_delay_condition_and_counter_update` at `0x22948`;
+- `cl_ol_transition_state_update` at `0x22AAE`;
+- `cl_ol_transition_state_initialize` at `0x22AC2`;
+- `fueling_state_flag_clear_on_condition` at `0x2331E`;
+- `fuel_cut_flag_aggregate` at `0x23FC0`;
+- `rev_limiter_fuel_cut` at `0x24B24`; and
+- `atmospheric_pressure_source_select_update` at `0x47DB2`.
+
+The primary target routine uses RPM `0xFFFFB544`, conditioned load
+`0xFFFFB438`, and Primary Open Loop descriptors `0x5FA9C/0x5FAB8`. It publishes
+through `0xFFFFBE20/BE24/BE00`. Its read/modify/write of `0xFFFFBE38` establishes
+bit `0x80` as closed-loop permission for this path: sufficiently enriched
+open-loop targeting clears the bit; closed-loop-eligible targeting sets it. The
+new wrapper occupies task pointer slot `0x11D78`, calls the entire stock routine
+first, and may only clear bit `0x80` afterward. It does not synthesize a fuel
+target or replace the stock CL/OL state machine.
+
+`cl_ol_delay_condition_and_counter_update` reads `0xFFFFCFBC` and passes it to
+descriptor `0x5F8FC`, whose axis/data are the mapped CL Delay Atmospheric
+Pressure table at `0x772D4/0x772DC`. The writer at `0x47DB2` selects the live
+source from `0xFFFF8E04` or `0xFFFFB3A8`. This confirms `0xFFFFCFBC` as the live
+native-mmHg absolute barometric signal used by the pressure comparison, rather
+than assuming fixed 760-mmHg sea-level pressure.
+
+The lean wrapper repoints the already-composed task slot at `0x11D3C`. It first
+calls the existing boost component wrapper at `0x7D8C4`, which itself calls the
+stock limiter at `0x24B24`; only then can it set `0xFFFFBF6C` bit `0x80` for a
+lean trip. `fuel_cut_flag_aggregate` consumes that bit. The trip state is latched
+until MAP falls below the barometrically referenced reset, so the AFR value made
+lean by fuel cut cannot chatter the cut on and off.
+
+Persistent state uses retired rear-O2 response-integrator RAM `0xFFFFC85C` and
+`0xFFFFC860`. Their traced runtime updater/reader task pointers at `0x11490` and
+`0x11494`, plus the other rear-O2 tasks, are already redirected to the stock
+return stub by the mandatory master wideband component. Stock initializer
+`rear_o2_sensor_response_integrator_initialize` at `0x33964` writes float 1.0,
+so task pointer `0x1055C` is repointed to an explicit zero initializer at
+`0x7EBA0`. Installation is refused unless all pointer guards pass.
 
 ## Unresolved physical risks
 

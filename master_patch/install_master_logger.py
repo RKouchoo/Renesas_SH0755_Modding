@@ -20,10 +20,13 @@ HERE = Path(__file__).resolve().parent
 FRAGMENT = HERE / "D2WD610H_master_logger_ecuparams.xml"
 ECU_ID = "3C5A387116"
 PARAMETERS = {
-    "E500": "External Wideband Lambda (D2WD610H master)*",
+    "E500": "External Wideband AFR (D2WD610H master)*",
     "E501": "External Wideband Input ADC (D2WD610H master)*",
     "E502": "External Wideband Ready Metric (D2WD610H master)*",
     "E503": "Committed AVLS VE State (D2WD610H master)*",
+    "E504": "Lean Fuel Cut State (D2WD610H master)*",
+    "E505": "Lean Fuel Cut Counter (D2WD610H master)*",
+    "E506": "CL/OL State Flags (D2WD610H master)*",
 }
 
 
@@ -127,10 +130,12 @@ def main(argv: list[str] | None = None) -> None:
     print(f"D2WD610H master logger definition written: {output}")
     print(f"  source preserved : {source}")
     print(f"  ECU ID           : {ECU_ID}")
-    print("  E500              : external-wideband lambda / estimated AFR")
+    print("  E500              : external-wideband AFR / raw lambda")
     print("  E501              : former-MAF raw ADC / input volts")
     print("  E502              : wideband readiness / one boost-duty prerequisite")
     print("  E503              : committed AVLS mode used by the dual-VE selector")
+    print("  E504 / E505       : lean-cut state / task-call counter")
+    print("  E506              : raw stock CL/OL state flags")
     print(
         "Select the new output under RomRaider Logger -> Settings -> "
         "Logger Definition Location."

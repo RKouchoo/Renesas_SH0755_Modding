@@ -34,9 +34,9 @@ Use a fused, current-limited setup and do not backfeed an unpowered ECU.
    with B136-23-to-B136-31 voltage under normal electrical loads to quantify
    ground offset.
 3. Sweep a protected 0-5 V source through the former-MAF input and verify:
-   - below 0.50 V: logger lambda 0.0, ready 0.0, EBCS command zero;
-   - 0.50..4.50 V: `lambda = (2*V + 10)/14.64`, ready 50.0;
-   - above 4.50 V: logger lambda 0.0, ready 0.0, EBCS command zero.
+   - below 0.50 V: logger AFR fault sentinel (raw 0.0), ready 0.0, EBCS command zero;
+   - 0.50..4.50 V: gasoline `AFR = 2*V + 10`, ready 50.0;
+   - above 4.50 V: logger AFR fault sentinel (raw 0.0), ready 0.0, EBCS command zero.
 4. With the actual controller, record display and white-to-black voltage during
    cold warm-up, warmed free air, and a disconnected sensor. An in-window result
    is not proof of controller health and must not be presented as such.
@@ -57,10 +57,12 @@ python3 master_patch/install_master_logger.py /path/to/logger.xml
 
 Log at minimum:
 
-- E500 external-wideband lambda/estimated AFR;
+- E500 external-wideband AFR (raw lambda remains an alternate conversion);
 - E501 raw former-MAF ADC/input voltage;
 - E502 external-wideband readiness;
 - E503 committed AVLS VE state (mode 1 low lift, mode 3 high lift);
+- E504 lean-cut state and E505 task-call counter;
+- E506 raw CL/OL flags;
 - MAP, barometric pressure, RPM, IAT, modeled airflow, calculated load;
 - commanded fuel/lambda, short- and long-term correction, CL/OL state;
 - ignition timing, feedback knock, fine-learning knock, KCA, IAM;
@@ -98,7 +100,10 @@ imbalance evidence, or disagreement between ECU and independent instruments.
 Bench-simulate MAP and wideband inputs, or use an equivalent controlled test,
 to show that throttle, invalid-wideband, invalid MAP/RPM/IAT, below-minimum-RPM,
 and 500 g/s SD-fault gates command zero duty, 5.5 psi commands zero duty, and
-6.5 psi reaches the stock fuel-cut aggregation path.
+6.5 psi reaches the stock fuel-cut aggregation path. Separately confirm that
+the pressure guard revokes closed-loop permission at baro minus 0.5 psi, then
+exercise the 50-call delay, eight-sample 13.0-AFR trip, latch persistence, and
+-0.5-psi release without relying on live combustion.
 Confirm the 6800/6770 limiter behavior. Do not deliberately overboost the
 engine just to test the hard cut.
 

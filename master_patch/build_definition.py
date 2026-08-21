@@ -4,8 +4,8 @@
 The metric D2WD610H AVLS definition remains the only stock-definition source.
 This generator removes stock MAF/O2/diagnostic material that is no longer part
 of the master architecture, gives the live timing maps their Ghidra-verified
-identities, and adds only the speed-density, boost, AVLS, and external-wideband
-calibrations installed by build_master_patch.py.
+identities, and adds only the speed-density, boost, AVLS, external-wideband,
+pressure-open-loop, and lean-cut calibrations installed by build_master_patch.py.
 """
 
 from __future__ import annotations
@@ -49,6 +49,17 @@ BOOST_NAMES = (
 WIDEBAND_NAMES = (
     "External Wideband Lambda Transfer",
     "External Wideband Valid Voltage Range",
+)
+
+FUELING_SAFETY_NAMES = (
+    "Pressure-Based Open Loop Failsafe Enable",
+    "Pressure-Based Open Loop Margin",
+    "Lean Fuel Cut Enable",
+    "Lean Fuel Cut Arm Pressure",
+    "Lean Fuel Cut Reset Pressure",
+    "Lean Fuel Cut AFR Threshold",
+    "Lean Fuel Cut Sensor Transport Delay",
+    "Lean Fuel Cut Confirmation Count",
 )
 
 AVLS_NAMES = (
@@ -383,6 +394,113 @@ def add_wideband_templates(parent: ET.Element, target: ET.Element) -> None:
     ET.SubElement(target, "table", {"name": WIDEBAND_NAMES[1], "storageaddress": "0x7E40C"})
 
 
+def add_scalar_template(
+    parent: ET.Element,
+    target: ET.Element,
+    name: str,
+    address: str,
+    storagetype: str,
+    units: str,
+    expression: str,
+    to_byte: str,
+    axis_label: str,
+    description: str,
+    fmt: str = "0.00",
+    fine: str = ".01",
+    coarse: str = ".10",
+) -> None:
+    table = ET.SubElement(
+        parent,
+        "table",
+        {
+            "type": "2D",
+            "name": name,
+            "category": "Fueling - Pressure/Lean Safety (patch)",
+            "storagetype": storagetype,
+            "endian": "big",
+            "sizey": "1",
+            "userlevel": "3",
+        },
+    )
+    ET.SubElement(
+        table,
+        "scaling",
+        {
+            "units": units,
+            "expression": expression,
+            "to_byte": to_byte,
+            "format": fmt,
+            "fineincrement": fine,
+            "coarseincrement": coarse,
+        },
+    )
+    axis = ET.SubElement(
+        table, "table", {"type": "Static Y Axis", "name": "Setting", "sizey": "1"}
+    )
+    ET.SubElement(axis, "data").text = axis_label
+    set_description(table, description)
+    ET.SubElement(target, "table", {"name": name, "storageaddress": address})
+
+
+def add_fueling_safety_templates(parent: ET.Element, target: ET.Element) -> None:
+    exact_switch = (
+        "Exact 01 enables this guard; any other value disables only this guard. "
+    )
+    add_scalar_template(
+        parent, target, FUELING_SAFETY_NAMES[0], "0x7EACC", "uint8", "switch",
+        "x", "x", "01 = enabled", exact_switch
+        + "Default is ON. The stock primary-open-loop target routine still runs first; "
+        "the wrapper then clears only its Ghidra-verified closed-loop-permission bit "
+        "when MAP reaches barometric pressure minus the configured margin.",
+        "0", "1", "1",
+    )
+    add_scalar_template(
+        parent, target, FUELING_SAFETY_NAMES[1], "0x7EAD0", "float", "psi below baro",
+        "x/51.71493257", "x*51.71493257", "Force OL this far below barometric pressure",
+        "Default 0.50 psi. A larger value requests open loop earlier in vacuum. The "
+        "comparison uses live MAP minus live atmospheric pressure, not a fixed sea-level value.",
+    )
+    add_scalar_template(
+        parent, target, FUELING_SAFETY_NAMES[2], "0x7EACD", "uint8", "switch",
+        "x", "x", "01 = enabled", exact_switch
+        + "Default is ON. It adds a latched cut through the verified stock rev-limiter "
+        "fuel-cut path and cannot suppress the existing RPM or hard-overboost cuts.",
+        "0", "1", "1",
+    )
+    add_scalar_template(
+        parent, target, FUELING_SAFETY_NAMES[3], "0x7EAD4", "float", "psi gauge",
+        "x/51.71493257", "x*51.71493257", "Begin sensor-delay state above",
+        "Default +0.50 psi relative to live barometric pressure. Below this pressure "
+        "the non-latched state and counter are cleared.",
+    )
+    add_scalar_template(
+        parent, target, FUELING_SAFETY_NAMES[4], "0x7EAD8", "float", "psi gauge",
+        "x/51.71493257", "x*51.71493257", "Release a latched cut below",
+        "Default -0.50 psi relative to live barometric pressure. AFR is deliberately "
+        "ignored after a trip because fuel cut itself makes the sensor read lean.",
+    )
+    add_scalar_template(
+        parent, target, FUELING_SAFETY_NAMES[5], "0x7EADC", "float", "gasoline AFR",
+        "x*14.64", "x/14.64", "Trip when measured AFR is leaner than",
+        "Default 13.00 AFR using the project's verified 14.64 stoichiometric reference. "
+        "An invalid or not-ready former-MAF wideband sample counts as lean after the "
+        "transport delay. This is displayed as AFR although firmware stores lambda.",
+    )
+    add_scalar_template(
+        parent, target, FUELING_SAFETY_NAMES[6], "0x7EAE8", "uint16", "task calls",
+        "x", "x", "Post-turbo sensor delay", "Default 50 periodic task calls before "
+        "AFR is evaluated. This is not milliseconds; measure and calibrate it from logs.",
+        "0", "1", "10",
+    )
+    add_scalar_template(
+        parent, target, FUELING_SAFETY_NAMES[7], "0x7EAEA", "uint16", "task calls",
+        "x", "x", "Consecutive lean samples to trip", "Default 8 consecutive lean, "
+        "invalid, or not-ready samples. A valid sample at or richer than the AFR "
+        "threshold resets this counter.",
+        "0", "1", "5",
+    )
+
+
 def update_patch_descriptions(target: ET.Element) -> None:
     for name, description in BOOST_DESCRIPTIONS.items():
         set_description(table_by_name(target, name), description)
@@ -411,7 +529,9 @@ def validate(root: ET.Element) -> None:
             raise SystemExit(f"target table has no parent template: {table.get('name')!r}")
 
     target_names = {table.get("name") for table in target.findall("table")}
-    expected_custom = set(SD_NAMES + BOOST_NAMES + WIDEBAND_NAMES + AVLS_NAMES)
+    expected_custom = set(
+        SD_NAMES + BOOST_NAMES + WIDEBAND_NAMES + FUELING_SAFETY_NAMES + AVLS_NAMES
+    )
     missing = sorted(expected_custom - target_names)
     if missing:
         raise SystemExit(f"master definition is missing custom tables: {missing}")
@@ -442,6 +562,14 @@ def validate(root: ET.Element) -> None:
         "Overboost Fuel Cut Enable": "0x7D80D",
         "External Wideband Lambda Transfer": "0x7E404",
         "External Wideband Valid Voltage Range": "0x7E40C",
+        "Pressure-Based Open Loop Failsafe Enable": "0x7EACC",
+        "Pressure-Based Open Loop Margin": "0x7EAD0",
+        "Lean Fuel Cut Enable": "0x7EACD",
+        "Lean Fuel Cut Arm Pressure": "0x7EAD4",
+        "Lean Fuel Cut Reset Pressure": "0x7EAD8",
+        "Lean Fuel Cut AFR Threshold": "0x7EADC",
+        "Lean Fuel Cut Sensor Transport Delay": "0x7EAE8",
+        "Lean Fuel Cut Confirmation Count": "0x7EAEA",
     }
     for name, address in expected_addresses.items():
         if table_by_name(target, name).get("storageaddress") != address:
@@ -471,6 +599,7 @@ def build_tree() -> ET.ElementTree:
         target.append(deepcopy(table_by_name(boost_target, name)))
     update_patch_descriptions(target)
     add_wideband_templates(parent, target)
+    add_fueling_safety_templates(parent, target)
 
     root = ET.Element("roms")
     root.append(

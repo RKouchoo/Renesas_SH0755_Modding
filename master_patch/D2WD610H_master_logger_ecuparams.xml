@@ -5,13 +5,13 @@
   Install it into a normal RomRaider logger XML with install_master_logger.py.
 -->
 <ecuparams>
-  <ecuparam id="E500" name="External Wideband Lambda (D2WD610H master)*" desc="Master-patch external-wideband lambda at FFFFB098. The former MAF ADC feeds both synthetic front feedback banks. A value of 0.0 is the firmware fault sentinel and must never be interpreted as a real lambda value." target="1">
+  <ecuparam id="E500" name="External Wideband AFR (D2WD610H master)*" desc="Master-patch external-wideband value at FFFFB098, presented primarily as gasoline AFR using 14.64 stoich. The former MAF ADC feeds both synthetic front feedback banks. A raw value of 0.0 is the firmware fault sentinel and must never be interpreted as a real AFR." target="1">
     <ecu id="3C5A387116">
       <address length="4">0xFFB098</address>
     </ecu>
     <conversions>
-      <conversion units="lambda" storagetype="float" expr="x" format="0.000" gauge_min="0.5" gauge_max="1.3" gauge_step="0.1" />
       <conversion units="estimated AFR (14.64 stoich)" storagetype="float" expr="x*14.64" format="0.00" gauge_min="7" gauge_max="19" gauge_step="1" />
+      <conversion units="raw lambda" storagetype="float" expr="x" format="0.000" gauge_min="0.5" gauge_max="1.3" gauge_step="0.1" />
     </conversions>
   </ecuparam>
   <ecuparam id="E501" name="External Wideband Input ADC (D2WD610H master)*" desc="Unsigned former-MAF ADC at FFFFAB06. Use counts/volts to compare the ECU-referenced B136-23 input with the controller's white-to-black output and diagnose wiring, ground offset, or clipping; an in-range value does not prove controller health." target="1">
@@ -37,6 +37,30 @@
     </ecu>
     <conversions>
       <conversion units="AVLS mode (1 low, 3 high)" storagetype="uint8" expr="x" format="0" gauge_min="0" gauge_max="3" gauge_step="1" />
+    </conversions>
+  </ecuparam>
+  <ecuparam id="E504" name="Lean Fuel Cut State (D2WD610H master)*" desc="Latched lean-protection state at FFFFC860: 0 disarmed, 1 post-turbo sensor delay, 2 monitoring AFR, 3 fuel-cut latched. State 3 releases only after MAP falls below the configured barometric reset pressure." target="1">
+    <ecu id="3C5A387116">
+      <address length="1">0xFFC860</address>
+    </ecu>
+    <conversions>
+      <conversion units="state (0 idle, 1 delay, 2 monitor, 3 cut)" storagetype="uint8" expr="x" format="0" gauge_min="0" gauge_max="3" gauge_step="1" />
+    </conversions>
+  </ecuparam>
+  <ecuparam id="E505" name="Lean Fuel Cut Counter (D2WD610H master)*" desc="Current post-turbo transport-delay or consecutive-lean confirmation count at FFFFC85C. Counts periodic task calls, not milliseconds; log it to calibrate the installed sensor delay." target="1">
+    <ecu id="3C5A387116">
+      <address length="2">0xFFC85C</address>
+    </ecu>
+    <conversions>
+      <conversion units="task calls" storagetype="uint16" expr="x" format="0" gauge_min="0" gauge_max="500" gauge_step="10" />
+    </conversions>
+  </ecuparam>
+  <ecuparam id="E506" name="CL/OL State Flags (D2WD610H master)*" desc="Raw stock closed-loop/open-loop state byte at FFFFBE38. Pressure safety clears bit 0x80 to revoke closed-loop permission; use the stock logger's final fueling status where available for a human-readable state." target="1">
+    <ecu id="3C5A387116">
+      <address length="1">0xFFBE38</address>
+    </ecu>
+    <conversions>
+      <conversion units="raw flags" storagetype="uint8" expr="x" format="0" gauge_min="0" gauge_max="255" gauge_step="16" />
     </conversions>
   </ecuparam>
 </ecuparams>

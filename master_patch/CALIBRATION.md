@@ -98,6 +98,29 @@ One sensor feeds both banks. No calibration can recover per-bank fault
 detection, and the post-turbo location adds delay that must be represented when
 interpreting fuel corrections.
 
+## Pressure/open-loop and lean-cut safety
+
+The pressure guard calls `primary_open_loop_fueling_target_update` at `0x22454`
+unchanged, then clears only `0xFFFFBE38` bit `0x80` when:
+
+```text
+MAP_absolute >= live_barometric_pressure - 0.50 psi
+```
+
+This requests open loop before positive boost regardless of a late normal
+load/RPM transition. Both the enable switch (`0x7EACC`) and margin (`0x7EAD0`)
+are exposed in RomRaider; the switch requires exact `01` and defaults ON.
+
+The independent lean cut (`0x7EACD`, exact `01`, default ON) arms above +0.50
+psi gauge. It waits 50 periodic task calls for post-turbo transport delay, then
+sets the stock fuel-cut flag after eight consecutive invalid/not-ready or
+leaner-than-13.00-AFR samples. A valid sample at or richer than 13.00 AFR resets
+the confirmation counter. Once cut, AFR is ignored because removing fuel makes
+the wideband read lean; the latch releases only at or below -0.50 psi gauge.
+RomRaider exposes arm pressure, reset pressure, AFR threshold, delay count, and
+confirmation count. Counts are scheduler calls, not milliseconds, and must be
+measured on the installed system.
+
 ## Injectors and fuel
 
 The injector seed is translated from a SHA-pinned factory 2003 JDM STI

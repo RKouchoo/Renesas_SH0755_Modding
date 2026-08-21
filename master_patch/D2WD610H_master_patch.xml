@@ -921,6 +921,62 @@
    </table>
    <description>Inclusive operating-plausibility window. Default 0.50 to 4.50 V corresponds to 11.00 to 19.00 gasoline AFR on the supplied P0/P1 curve. Outside it the ECU publishes a zero logger sentinel, inhibits closed-loop feedback, and forces EBCS duty to zero. In-range voltage does not prove controller or sensor health; a warm-up/disconnected output may remain in range. MAP/RPM/IAT, minimum-RPM, and SD-result prerequisites must also pass.</description>
   </table>
+  <table type="2D" name="Pressure-Based Open Loop Failsafe Enable" category="Fueling - Pressure/Lean Safety (patch)" storagetype="uint8" endian="big" sizey="1" userlevel="3">
+   <scaling units="switch" expression="x" to_byte="x" format="0" fineincrement="1" coarseincrement="1" />
+   <table type="Static Y Axis" name="Setting" sizey="1">
+    <data>01 = enabled</data>
+   </table>
+   <description>Exact 01 enables this guard; any other value disables only this guard. Default is ON. The stock primary-open-loop target routine still runs first; the wrapper then clears only its Ghidra-verified closed-loop-permission bit when MAP reaches barometric pressure minus the configured margin.</description>
+  </table>
+  <table type="2D" name="Pressure-Based Open Loop Margin" category="Fueling - Pressure/Lean Safety (patch)" storagetype="float" endian="big" sizey="1" userlevel="3">
+   <scaling units="psi below baro" expression="x/51.71493257" to_byte="x*51.71493257" format="0.00" fineincrement=".01" coarseincrement=".10" />
+   <table type="Static Y Axis" name="Setting" sizey="1">
+    <data>Force OL this far below barometric pressure</data>
+   </table>
+   <description>Default 0.50 psi. A larger value requests open loop earlier in vacuum. The comparison uses live MAP minus live atmospheric pressure, not a fixed sea-level value.</description>
+  </table>
+  <table type="2D" name="Lean Fuel Cut Enable" category="Fueling - Pressure/Lean Safety (patch)" storagetype="uint8" endian="big" sizey="1" userlevel="3">
+   <scaling units="switch" expression="x" to_byte="x" format="0" fineincrement="1" coarseincrement="1" />
+   <table type="Static Y Axis" name="Setting" sizey="1">
+    <data>01 = enabled</data>
+   </table>
+   <description>Exact 01 enables this guard; any other value disables only this guard. Default is ON. It adds a latched cut through the verified stock rev-limiter fuel-cut path and cannot suppress the existing RPM or hard-overboost cuts.</description>
+  </table>
+  <table type="2D" name="Lean Fuel Cut Arm Pressure" category="Fueling - Pressure/Lean Safety (patch)" storagetype="float" endian="big" sizey="1" userlevel="3">
+   <scaling units="psi gauge" expression="x/51.71493257" to_byte="x*51.71493257" format="0.00" fineincrement=".01" coarseincrement=".10" />
+   <table type="Static Y Axis" name="Setting" sizey="1">
+    <data>Begin sensor-delay state above</data>
+   </table>
+   <description>Default +0.50 psi relative to live barometric pressure. Below this pressure the non-latched state and counter are cleared.</description>
+  </table>
+  <table type="2D" name="Lean Fuel Cut Reset Pressure" category="Fueling - Pressure/Lean Safety (patch)" storagetype="float" endian="big" sizey="1" userlevel="3">
+   <scaling units="psi gauge" expression="x/51.71493257" to_byte="x*51.71493257" format="0.00" fineincrement=".01" coarseincrement=".10" />
+   <table type="Static Y Axis" name="Setting" sizey="1">
+    <data>Release a latched cut below</data>
+   </table>
+   <description>Default -0.50 psi relative to live barometric pressure. AFR is deliberately ignored after a trip because fuel cut itself makes the sensor read lean.</description>
+  </table>
+  <table type="2D" name="Lean Fuel Cut AFR Threshold" category="Fueling - Pressure/Lean Safety (patch)" storagetype="float" endian="big" sizey="1" userlevel="3">
+   <scaling units="gasoline AFR" expression="x*14.64" to_byte="x/14.64" format="0.00" fineincrement=".01" coarseincrement=".10" />
+   <table type="Static Y Axis" name="Setting" sizey="1">
+    <data>Trip when measured AFR is leaner than</data>
+   </table>
+   <description>Default 13.00 AFR using the project's verified 14.64 stoichiometric reference. An invalid or not-ready former-MAF wideband sample counts as lean after the transport delay. This is displayed as AFR although firmware stores lambda.</description>
+  </table>
+  <table type="2D" name="Lean Fuel Cut Sensor Transport Delay" category="Fueling - Pressure/Lean Safety (patch)" storagetype="uint16" endian="big" sizey="1" userlevel="3">
+   <scaling units="task calls" expression="x" to_byte="x" format="0" fineincrement="1" coarseincrement="10" />
+   <table type="Static Y Axis" name="Setting" sizey="1">
+    <data>Post-turbo sensor delay</data>
+   </table>
+   <description>Default 50 periodic task calls before AFR is evaluated. This is not milliseconds; measure and calibrate it from logs.</description>
+  </table>
+  <table type="2D" name="Lean Fuel Cut Confirmation Count" category="Fueling - Pressure/Lean Safety (patch)" storagetype="uint16" endian="big" sizey="1" userlevel="3">
+   <scaling units="task calls" expression="x" to_byte="x" format="0" fineincrement="1" coarseincrement="5" />
+   <table type="Static Y Axis" name="Setting" sizey="1">
+    <data>Consecutive lean samples to trip</data>
+   </table>
+   <description>Default 8 consecutive lean, invalid, or not-ready samples. A valid sample at or richer than the AFR threshold resets this counter.</description>
+  </table>
  </rom>
  <rom base="32BITBASE">
   <romid>
@@ -1247,5 +1303,13 @@
   </table>
   <table name="External Wideband Lambda Transfer" storageaddress="0x7E404" />
   <table name="External Wideband Valid Voltage Range" storageaddress="0x7E40C" />
+  <table name="Pressure-Based Open Loop Failsafe Enable" storageaddress="0x7EACC" />
+  <table name="Pressure-Based Open Loop Margin" storageaddress="0x7EAD0" />
+  <table name="Lean Fuel Cut Enable" storageaddress="0x7EACD" />
+  <table name="Lean Fuel Cut Arm Pressure" storageaddress="0x7EAD4" />
+  <table name="Lean Fuel Cut Reset Pressure" storageaddress="0x7EAD8" />
+  <table name="Lean Fuel Cut AFR Threshold" storageaddress="0x7EADC" />
+  <table name="Lean Fuel Cut Sensor Transport Delay" storageaddress="0x7EAE8" />
+  <table name="Lean Fuel Cut Confirmation Count" storageaddress="0x7EAEA" />
  </rom>
 </roms>

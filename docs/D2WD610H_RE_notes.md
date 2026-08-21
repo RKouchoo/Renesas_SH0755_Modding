@@ -520,7 +520,7 @@ _(underscore names only — strict naming enforcement is ON)_
   - 0x000353B0 → **intake_avcs_target_by_avls_mode_update**
   - 0x0003E20E → **engine_load_dependent_update_3e20e**
   - 0x00029024 → **engine_load_dependent_update_29024**
-  - 0x00022454 → **engine_load_dependent_update_22454**
+  - 0x00022454 → **primary_open_loop_fueling_target_update**
   - 0x0002046C → **engine_load_dependent_update_2046c**
   - 0x0003DEF0 → **engine_load_dependent_update_3def0**
   - 0x000666EC → **engine_load_and_delta_dependent_update_666ec**
@@ -691,3 +691,19 @@ and 0x1B81E.
   conditioner cap, leaving a predictable 3200-RPM engage / 3000-RPM release policy. The stock
   request/commit/actuation sequence remains. The focused XML omits controls made inoperative by
   this policy and E503 logs the committed state used by the VE selector.
+- 2026-08-22: the pressure/lean safety trace renamed
+  `engine_control_periodic_task_dispatch` (0x10A28),
+  `primary_open_loop_fueling_target_update` (0x22454),
+  `cl_ol_transition_delay_update` (0x22756),
+  `cl_ol_delay_condition_and_counter_update` (0x22948),
+  `cl_ol_transition_state_update` (0x22AAE),
+  `cl_ol_transition_state_initialize` (0x22AC2),
+  `fueling_state_flag_clear_on_condition` (0x2331E),
+  `fuel_cut_flag_aggregate` (0x23FC0), `rev_limiter_fuel_cut` (0x24B24), and
+  `atmospheric_pressure_source_select_update` (0x47DB2). The primary target
+  task proves `0xFFFFBE38` bit `0x80` is its closed-loop-permission bit. The
+  delay lookup and atmospheric source writer prove `0xFFFFCFBC` is live native
+  absolute barometric pressure. The master now calls the stock target first and
+  may clear only bit `0x80` near atmospheric pressure; its separate lean wrapper
+  composes after the prior rev-limit/overboost wrapper and sets the same verified
+  fuel-cut flag only after delayed, confirmed AFR failure.

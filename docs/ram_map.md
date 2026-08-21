@@ -82,7 +82,7 @@ allocates no RAM and does not alter the stock correction array.
 ## Closed-loop / open-loop fuel (see notes §7, task #4)
 | RAM addr | Meaning |
 |---|---|
-| 0xFFFFBE38 | CL/OL state flag byte (0x40 throttle-above, 0x20 BPW-above, 0x80 delay) |
+| 0xFFFFBE38 | CL/OL state flag byte (0x40 throttle-above, 0x20 BPW-above, 0x80 closed-loop permitted by the primary target path; master pressure safety may clear only 0x80) |
 | 0xFFFFBE2C / BE30 | CL/OL thresholds cached (throttle / BPW) |
 | 0xFFFFBE14/16/18/1A/28 | CL/OL delay counters |
 
@@ -97,6 +97,8 @@ allocates no RAM and does not alter the stock correction array.
 | 0xFFFFB4E8 / B4EC | float | Retained stock conditioned front feedback/logger paths; both ultimately follow the same synthetic lambda in the master image |
 | 0xFFFFAB20 / AB0C | u16 | Stock rear narrowband raw channels; master bypasses conversion and every traced rear monitor stage |
 | 0xFFFFB098 / B09C | float | Master external-wideband logger mirrors E500 (same lambda when valid, 0.0 fault sentinel); no longer rear-O2 results in the master image |
+| 0xFFFFC85C | u16 | Master lean-cut delay/confirmation counter, reclaimed only after every traced rear-O2 runtime task is bypassed |
+| 0xFFFFC860 | u8 | Master lean-cut state: 0 idle, 1 sensor delay, 2 AFR monitoring, 3 fuel-cut latched |
 
 The older standalone single-front-A/F patch has different semantics and remains documented in
 [single_front_af_patch.md](single_front_af_patch.md). For the current master image, use the logger

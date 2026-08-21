@@ -22,7 +22,11 @@ seed data by the final boost calibration.
 | `0x7E640..0x7E667` | Low/high dual-VE descriptors. |
 | `0x7E668..0x7E6B7` | Low/high dual-VE RPM axes. |
 | `0x7E6B8..0x7EAC7` | Low/high dual-VE data. |
-| `0x7EAC8..0x7FAF7` | Unallocated verified free flash remaining in the checksum range. |
+| `0x7EAC8..0x7EAEB` | Pressure-open-loop and lean-cut switches/calibration. |
+| `0x7EB20..0x7EB9B` | Stock-target-first pressure/open-loop wrapper. |
+| `0x7EBA0..0x7EBB7` | Explicit lean-state zero initializer. |
+| `0x7EC00..0x7EDE7` | Composed rev-limit/overboost/latched-lean-cut wrapper. |
+| `0x7EDE8..0x7FAF7` | Unallocated contiguous verified free flash remaining in the checksum range (3,344 bytes). |
 
 The critical boundary is exact: the wideband component ends at `0x7E63F` and
 the speed-density component's dual-VE data segment starts at `0x7E640`. Component builders also require every destination
@@ -45,11 +49,13 @@ byte to remain `0xFF` before writing.
 
 ## RAM
 
-No component reserves new persistent RAM. Injected code uses the SH stack for
-temporary register preservation and reads or publishes already-mapped stock RAM
-signals: MAP/RPM/IAT/airflow/load, former-MAF ADC, front-feedback/readiness and
-logger mirrors, boost duty inputs, and committed AVLS state. Consequently there
-is no independent scratch-RAM allocation that can collide with another task.
+The fueling-safety component reserves `0xFFFFC85C` as a 16-bit task-call counter
+and `0xFFFFC860` as an 8-bit state (`0` idle, `1` sensor delay, `2` monitoring,
+`3` cut latched). These were rear-O2 response-integrator locations. The component
+refuses to install unless all five traced rear-O2 runtime tasks have already been
+bypassed. It repoints the stock float-1.0 initializer at task pointer `0x1055C`
+to an explicit zero initializer at `0x7EBA0`. Other injected code uses only the
+SH stack and already-mapped stock signals.
 
 `python3 master_patch/verify_master_patch.py` checks all declared blob ranges,
 stock hook ranges, calibration ranges, the rotational-idle reservation,

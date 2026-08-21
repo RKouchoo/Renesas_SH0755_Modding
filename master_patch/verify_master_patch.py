@@ -17,7 +17,8 @@ ROOT = HERE.parent
 PATCH_DIR = ROOT / "patch"
 SD_DIR = ROOT / "speed_density"
 BASE_TURBO_DIR = ROOT / "base_turbo_map"
-for directory in (PATCH_DIR, SD_DIR, BASE_TURBO_DIR, HERE):
+FUEL_SAFETY_DIR = ROOT / "fueling_safety"
+for directory in (PATCH_DIR, SD_DIR, BASE_TURBO_DIR, FUEL_SAFETY_DIR, HERE):
     sys.path.insert(0, str(directory))
 
 import build_definition as definition  # noqa: E402
@@ -28,12 +29,14 @@ import patch_speed_density as speed_density  # noqa: E402
 import build_base_turbo_map as base_turbo  # noqa: E402
 import verify_base_turbo_map as base_turbo_verify  # noqa: E402
 import sh2_disasm  # noqa: E402
+import fueling_safety_component as fueling_safety  # noqa: E402
+import verify_fueling_safety as fueling_safety_verify  # noqa: E402
 
 
 OUTPUT = HERE / "D2WD610H_master_patch.bin"
 DEFINITION = HERE / "D2WD610H_master_patch.xml"
 LOGGER_FRAGMENT = HERE / "D2WD610H_master_logger_ecuparams.xml"
-EXPECTED_OUTPUT_SHA256 = "99f1e67932a001679117101ce09384ed1011331de99684410bae57bb94d91813"
+EXPECTED_OUTPUT_SHA256 = "2950f98360aba3c47d3aeed072104141d506a8e070b14efb5e7e29e2517821eb"
 ROTATIONAL_IDLE_RESERVED_START = 0x0007DB40
 ROTATIONAL_IDLE_RESERVED_END = 0x0007DCEB
 
@@ -76,6 +79,7 @@ def rebuild_component_stage(stock: bytes) -> tuple[
     master.apply_omni_map_calibration(stage)
     blobs["speed_density"] = speed_density.apply_to_rom(stage)
     blobs["wideband"] = wideband.apply_to_rom(stage)
+    blobs["fueling_safety"] = fueling_safety.apply_to_rom(stage)
     return bytes(stage), blobs
 
 
@@ -108,6 +112,15 @@ def verify_layout(
         fail("wideband and speed-density dual-VE segments are not exactly adjacent")
     if speed_density.COMPONENT_END >= wideband.CONSTANTS_ADDR:
         fail("speed-density reservation enters the wideband component region")
+    if speed_density.DUAL_VE_END + 1 != fueling_safety.COMPONENT_START:
+        fail("dual-VE and fueling-safety segments are not exactly adjacent")
+    safety_end = (
+        fueling_safety.LEAN_CUT_WRAPPER_ADDR
+        + len(fueling_safety.build_lean_cut_wrapper())
+        - 1
+    )
+    if fueling_safety.COMPONENT_END != safety_end:
+        fail("fueling-safety reserved end does not equal its final wrapper byte")
 
     # The optional rotational-idle component has a reserved, intentionally
     # unused allocation between boost and speed density.  Master must not
@@ -166,6 +179,8 @@ def verify_layout(
         (wideband.BANK2_INHIBIT_ENTRY, 12, "bank-2 inhibit hook"),
         (wideband.FRONT_PUMP_DIAG_TASK_PTR, 4, "front pump diagnostic bypass"),
         (wideband.REAR_O2_PROCESS_ENTRY, 12, "rear O2 process bypass"),
+        (fueling_safety.PRIMARY_OL_TASK_PTR, 4, "pressure-forced OL task hook"),
+        (fueling_safety.LEAN_STATE_INIT_TASK_PTR, 4, "lean-state initialization hook"),
     ):
         add_range(hook_owned, address, size, f"hook/{label}")
     for address in speed_density.MAF_CONVERSION_CALL_ADDRS:
@@ -730,6 +745,9 @@ def verify_logger_fragment() -> None:
         ),
         "E502": ("0xFFAE70", "4", "float", {"x"}),
         "E503": ("0xFFCD86", "1", "uint8", {"x"}),
+        "E504": ("0xFFC860", "1", "uint8", {"x"}),
+        "E505": ("0xFFC85C", "2", "uint16", {"x"}),
+        "E506": ("0xFFBE38", "1", "uint8", {"x"}),
     }
     parameters = list(root.findall("ecuparam"))
     by_id = {parameter.get("id"): parameter for parameter in parameters}
@@ -760,14 +778,18 @@ def verify_logger_fragment() -> None:
         fail("logger readiness parameter does not document the boost/CL threshold")
     if "committed" not in (by_id["E503"].get("desc") or ""):
         fail("logger AVLS parameter does not document committed-state selection")
+    if "releases only" not in (by_id["E504"].get("desc") or ""):
+        fail("logger lean-cut state does not document latch release")
+    if "not milliseconds" not in (by_id["E505"].get("desc") or ""):
+        fail("logger lean-cut counter does not document task-call units")
 
 
 def verify_component_hooks(image: bytes, component_stage: bytes) -> None:
     expect(
         image,
         boost.REVLIM_FNPTR,
-        boost.be32(boost.REVWRAP_ADDR),
-        "overboost rev-limiter wrapper pointer",
+        boost.be32(fueling_safety.LEAN_CUT_WRAPPER_ADDR),
+        "composed rev-limit/overboost/lean-cut wrapper pointer",
     )
     expect(
         image,
@@ -828,6 +850,21 @@ def verify_component_hooks(image: bytes, component_stage: bytes) -> None:
             wideband.BOOST_READY_GUARD_ADDR,
             len(wideband.build_boost_ready_guard()),
             "master sensor/SD-validity boost gate",
+        ),
+        (
+            fueling_safety.PRESSURE_OL_WRAPPER_ADDR,
+            len(fueling_safety.build_pressure_ol_wrapper()),
+            "pressure-forced open-loop wrapper",
+        ),
+        (
+            fueling_safety.LEAN_STATE_INITIALIZE_ADDR,
+            len(fueling_safety.build_lean_state_initialize()),
+            "lean-state zero initializer",
+        ),
+        (
+            fueling_safety.LEAN_CUT_WRAPPER_ADDR,
+            len(fueling_safety.build_lean_cut_wrapper()),
+            "latched lean-cut wrapper",
         ),
     ):
         expect(image, address, component_stage[address : address + size], label)
@@ -942,6 +979,10 @@ def main() -> None:
     verify_omni_map(image)
     verify_avls_dual_ve(image)
     verify_wideband(image)
+    try:
+        fueling_safety_verify.verify_image(image)
+    except AssertionError as exc:
+        fail(f"fueling-safety audit: {exc}")
 
     # Reuse the already-audited tune-policy verifier against the new master
     # component stage: fueling, all six calibrated timing surfaces (including
@@ -973,7 +1014,8 @@ def main() -> None:
     print("  timing/AVLS       : dual VE; fixed 3200/3000 lift switch; cam timing endpoints identified")
     print("  memory layout     : no ownership collisions; rotational-idle reservation untouched")
     print("  definition        : focused master XML; dormant timing pair and obsolete defs omitted")
-    print("  logger            : lambda/raw-ADC/readiness/committed-AVLS fragment validated")
+    print("  fueling safety    : pressure-forced OL ON; 13.0-AFR delayed/latched cut ON")
+    print("  logger            : AFR/ADC/readiness/AVLS/lean-cut state fragment validated")
     print("  provenance        : root stock, base copy, and SRF payload remain byte-identical")
 
 
