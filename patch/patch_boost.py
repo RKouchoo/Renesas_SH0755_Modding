@@ -8,6 +8,7 @@ Proportional + feed-forward controller on the repurposed purge PWM output (ATU-I
     target = TargetBoost[rpm]              (native pressure: mmHg absolute)
     err    = target - MAP(0xFFFFABC4)
     ratio  = clamp(base + Kp*err, 0, MaxRatio)
+    if EBCS_Enable != 1: ratio = 0         (spring-pressure mode)
     if throttle <= MinThrottle: ratio = 0  (driver-demand gate)
     if MAP > Overboost: ratio = 0          (actuator fail-safe)
     -> stock output stage 0xE8C4
@@ -25,8 +26,9 @@ solenoid (0xE8C4 has one caller; 0xFFFFF590 is otherwise written only by init).
 
 Default calibrations are reduced from the 2005 EJ255 Legacy GT MT ROM A2WC510N and rescaled to
 a 5 psi peak target. The matching MAP conversion (-414.0 offset, 514.2 multiplier) is installed
-at 0x72810. Use the matching turbo MAP sensor, validate it against a reference gauge, bench-prove
-the built-in hard fuel cut, and retain a mechanical boost fallback.
+at 0x72810. Use the matching turbo MAP sensor, validate it against a reference gauge, prove the
+built-in hard fuel cut, and retain a mechanical boost fallback. The electronic actuator and hard
+overboost cut use independent exact-01 switches: the actuator defaults OFF and the hard cut ON.
 
 The canonical stock ROM is always read from the repository root and is never opened for
 writing. The patcher refuses an output path that aliases it.
@@ -67,7 +69,8 @@ TARGET_DATA = 0x7D7E0   # float32[8]  target native mmHg absolute
 KP_ADDR     = 0x7D800   # float32
 MAXR_ADDR   = 0x7D804   # float32
 OVERB_ADDR  = 0x7D808   # float32
-BOOST_ENABLE_ADDR = 0x7D80C # uint8: exact 1=patch; every other value=zero duty/stock rev limit
+EBCS_ENABLE_ADDR = 0x7D80C # uint8: exact 1=electronic duty; default 0=spring pressure
+OVERBOOST_ENABLE_ADDR = 0x7D80D # uint8: exact 1=added hard MAP fuel cut; default 1
 STUB_ADDR   = 0x7D810   # controller (4-aligned)
 THROTTLE_GATE_ADDR = 0x7D8BC # float32: minimum throttle opening for boost duty
 OVERB_FC_ADDR = 0x7D8C0 # float32: overboost FUEL-CUT MAP limit
@@ -124,13 +127,13 @@ def desc_1axis(type_byte, axis_addr, data_addr, scale, offset):
 def build_stub():
     """Proportional + feed-forward. Entered via tail-call jmp (PR=grandparent).
 
-       With BOOST_ENABLE_ADDR clear, force FR4 to zero before the stock output stage
+       With EBCS_ENABLE_ADDR clear, force FR4 to zero before the stock output stage
        (the safe spring-pressure state for the required plumbing). With it set,
        replace FR4 with calculated boost duty. Reads only RAM + flash constants —
        NO RAM writes.
     """
     a = Asm(STUB_ADDR)
-    a.movl_pool(1, BOOST_ENABLE_ADDR); a.movb_at(0, 1); a.cmp_eq_imm(0x01)
+    a.movl_pool(1, EBCS_ENABLE_ADDR); a.movb_at(0, 1); a.cmp_eq_imm(0x01)
     a.bt('enabled')                                                # exact 01 -> boost controller
     a.fldi0(4)                                                     # disabled: fail closed at zero EBCS duty
     a.movl_pool(2, STOCK_OUTPUT); a.jmp(2); a.nop()
@@ -173,7 +176,7 @@ def build_fuelcut_wrapper():
     a = Asm(REVWRAP_ADDR)
     a.stsl_pr()                                                    # save dispatcher PR
     a.movl_pool(2, REVLIMITER); a.jsr(2); a.nop()                  # call stock rev limiter
-    a.movl_pool(1, BOOST_ENABLE_ADDR); a.movb_at(0, 1); a.cmp_eq_imm(0x01)
+    a.movl_pool(1, OVERBOOST_ENABLE_ADDR); a.movb_at(0, 1); a.cmp_eq_imm(0x01)
     a.bf('skip')                                                   # anything but 01: stock rev limiter only
     a.movl_pool(1, MAP_ADDR); a.fmov_load(2, 1)                    # fr2 = MAP
     a.movl_pool(1, OVERB_FC_ADDR); a.fmov_load(3, 1)               # fr3 = fuel-cut limit
@@ -193,7 +196,8 @@ def build_blobs():
         ("target_desc", TARGET_DESC, desc_1axis(0x00, RPM_AXIS, TARGET_DATA, 1.0, 0.0)),
         ("target_data", TARGET_DATA, b"".join(f32(x) for x in TARGET_MAP)),
         ("gains",       KP_ADDR,     f32(KP)+f32(MAXRATIO)+f32(OVERBOOST)),
-        ("enable",      BOOST_ENABLE_ADDR, b"\x01"),
+        ("ebcs_enable", EBCS_ENABLE_ADDR, b"\x00"),
+        ("overboost_enable", OVERBOOST_ENABLE_ADDR, b"\x01"),
         ("stub",        STUB_ADDR,   build_stub()),
         ("throttle_gate",THROTTLE_GATE_ADDR, f32(MIN_THROTTLE)),
         ("overb_fc",    OVERB_FC_ADDR, f32(OVERBOOST_FUELCUT)),
@@ -281,9 +285,11 @@ def main():
     print("  target : %s (psi relative to 760 mmHg; native=%s)" % (TARGET_BOOST_PSI, TARGET_MAP))
     print("  Kp=%g ratio/mmHg MaxRatio=%g MinThrottle=%g Overboost(duty)=%gpsi Overboost(fuelcut)=%gpsi"
           % (KP, MAXRATIO, MIN_THROTTLE, OVERBOOST_PSI, OVERBOOST_FUELCUT_PSI))
-    print("  runtime switch  @0x%05X : ON (01); RomRaider OFF forces zero EBCS duty + stock rev limiter"
-          % BOOST_ENABLE_ADDR)
-    print("  switch caveat   : OFF does not restore the stock MAP-sensor scaling at 0x%05X" % MAP_SCALING_ADDR)
+    print("  EBCS switch     @0x%05X : OFF (00); exact 01 permits electronic duty"
+          % EBCS_ENABLE_ADDR)
+    print("  overboost switch@0x%05X : ON (01); exact 01 permits the added hard MAP cut"
+          % OVERBOOST_ENABLE_ADDR)
+    print("  switch caveat   : neither switch restores stock MAP scaling at 0x%05X" % MAP_SCALING_ADDR)
     print("  fuel cut reuses rev-limiter path: sets 0xFFFFBF6C bit0x80 (via 0x23FC0 aggregator)")
     print("\n*** Fit the A2WC510N-compatible EJ255 MAP sensor and validate 0xFFFFABC4 against a gauge. ***")
     print("Flash via EcuFlash/RomRaider (recomputes subarudbw checksum on save).")

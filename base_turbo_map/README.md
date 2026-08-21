@@ -6,10 +6,10 @@ boost + single-front-A/F/rear-O2-delete image for D2WD610H.
 Generated ROM:
 
 - `D2WD610H_5psi_98RON_base_turbo.bin`
-- SHA-256: `fd9a9354c7a9f2d82813253d41b17adb058b68ceb3f426a0c197a6322fbf2c0f`
+- SHA-256: `3564985c8e5d6e60b7d259408900e1b386bea51e372b90c805b04a32db4f404b`
 - CALID: `D2WD610H`
 - Size: 512 KiB
-- Subaru additive checksum: valid (`0x4BD6335B`)
+- Subaru additive checksum: valid (`0x4DD4335A`)
 - Matching definition: `../defs/D2WD610H_AVLS_boost_single_front_af_patch.xml`
 
 ## Important status
@@ -46,7 +46,8 @@ with table locations and conversions from
 
 - Rebuilds the combined patch from the pinned stock ROM; it never stacks changes onto a generated
   image.
-- Keeps both runtime patch switches on.
+- Keeps electronic boost control OFF while independently retaining the hard
+  overboost cut; the front-A/F/rear-delete switch remains ON.
 - Uses the 5 psi wastegate spring as the sole boost controller:
   - all base wastegate duty cells = `0%`;
   - proportional gain = `0`;

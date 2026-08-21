@@ -65,7 +65,8 @@ def main():
     # shared blob builders.
     expect(image, boost.HIJACK_LITERAL, boost.be32(boost.STUB_ADDR), "boost output hook")
     expect(image, boost.REVLIM_FNPTR, boost.be32(boost.REVWRAP_ADDR), "boost rev-limit hook")
-    expect(image, boost.BOOST_ENABLE_ADDR, b"\x01", "boost runtime enable")
+    expect(image, boost.EBCS_ENABLE_ADDR, b"\x00", "EBCS enable default")
+    expect(image, boost.OVERBOOST_ENABLE_ADDR, b"\x01", "overboost enable default")
     expect(image, boost.STUB_ADDR,
            bytes.fromhex("d11e601088018903f48dd21d422b0009"),
            "zero-duty disabled boost path")
@@ -163,8 +164,9 @@ def main():
     print("  changed bytes  : %d = boost %d + front-A/F %d; no overlap"
           % (len(all_changed), len(boost_changed), len(front_changed)))
     print("  injected code  : %d decoded instructions; no unknown opcodes" % len(decoded))
-    print("  runtime enables: boost 0x%05X=01; front-A/F 0x%05X=01"
-          % (boost.BOOST_ENABLE_ADDR, front.FRONT_AF_ENABLE_ADDR))
+    print("  runtime enables: EBCS 0x%05X=00; hard cut 0x%05X=01; front-A/F 0x%05X=01"
+          % (boost.EBCS_ENABLE_ADDR, boost.OVERBOOST_ENABLE_ADDR,
+             front.FRONT_AF_ENABLE_ADDR))
     print("  O2 architecture: retained Bank-1 factory A/F; both rear narrowbands bypassed")
     print("  regenerated    : byte-identical from fresh stock; no generated input stacking")
 

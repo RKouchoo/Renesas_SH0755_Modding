@@ -251,6 +251,7 @@ def main(argv: list[str] | None = None) -> None:
     print("  AVLS VE ranges    : low 0..3200 RPM; high 3000..7500 RPM")
     print("  AVLS switch       : fixed 3200 engage / 3000 release RPM")
     print("  boost             : EVAP PWM + throttle/SD-input/wideband/soft/hard gates")
+    print("  boost switches    : EBCS OFF; independent hard overboost cut ON")
     print("  default boost cmd : spring-only (WGDC/Kp/max duty all zero), 5 psi targets")
     print("  oxygen sensors    : four stock paths removed; former MAF ADC -> 50-4110 P0/P1")
     print(

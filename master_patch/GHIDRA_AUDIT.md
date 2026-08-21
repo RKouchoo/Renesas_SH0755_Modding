@@ -203,6 +203,14 @@ The verifier rejects overlap, writes outside declared stock hooks/calibration
 regions, unknown injected opcodes, stale generated XML, unexpected logger RAM
 addresses, stock/SRF provenance drift, and checksum failure.
 
+The spring-pressure revision separates the former combined boost switch into
+`Electronic Boost Control Enable` at `0x7D80C` (default `00`) and `Overboost
+Fuel Cut Enable` at `0x7D80D` (default `01`). Live Ghidra reconfirmed the named
+stock endpoints `evap_purge_pwm_output_write` at `0xE8C4`,
+`rev_limiter_fuel_cut` at `0x24B24`, and `fuel_cut_flag_aggregate` at `0x23FC0`.
+The component and master verifiers independently pin both exact-`01` branches,
+their literal addresses, the zero-duty path, and the `0x80` fuel-cut flag write.
+
 ## Unresolved physical risks
 
 - AB06 is proven as the continuing former-MAF ADC channel in firmware, but its

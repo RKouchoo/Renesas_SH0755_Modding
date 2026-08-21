@@ -30,6 +30,9 @@ byte to remain `0xFF` before writing.
 
 ## Intentional composition
 
+- `0x7D80C` is the exact-`01` electronic-actuator enable and defaults `00`.
+  `0x7D80D` is the independent exact-`01` hard-overboost-cut enable and defaults
+  `01`; both remain inside the existing boost allocation before code at `0x7D810`.
 - The stock purge-output literal at `0x3FD8C` is one composed hook: boost first
   points it to its controller; master wideband then points it to the prerequisite
   guard, which tail-calls the boost controller only when its inputs are valid.

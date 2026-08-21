@@ -168,7 +168,8 @@ custom code in free space, driving the repurposed purge PWM output (0xFFFFF590).
   definition with AVLS and category "Boost Control (patch)". Its xmlid is
   D2WD610H_AVLS_BOOST_PATCH while internalidstring remains D2WD610H for auto-detect. Load this
   definition for the standalone boost ROM; use D2WD610H_AVLS.xml for an AVLS-only ROM. The definition
-  exposes the one-byte `Boost Control Patch Enable` at 0x7D80C (`01` on, `00` off).
+  exposes `Electronic Boost Control Enable` at 0x7D80C (default `00`) and the
+  independent `Overboost Fuel Cut Enable` at 0x7D80D (default `01`).
 - The combined boost + single-front-A/F/rear-O2-delete image uses
   **defs/D2WD610H_AVLS_boost_single_front_af_patch.xml**, which retains the same boost tables and
   switch addresses and adds `Single Front A/F Patch Enable` at 0x7D91C; exact `01` also bypasses
@@ -199,7 +200,7 @@ custom code in free space, driving the repurposed purge PWM output (0xFFFFF590).
   pooled pointer @0x3FD8C (=0x0000E8C4); the patch repoints that pointer to the stub. Disassembly
   confirms the controller is STATELESS (no persistent RAM stores). err = TargetBoost[rpm] − MAP(0xFFFFABC4);
   ratio = clamp(base + Kp·err, 0, MaxRatio); throttle @0xFFFFB314 at/below the tunable minimum
-  @0x7D8BC → ratio 0; overboost → ratio 0. Before those calculations it reads enable byte
+  @0x7D8BC → ratio 0; overboost → ratio 0. Before those calculations it reads the EBCS byte
   0x7D80C; when clear it forces zero EBCS duty and tail-calls the stock output stage.
 - **P-only, not PI — deliberate.** Audit (verify_regions.py, cross-checked in Ghidra) found NO RAM
   word can be proven free: 0xFFFFBFF0/BFF8 are inside the cam-solenoid struct array (0xFFFFBFB8 +
@@ -211,7 +212,8 @@ custom code in free space, driving the repurposed purge PWM output (0xFFFFF590).
   0x72808). The stub is the sole runtime driver — nothing else can fight boost control.
 - Free flash VERIFIED CLEAN: 9064 contiguous 0xFF @0x7D790; no code points into it.
 - Layout: base_desc 0x7D790 / rpm_axis 0x7D7A4 / base_data 0x7D7C4 / target_desc 0x7D7CC /
-  target_data 0x7D7E0 / Kp 0x7D800 / MaxRatio 0x7D804 / Overboost 0x7D808 / enable 0x7D80C /
+  target_data 0x7D7E0 / Kp 0x7D800 / MaxRatio 0x7D804 / Overboost 0x7D808 /
+  EBCS enable 0x7D80C / hard-cut enable 0x7D80D /
   stub 0x7D810 / throttle minimum 0x7D8BC / hard limit 0x7D8C0 / wrapper 0x7D8C4.
 - Default calibration is donor-derived: 5 psi peak target, base WGDC
   `{0,0,21,19,18,17,15,14}`, Kp `0.0005 ratio/mmHg`, maximum duty `0.33`, 30.0 native throttle
@@ -221,8 +223,9 @@ custom code in free space, driving the repurposed purge PWM output (0xFFFFF590).
   integral term (needs verified RAM), 2-axis target, and faster loop rate.
 
 ### Overboost fuel cut
-Two-tier while enabled: SOFT (MAP>0x7D808 → duty 0, in the boost stub) + HARD
-(MAP>0x7D8C0 → fuel cut). Hard cut reuses the factory rev-limiter path — wrapper @0x7D8C4
+Two-tier protection: SOFT (MAP>0x7D808 → duty 0, in the boost stub when EBCS is
+enabled) + independently switched HARD (MAP>0x7D8C0 → fuel cut). Hard cut reuses
+the factory rev-limiter path — wrapper @0x7D8C4
 hooked at rev-limiter fn-ptr 0x11D3C
 (`FUN_00011AD0` dispatcher) calls `rev_limiter_fuel_cut` @0x24B24 then sets fuel-cut flag
 0xFFFFBF6C bit0x80 on overboost; `fuel_cut_flag_aggregate` @0x23FC0 propagates → injectors off.

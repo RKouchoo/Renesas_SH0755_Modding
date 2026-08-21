@@ -1201,10 +1201,15 @@
   <table name="Speed Density IAT Density Correction" storageaddress="0x7E160" sizey="10">
    <table type="Y Axis" storageaddress="0x7E138" />
   </table>
-  <table type="Switch" name="Boost Control Patch Enable" category="Boost Control (patch)" sizey="1" userlevel="1" storageaddress="0x7D80C">
+  <table type="Switch" name="Electronic Boost Control Enable" category="Boost Control (patch)" sizey="1" userlevel="1" storageaddress="0x7D80C">
    <state name="on" data="01" />
    <state name="off" data="00" />
-   <description>Exact 01 enables the EVAP-output EBCS controller and added hard MAP fuel cut. Any other value forces zero EBCS duty and runs only the stock RPM limiter. This does not restore the removed MAF/O2 logic or the stock MAP scaling. The master prerequisite guard still forces zero duty unless the external-wideband input is ready, MAP/RPM/IAT are inside their speed-density validity windows, RPM is at least the first shared boost-axis breakpoint, and modeled airflow is not the 500 g/s fault sentinel.</description>
+   <description>Exact 01 permits the EVAP-output EBCS controller to command duty. Default 00 forces zero EBCS duty for direct wastegate-spring control without disabling the independent hard overboost cut. This does not restore the removed MAF/O2 logic or stock MAP scaling. The master prerequisite guard still forces zero duty unless the external-wideband input is ready, MAP/RPM/IAT are inside their speed-density validity windows, RPM is at least the first shared boost-axis breakpoint, and modeled airflow is not the 500 g/s fault sentinel.</description>
+  </table>
+  <table type="Switch" name="Overboost Fuel Cut Enable" category="Boost Control (patch)" sizey="1" userlevel="1" storageaddress="0x7D80D">
+   <state name="on" data="01" />
+   <state name="off" data="00" />
+   <description>Exact 01 independently enables the added hard MAP fuel cut through the verified stock rev-limiter flag path. Default is ON even while electronic boost control is OFF. Any other value retains the stock RPM limiter but bypasses only the added MAP cut. This is a last-resort software protection and cannot replace correct wastegate plumbing.</description>
   </table>
   <table type="2D" name="Boost Wastegate Duty (RPM)" category="Boost Control (patch)" storagetype="uint8" endian="big" sizey="8" userlevel="1" storageaddress="0x7D7C4">
    <scaling units="wastegate duty %" expression="x" to_byte="x" format="0" fineincrement="1" coarseincrement="5" />

@@ -133,8 +133,8 @@ def main():
           % (len(all_changed), len(boost_changed), len(front_changed)))
     print("  changed ranges  : %s" % ", ".join(
         "0x%05X..0x%05X" % pair for pair in merge_ranges(all_changed)))
-    print("  boost blocks    : %d; enable 0x%05X=01" %
-          (len(boost_blobs), boost.BOOST_ENABLE_ADDR))
+    print("  boost blocks    : %d; EBCS 0x%05X=00; hard cut 0x%05X=01" %
+          (len(boost_blobs), boost.EBCS_ENABLE_ADDR, boost.OVERBOOST_ENABLE_ADDR))
     print("  front-A/F blocks: %d; enable 0x%05X=01" %
           (len(front_blobs), front.FRONT_AF_ENABLE_ADDR))
     print("  input policy    : fresh root stock only; no generated image was used as input")

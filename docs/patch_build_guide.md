@@ -100,10 +100,10 @@ if MAP > SoftOverboost:
 write ratio through output stage 0xE8C4
 ```
 
-`Boost Control Patch Enable` in the matching RomRaider definition writes `01` (on) or `00`
-(off) at `0x7D80C`. The generated image defaults to on. Only exact `01` enables the feature;
-erased `FF` and every other value fail closed. Off forces `FR4 = 0.0` before the stock
-PWM output stage and skips the added MAP fuel cut, leaving the stock rev limiter in place. It
+`Electronic Boost Control Enable` writes `01`/`00` at `0x7D80C` and defaults OFF. Only exact
+`01` permits actuator duty; every other value forces `FR4 = 0.0` before the stock PWM stage.
+`Overboost Fuel Cut Enable` independently writes `01`/`00` at `0x7D80D` and defaults ON. Only
+exact `01` permits the added MAP fuel cut; every other value leaves only the stock RPM limiter. It
 does not replay stock purge duty because that could energize a physically repurposed EBCS. The
 required commissioning assumption is that zero duty produces the minimum-boost/wastegate-spring
 state; prove that plumbing and polarity on a bench.
@@ -164,7 +164,8 @@ The populated region remains inside the verified `0xFF` free run at `0x7D790..0x
 | Kp | `0x7D800` |
 | Maximum duty ratio | `0x7D804` |
 | Soft overboost limit | `0x7D808` |
-| Runtime enable byte | `0x7D80C` |
+| Electronic boost-control enable | `0x7D80C` (default `00`) |
+| Hard-overboost fuel-cut enable | `0x7D80D` (default `01`) |
 | Controller | `0x7D810` |
 | Minimum throttle | `0x7D8BC` |
 | Hard overboost limit | `0x7D8C0` |

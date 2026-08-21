@@ -1793,8 +1793,13 @@
    <description>Minimum engine speed gate for OSV (oil switching valve) actuation, checked in avls_osv_actuation_gate @ 0x405CC. Below this the high-cam actuation is not commanded even if requested. Stock: 3000.</description>
   </table>
   <!-- D2WD610H EVAP-to-EBCS boost-patch tables -->
-  <table type="Switch" name="Boost Control Patch Enable" category="Boost Control (patch)" sizey="1" userlevel="1" storageaddress="0x7D80C">
-   <description>Only ON (exactly 01) enables EVAP-solenoid boost duty and the added MAP overboost fuel cut. OFF (00), erased FF, or any other value forces zero EBCS duty and runs only the stock rev limiter; with the required plumbing this is the minimum-boost/wastegate-spring state. Verify on the bench that zero duty produces minimum boost before relying on this switch. OFF does not restore the stock MAP-sensor scaling at 0x72810; the installed sensor must remain compatible with {-414.0, 514.199951} unless that calibration is separately restored before flashing.</description>
+  <table type="Switch" name="Electronic Boost Control Enable" category="Boost Control (patch)" sizey="1" userlevel="1" storageaddress="0x7D80C">
+   <description>Only ON (exactly 01) permits EVAP-output electronic boost-control duty. Default OFF forces zero EBCS duty for direct wastegate-spring control without disabling the independent hard overboost cut. This switch does not restore stock MAP scaling.</description>
+   <state name="on" data="01" />
+   <state name="off" data="00" />
+  </table>
+  <table type="Switch" name="Overboost Fuel Cut Enable" category="Boost Control (patch)" sizey="1" userlevel="1" storageaddress="0x7D80D">
+   <description>Only ON (exactly 01) enables the added hard MAP fuel cut through the stock rev-limiter flag path. Default ON remains independent of electronic boost control. OFF retains the stock RPM limiter and bypasses only the added MAP cut.</description>
    <state name="on" data="01" />
    <state name="off" data="00" />
   </table>
@@ -1830,7 +1835,7 @@
   </table>
   <table type="1D" name="Boost Overboost Fuel Cut (hard)" category="Boost Control (patch)" storagetype="float" endian="big" sizey="1" userlevel="1" storageaddress="0x7D8C0">
    <scaling units="psi relative 760 mmHg" expression="(x-760)/51.71493257" to_byte="(x*51.71493257)+760" format="0.00" fineincrement="0.1" coarseincrement="0.5" />
-   <description>HARD overboost limit: above the default 7.00 psi relative-to-760-mmHg threshold, a FUEL CUT is triggered through the rev-limiter wrapper @0x7D8C4 and flag 0xFFFFBF6C bit0x80 while Boost Control Patch Enable is ON. Last-resort protection; no hysteresis, so bench-prove cut and recovery.</description>
+   <description>HARD overboost limit: above the default 7.00 psi relative-to-760-mmHg threshold, a FUEL CUT is triggered through the rev-limiter wrapper @0x7D8C4 and flag 0xFFFFBF6C bit0x80 while Overboost Fuel Cut Enable is ON. Last-resort protection; no hysteresis.</description>
   </table>
   <!-- D2WD610H single-front-A/F patch runtime control -->
   <table type="Switch" name="Single Front A/F Patch Enable" category="Front A/F + Rear O2 (patch)" sizey="1" userlevel="1" storageaddress="0x7D91C">

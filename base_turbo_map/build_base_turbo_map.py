@@ -47,7 +47,7 @@ DEFAULT_OUT = HERE / "D2WD610H_5psi_98RON_base_turbo.bin"
 
 ROM_SIZE = 0x80000
 STOCK_SHA256 = boost.STOCK_SHA256
-COMBINED_SHA256 = "019e06e509afce2e798bfe29543e2536524c259d3ab6683c7dd3131ee069fb5e"
+COMBINED_SHA256 = "71b28714106dcc1eb7adfe59738fc8c6e968b2b94ca9337158f4442f46fcc1fe"
 PINK_INJECTOR_DONOR_SIZE = 0x30000
 PINK_INJECTOR_DONOR_SHA256 = (
     "e3cc868a51476aaa25c1ffb63e8af8ba3e35ca4ace404e842f193bf117754b44"
@@ -611,8 +611,8 @@ def apply_calibration(rom: bytearray, reference: bytes) -> dict[str, tuple[int, 
     write("AVLS High Cam Engage RPM", AVLS_ENGAGE_RPM_ADDR, f32(AVLS_ENGAGE_RPM))
 
     # Five-psi spring-only commissioning: no electronic duty can be produced,
-    # even if a table or gain is accidentally non-zero.  Keep enable=01 so the
-    # separate hard-MAP fuel-cut wrapper is active.
+    # even if a table or gain is accidentally non-zero. The component has
+    # independent switches: keep EBCS explicitly OFF and the hard cut ON.
     write("Boost Target", boost.TARGET_DATA, pack_floats(BOOST_TARGET_NATIVE))
     write("Boost Wastegate Duty", boost.BASE_DATA, bytes(len(boost.BASE_DUTY)))
     write("Boost Kp", boost.KP_ADDR, f32(0.0))
@@ -628,8 +628,10 @@ def apply_calibration(rom: bytearray, reference: bytes) -> dict[str, tuple[int, 
         f32(boost.ATM_PRESSURE_NATIVE + HARD_OVERBOOST_PSI * boost.NATIVE_PER_PSI),
     )
 
-    if rom[boost.BOOST_ENABLE_ADDR] != 0x01:
-        raise SystemExit("REFUSING: boost patch is not enabled in combined reference")
+    if rom[boost.EBCS_ENABLE_ADDR] != 0x00:
+        raise SystemExit("REFUSING: EBCS actuator is not disabled in combined reference")
+    if rom[boost.OVERBOOST_ENABLE_ADDR] != 0x01:
+        raise SystemExit("REFUSING: hard overboost cut is not enabled in combined reference")
     if rom[0x7D91C] != 0x01:
         raise SystemExit("REFUSING: single-front-A/F patch is not enabled in combined reference")
 

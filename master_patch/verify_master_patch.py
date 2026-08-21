@@ -33,7 +33,7 @@ import sh2_disasm  # noqa: E402
 OUTPUT = HERE / "D2WD610H_master_patch.bin"
 DEFINITION = HERE / "D2WD610H_master_patch.xml"
 LOGGER_FRAGMENT = HERE / "D2WD610H_master_logger_ecuparams.xml"
-EXPECTED_OUTPUT_SHA256 = "a04a82a09f713801351f4fa849452d90187da526c0344857ab8834b799e221ce"
+EXPECTED_OUTPUT_SHA256 = "e841cb315ae15643d5140cf4c484ab753d054c719579e09d560c0eb328f7458d"
 ROTATIONAL_IDLE_RESERVED_START = 0x0007DB40
 ROTATIONAL_IDLE_RESERVED_END = 0x0007DCEB
 
@@ -833,6 +833,65 @@ def verify_component_hooks(image: bytes, component_stage: bytes) -> None:
         expect(image, address, component_stage[address : address + size], label)
 
 
+def verify_independent_boost_switches(image: bytes) -> None:
+    """Pin the two exact-01 decisions independently of the blob builders."""
+    expect(image, boost.EBCS_ENABLE_ADDR, b"\x00", "spring-only EBCS default")
+    expect(image, boost.OVERBOOST_ENABLE_ADDR, b"\x01", "hard-cut enable default")
+
+    controller_blob = boost.build_stub()
+    controller_decoded = decode_executable(
+        image,
+        controller_blob,
+        boost.STUB_ADDR,
+        {
+            boost.EBCS_ENABLE_ADDR,
+            boost.STOCK_OUTPUT,
+            boost.THROTTLE_ADDR,
+            boost.THROTTLE_GATE_ADDR,
+            boost.RPM_ADDR,
+            boost.BASE_DESC,
+            boost.INTERP_2D,
+            boost.TARGET_DESC,
+            boost.MAP_ADDR,
+            boost.OVERB_ADDR,
+            boost.KP_ADDR,
+            boost.MAXR_ADDR,
+        },
+        "boost controller",
+    )
+    expect(
+        image,
+        boost.STUB_ADDR,
+        bytes.fromhex("d11e601088018903f48dd21d422b0009"),
+        "exact-01 EBCS disabled path",
+    )
+    if controller_decoded.count("fldi0 fr4") < 2:
+        fail("boost controller lacks zero-duty disabled/gated outcomes")
+
+    cut_blob = boost.build_fuelcut_wrapper()
+    cut_decoded = decode_executable(
+        image,
+        cut_blob,
+        boost.REVWRAP_ADDR,
+        {
+            boost.REVLIMITER,
+            boost.OVERBOOST_ENABLE_ADDR,
+            boost.MAP_ADDR,
+            boost.OVERB_FC_ADDR,
+            boost.FUELCUT_FLAG,
+        },
+        "overboost fuel-cut wrapper",
+    )
+    expect(
+        image,
+        boost.REVWRAP_ADDR + 8,
+        bytes.fromhex("d109601088018b09"),
+        "independent exact-01 hard-cut branch",
+    )
+    if "or #128,r0" not in cut_decoded:
+        fail("hard-cut wrapper does not set the verified fuel-cut flag bit")
+
+
 def main() -> None:
     stock, expected, _, calibration_writes = master.build_image()
     component_stage, blobs = rebuild_component_stage(stock)
@@ -879,6 +938,7 @@ def main() -> None:
         fail("canonical stock SHA-256 changed")
     verify_layout(stock, image, blobs, calibration_writes)
     verify_component_hooks(image, component_stage)
+    verify_independent_boost_switches(image)
     verify_omni_map(image)
     verify_avls_dual_ve(image)
     verify_wideband(image)
@@ -907,7 +967,7 @@ def main() -> None:
     print("  air model         : always-on MAFless committed-state dual VE speed density")
     print("  MAP               : Omni MAP-SUP-3BR 30..300 kPa / 0.60..4.75 V")
     print("  wideband/O2       : former-MAF 50-4110 P0/P1 input; four stock paths removed")
-    print("  boost             : zero-duty spring baseline; throttle/SD/sensor/soft/hard gates")
+    print("  boost             : EBCS OFF; independent hard cut ON; zero-duty spring baseline")
     print("  injectors         : pinned A4TE002B STI-pink flow/deadtime translation")
     print("  timing/AVLS       : dual VE; fixed 3200/3000 lift switch; cam timing endpoints identified")
     print("  memory layout     : no ownership collisions; rotational-idle reservation untouched")

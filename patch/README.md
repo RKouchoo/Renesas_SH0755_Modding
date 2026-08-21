@@ -136,11 +136,13 @@ fuel-cut flag `0xFFFFBF6C` bit `0x80`, which is consumed by `fuel_cut_flag_aggre
 | `patch_rotational_idle.py` | Canonical stock-ROM-to-rotational-idle patcher with guarded `apply_to_rom()` component API. |
 | `verify_rotational_idle.py` | Audits the exact binary, injected instructions, operating policy, changed-byte ownership, and future three-component compatibility. |
 | `D2WD610H_rotational_idle.bin` | Generated standalone rotational-idle development ROM; enable defaults off. |
-| `D2WD610H_boost_single_front_af.bin` | Generated combined development ROM; both runtime switches default on. |
+| `D2WD610H_boost_single_front_af.bin` | Generated combined development ROM; EBCS defaults off, hard overboost cut and front-A/F architecture default on. |
 
 RomRaider boost calibration entries are in
 [D2WD610H_AVLS_boost_patch.xml](../defs/D2WD610H_AVLS_boost_patch.xml), category
-`Boost Control (patch)`. Its `Boost Control Patch Enable` switch writes `01`/`00` at `0x7D80C`.
+`Boost Control (patch)`. `Electronic Boost Control Enable` writes `01`/`00` at
+`0x7D80C` and defaults OFF. `Overboost Fuel Cut Enable` independently writes
+`01`/`00` at `0x7D80D` and defaults ON.
 The matching front-A/F/rear-delete definition is
 [D2WD610H_AVLS_single_front_af_patch.xml](../defs/D2WD610H_AVLS_single_front_af_patch.xml); its
 `Single Front A/F Patch Enable` switch writes `01`/`00` at `0x7D91C`. Neither patch adds an
@@ -153,11 +155,12 @@ timing offsets are in category `Rotational Idle (patch)`.
 
 The combined image must be opened with
 [D2WD610H_AVLS_boost_single_front_af_patch.xml](../defs/D2WD610H_AVLS_boost_single_front_af_patch.xml).
-It contains the boost tables and both enable switches at their unchanged component addresses.
+It contains the boost tables and all component switches at their unchanged addresses.
 
-Boost and front-A/F switches default to `ON` in their generated images. Boost `OFF` forces zero
-EBCS duty and bypasses the added hard overboost cut while retaining the stock rev limiter; it
-does not revert the patched MAP scaling. Front-A/F `OFF` restores stock dual-front and rear-O2 runtime
+Electronic boost control defaults `OFF`, while the independent hard-overboost and front-A/F
+switches default `ON`. EBCS `OFF` forces zero actuator duty without bypassing the added MAP cut.
+Hard-cut `OFF` retains the stock RPM limiter but bypasses only the added MAP cut. Neither boost
+switch reverts the patched MAP scaling. Front-A/F `OFF` restores stock dual-front and rear-O2 runtime
 logic, but the 13 generated DTC-byte edits remain off until P0051/P0052/P0151/P0152/P0154 and
 P0037/P0038/P0057/P0058/P0137/P0138/P0157/P0158 are separately re-enabled in RomRaider.
 Rotational idle defaults `OFF`; only exact `01` permits its bounded timing post-processing.
@@ -175,7 +178,8 @@ after the edited ROM is saved with a valid checksum and flashed to the ECU.
 | Target descriptor | `0x7D7CC` |
 | Target data | `0x7D7E0` |
 | Kp / maximum ratio / soft overboost | `0x7D800` / `0x7D804` / `0x7D808` |
-| Runtime enable byte | `0x7D80C` |
+| Electronic boost-control enable | `0x7D80C` (default `00`) |
+| Hard-overboost fuel-cut enable | `0x7D80D` (default `01`) |
 | Controller stub | `0x7D810` |
 | Minimum throttle | `0x7D8BC` |
 | Hard overboost | `0x7D8C0` |

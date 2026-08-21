@@ -18,7 +18,7 @@ import build_base_turbo_map as base  # noqa: E402
 
 OUTPUT = HERE / "D2WD610H_5psi_98RON_base_turbo.bin"
 DEFINITION = ROOT / "defs" / "D2WD610H_AVLS_boost_single_front_af_patch.xml"
-EXPECTED_OUTPUT_SHA256 = "fd9a9354c7a9f2d82813253d41b17adb058b68ceb3f426a0c197a6322fbf2c0f"
+EXPECTED_OUTPUT_SHA256 = "3564985c8e5d6e60b7d259408900e1b386bea51e372b90c805b04a32db4f404b"
 
 
 def fail(message: str) -> None:
@@ -95,7 +95,8 @@ def verify_definition() -> None:
         "Boost Max Duty Ratio": base.boost.MAXR_ADDR,
         "Boost Overboost Cut (Duty, soft)": base.boost.OVERB_ADDR,
         "Boost Overboost Fuel Cut (hard)": base.boost.OVERB_FC_ADDR,
-        "Boost Control Patch Enable": base.boost.BOOST_ENABLE_ADDR,
+        "Electronic Boost Control Enable": base.boost.EBCS_ENABLE_ADDR,
+        "Overboost Fuel Cut Enable": base.boost.OVERBOOST_ENABLE_ADDR,
         "Single Front A/F Patch Enable": 0x7D91C,
         "Checksum Fix": base.CHECKSUM_TABLE_ADDR,
     }
@@ -275,8 +276,10 @@ def verify_auxiliary(reference: bytes, image: bytes) -> None:
         fail("soft overboost threshold is not 5.5 psi relative to 760 mmHg")
     if abs(read_float(image, base.boost.OVERB_FC_ADDR) - expected_hard) > 1e-3:
         fail("hard overboost threshold is not 6.5 psi relative to 760 mmHg")
-    if image[base.boost.BOOST_ENABLE_ADDR] != 0x01 or image[0x7D91C] != 0x01:
-        fail("one or both combined patch enables are not ON")
+    if image[base.boost.EBCS_ENABLE_ADDR] != 0x00:
+        fail("spring-only electronic boost-control switch is not OFF")
+    if image[base.boost.OVERBOOST_ENABLE_ADDR] != 0x01 or image[0x7D91C] != 0x01:
+        fail("hard-overboost or O2 architecture enable is not ON")
     expected_target = base.pack_floats(base.BOOST_TARGET_NATIVE)
     if image[base.boost.TARGET_DATA:base.boost.TARGET_DATA + len(expected_target)] != expected_target:
         fail("boost target is not flat at 5 psi from 2500 RPM through redline")

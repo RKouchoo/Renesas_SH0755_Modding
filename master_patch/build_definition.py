@@ -35,7 +35,8 @@ SD_NAMES = (
 )
 
 BOOST_NAMES = (
-    "Boost Control Patch Enable",
+    "Electronic Boost Control Enable",
+    "Overboost Fuel Cut Enable",
     "Boost Wastegate Duty (RPM)",
     "Boost Target (RPM)",
     "Boost Kp (proportional gain)",
@@ -195,15 +196,23 @@ PREDICTABLE_AVLS_DESCRIPTIONS = {
 }
 
 BOOST_DESCRIPTIONS = {
-    "Boost Control Patch Enable": (
-        "Exact 01 enables the EVAP-output EBCS controller and added hard MAP "
-        "fuel cut. Any other value forces zero EBCS duty and runs only the "
-        "stock RPM limiter. This does not restore the removed MAF/O2 logic or "
-        "the stock MAP scaling. The master prerequisite guard still forces "
+    "Electronic Boost Control Enable": (
+        "Exact 01 permits the EVAP-output EBCS controller to command duty. "
+        "Default 00 forces zero EBCS duty for direct wastegate-spring control "
+        "without disabling the independent hard overboost cut. This does not "
+        "restore the removed MAF/O2 logic or stock MAP scaling. The master "
+        "prerequisite guard still forces "
         "zero duty unless the external-wideband input is ready, MAP/RPM/IAT "
         "are inside their speed-density validity windows, RPM is at least the first shared "
         "boost-axis breakpoint, and modeled airflow is not the 500 g/s fault "
         "sentinel."
+    ),
+    "Overboost Fuel Cut Enable": (
+        "Exact 01 independently enables the added hard MAP fuel cut through "
+        "the verified stock rev-limiter flag path. Default is ON even while "
+        "electronic boost control is OFF. Any other value retains the stock "
+        "RPM limiter but bypasses only the added MAP cut. This is a last-resort "
+        "software protection and cannot replace correct wastegate plumbing."
     ),
     "Boost Wastegate Duty (RPM)": (
         "Feed-forward EBCS duty versus RPM. The master commissioning image is "
@@ -429,6 +438,8 @@ def validate(root: ET.Element) -> None:
         "Intake AVCS Target - AVLS Low Cam": "0x7C5B0",
         "Intake AVCS Target - AVLS High Cam": "0x7C764",
         "Omni Power MAP-SUP-3BR Scaling": "0x72810",
+        "Electronic Boost Control Enable": "0x7D80C",
+        "Overboost Fuel Cut Enable": "0x7D80D",
         "External Wideband Lambda Transfer": "0x7E404",
         "External Wideband Valid Voltage Range": "0x7E40C",
     }

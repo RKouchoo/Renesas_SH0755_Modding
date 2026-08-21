@@ -11,8 +11,10 @@ CASES = [
         "definition": ROOT / "defs/D2WD610H_AVLS_boost_patch.xml",
         "image": ROOT / "patch/D2WD610H_boost.bin",
         "xmlid": "D2WD610H_AVLS_BOOST_PATCH",
-        "switch": "Boost Control Patch Enable",
+        "switch": "Electronic Boost Control Enable",
         "address": 0x7D80C,
+        "default": 0x00,
+        "alternate": 0x01,
         "tables": {
             "Boost Wastegate Duty (RPM)": 0x7D7C4,
             "Boost Target (RPM)": 0x7D7E0,
@@ -22,6 +24,14 @@ CASES = [
             "Boost Minimum Throttle": 0x7D8BC,
             "Boost Overboost Fuel Cut (hard)": 0x7D8C0,
         },
+    },
+    {
+        "definition": ROOT / "defs/D2WD610H_AVLS_boost_patch.xml",
+        "image": ROOT / "patch/D2WD610H_boost.bin",
+        "xmlid": "D2WD610H_AVLS_BOOST_PATCH",
+        "switch": "Overboost Fuel Cut Enable",
+        "address": 0x7D80D,
+        "tables": {},
     },
     {
         "definition": ROOT / "defs/D2WD610H_AVLS_single_front_af_patch.xml",
@@ -71,8 +81,10 @@ CASES = [
         "definition": ROOT / "defs/D2WD610H_AVLS_boost_single_front_af_patch.xml",
         "image": ROOT / "patch/D2WD610H_boost_single_front_af.bin",
         "xmlid": "D2WD610H_AVLS_BOOST_SINGLE_FRONT_AF_PATCH",
-        "switch": "Boost Control Patch Enable",
+        "switch": "Electronic Boost Control Enable",
         "address": 0x7D80C,
+        "default": 0x00,
+        "alternate": 0x01,
         "tables": {
             "Boost Wastegate Duty (RPM)": 0x7D7C4,
             "Boost Target (RPM)": 0x7D7E0,
@@ -82,6 +94,14 @@ CASES = [
             "Boost Minimum Throttle": 0x7D8BC,
             "Boost Overboost Fuel Cut (hard)": 0x7D8C0,
         },
+    },
+    {
+        "definition": ROOT / "defs/D2WD610H_AVLS_boost_single_front_af_patch.xml",
+        "image": ROOT / "patch/D2WD610H_boost_single_front_af.bin",
+        "xmlid": "D2WD610H_AVLS_BOOST_SINGLE_FRONT_AF_PATCH",
+        "switch": "Overboost Fuel Cut Enable",
+        "address": 0x7D80D,
+        "tables": {},
     },
     {
         "definition": ROOT / "defs/D2WD610H_AVLS_boost_single_front_af_patch.xml",

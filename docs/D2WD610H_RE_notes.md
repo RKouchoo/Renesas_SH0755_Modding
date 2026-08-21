@@ -225,13 +225,13 @@ Definition layout:
 - `defs/D2WD610H.xml` is the retained base metric EcuFlash definition.
 - `defs/D2WD610H_AVLS.xml` is the AVLS-only custom RomRaider definition.
 - `defs/D2WD610H_AVLS_boost_patch.xml` contains the same D2WD610H + AVLS definition plus the
-  canonical boost-patch tables and its one-byte runtime enable.
+  canonical boost-patch tables and independent EBCS/hard-cut enable bytes.
 - `defs/D2WD610H_AVLS_single_front_af_patch.xml` contains D2WD610H + AVLS plus the one-byte
   front-mirror/rear-delete runtime enable; existing DTC switches cover all 13 removed-sensor edits.
 - `defs/D2WD610H_AVLS_rotational_idle_patch.xml` contains D2WD610H + AVLS plus only the separate
   rotational-idle switch, operating gates, safety limits, and six timing offsets.
 - `defs/D2WD610H_AVLS_boost_single_front_af_patch.xml` is the combined-image variant containing
-  the canonical boost tables plus both unchanged runtime-enable switches.
+  the canonical boost tables plus its two boost switches and the front-A/F switch.
 - `speed_density/D2WD610H_AVLS_speed_density_patch.xml` is the single standalone MAFless
   definition. It contains committed-state low/high-lift VE, fixed 3200/3000-RPM AVLS
   hysteresis, and removes inherited MAF tables/diagnostics.
@@ -597,8 +597,9 @@ and 0x1B81E.
   AE68/6C, AE70/74 -> B4E8/B4EC and the stock rear raw/result chain AB20/AB0C -> B098/B09C.
   That first revision retained the rear paths; it was superseded by the 2026-07-15 rear-delete
   revision below.
-- 2026-07-14: both generated patches gained definition-backed runtime-enable bytes. Boost uses
-  0x7D80C (`OFF` forces zero EBCS duty and skips the added MAP cut); single-front A/F uses
+- 2026-07-14: both generated patches gained definition-backed runtime-enable bytes. The original
+  boost switch used 0x7D80C; on 2026-08-21 it was split into EBCS at 0x7D80C (default OFF) and
+  independent hard cut at 0x7D80D (default ON). Single-front A/F uses
   0x7D91C (`OFF` restores stock front and rear runtime paths). The switches do not undo the boost
   MAP calibration or the 13 single-front/rear-delete DTC bytes, respectively.
 - 2026-07-14: retired ECU-side aftermarket-sensor annotations were replaced in the active Ghidra

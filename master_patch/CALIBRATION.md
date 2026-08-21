@@ -224,6 +224,10 @@ timing is a conservative commissioning surface, not a finished optimum tune.
 
 ## Boost and RPM
 
+- electronic boost-control switch: OFF (`0x7D80C = 00`), so the actuator path
+  cannot command duty;
+- independent hard-overboost switch: ON (`0x7D80D = 01`), so disabling the
+  actuator does not disable the last-resort MAP fuel cut;
 - target: reaches 5.0 psi at 2500 RPM and remains there through the table;
 - feed-forward wastegate duty: 0 at every breakpoint;
 - proportional gain: 0;
@@ -241,6 +245,6 @@ timing is a conservative commissioning surface, not a finished optimum tune.
 - RPM limit: 6800 RPM cut / 6770 RPM resume.
 
 Thus the generated baseline is mechanically spring-controlled even though the
-boost firmware and runtime-enable byte are installed. There is no integral
+boost firmware and independent switches are installed. There is no integral
 term. A target table does not restrain a spring, incorrect hose routing, an
 undersized/mispositioned gate, or boost creep.

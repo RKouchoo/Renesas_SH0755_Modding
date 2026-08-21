@@ -18,6 +18,8 @@ and keep the root stock image unchanged.
    pressure, fuel-pump delivery, and manifold-referenced pressure regulation.
 8. Keep the wastegate referenced directly to the compressor/manifold source;
    leave the EBCS out of the pressure path.
+9. In the matching master definition, confirm `Electronic Boost Control
+   Enable` is OFF and `Overboost Fuel Cut Enable` is ON.
 
 ## 2. Bench the analog inputs before flashing
 
@@ -101,9 +103,10 @@ Confirm the 6800/6770 limiter behavior. Do not deliberately overboost the
 engine just to test the hard cut.
 
 Scope the original purge output unloaded to establish frequency and polarity.
-Then drive the intended EBCS on a fused bench circuit and prove that ECU zero
-duty maps to the valve state that gives minimum boost. Resolve flyback,
-current, heat, and fail-state behavior before attaching pressure hoses.
+If electronic control is not being commissioned, leave the EBCS electrically
+and pneumatically out of the boost path. If it is added later, first prove that
+ECU zero duty maps to the valve state that gives minimum boost and resolve
+flyback, current, heat, and fail-state behavior before attaching pressure hoses.
 
 ## 6. Spring-only load testing
 

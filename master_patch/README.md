@@ -19,14 +19,16 @@ firmware work into one deterministic stock-to-output build:
 - a focused, self-contained D2WD610H RomRaider definition and logger fragment.
 
 The generated baseline is `D2WD610H_master_patch.bin`, SHA-256
-`a04a82a09f713801351f4fa849452d90187da526c0344857ab8834b799e221ce`.
+`e841cb315ae15643d5140cf4c484ab753d054c719579e09d560c0eb328f7458d`.
 It is 512 KiB, contains CALID `D2WD610H`, and has a valid Subaru additive
-checksum (`0xB94E8916`). It is a development artifact, not a vehicle-tested tune.
+checksum (`0xBB4C8915`). It is a development artifact, not a vehicle-tested tune.
 
-Only `Boost Control Patch Enable` remains a RomRaider firmware toggle. MAFless
-airflow and the external-wideband/four-stock-O2 replacement are intentionally
-permanent in this image because its physical architecture has no MAF or stock
-O2 fallback.
+Two independent boost switches remain in RomRaider. `Electronic Boost Control
+Enable` defaults OFF and forces zero actuator duty for direct wastegate-spring
+control. `Overboost Fuel Cut Enable` defaults ON and independently retains the
+6.5 psi hard MAP cut. MAFless airflow and the external-wideband/four-stock-O2
+replacement are intentionally permanent because this architecture has no MAF
+or stock-O2 fallback.
 
 ## Exact hardware assumptions
 

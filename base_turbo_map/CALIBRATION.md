@@ -1,7 +1,7 @@
 # Calibration Changes
 
 All addresses are D2WD610H flash offsets. The reference is the verified combined image with
-SHA-256 `019e06e509afce2e798bfe29543e2536524c259d3ab6683c7dd3131ee069fb5e`.
+SHA-256 `71b28714106dcc1eb7adfe59738fc8c6e968b2b94ca9337158f4442f46fcc1fe`.
 The base-turbo image changes 1,043 bytes beyond that reference, confined to the tables listed here
 plus the four-byte checksum value.
 
@@ -15,12 +15,13 @@ plus the four-byte checksum value.
 | Boost Max Duty Ratio | `0x7D804` | 0.33 | 0 |
 | Soft duty shutdown | `0x7D808` | 6.0 psi | 5.5 psi |
 | Hard MAP fuel cut | `0x7D8C0` | 7.0 psi | 6.5 psi |
-| Boost patch enable | `0x7D80C` | on | on |
+| Electronic boost control enable | `0x7D80C` | off | off |
+| Overboost fuel cut enable | `0x7D80D` | on | on |
 
 The RPM axis and 30.0 native throttle gate remain unchanged. The low-RPM target ramp is retained,
 then the target remains 5 psi instead of tapering at high RPM. With the maximum ratio at zero,
-neither the feed-forward table nor proportional correction can command solenoid duty. The patch
-remains enabled so its separate hard MAP fuel-cut wrapper remains active.
+neither the feed-forward table nor proportional correction can command solenoid duty. The
+electronic actuator switch is also OFF, while the independent hard MAP fuel-cut switch remains ON.
 
 Both pressure limits are stored as absolute native pressure but displayed relative to 760 mmHg.
 There is still no atmospheric-pressure compensation or hard-cut hysteresis. Validate the MAP

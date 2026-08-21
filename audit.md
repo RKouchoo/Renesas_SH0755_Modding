@@ -46,24 +46,24 @@ purge-DTC handling, checksum correction, and an overboost-cut bench test before 
   table transplant: the patch controller is RPM-only and has no integral state. See
   [boost_donor_A2WC510N.md](docs/boost_donor_A2WC510N.md).
 - The generated boost artifact is `patch/D2WD610H_boost.bin` (512 KiB, SHA-256
-  `744f4c320f5097256af16101cbba1b71985d8c9dfa77805158a0c4e204fe4560`). Its 369 changed bytes
+  `d4c215a3acc2a68e7daa355d56510589b8f9aa4bf573e6bc4aa4224b16ffa2bc`). Its 370 changed bytes
   are confined to the two guarded hooks (`0x11D3C..0x11D3F`, `0x3FD8C..0x3FD8F`), MAP scaling
   (`0x72810..0x72817`), and injected free-space region (`0x7D790..0x7D903`). The obsolete split
   patcher and `_p1`/`_p2` images have been removed.
 
-## RomRaider runtime toggle
+## RomRaider runtime toggles
 
-- `Boost Control Patch Enable` is a one-byte switch at `0x7D80C`; `01` is on and `00` is off.
-  The generated image contains `01`.
+- `Electronic Boost Control Enable` is at `0x7D80C` and defaults `00` so the actuator cannot
+  command duty. `Overboost Fuel Cut Enable` is independent at `0x7D80D` and defaults `01`.
 - The controller at `0x7D810` requires the exact value `01` before saving `PR` or evaluating any
   boost table. `00`, erased `FF`, and all other values fail closed: the controller forces
   `FR4 = 0.0` and tail-calls the stock PWM output stage, producing zero commanded EBCS duty.
   Passing through stock purge duty was rejected because it could energize a solenoid physically
   rewired for boost control.
-- The rev-limiter wrapper at `0x7D8C4` always runs the stock limiter first. With the switch off it
+- The rev-limiter wrapper at `0x7D8C4` always runs the stock limiter first. With its own switch off it
   returns immediately, bypassing only the patch's added MAP fuel cut.
-- XML parsing and a byte-level simulation confirmed that changing the RomRaider switch from on
-  to off changes only `0x7D80C` in the generated image before checksum correction.
+- XML parsing and byte-level simulation confirm each RomRaider switch changes only its respective
+  byte before checksum correction.
 - The definition edits a flash byte; it is not a live logger toggle. Changing state requires a
   checksum-correct save and reflash.
 - Off is a spring-pressure fallback only after bench proof that zero commanded duty produces
@@ -182,9 +182,9 @@ the patch is used alone or enabled in the combined image.
 - The verifier regenerated every blob and hook from source, rejected all unexpected changed
   offsets, reconstructed both overwritten stock prologues, and decoded 136 injected SH-2E
   instructions with no unknown opcodes.
-- The shared assembler self-tests pass. Rebuilding the boost patch produced a byte-identical
-  image with its existing SHA-256
-  `744f4c320f5097256af16101cbba1b71985d8c9dfa77805158a0c4e204fe4560`, and the pinned donor
+- The shared assembler self-tests pass. The current spring-pressure switch-split boost image is
+  byte-identical to regeneration at SHA-256
+  `d4c215a3acc2a68e7daa355d56510589b8f9aa4bf573e6bc4aa4224b16ffa2bc`, and the pinned donor
   table/default verifier also passes.
 
 ## Ghidra rear-path verification
@@ -312,15 +312,15 @@ checksum.
 ## Combined binary checks completed
 
 - Generated artifact: `patch/D2WD610H_boost_single_front_af.bin`, 512 KiB, SHA-256
-  `019e06e509afce2e798bfe29543e2536524c259d3ab6683c7dd3131ee069fb5e`.
-- Exactly 811 bytes differ from stock: 369 owned by the boost patch plus 442 owned by the
+  `71b28714106dcc1eb7adfe59738fc8c6e968b2b94ca9337158f4442f46fcc1fe`.
+- Exactly 812 bytes differ from stock: 370 owned by the boost patch plus 442 owned by the
   single-front-A/F patch, with zero overlapping offsets.
 - Before composing the image, the builder independently applies each component to stock and
   rejects any intersecting changed-byte ownership. It then applies both guarded change sets to a
   separate fresh stock copy and requires the result to equal their exact union.
 - Refactoring the component scripts to expose shared `apply_to_rom` functions did not change
-  either standalone artifact: boost remains SHA-256
-  `744f4c320f5097256af16101cbba1b71985d8c9dfa77805158a0c4e204fe4560`; single-front-A/F remains
+  the single-front-A/F artifact. The spring-pressure switch split changes boost to SHA-256
+  `d4c215a3acc2a68e7daa355d56510589b8f9aa4bf573e6bc4aa4224b16ffa2bc`; single-front-A/F remains
   SHA-256 `99a0b2df7f24a247307dfdde6790d464264bbbe6ae8498632735d6d98b4ae5eb`.
 - `patch/verify_combined.py` regenerates the expected image from stock, checks every byte, pins all
   component hooks/task edits and enable-dependent branches, verifies all 13 removed-sensor DTC
@@ -334,11 +334,11 @@ checksum.
 - `defs/D2WD610H_AVLS_boost_single_front_af_patch.xml` is self-contained and contains only the
   pruned metric `32BITBASE` plus the D2WD610H target ROM.
 - Target XMLID: `D2WD610H_AVLS_BOOST_SINGLE_FRONT_AF_PATCH`.
-- It exposes all canonical boost calibrations, `Boost Control Patch Enable` at `0x7D80C`, and
-  `Single Front A/F Patch Enable` at `0x7D91C`.
-- Both generated bytes default to `01`. XML parsing and byte simulation verify that changing
-  either switch to `00` changes only its own one-byte address before checksum handling.
-- Boost `OFF` retains the donor MAP scaling and bypasses the added hard overboost cut. Front-A/F
+- It exposes all canonical boost calibrations, `Electronic Boost Control Enable` at `0x7D80C`,
+  `Overboost Fuel Cut Enable` at `0x7D80D`, and `Single Front A/F Patch Enable` at `0x7D91C`.
+- Defaults are `00`, `01`, and `01`, respectively. XML parsing and byte simulation verify that
+  changing any switch changes only its own one-byte address before checksum handling.
+- Both boost switches retain donor MAP scaling. Front-A/F
   `OFF` restores stock front/rear runtime logic but does not re-enable the 13 removed-sensor DTC
   bytes. The existing component caveats remain unchanged in the combined image.
 
@@ -362,19 +362,19 @@ scaling, MAP validation, post-turbo wideband logging, and physical boost tests r
   original SRF `MEMD` payload, and reconstructs the combined patch in memory.
 - That intermediate stage must be byte-identical to
   `patch/D2WD610H_boost_single_front_af.bin`, SHA-256
-  `019e06e509afce2e798bfe29543e2536524c259d3ab6683c7dd3131ee069fb5e`, before calibration is
+  `71b28714106dcc1eb7adfe59738fc8c6e968b2b94ca9337158f4442f46fcc1fe`, before calibration is
   allowed. No generated image is used as patch input.
 - The pinned 192-KiB A4TE002B injector donor must have CALID `A4TE002B`, SHA-256
   `e3cc868a51476aaa25c1ffb63e8af8ba3e35ca4ace404e842f193bf117754b44`, flow raw `4900` at
   `0x2866B`, and latency raw `{697,372,245,171,95}` at `0x28673` before calibration is allowed.
 - Output SHA-256 is
-  `fd9a9354c7a9f2d82813253d41b17adb058b68ceb3f426a0c197a6322fbf2c0f`.
+  `3564985c8e5d6e60b7d259408900e1b386bea51e372b90c805b04a32db4f404b`.
 - Exactly 1,043 bytes differ from the combined stage across 39 owned writes. Ownership covers the
   paired Primary Open Loop axes/maps, CL-to-OL delay, shared timing and KCA axes, six base-timing
   maps, two KCA maps, IAT compensation, Rev Limit A, injector scalar/deadtime, four cranking maps,
   two tip-in maps and threshold, five AVLS tables, six boost calibration fields, and checksum.
 - The first Subaru checksum table entry remains `0x2000..0x7FAF7`; calculated/stored difference
-  `0x4BD6335B` satisfies additive target `0x5AA5A55A`.
+  `0x4DD4335A` satisfies additive target `0x5AA5A55A`.
 - The matching combined RomRaider definition parses with all edited table addresses unchanged.
 - The canonical root/base stock ROMs, SRF, combined artifact, patch code/hooks, enable bytes, MAP
   scaling, O2 patch, and removed-sensor DTC edits remain unchanged.
@@ -894,8 +894,8 @@ vehicle-speed-selected AVLS descriptions for the current master image.
   `9cfcf45d075818c1a8320e540eb855979289ce25a6e03b8879a0c4767db49d16`,
   checksum `0x051694B7`.
 - Master: `master_patch/D2WD610H_master_patch.bin`, SHA-256
-  `a04a82a09f713801351f4fa849452d90187da526c0344857ab8834b799e221ce`,
-  checksum `0xB94E8916`.
+  `e841cb315ae15643d5140cf4c484ab753d054c719579e09d560c0eb328f7458d`,
+  checksum `0xBB4C8915`.
 - Both generated XML files use the project's RomRaider SH float-endianness
   convention and omit the obsolete full-range VE entry and inoperative
   variable AVLS controls. The legacy single-VE bytes remain inert in flash but
