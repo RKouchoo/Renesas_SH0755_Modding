@@ -13,6 +13,8 @@ firmware work into one deterministic stock-to-output build:
   / 30-4110-style P0/P1 0-5 V lambda signal;
 - both stock front A/F paths and both rear O2 paths removed from feedback and
   diagnostics;
+- the bounded per-cylinder rotational-idle timing post-processor, installed but
+  default OFF;
 - a live-barometric pressure failsafe that requests open loop before boost and
   a delayed, confirmed, pressure-release-latched 13.0-AFR fuel cut;
 - a factory-ROM-derived STI pink injector scalar/deadtime starting point;
@@ -21,9 +23,9 @@ firmware work into one deterministic stock-to-output build:
 - a focused, self-contained D2WD610H RomRaider definition and logger fragment.
 
 The generated baseline is `D2WD610H_master_patch.bin`, SHA-256
-`2950f98360aba3c47d3aeed072104141d506a8e070b14efb5e7e29e2517821eb`.
+`3e5a18d495e567e121f6692f0f8939b8a4dc8bf22f479186c56f66b82cf993a2`.
 It is 512 KiB, contains CALID `D2WD610H`, and has a valid Subaru additive
-checksum (`0xBAF9F280`). It is a development artifact, not a vehicle-tested tune.
+checksum (`0xB0B76582`). It is a development artifact, not a vehicle-tested tune.
 
 Two independent boost switches remain in RomRaider. `Electronic Boost Control
 Enable` defaults OFF and forces zero actuator duty for direct wastegate-spring
@@ -39,6 +41,13 @@ permission at live barometric pressure minus 0.5 psi. The lean guard arms above
 eight consecutive invalid or leaner-than-13.0-AFR samples, and latches the stock
 fuel-cut path until pressure falls below -0.5 psi gauge. The call-count defaults
 are not time-calibrated and require controlled validation from logs.
+
+`Rotational Idle Enable` defaults OFF. When enabled inside its warm,
+stationary, closed-throttle, high-vacuum window, the wrapper runs the complete
+stock timing calculation first and then applies the bounded cylinder pattern
+`{-6, 0, -6, 0, -6, 0}` degrees. It cannot add advance, exceeds neither an
+8-degree retard limit nor the original stock angle, and retains a 5-degree-BTDC
+floor unless stock timing is already lower.
 
 ## Exact hardware assumptions
 
@@ -106,6 +115,7 @@ and checksum.
 | `../speed_density/patch_speed_density.py` | Single MAFless SD component containing committed-state dual VE and predictable 3200/3000 RPM AVLS calibration. |
 | `wideband_component.py` | Permanent four-stock-O2 delete and former-MAF external-wideband input firmware. |
 | `../fueling_safety/fueling_safety_component.py` | Pressure-forced-open-loop and latched lean-cut component. |
+| `../patch/patch_rotational_idle.py` | Reusable bounded rotational-idle component, integrated default OFF. |
 | `verify_master_patch.py` | Independent binary, opcode, calibration, XML, logger, and provenance audit. |
 | `MEMORY_LAYOUT.md` | Exact injected-flash boundaries and collision policy. |
 | `build_definition.py` | Generates the focused D2WD610H RomRaider definition. |

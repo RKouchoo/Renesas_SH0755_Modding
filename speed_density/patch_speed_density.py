@@ -100,7 +100,7 @@ SYNTHETIC_RAW_AIRFLOW_ADDR = 0xFFFFB448
 SYNTHETIC_FILTER_A_ADDR = 0xFFFFB458
 SYNTHETIC_FILTER_B_ADDR = 0xFFFFB45C
 
-# Free flash starts after the rotational-idle component's reserved ceiling.
+# Free flash starts after the integrated rotational-idle component's ceiling.
 FREE_START = 0x0007DD00
 COMPONENT_END = 0x0007E3FF
 FREE_END = 0x0007FAF7

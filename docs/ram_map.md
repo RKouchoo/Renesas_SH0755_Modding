@@ -52,7 +52,7 @@ physically removed.
 | 0xFFFFCCC8–CCDC | Six per-cylinder correction floats; updated/cleared by the `ign_per_cylinder_correction_*` state path |
 | **0xFFFFC0EC–C100** | **Six final per-cylinder ignition angles** produced by `ign_final_timing_per_cylinder_update`; consumed by minimum-check, schedule-count, current-cylinder, and logger paths |
 
-The standalone rotational-idle component runs the stock final-timing task first and then, only
+The master rotational-idle component runs the stock final-timing task first and then, only
 inside its calibrated idle window, post-processes the six `0xFFFFC0EC–C100` values in place. It
 allocates no RAM and does not alter the stock correction array.
 

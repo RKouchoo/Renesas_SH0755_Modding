@@ -39,7 +39,6 @@ import patch_combined as combined_patch  # noqa: E402
 STOCK = ROOT / "2005 BLE MT.bin"
 BASE_STOCK = ROOT / "base_roms" / "2005 BLE MT.bin"
 SOURCE_SRF = ROOT / "base_roms" / "2005 BLE MT.srf"
-COMBINED_ARTIFACT = PATCH_DIR / "D2WD610H_boost_single_front_af.bin"
 PINK_INJECTOR_DONOR = (
     ROOT / "base_roms" / "A4TE002B-2003-JDM-Subaru-Impreza-STi.hex"
 )
@@ -713,7 +712,7 @@ def apply_calibration(rom: bytearray, reference: bytes) -> dict[str, tuple[int, 
 
 
 def refuse_output_alias(output: Path) -> None:
-    protected = (STOCK, BASE_STOCK, SOURCE_SRF, COMBINED_ARTIFACT, PINK_INJECTOR_DONOR)
+    protected = (STOCK, BASE_STOCK, SOURCE_SRF, PINK_INJECTOR_DONOR)
     output_real = Path(os.path.realpath(output))
     for path in protected:
         if output_real == Path(os.path.realpath(path)):
@@ -740,9 +739,6 @@ def build_image() -> tuple[bytes, bytes, bytes, dict[str, tuple[int, bytes]]]:
     combined_reference = bytes(rebuilt)
     if sha256(combined_reference) != COMBINED_SHA256:
         raise SystemExit("REFUSING: reconstructed combined stage has an unexpected SHA-256")
-    if COMBINED_ARTIFACT.read_bytes() != combined_reference:
-        raise SystemExit("REFUSING: canonical combined artifact differs from reconstructed stage")
-
     rom = bytearray(combined_reference)
     writes = apply_calibration(rom, combined_reference)
     return stock, combined_reference, bytes(rom), writes
@@ -763,8 +759,6 @@ def main() -> None:
         raise RuntimeError("protected stock BIN changed during base-map build")
     if extract_srf.extract_memd(SOURCE_SRF)[0] != stock:
         raise RuntimeError("protected SRF provenance changed during base-map build")
-    if COMBINED_ARTIFACT.read_bytes() != combined_reference:
-        raise RuntimeError("canonical combined artifact changed during base-map build")
     # Re-run all size, hash, CALID, and source-byte checks on the injector donor.
     pink_injector_calibration()
 

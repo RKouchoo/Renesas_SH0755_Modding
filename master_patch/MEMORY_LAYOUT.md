@@ -1,7 +1,7 @@
 # Master-patch memory ownership
 
-The master verifier treats injected flash, stock hook sites, calibration writes,
-and the separate rotational-idle reservation as distinct ownership classes. A
+The master verifier treats injected flash, stock hook sites, and calibration writes
+as distinct ownership classes. A
 build fails on any overlap except the explicit replacement of boost component
 seed data by the final boost calibration.
 
@@ -11,7 +11,7 @@ seed data by the final boost calibration.
 |---:|---|
 | `0x7D790..0x7D903` | Boost descriptors, axes, data, controller, and fuel-cut wrapper. |
 | `0x7D91C` | Master wideband/O2 architecture signature. |
-| `0x7DB40..0x7DCEB` | Reserved for the separate rotational-idle patch; unchanged by master. |
+| `0x7DB40..0x7DCEB` | Integrated default-OFF rotational-idle calibration and wrapper. |
 | `0x7DD00..0x7E39B` | Original speed-density calibration and wrapper allocation. |
 | `0x7E39C..0x7E3B3` | Dual-VE portion of the speed-density wrapper allocation. |
 | `0x7E3B4..0x7E3FF` | Unused speed-density reservation. |
@@ -58,6 +58,6 @@ to an explicit zero initializer at `0x7EBA0`. Other injected code uses only the
 SH stack and already-mapped stock signals.
 
 `python3 master_patch/verify_master_patch.py` checks all declared blob ranges,
-stock hook ranges, calibration ranges, the rotational-idle reservation,
+stock hook ranges, calibration ranges, the rotational-idle component,
 undeclared changed bytes, fresh-rebuild equality, checksum, and pinned output
 hash.

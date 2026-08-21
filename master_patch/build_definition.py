@@ -6,6 +6,8 @@ This generator removes stock MAF/O2/diagnostic material that is no longer part
 of the master architecture, gives the live timing maps their Ghidra-verified
 identities, and adds only the speed-density, boost, AVLS, external-wideband,
 pressure-open-loop, and lean-cut calibrations installed by build_master_patch.py.
+The generated target also exposes the integrated default-OFF rotational-idle
+switch, gates, limits, and six cylinder offsets.
 """
 
 from __future__ import annotations
@@ -60,6 +62,21 @@ FUELING_SAFETY_NAMES = (
     "Lean Fuel Cut AFR Threshold",
     "Lean Fuel Cut Sensor Transport Delay",
     "Lean Fuel Cut Confirmation Count",
+)
+
+ROTATIONAL_IDLE_NAMES = (
+    "Rotational Idle Enable",
+    "Rotational Idle Minimum Coolant Temperature",
+    "Rotational Idle Maximum Coolant Temperature",
+    "Rotational Idle Minimum Engine Speed",
+    "Rotational Idle Maximum Engine Speed",
+    "Rotational Idle Maximum Throttle",
+    "Rotational Idle Maximum Vehicle Speed",
+    "Rotational Idle Minimum Manifold Pressure",
+    "Rotational Idle Maximum Manifold Pressure",
+    "Rotational Idle Maximum Retard",
+    "Rotational Idle Minimum Final Timing",
+    "Rotational Idle Cylinder Timing Offsets",
 )
 
 AVLS_NAMES = (
@@ -442,6 +459,111 @@ def add_scalar_template(
     ET.SubElement(target, "table", {"name": name, "storageaddress": address})
 
 
+def add_rotational_idle_tables(target: ET.Element) -> None:
+    category = "Rotational Idle (master patch)"
+    switch = ET.SubElement(
+        target,
+        "table",
+        {
+            "type": "Switch",
+            "name": ROTATIONAL_IDLE_NAMES[0],
+            "category": category,
+            "sizey": "1",
+            "userlevel": "1",
+            "storageaddress": "0x7DB40",
+        },
+    )
+    set_description(
+        switch,
+        "Exact 01 enables the bounded timing post-processor; 00 or any other "
+        "value leaves all six stock final ignition angles unchanged. Master "
+        "defaults OFF. Enable only after confirming a stable warm idle and log "
+        "final ignition timing while commissioning.",
+    )
+    ET.SubElement(switch, "state", {"name": "on", "data": "01"})
+    ET.SubElement(switch, "state", {"name": "off", "data": "00"})
+
+    scalar_specs = (
+        (ROTATIONAL_IDLE_NAMES[1], "0x7DB44", "Coolant Temp (Degrees C)", "x", "x", "0.0", "Inclusive warm-idle lower gate; default 80 C."),
+        (ROTATIONAL_IDLE_NAMES[2], "0x7DB48", "Coolant Temp (Degrees C)", "x", "x", "0.0", "Inclusive over-temperature exit; default 105 C."),
+        (ROTATIONAL_IDLE_NAMES[3], "0x7DB4C", "RPM", "x", "x", "#", "Inclusive idle-speed lower gate; default 600 RPM."),
+        (ROTATIONAL_IDLE_NAMES[4], "0x7DB50", "RPM", "x", "x", "#", "Inclusive idle-speed upper gate; default 1050 RPM."),
+        (ROTATIONAL_IDLE_NAMES[5], "0x7DB54", "Throttle Plate Opening Angle (%)", "x/.84", "x*.84", "0.0", "Inclusive processed-throttle gate; default native 1.68 displays as 2.0 percent."),
+        (ROTATIONAL_IDLE_NAMES[6], "0x7DB58", "km/h", "x", "x", "0.0", "Inclusive stationary-vehicle gate; default 1.0 km/h."),
+        (ROTATIONAL_IDLE_NAMES[7], "0x7DB5C", "kPa absolute", "x*.1333223684", "x/.1333223684", "0.0", "Inclusive MAP lower gate; default 150 mmHg or about 20.0 kPa absolute."),
+        (ROTATIONAL_IDLE_NAMES[8], "0x7DB60", "kPa absolute", "x*.1333223684", "x/.1333223684", "0.0", "Inclusive high-vacuum upper gate; default 550 mmHg or about 73.3 kPa absolute."),
+        (ROTATIONAL_IDLE_NAMES[9], "0x7DB64", "degrees", "x", "x", "0.0", "Maximum retard magnitude; default 8 degrees. Invalid or non-positive values apply no offset."),
+        (ROTATIONAL_IDLE_NAMES[10], "0x7DB68", "degrees BTDC", "x", "x", "0.0", "Post-retard timing floor; default 5 degrees BTDC. The stock-angle ceiling prevents this floor adding advance."),
+    )
+    for name, address, units, expression, to_byte, fmt, description in scalar_specs:
+        table = ET.SubElement(
+            target,
+            "table",
+            {
+                "type": "1D",
+                "name": name,
+                "category": category,
+                "storagetype": "float",
+                "endian": "big",
+                "sizey": "1",
+                "userlevel": "2",
+                "storageaddress": address,
+            },
+        )
+        ET.SubElement(
+            table,
+            "scaling",
+            {
+                "units": units,
+                "expression": expression,
+                "to_byte": to_byte,
+                "format": fmt,
+                "fineincrement": "0.5",
+                "coarseincrement": "1",
+            },
+        )
+        set_description(table, description)
+
+    offsets = ET.SubElement(
+        target,
+        "table",
+        {
+            "type": "2D",
+            "name": ROTATIONAL_IDLE_NAMES[11],
+            "category": category,
+            "storagetype": "float",
+            "endian": "big",
+            "sizey": "6",
+            "userlevel": "1",
+            "storageaddress": "0x7DB6C",
+        },
+    )
+    ET.SubElement(
+        offsets,
+        "scaling",
+        {
+            "units": "degrees",
+            "expression": "x",
+            "to_byte": "x",
+            "format": "0.0",
+            "fineincrement": "0.5",
+            "coarseincrement": "1",
+        },
+    )
+    axis = ET.SubElement(
+        offsets, "table", {"type": "Static Y Axis", "name": "Cylinder", "sizey": "6"}
+    )
+    for cylinder in range(1, 7):
+        ET.SubElement(axis, "data").text = f"Cylinder {cylinder}"
+    set_description(
+        offsets,
+        "Retard-only offsets in ECU final-angle array order. Defaults are "
+        "{-6, 0, -6, 0, -6, 0} degrees. Positive values are forced to zero; "
+        "Maximum Retard, Minimum Final Timing, and the original stock angle "
+        "bound every output.",
+    )
+
+
 def add_fueling_safety_templates(parent: ET.Element, target: ET.Element) -> None:
     exact_switch = (
         "Exact 01 enables this guard; any other value disables only this guard. "
@@ -530,7 +652,12 @@ def validate(root: ET.Element) -> None:
 
     target_names = {table.get("name") for table in target.findall("table")}
     expected_custom = set(
-        SD_NAMES + BOOST_NAMES + WIDEBAND_NAMES + FUELING_SAFETY_NAMES + AVLS_NAMES
+        SD_NAMES
+        + BOOST_NAMES
+        + WIDEBAND_NAMES
+        + FUELING_SAFETY_NAMES
+        + ROTATIONAL_IDLE_NAMES
+        + AVLS_NAMES
     )
     missing = sorted(expected_custom - target_names)
     if missing:
@@ -570,6 +697,18 @@ def validate(root: ET.Element) -> None:
         "Lean Fuel Cut AFR Threshold": "0x7EADC",
         "Lean Fuel Cut Sensor Transport Delay": "0x7EAE8",
         "Lean Fuel Cut Confirmation Count": "0x7EAEA",
+        "Rotational Idle Enable": "0x7DB40",
+        "Rotational Idle Minimum Coolant Temperature": "0x7DB44",
+        "Rotational Idle Maximum Coolant Temperature": "0x7DB48",
+        "Rotational Idle Minimum Engine Speed": "0x7DB4C",
+        "Rotational Idle Maximum Engine Speed": "0x7DB50",
+        "Rotational Idle Maximum Throttle": "0x7DB54",
+        "Rotational Idle Maximum Vehicle Speed": "0x7DB58",
+        "Rotational Idle Minimum Manifold Pressure": "0x7DB5C",
+        "Rotational Idle Maximum Manifold Pressure": "0x7DB60",
+        "Rotational Idle Maximum Retard": "0x7DB64",
+        "Rotational Idle Minimum Final Timing": "0x7DB68",
+        "Rotational Idle Cylinder Timing Offsets": "0x7DB6C",
     }
     for name, address in expected_addresses.items():
         if table_by_name(target, name).get("storageaddress") != address:
@@ -600,6 +739,7 @@ def build_tree() -> ET.ElementTree:
     update_patch_descriptions(target)
     add_wideband_templates(parent, target)
     add_fueling_safety_templates(parent, target)
+    add_rotational_idle_tables(target)
 
     root = ET.Element("roms")
     root.append(

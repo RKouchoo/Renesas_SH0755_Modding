@@ -1,7 +1,7 @@
 # D2WD610H MAFless speed-density and AVLS VE component
 
-This folder contains the standalone, always-on MAFless speed-density firmware component for the
-2005 ADM Liberty 3.0R BLE manual ROM `D2WD610H`.
+This folder contains the reusable, always-on MAFless speed-density firmware component for the
+2005 ADM Liberty 3.0R BLE manual ROM `D2WD610H`. It is part of the current master.
 
 The builder never edits the canonical root ROM. It verifies the SHA-256 of
 `2005 BLE MT.bin`, copies it in memory, and writes a separate output.
@@ -59,21 +59,14 @@ That is an emergency indication, not a drivable limp mode.
 From the repository root:
 
 ```sh
-python3 speed_density/patch_speed_density.py
-python3 speed_density/build_definition.py
-python3 speed_density/verify_speed_density.py
+python3 master_patch/build_master_patch.py
+python3 master_patch/build_definition.py
+python3 master_patch/verify_master_patch.py
 ```
 
-Outputs:
-
-- `speed_density/D2WD610H_speed_density.bin`
-- `speed_density/D2WD610H_AVLS_speed_density_patch.xml`
-
-The current deterministic standalone ROM SHA-256 is
-`9cfcf45d075818c1a8320e540eb855979289ce25a6e03b8879a0c4767db49d16`.
-Its Subaru additive checksum is valid (`0x051694B7`).
-This exact component is included directly by `master_patch`; there is no
-separate AVLS-VE patch layer.
+`D2WD610H_AVLS_speed_density_patch.xml` is retained as an internal definition-generator input.
+Standalone component BINs are reproducible local test outputs and are no longer committed. This
+exact component is included directly by `master_patch`; there is no separate AVLS-VE patch layer.
 
 ## Calibration model
 

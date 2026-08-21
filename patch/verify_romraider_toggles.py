@@ -1,16 +1,16 @@
 #!/usr/bin/env python3
-"""Audit runtime switches in the standalone and combined patch images."""
+"""Audit the independent switches in the focused master ROM/definition."""
 from pathlib import Path
 import xml.etree.ElementTree as ET
 
 
 ROOT = Path(__file__).resolve().parent.parent
+DEFINITION = ROOT / "master_patch/D2WD610H_master_patch.xml"
+IMAGE = ROOT / "master_patch/D2WD610H_master_patch.bin"
+XMLIDS = ["32BITBASE", "D2WD610H_MASTER_PATCH"]
 
-CASES = [
+CASES = (
     {
-        "definition": ROOT / "defs/D2WD610H_AVLS_boost_patch.xml",
-        "image": ROOT / "patch/D2WD610H_boost.bin",
-        "xmlid": "D2WD610H_AVLS_BOOST_PATCH",
         "switch": "Electronic Boost Control Enable",
         "address": 0x7D80C,
         "default": 0x00,
@@ -26,40 +26,14 @@ CASES = [
         },
     },
     {
-        "definition": ROOT / "defs/D2WD610H_AVLS_boost_patch.xml",
-        "image": ROOT / "patch/D2WD610H_boost.bin",
-        "xmlid": "D2WD610H_AVLS_BOOST_PATCH",
         "switch": "Overboost Fuel Cut Enable",
         "address": 0x7D80D,
+        "default": 0x01,
+        "alternate": 0x00,
         "tables": {},
     },
     {
-        "definition": ROOT / "defs/D2WD610H_AVLS_single_front_af_patch.xml",
-        "image": ROOT / "patch/D2WD610H_single_front_af.bin",
-        "xmlid": "D2WD610H_AVLS_SINGLE_FRONT_AF_PATCH",
-        "switch": "Single Front A/F Patch Enable",
-        "address": 0x7D91C,
-        "tables": {
-            "(P0051) HO2S CIRCUIT LOW B2 S1": 0x5BDB4,
-            "(P0052) HO2S CIRCUIT HIGH B2 S1": 0x5BDB3,
-            "(P0151) O2 SENSOR CIRCUIT LOW B2 S1": 0x5BDA1,
-            "(P0152) O2 SENSOR CIRCUIT HIGH B2 S1": 0x5BDA3,
-            "(P0154) O2 SENSOR CIRCUIT OPEN B2 S1": 0x5BDBC,
-            "(P0037) REAR O2 SENSOR LOW INPUT": 0x5BDAB,
-            "(P0038) REAR O2 SENSOR HIGH INPUT": 0x5BDA9,
-            "(P0057) HO2S CIRCUIT LOW B2 S2": 0x5BDC1,
-            "(P0058) HO2S CIRCUIT HIGH B2 S2": 0x5BDC2,
-            "(P0137) REAR O2 SENSOR LOW VOLTAGE": 0x5BD9F,
-            "(P0138) REAR O2 SENSOR HIGH VOLTAGE": 0x5BDA4,
-            "(P0157) O2 SENSOR CIRCUIT LOW B2 S2": 0x5BDC3,
-            "(P0158) O2 SENSOR CIRCUIT HIGH B2 S2": 0x5BDC4,
-        },
-    },
-    {
-        "definition": ROOT / "defs/D2WD610H_AVLS_rotational_idle_patch.xml",
-        "image": ROOT / "patch/D2WD610H_rotational_idle.bin",
-        "xmlid": "D2WD610H_AVLS_ROTATIONAL_IDLE_PATCH",
-        "switch": "Rotational Idle Patch Enable",
+        "switch": "Rotational Idle Enable",
         "address": 0x7DB40,
         "default": 0x00,
         "alternate": 0x01,
@@ -77,55 +51,7 @@ CASES = [
             "Rotational Idle Cylinder Timing Offsets": 0x7DB6C,
         },
     },
-    {
-        "definition": ROOT / "defs/D2WD610H_AVLS_boost_single_front_af_patch.xml",
-        "image": ROOT / "patch/D2WD610H_boost_single_front_af.bin",
-        "xmlid": "D2WD610H_AVLS_BOOST_SINGLE_FRONT_AF_PATCH",
-        "switch": "Electronic Boost Control Enable",
-        "address": 0x7D80C,
-        "default": 0x00,
-        "alternate": 0x01,
-        "tables": {
-            "Boost Wastegate Duty (RPM)": 0x7D7C4,
-            "Boost Target (RPM)": 0x7D7E0,
-            "Boost Kp (proportional gain)": 0x7D800,
-            "Boost Max Duty Ratio": 0x7D804,
-            "Boost Overboost Cut (Duty, soft)": 0x7D808,
-            "Boost Minimum Throttle": 0x7D8BC,
-            "Boost Overboost Fuel Cut (hard)": 0x7D8C0,
-        },
-    },
-    {
-        "definition": ROOT / "defs/D2WD610H_AVLS_boost_single_front_af_patch.xml",
-        "image": ROOT / "patch/D2WD610H_boost_single_front_af.bin",
-        "xmlid": "D2WD610H_AVLS_BOOST_SINGLE_FRONT_AF_PATCH",
-        "switch": "Overboost Fuel Cut Enable",
-        "address": 0x7D80D,
-        "tables": {},
-    },
-    {
-        "definition": ROOT / "defs/D2WD610H_AVLS_boost_single_front_af_patch.xml",
-        "image": ROOT / "patch/D2WD610H_boost_single_front_af.bin",
-        "xmlid": "D2WD610H_AVLS_BOOST_SINGLE_FRONT_AF_PATCH",
-        "switch": "Single Front A/F Patch Enable",
-        "address": 0x7D91C,
-        "tables": {
-            "(P0051) HO2S CIRCUIT LOW B2 S1": 0x5BDB4,
-            "(P0052) HO2S CIRCUIT HIGH B2 S1": 0x5BDB3,
-            "(P0151) O2 SENSOR CIRCUIT LOW B2 S1": 0x5BDA1,
-            "(P0152) O2 SENSOR CIRCUIT HIGH B2 S1": 0x5BDA3,
-            "(P0154) O2 SENSOR CIRCUIT OPEN B2 S1": 0x5BDBC,
-            "(P0037) REAR O2 SENSOR LOW INPUT": 0x5BDAB,
-            "(P0038) REAR O2 SENSOR HIGH INPUT": 0x5BDA9,
-            "(P0057) HO2S CIRCUIT LOW B2 S2": 0x5BDC1,
-            "(P0058) HO2S CIRCUIT HIGH B2 S2": 0x5BDC2,
-            "(P0137) REAR O2 SENSOR LOW VOLTAGE": 0x5BD9F,
-            "(P0138) REAR O2 SENSOR HIGH VOLTAGE": 0x5BDA4,
-            "(P0157) O2 SENSOR CIRCUIT LOW B2 S2": 0x5BDC3,
-            "(P0158) O2 SENSOR CIRCUIT HIGH B2 S2": 0x5BDC4,
-        },
-    },
-]
+)
 
 
 def named_tables(root, name):
@@ -133,49 +59,54 @@ def named_tables(root, name):
 
 
 def main():
-    for case in CASES:
-        root = ET.parse(case["definition"]).getroot()
-        xmlids = [rom.findtext("./romid/xmlid") for rom in root.findall("./rom")]
-        expected_ids = ["32BITBASE", case["xmlid"]]
-        if xmlids != expected_ids:
-            raise SystemExit("FAIL: %s ROM IDs are %r, expected %r"
-                             % (case["definition"].name, xmlids, expected_ids))
+    root = ET.parse(DEFINITION).getroot()
+    xmlids = [rom.findtext("./romid/xmlid") for rom in root.findall("./rom")]
+    if xmlids != XMLIDS:
+        raise SystemExit(f"FAIL: {DEFINITION.name} ROM IDs are {xmlids!r}, expected {XMLIDS!r}")
 
-        switches = named_tables(root, case["switch"])
+    image = IMAGE.read_bytes()
+    if len(image) != 0x80000:
+        raise SystemExit(f"FAIL: {IMAGE.name} is not a 512-KiB image")
+
+    for case in CASES:
+        switches = [table for table in named_tables(root, case["switch"])
+                    if table.get("storageaddress") is not None]
         if len(switches) != 1:
-            raise SystemExit("FAIL: %s has %d matching enable switches"
-                             % (case["definition"].name, len(switches)))
+            raise SystemExit(f"FAIL: {DEFINITION.name} has {len(switches)} matching switches")
         switch = switches[0]
         address = int(switch.get("storageaddress"), 16)
         states = {state.get("name"): state.get("data") for state in switch.findall("state")}
         if address != case["address"] or states != {"on": "01", "off": "00"}:
-            raise SystemExit("FAIL: %s switch mapping is address=0x%X states=%r"
-                             % (case["definition"].name, address, states))
+            raise SystemExit(
+                f"FAIL: {case['switch']} maps to 0x{address:X} with states {states!r}"
+            )
 
         for name, expected_address in case["tables"].items():
             tables = [table for table in named_tables(root, name)
                       if table.get("storageaddress") is not None]
             if len(tables) != 1 or int(tables[0].get("storageaddress"), 16) != expected_address:
-                raise SystemExit("FAIL: %s table %r does not map uniquely to 0x%05X"
-                                 % (case["definition"].name, name, expected_address))
+                raise SystemExit(
+                    f"FAIL: table {name!r} does not map uniquely to 0x{expected_address:05X}"
+                )
 
-        image = case["image"].read_bytes()
-        default = case.get("default", 0x01)
-        alternate = case.get("alternate", 0x00)
-        if len(image) != 0x80000 or image[address] != default:
-            raise SystemExit("FAIL: %s is not a 512-KiB generated-%02X image"
-                             % (case["image"].name, default))
+        default = case["default"]
+        alternate = case["alternate"]
+        if image[address] != default:
+            raise SystemExit(
+                f"FAIL: {case['switch']} generated {image[address]:02X}, expected {default:02X}"
+            )
         edited = bytearray(image)
         edited[address] = alternate
         changed = [index for index, pair in enumerate(zip(image, edited)) if pair[0] != pair[1]]
         if changed != [address]:
-            raise SystemExit("FAIL: simulated toggle edit was not isolated to the enable byte")
+            raise SystemExit("FAIL: simulated switch edit was not isolated to its enable byte")
 
-        print("PASS: %-48s %s @0x%05X (default=%02X, alternate=%02X)"
-              % (case["definition"].name, case["switch"], address,
-                 default, alternate))
+        print(
+            f"PASS: {case['switch']:<36} @0x{address:05X} "
+            f"(default={default:02X}, alternate={alternate:02X})"
+        )
 
-    print("RomRaider toggle audit PASS: XML, target IDs, table addresses, defaults, and isolated toggle edits")
+    print("Master RomRaider switch audit PASS")
 
 
 if __name__ == "__main__":

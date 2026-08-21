@@ -26,6 +26,8 @@ import build_master_patch as master  # noqa: E402
 import wideband_component as wideband  # noqa: E402
 import patch_boost as boost  # noqa: E402
 import patch_speed_density as speed_density  # noqa: E402
+import patch_rotational_idle as rotational_idle  # noqa: E402
+import verify_rotational_idle as rotational_idle_verify  # noqa: E402
 import build_base_turbo_map as base_turbo  # noqa: E402
 import verify_base_turbo_map as base_turbo_verify  # noqa: E402
 import sh2_disasm  # noqa: E402
@@ -36,9 +38,7 @@ import verify_fueling_safety as fueling_safety_verify  # noqa: E402
 OUTPUT = HERE / "D2WD610H_master_patch.bin"
 DEFINITION = HERE / "D2WD610H_master_patch.xml"
 LOGGER_FRAGMENT = HERE / "D2WD610H_master_logger_ecuparams.xml"
-EXPECTED_OUTPUT_SHA256 = "2950f98360aba3c47d3aeed072104141d506a8e070b14efb5e7e29e2517821eb"
-ROTATIONAL_IDLE_RESERVED_START = 0x0007DB40
-ROTATIONAL_IDLE_RESERVED_END = 0x0007DCEB
+EXPECTED_OUTPUT_SHA256 = "3e5a18d495e567e121f6692f0f8939b8a4dc8bf22f479186c56f66b82cf993a2"
 
 
 def fail(message: str) -> None:
@@ -77,6 +77,7 @@ def rebuild_component_stage(stock: bytes) -> tuple[
     blobs: dict[str, list[tuple[str, int, bytes]]] = {}
     blobs["boost"] = boost.apply_to_rom(stage)
     master.apply_omni_map_calibration(stage)
+    blobs["rotational_idle"] = rotational_idle.apply_to_rom(stage)
     blobs["speed_density"] = speed_density.apply_to_rom(stage)
     blobs["wideband"] = wideband.apply_to_rom(stage)
     blobs["fueling_safety"] = fueling_safety.apply_to_rom(stage)
@@ -122,18 +123,15 @@ def verify_layout(
     if fueling_safety.COMPONENT_END != safety_end:
         fail("fueling-safety reserved end does not equal its final wrapper byte")
 
-    # The optional rotational-idle component has a reserved, intentionally
-    # unused allocation between boost and speed density.  Master must not
-    # silently absorb or alter it.
-    if image[ROTATIONAL_IDLE_RESERVED_START : ROTATIONAL_IDLE_RESERVED_END + 1] != stock[
-        ROTATIONAL_IDLE_RESERVED_START : ROTATIONAL_IDLE_RESERVED_END + 1
-    ]:
-        fail("master modifies the separate rotational-idle reserved region")
-    rotational_reserved = set(
-        range(ROTATIONAL_IDLE_RESERVED_START, ROTATIONAL_IDLE_RESERVED_END + 1)
+    rotational_end = (
+        rotational_idle.ROT_IDLE_WRAPPER_ADDR
+        + len(rotational_idle.build_wrapper())
+        - 1
     )
-    if free_owned & rotational_reserved:
-        fail("declared component ownership enters the rotational-idle reservation")
+    if rotational_end != 0x0007DCEB:
+        fail(f"rotational-idle wrapper boundary moved to 0x{rotational_end:05X}")
+    if rotational_end >= speed_density.FREE_START:
+        fail("rotational-idle component reaches the speed-density allocation")
 
     calibration_owned: set[int] = set()
     for label, (address, data) in calibration_writes.items():
@@ -181,6 +179,7 @@ def verify_layout(
         (wideband.REAR_O2_PROCESS_ENTRY, 12, "rear O2 process bypass"),
         (fueling_safety.PRIMARY_OL_TASK_PTR, 4, "pressure-forced OL task hook"),
         (fueling_safety.LEAN_STATE_INIT_TASK_PTR, 4, "lean-state initialization hook"),
+        (rotational_idle.FINAL_TIMING_TASK_PTR, 4, "rotational-idle timing task hook"),
     ):
         add_range(hook_owned, address, size, f"hook/{label}")
     for address in speed_density.MAF_CONVERSION_CALL_ADDRS:
@@ -194,8 +193,8 @@ def verify_layout(
     for address in wideband.DISABLED_O2_DTC_SWITCHES.values():
         add_range(hook_owned, address, 1, f"hook/O2 DTC switch @0x{address:05X}")
 
-    if hook_owned & (free_owned | calibration_owned | rotational_reserved):
-        fail("stock hook ownership collides with component, calibration, or reserved space")
+    if hook_owned & (free_owned | calibration_owned):
+        fail("stock hook ownership collides with component or calibration space")
 
     allowed = free_owned | hook_owned | calibration_owned
 
@@ -570,6 +569,83 @@ def verify_wideband(image: bytes) -> None:
         fail("master boost guard does not preserve its inclusive valid boundaries")
 
 
+def verify_rotational_idle(image: bytes) -> None:
+    expect(
+        image,
+        rotational_idle.FINAL_TIMING_TASK_PTR,
+        rotational_idle.be32(rotational_idle.ROT_IDLE_WRAPPER_ADDR),
+        "rotational-idle task hook",
+    )
+    expect(
+        image,
+        rotational_idle.ROT_IDLE_ENABLE_ADDR,
+        b"\x00",
+        "default-OFF rotational-idle switch",
+    )
+    gates = b"".join(
+        rotational_idle.f32(value)
+        for value in (
+            rotational_idle.ECT_MIN,
+            rotational_idle.ECT_MAX,
+            rotational_idle.RPM_MIN,
+            rotational_idle.RPM_MAX,
+            rotational_idle.THROTTLE_MAX,
+            rotational_idle.VEHICLE_SPEED_MAX,
+            rotational_idle.MAP_MIN,
+            rotational_idle.MAP_MAX,
+            rotational_idle.MAX_RETARD,
+            rotational_idle.MIN_FINAL_TIMING,
+        )
+    )
+    expect(image, rotational_idle.ECT_MIN_ADDR, gates, "rotational-idle gate defaults")
+    offsets = b"".join(rotational_idle.f32(value) for value in rotational_idle.CYLINDER_OFFSETS)
+    expect(
+        image,
+        rotational_idle.CYLINDER_OFFSETS_ADDR,
+        offsets,
+        "rotational-idle cylinder offsets",
+    )
+
+    wrapper = rotational_idle.build_wrapper()
+    decoded = decode_executable(
+        image,
+        wrapper,
+        rotational_idle.ROT_IDLE_WRAPPER_ADDR,
+        {
+            rotational_idle.STOCK_FINAL_TIMING_TASK,
+            rotational_idle.ROT_IDLE_ENABLE_ADDR,
+            rotational_idle.ECT_ADDR,
+            rotational_idle.ECT_MIN_ADDR,
+            rotational_idle.ECT_MAX_ADDR,
+            rotational_idle.RPM_ADDR,
+            rotational_idle.RPM_MIN_ADDR,
+            rotational_idle.RPM_MAX_ADDR,
+            rotational_idle.THROTTLE_ADDR,
+            rotational_idle.THROTTLE_MAX_ADDR,
+            rotational_idle.VEHICLE_SPEED_ADDR,
+            rotational_idle.VEHICLE_SPEED_MAX_ADDR,
+            rotational_idle.MAP_ADDR,
+            rotational_idle.MAP_MIN_ADDR,
+            rotational_idle.MAP_MAX_ADDR,
+            rotational_idle.FINAL_TIMING_ARRAY,
+            rotational_idle.CYLINDER_OFFSETS_ADDR,
+            rotational_idle.MAX_RETARD_ADDR,
+            rotational_idle.MIN_FINAL_TIMING_ADDR,
+        },
+        "rotational-idle wrapper",
+    )
+    if decoded.count("jsr @r2") != 1:
+        fail("rotational-idle wrapper does not call the complete stock timing task once")
+    if "cmp/eq #1,r0" not in decoded:
+        fail("rotational-idle wrapper lacks the exact-01 enable decision")
+    if decoded.count("dt r2") != 1 or decoded.count("fmov.s fr4,@r4") != 1:
+        fail("rotational-idle wrapper lacks its bounded six-cylinder output loop")
+    try:
+        rotational_idle_verify.verify_policy_model()
+    except SystemExit as exc:
+        fail(f"rotational-idle policy model: {exc}")
+
+
 def render_definition() -> bytes:
     tree = definition.build_tree()
     ET.indent(tree, space=" ")
@@ -793,6 +869,12 @@ def verify_component_hooks(image: bytes, component_stage: bytes) -> None:
     )
     expect(
         image,
+        rotational_idle.FINAL_TIMING_TASK_PTR,
+        rotational_idle.be32(rotational_idle.ROT_IDLE_WRAPPER_ADDR),
+        "rotational-idle final-timing wrapper pointer",
+    )
+    expect(
+        image,
         speed_density.FINAL_AIRFLOW_HELPER_PTR,
         speed_density.be32(speed_density.WRAPPER_ADDR),
         "MAFless final-airflow helper pointer",
@@ -831,6 +913,11 @@ def verify_component_hooks(image: bytes, component_stage: bytes) -> None:
     for address, size, label in (
         (boost.STUB_ADDR, len(boost.build_stub()), "boost controller"),
         (boost.REVWRAP_ADDR, len(boost.build_fuelcut_wrapper()), "overboost wrapper"),
+        (
+            rotational_idle.ROT_IDLE_WRAPPER_ADDR,
+            len(rotational_idle.build_wrapper()),
+            "bounded rotational-idle wrapper",
+        ),
         (
             speed_density.WRAPPER_ADDR,
             len(speed_density.build_wrapper()),
@@ -976,6 +1063,7 @@ def main() -> None:
     verify_layout(stock, image, blobs, calibration_writes)
     verify_component_hooks(image, component_stage)
     verify_independent_boost_switches(image)
+    verify_rotational_idle(image)
     verify_omni_map(image)
     verify_avls_dual_ve(image)
     verify_wideband(image)
@@ -1012,7 +1100,8 @@ def main() -> None:
     print("  primary OL        : exact 1000..6800 RPM axes; conservative resample verified")
     print("  injectors         : pinned A4TE002B STI-pink flow/deadtime translation")
     print("  timing/AVLS       : dual VE; fixed 3200/3000 lift switch; cam timing endpoints identified")
-    print("  memory layout     : no ownership collisions; rotational-idle reservation untouched")
+    print("  rotational idle   : bounded retard-only component installed, default OFF")
+    print("  memory layout     : no component, hook, calibration, or RAM collisions")
     print("  definition        : focused master XML; dormant timing pair and obsolete defs omitted")
     print("  fueling safety    : pressure-forced OL ON; 13.0-AFR delayed/latched cut ON")
     print("  logger            : AFR/ADC/readiness/AVLS/lean-cut state fragment validated")

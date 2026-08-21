@@ -226,20 +226,15 @@ Definition layout:
 - `defs/D2WD610H_AVLS.xml` is the AVLS-only custom RomRaider definition.
 - `defs/D2WD610H_AVLS_boost_patch.xml` contains the same D2WD610H + AVLS definition plus the
   canonical boost-patch tables and independent EBCS/hard-cut enable bytes.
-- `defs/D2WD610H_AVLS_single_front_af_patch.xml` contains D2WD610H + AVLS plus the one-byte
-  front-mirror/rear-delete runtime enable; existing DTC switches cover all 13 removed-sensor edits.
-- `defs/D2WD610H_AVLS_rotational_idle_patch.xml` contains D2WD610H + AVLS plus only the separate
-  rotational-idle switch, operating gates, safety limits, and six timing offsets.
-- `defs/D2WD610H_AVLS_boost_single_front_af_patch.xml` is the combined-image variant containing
-  the canonical boost tables plus its two boost switches and the front-A/F switch.
 - `speed_density/D2WD610H_AVLS_speed_density_patch.xml` is the single standalone MAFless
-  definition. It contains committed-state low/high-lift VE, fixed 3200/3000-RPM AVLS
-  hysteresis, and removes inherited MAF tables/diagnostics.
+  component input used by the master definition generator. It contains committed-state
+  low/high-lift VE and fixed 3200/3000-RPM AVLS hysteresis.
 - `master_patch/D2WD610H_master_patch.xml` is the current focused integration definition. It
   retains only relevant engine-tuning controls plus AVLS, SD/VE, exact Omni MAP, boost, and AEM
-  input calibration; it renames the active timing/KCA paths and the AVCS A/B targets by their
-  verified roles, and removes obsolete MAF/O2/DTC, readiness, fuel-temperature, and dormant B/E
-  entries.
+  input calibration, fueling safeties, and rotational idle; it renames the active timing/KCA paths
+  and the AVCS A/B targets by their verified roles, and removes obsolete MAF/O2/DTC, readiness,
+  fuel-temperature, and dormant B/E entries. Retired single-front, rotational-only, and old
+  combined XML files are no longer committed.
 - `defs/romraider_ecu_defs.xml` is a clean upstream metric RomRaider snapshot and is not modified
   with project tables.
 
@@ -313,13 +308,12 @@ data registers (datasheet) instead of descending the call tree.
       guarded components to one fresh stock copy; `verify_combined.py` proves the 811 changed bytes
       are the exact 369 + 442 union with zero overlap. Hardware use remains gated on both standalone
       commissioning plans.
-- [x] **Rotational-idle standalone component built.** `patch_rotational_idle.py` wraps the complete
+- [x] **Rotational-idle component integrated in the current master.** `patch_rotational_idle.py` wraps the complete
       stock task at 0x279CC through task-pointer slot 0x11E30, defaults OFF, and applies bounded
       retard-only six-cylinder offsets only inside the calibrated warm/stationary idle window.
-      `verify_rotational_idle.py` proves exact binary ownership and future three-component
-      compatibility in memory. It is not installed in the legacy combined patch, base turbo map,
-      or current master.
-- [x] **MAFless speed density — standalone development component built.** The stock raw-MAF
+      `verify_rotational_idle.py` proves exact binary ownership and policy behavior; the master
+      verifier proves its hook and flash allocation are collision-free. The switch defaults OFF.
+- [x] **MAFless speed density integrated in the current master.** The stock raw-MAF
       converter `maf_sensor_voltage_to_airflow_process` (`0x7C30`) is no longer called from
       `0x639C` or `0x66D8`; the scheduled raw-MAF limit/filter call at `0x107F8` is also removed.
       Periodic pointer `0x11D20` retains `maf_airflow_temperature_compensation_update`

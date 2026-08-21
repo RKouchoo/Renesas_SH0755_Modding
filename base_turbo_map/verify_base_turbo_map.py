@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Binary verifier for D2WD610H_5psi_98RON_base_turbo.bin."""
+"""Local regression verifier for the superseded pre-master base-map recipe."""
 
 from __future__ import annotations
 
@@ -7,7 +7,6 @@ from pathlib import Path
 import math
 import struct
 import sys
-import xml.etree.ElementTree as ET
 
 
 HERE = Path(__file__).resolve().parent
@@ -17,8 +16,9 @@ sys.path.insert(0, str(HERE))
 import build_base_turbo_map as base  # noqa: E402
 
 
-OUTPUT = HERE / "D2WD610H_5psi_98RON_base_turbo.bin"
-DEFINITION = ROOT / "defs" / "D2WD610H_AVLS_boost_single_front_af_patch.xml"
+if len(sys.argv) > 2:
+    raise SystemExit("usage: python3 base_turbo_map/verify_base_turbo_map.py [image.bin]")
+OUTPUT = Path(sys.argv[1]).resolve() if len(sys.argv) == 2 else HERE / "D2WD610H_5psi_98RON_base_turbo.bin"
 EXPECTED_OUTPUT_SHA256 = "e26a2c5ef25aa6585aca0bf915c7077f89392d71fbcd1f615a069c133ebc5f28"
 
 
@@ -72,65 +72,6 @@ def allowed_offsets() -> set[int]:
             fail(f"declared calibration regions overlap at 0x{min(allowed & region):05X}")
         allowed.update(region)
     return allowed
-
-
-def verify_definition() -> None:
-    root = ET.parse(DEFINITION).getroot()
-    roms = root.findall("rom")
-    if len(roms) != 2:
-        fail(f"combined definition should contain 32BITBASE + one target, found {len(roms)}")
-    target = roms[-1]
-    xmlid = target.findtext("./romid/xmlid")
-    if xmlid != "D2WD610H_AVLS_BOOST_SINGLE_FRONT_AF_PATCH":
-        fail(f"unexpected combined definition XMLID {xmlid!r}")
-
-    expected_addresses = {
-        "Primary Open Loop Fueling A ": base.PRIMARY_OL_A_ADDR,
-        "Primary Open Loop Fueling B ": base.PRIMARY_OL_B_ADDR,
-        "CL to OL Delay (Atm. Pressure)": base.CL_OL_DELAY_ADDR,
-        "Base Timing A": 0x78AA0,
-        "Base Timing B": 0x78BAC,
-        "Base Timing C": 0x78CD0,
-        "Base Timing D": 0x78E34,
-        "Base Timing E": 0x78F40,
-        "Base Timing F": 0x79064,
-        "Knock Correction Advance Max A": 0x7924C,
-        "Knock Correction Advance Max B": 0x793AC,
-        "Timing Compensation (IAT)": base.IAT_TIMING_COMP_ADDR,
-        "Rev Limit A": base.REV_LIMIT_A_ADDR,
-        "Injector Latency": base.INJECTOR_LATENCY_ADDR,
-        "Injector Flow Scaling ": base.INJECTOR_FLOW_ADDR,
-        "Cranking Fuel Injector Pulse Width A (ECT)": 0x76B76,
-        "Cranking Fuel Injector Pulse Width B (ECT)": 0x76B96,
-        "Cranking Fuel Injector Pulse Width C (ECT)": 0x76BB6,
-        "Cranking Fuel Injector Pulse Width D (ECT)": 0x76BD6,
-        "Throttle Tip-in Enrichment A": 0x7739C,
-        "Throttle Tip-in Enrichment B": 0x773BC,
-        "Minimum Tip-in Enrichment Activation": base.MIN_TIP_IN_ACTIVATION_ADDR,
-        "AVLS Vehicle Speed Threshold (Normal Oil Temperature)": base.AVLS_THRESHOLD_1_ADDR,
-        "AVLS Vehicle Speed Threshold (High Oil Temperature)": base.AVLS_THRESHOLD_2_ADDR,
-        "AVLS Actuation Minimum RPM": base.AVLS_ACTUATION_MIN_RPM_ADDR,
-        "AVLS High Cam Release RPM": base.AVLS_RELEASE_RPM_ADDR,
-        "AVLS High Cam Engage RPM": base.AVLS_ENGAGE_RPM_ADDR,
-        "Boost Wastegate Duty (RPM)": base.boost.BASE_DATA,
-        "Boost Target (RPM)": base.boost.TARGET_DATA,
-        "Boost Kp (proportional gain)": base.boost.KP_ADDR,
-        "Boost Max Duty Ratio": base.boost.MAXR_ADDR,
-        "Boost Overboost Cut (Duty, soft)": base.boost.OVERB_ADDR,
-        "Boost Overboost Fuel Cut (hard)": base.boost.OVERB_FC_ADDR,
-        "Electronic Boost Control Enable": base.boost.EBCS_ENABLE_ADDR,
-        "Overboost Fuel Cut Enable": base.boost.OVERBOOST_ENABLE_ADDR,
-        "Single Front A/F Patch Enable": 0x7D91C,
-        "Checksum Fix": base.CHECKSUM_TABLE_ADDR,
-    }
-    target_tables = {table.get("name"): table for table in target.findall("table")}
-    for name, address in expected_addresses.items():
-        table = target_tables.get(name)
-        if table is None:
-            fail(f"combined definition is missing {name}")
-        actual = int(table.get("storageaddress", "-1"), 0)
-        if actual != address:
-            fail(f"{name} XML address is 0x{actual:X}, expected 0x{address:X}")
 
 
 def verify_fueling(reference: bytes, image: bytes) -> None:
@@ -370,8 +311,6 @@ def main() -> None:
     verify_injectors(reference, image)
     verify_avls(reference, image)
     verify_auxiliary(reference, image)
-    verify_definition()
-
     print("base turbo map binary audit PASS")
     print(f"  stock SHA-256    : {base.sha256(stock)}")
     print(f"  combined stage   : {base.sha256(reference)}")

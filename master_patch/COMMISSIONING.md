@@ -46,6 +46,7 @@ Use a fused, current-limited setup and do not backfeed an unpowered ECU.
 6. With wideband input valid, separately move MAP, RPM, and IAT outside each SD
    validity window, below the first 1500-RPM boost breakpoint, and force the
    500 g/s SD fault sentinel. Every case must leave EBCS command at zero.
+7. Confirm `Rotational Idle Enable` is OFF before first flash.
 
 ## 3. Install logging
 
@@ -112,6 +113,13 @@ If electronic control is not being commissioned, leave the EBCS electrically
 and pneumatically out of the boost path. If it is added later, first prove that
 ECU zero duty maps to the valve state that gives minimum boost and resolve
 flyback, current, heat, and fail-state behavior before attaching pressure hoses.
+
+With the engine already stable and all fueling checks complete, rotational idle
+may be commissioned separately. First log the six/factory-visible final timing
+results with the switch OFF. Enable only at a fully warm stationary idle and
+confirm the feature exits immediately for throttle, RPM, MAP, speed, or coolant
+outside its window. Disable it for any stall tendency, knock/misfire activity,
+excess exhaust temperature, or timing result outside the documented bounds.
 
 ## 6. Spring-only load testing
 

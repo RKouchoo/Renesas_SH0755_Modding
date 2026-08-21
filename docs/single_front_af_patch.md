@@ -63,13 +63,13 @@ sensors physically disconnected those ECU outputs can still be commanded into an
 but their mapped circuit DTCs are disabled and their signals are not consumed by the traced rear
 monitor pipeline. Keep disconnected harness terminals insulated.
 
-## RomRaider runtime switch
+## Historical RomRaider runtime switch
 
-Use
-[D2WD610H_AVLS_single_front_af_patch.xml](../defs/D2WD610H_AVLS_single_front_af_patch.xml) for
-the standalone image. `Single Front A/F Patch Enable` writes `01` (on) or `00` (off) at
-`0x7D91C`; the generated image defaults to on. Only exact `01` enables the substitutions. Erased
-`FF` and every other value select the disabled/stock-logic paths.
+The retired standalone definition exposed `Single Front A/F Patch Enable` at `0x7D91C`; exact
+`01` enabled the substitutions and `00` restored the stock runtime paths. That XML and its
+generated BIN are no longer committed because the current master instead uses the former MAF
+input for one external wideband and removes all four stock oxygen-sensor paths. This section is
+retained only to document the older component's behavior.
 
 This is a flash-image switch, not a live RomRaider logger control. Save the edited image with a
 valid checksum and reflash it before the selected state can take effect.

@@ -184,12 +184,28 @@ valid, MAP/RPM/IAT are inside their SD windows, RPM is at least the first boost
 axis breakpoint, and final modeled airflow is finite and not the 500 g/s fault
 sentinel. Only a fully valid state tail-calls the existing boost controller.
 
+### Integrated rotational idle
+
+Task pointer `0x11E30` originally calls
+`ign_final_timing_per_cylinder_update` at `0x279CC`. That stock routine produces
+six final ignition angles at `0xFFFFC0EC..0xFFFFC100`. The integrated wrapper at
+`0x7DB90` calls the complete stock routine first and returns unchanged unless
+the exact-`01` enable and every warm/stationary/closed-throttle/high-vacuum gate
+passes. It modifies those six final values in place without persistent RAM.
+
+Positive offsets are clamped to zero, negative offsets are limited by Maximum
+Retard, the result is floored by Minimum Final Timing, and a final original-angle
+ceiling prevents either the floor or malformed calibration from adding advance.
+Master defaults the switch to `00`; the focused definition exposes the switch,
+ten gates/limits, and six offsets. This hook and flash range are disjoint from
+all boost, speed-density, wideband, fueling-safety, calibration, and RAM state.
+
 ## Injected layout
 
 | Region | Use |
 |---:|---|
 | `0x7D790..0x7D91F` | Existing boost component and master signatures. |
-| `0x7DB40..0x7DCEB` | Reserved separate rotational-idle component; untouched. |
+| `0x7DB40..0x7DCEB` | Integrated default-OFF rotational-idle calibration and wrapper. |
 | `0x7DCF0..0x7E18B` | Existing speed-density calibration and support data. |
 | `0x7E18C..0x7E3B3` | Committed-state dual-VE speed-density wrapper. |
 | `0x7E400..0x7E41B` | Wideband constants. |

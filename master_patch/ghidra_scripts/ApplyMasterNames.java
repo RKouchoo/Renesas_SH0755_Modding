@@ -92,6 +92,7 @@ public class ApplyMasterNames extends GhidraScript {
         createOrRename("0002331e", "fueling_state_flag_clear_on_condition");
         createOrRename("00023fc0", "fuel_cut_flag_aggregate");
         createOrRename("00024b24", "rev_limiter_fuel_cut");
+        createOrRename("000279cc", "ign_final_timing_per_cylinder_update");
         createOrRename("00027088", "constant_zero_return");
         createOrRename("00028354", "ign_avcs_tracking_blend_factor_update");
         createOrRename("00028418", "ign_base_timing_map_blend");
@@ -104,6 +105,16 @@ public class ApplyMasterNames extends GhidraScript {
         createOrRename("00034be4", "rear_o2_sensor_response_ratio_update");
         createOrRename("000353b0", "intake_avcs_target_by_avls_mode_update");
         createOrRename("00035750", "intake_avcs_tracking_control_update");
+        createOrRename(
+            "0003d7e4", "ign_per_cylinder_correction_enable_latch_update"
+        );
+        createOrRename("0003d824", "ign_per_cylinder_correction_array_update");
+        createOrRename("0003d8e2", "ign_per_cylinder_correction_state_clear");
+        createOrRename(
+            "0003d916", "ign_per_cylinder_correction_state_any_active"
+        );
+        createOrRename("0003d95a", "ign_per_cylinder_correction_initialize");
+        createOrRename("0003d980", "ign_per_cylinder_correction_array_clear");
         createOrRename("0003eb68", "knock_correction_advance_max_select");
         createOrRename("0003fdbc", "avls_control_sequence_update");
         createOrRename("0003ffda", "avls_threshold_curve_selector_state_update");
@@ -146,6 +157,13 @@ public class ApplyMasterNames extends GhidraScript {
             "Stock RPM limiter sets fuel-cut status 0xFFFFBF6C bit 0x80. The " +
             "periodic task pointer at 0x11D3C is the verified composition point " +
             "for hard-overboost and latched-lean cuts."
+        );
+        setPlateComment(
+            toAddr("000279cc"),
+            "Produces the six final per-cylinder ignition angles at " +
+            "0xFFFFC0EC..0xFFFFC100. Master task slot 0x11E30 calls the " +
+            "default-OFF rotational-idle wrapper, which runs this complete stock " +
+            "task first and can only apply bounded retard afterward."
         );
         setPlateComment(
             toAddr("00033964"),

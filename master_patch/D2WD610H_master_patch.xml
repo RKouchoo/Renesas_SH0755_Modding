@@ -1311,5 +1311,62 @@
   <table name="Lean Fuel Cut AFR Threshold" storageaddress="0x7EADC" />
   <table name="Lean Fuel Cut Sensor Transport Delay" storageaddress="0x7EAE8" />
   <table name="Lean Fuel Cut Confirmation Count" storageaddress="0x7EAEA" />
+  <table type="Switch" name="Rotational Idle Enable" category="Rotational Idle (master patch)" sizey="1" userlevel="1" storageaddress="0x7DB40">
+   <description>Exact 01 enables the bounded timing post-processor; 00 or any other value leaves all six stock final ignition angles unchanged. Master defaults OFF. Enable only after confirming a stable warm idle and log final ignition timing while commissioning.</description>
+   <state name="on" data="01" />
+   <state name="off" data="00" />
+  </table>
+  <table type="1D" name="Rotational Idle Minimum Coolant Temperature" category="Rotational Idle (master patch)" storagetype="float" endian="big" sizey="1" userlevel="2" storageaddress="0x7DB44">
+   <scaling units="Coolant Temp (Degrees C)" expression="x" to_byte="x" format="0.0" fineincrement="0.5" coarseincrement="1" />
+   <description>Inclusive warm-idle lower gate; default 80 C.</description>
+  </table>
+  <table type="1D" name="Rotational Idle Maximum Coolant Temperature" category="Rotational Idle (master patch)" storagetype="float" endian="big" sizey="1" userlevel="2" storageaddress="0x7DB48">
+   <scaling units="Coolant Temp (Degrees C)" expression="x" to_byte="x" format="0.0" fineincrement="0.5" coarseincrement="1" />
+   <description>Inclusive over-temperature exit; default 105 C.</description>
+  </table>
+  <table type="1D" name="Rotational Idle Minimum Engine Speed" category="Rotational Idle (master patch)" storagetype="float" endian="big" sizey="1" userlevel="2" storageaddress="0x7DB4C">
+   <scaling units="RPM" expression="x" to_byte="x" format="#" fineincrement="0.5" coarseincrement="1" />
+   <description>Inclusive idle-speed lower gate; default 600 RPM.</description>
+  </table>
+  <table type="1D" name="Rotational Idle Maximum Engine Speed" category="Rotational Idle (master patch)" storagetype="float" endian="big" sizey="1" userlevel="2" storageaddress="0x7DB50">
+   <scaling units="RPM" expression="x" to_byte="x" format="#" fineincrement="0.5" coarseincrement="1" />
+   <description>Inclusive idle-speed upper gate; default 1050 RPM.</description>
+  </table>
+  <table type="1D" name="Rotational Idle Maximum Throttle" category="Rotational Idle (master patch)" storagetype="float" endian="big" sizey="1" userlevel="2" storageaddress="0x7DB54">
+   <scaling units="Throttle Plate Opening Angle (%)" expression="x/.84" to_byte="x*.84" format="0.0" fineincrement="0.5" coarseincrement="1" />
+   <description>Inclusive processed-throttle gate; default native 1.68 displays as 2.0 percent.</description>
+  </table>
+  <table type="1D" name="Rotational Idle Maximum Vehicle Speed" category="Rotational Idle (master patch)" storagetype="float" endian="big" sizey="1" userlevel="2" storageaddress="0x7DB58">
+   <scaling units="km/h" expression="x" to_byte="x" format="0.0" fineincrement="0.5" coarseincrement="1" />
+   <description>Inclusive stationary-vehicle gate; default 1.0 km/h.</description>
+  </table>
+  <table type="1D" name="Rotational Idle Minimum Manifold Pressure" category="Rotational Idle (master patch)" storagetype="float" endian="big" sizey="1" userlevel="2" storageaddress="0x7DB5C">
+   <scaling units="kPa absolute" expression="x*.1333223684" to_byte="x/.1333223684" format="0.0" fineincrement="0.5" coarseincrement="1" />
+   <description>Inclusive MAP lower gate; default 150 mmHg or about 20.0 kPa absolute.</description>
+  </table>
+  <table type="1D" name="Rotational Idle Maximum Manifold Pressure" category="Rotational Idle (master patch)" storagetype="float" endian="big" sizey="1" userlevel="2" storageaddress="0x7DB60">
+   <scaling units="kPa absolute" expression="x*.1333223684" to_byte="x/.1333223684" format="0.0" fineincrement="0.5" coarseincrement="1" />
+   <description>Inclusive high-vacuum upper gate; default 550 mmHg or about 73.3 kPa absolute.</description>
+  </table>
+  <table type="1D" name="Rotational Idle Maximum Retard" category="Rotational Idle (master patch)" storagetype="float" endian="big" sizey="1" userlevel="2" storageaddress="0x7DB64">
+   <scaling units="degrees" expression="x" to_byte="x" format="0.0" fineincrement="0.5" coarseincrement="1" />
+   <description>Maximum retard magnitude; default 8 degrees. Invalid or non-positive values apply no offset.</description>
+  </table>
+  <table type="1D" name="Rotational Idle Minimum Final Timing" category="Rotational Idle (master patch)" storagetype="float" endian="big" sizey="1" userlevel="2" storageaddress="0x7DB68">
+   <scaling units="degrees BTDC" expression="x" to_byte="x" format="0.0" fineincrement="0.5" coarseincrement="1" />
+   <description>Post-retard timing floor; default 5 degrees BTDC. The stock-angle ceiling prevents this floor adding advance.</description>
+  </table>
+  <table type="2D" name="Rotational Idle Cylinder Timing Offsets" category="Rotational Idle (master patch)" storagetype="float" endian="big" sizey="6" userlevel="1" storageaddress="0x7DB6C">
+   <scaling units="degrees" expression="x" to_byte="x" format="0.0" fineincrement="0.5" coarseincrement="1" />
+   <table type="Static Y Axis" name="Cylinder" sizey="6">
+    <data>Cylinder 1</data>
+    <data>Cylinder 2</data>
+    <data>Cylinder 3</data>
+    <data>Cylinder 4</data>
+    <data>Cylinder 5</data>
+    <data>Cylinder 6</data>
+   </table>
+   <description>Retard-only offsets in ECU final-angle array order. Defaults are {-6, 0, -6, 0, -6, 0} degrees. Positive values are forced to zero; Maximum Retard, Minimum Final Timing, and the original stock angle bound every output.</description>
+  </table>
  </rom>
 </roms>

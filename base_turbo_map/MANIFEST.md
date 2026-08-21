@@ -1,4 +1,4 @@
-# Build Manifest
+# Historical pre-master build manifest
 
 Build date: 2026-08-21. Target: D2WD610H / ECU ID `3C5A387116`, 512 KiB Renesas SH7055 ROM.
 
@@ -6,13 +6,14 @@ Build date: 2026-08-21. Target: D2WD610H / ECU ID `3C5A387116`, 512 KiB Renesas 
 |---|---|
 | Canonical root stock `../2005 BLE MT.bin` | `ed0fe0341d97fb760c2cda3f07277f861495d32f6520e3ce8047b8b0f7bfd4ee` |
 | Original SRF `../base_roms/2005 BLE MT.srf` | `05eae5322072449d90e20e20125d5333738675168d623a320735958bfc7619aa` |
-| Combined reference `../patch/D2WD610H_boost_single_front_af.bin` | `71b28714106dcc1eb7adfe59738fc8c6e968b2b94ca9337158f4442f46fcc1fe` |
+| Reproducible legacy combined stage (not committed) | `71b28714106dcc1eb7adfe59738fc8c6e968b2b94ca9337158f4442f46fcc1fe` |
 | A4TE002B STI-pink donor `../base_roms/A4TE002B-2003-JDM-Subaru-Impreza-STi.hex` | `e3cc868a51476aaa25c1ffb63e8af8ba3e35ca4ace404e842f193bf117754b44` |
-| Base turbo output `D2WD610H_5psi_98RON_base_turbo.bin` | `e26a2c5ef25aa6585aca0bf915c7077f89392d71fbcd1f615a069c133ebc5f28` |
+| Reproducible legacy base output (not committed) | `e26a2c5ef25aa6585aca0bf915c7077f89392d71fbcd1f615a069c133ebc5f28` |
 
 The SRF parser confirms its `MEMD` payload at file offset `0x1CD` is byte-identical to both stock
-BIN copies. The combined stage is regenerated from that stock payload and must be byte-identical to
-the canonical combined artifact before calibration begins.
+BIN copies. The legacy combined stage is regenerated from that stock payload and hash-checked in
+memory before calibration begins; the current master composes the same calibration functions with
+the speed-density, wideband, fueling-safety, and rotational-idle components.
 
 The 192-KiB injector donor must identify as `A4TE002B` at `0x200`, match the hash above, and contain
 flow raw `4900` at `0x2866B` plus latency raw `{697,372,245,171,95}` at `0x28673`. Source:

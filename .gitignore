@@ -1,0 +1,14 @@
+.DS_Store
+**/.DS_Store
+__pycache__/
+**/__pycache__/
+*.py[cod]
+*.lock
+*.lock~
+tmp/
+
+# Standalone component/test ROMs are reproducible local outputs.  The focused
+# master ROM is the only generated flash target kept under version control.
+patch/D2WD610H_*.bin
+speed_density/D2WD610H_speed_density.bin
+base_turbo_map/D2WD610H_5psi_98RON_base_turbo.bin

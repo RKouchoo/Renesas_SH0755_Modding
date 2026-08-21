@@ -1,10 +1,9 @@
 #!/usr/bin/env python3
-"""Synchronize Ghidra-verified AVLS metadata into derived D2WD610H definitions.
+"""Synchronize Ghidra-verified AVLS metadata into retained component inputs.
 
-The metric D2WD610H_AVLS.xml definition is authoritative.  Older patch
-definitions were created as copies and can otherwise retain stale AVLS names,
-units, descriptions, or omit the engine-oil-temperature scaling that selects
-the stock AVLS vehicle-speed curves.
+The metric D2WD610H_AVLS.xml definition is authoritative.  Only the boost
+component definition remains as a generator input; the focused master
+definition is rebuilt by master_patch/build_definition.py.
 """
 
 from __future__ import annotations
@@ -18,9 +17,6 @@ HERE = Path(__file__).resolve().parent
 SOURCE = HERE / "D2WD610H_AVLS.xml"
 TARGETS = (
     HERE / "D2WD610H_AVLS_boost_patch.xml",
-    HERE / "D2WD610H_AVLS_single_front_af_patch.xml",
-    HERE / "D2WD610H_AVLS_boost_single_front_af_patch.xml",
-    HERE / "D2WD610H_AVLS_rotational_idle_patch.xml",
 )
 
 OIL_TABLE = "Engine Oil Temperature Sensor Scaling"

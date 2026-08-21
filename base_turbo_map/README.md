@@ -1,16 +1,16 @@
-# D2WD610H 5 psi / 98 RON Base Turbo Map
+# D2WD610H 5 psi / 98 RON calibration recipe
 
-This directory contains a conservative **starting calibration**, built from the verified combined
-boost + single-front-A/F/rear-O2-delete image for D2WD610H.
+This directory retains the conservative calibration code imported by the current master builder:
+fuel, timing, injector, AVLS, rev-limit, and spring-only boost defaults. Its old pre-master binary
+is no longer committed and is not the current flash target.
 
-Generated ROM:
+Current generated ROM and matching definition:
 
-- `D2WD610H_5psi_98RON_base_turbo.bin`
-- SHA-256: `e26a2c5ef25aa6585aca0bf915c7077f89392d71fbcd1f615a069c133ebc5f28`
+- `../master_patch/D2WD610H_master_patch.bin`
+- `../master_patch/D2WD610H_master_patch.xml`
 - CALID: `D2WD610H`
 - Size: 512 KiB
-- Subaru additive checksum: valid (`0x8CC3EF80`)
-- Matching definition: `../defs/D2WD610H_AVLS_boost_single_front_af_patch.xml`
+- Subaru additive checksum: rebuilt and verified by the master builder
 
 ## Important status
 
@@ -81,28 +81,30 @@ with table locations and conversions from
 See [CALIBRATION.md](CALIBRATION.md) for the exact policies and addresses and
 [COMMISSIONING.md](COMMISSIONING.md) for the required test order.
 
-## Build and verify
+## Current build and verification
 
 From the repository root:
 
 ```sh
-python3 base_turbo_map/build_base_turbo_map.py
-python3 base_turbo_map/verify_base_turbo_map.py
+python3 master_patch/build_master_patch.py
+python3 master_patch/build_definition.py
+python3 master_patch/verify_master_patch.py
 ```
 
-The builder verifies all of the following before writing the output:
+The master builder verifies all of the following before writing the output:
 
 1. root stock ROM SHA-256;
 2. byte identity of the root stock, `base_roms` stock BIN, and original SRF `MEMD` payload;
-3. reconstruction of the combined image directly from stock;
-4. byte identity and SHA-256 of that stage against the canonical combined artifact;
+3. reconstruction of every firmware component directly from stock;
+4. deterministic component, calibration, and checksum ownership;
 5. size, CALID, SHA-256, flow bytes, and latency bytes of the pinned A4TE002B injector donor;
 6. guarded calibration ownership and a valid final checksum;
-7. no change to any protected stock, donor, or combined source.
+7. no change to any protected stock or donor source.
 
 Any RomRaider edit after this build changes the hash and requires another checksum-correct save.
-Run the verifier again only against an unedited generated baseline; keep separately named working
-revisions for real tuning.
+Run the verifier against the unedited generated baseline; keep separately named working revisions
+for real tuning. `build_base_turbo_map.py` remains executable only as an ignored local regression
+for the superseded pre-master composition.
 
 ## Hardware assumption for the boost valve
 

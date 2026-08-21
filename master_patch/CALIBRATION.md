@@ -250,6 +250,20 @@ Stop adding timing if torque no longer rises, knock activity appears, lambda or
 fuel pressure moves out of bounds, or the result is not repeatable. The supplied
 timing is a conservative commissioning surface, not a finished optimum tune.
 
+## Rotational idle
+
+The component is installed in master but `Rotational Idle Enable` defaults OFF.
+Its inclusive operating window is 80--105 C coolant, 600--1050 RPM, no more than
+2.0-percent displayed throttle, no more than 1 km/h, and 20.0--73.3 kPa absolute
+MAP. Inside that window the default per-cylinder timing offsets are
+`{-6, 0, -6, 0, -6, 0}` degrees.
+
+Every offset is retard-only. Maximum Retard defaults to 8 degrees, Minimum Final
+Timing defaults to 5 degrees BTDC, and the original stock final angle remains a
+hard ceiling. Therefore neither positive entries nor the minimum-timing floor
+can add advance. This changes ignition timing only: it does not command idle
+airflow, cut fuel, alter AVLS, or disable misfire monitoring.
+
 ## Boost and RPM
 
 - electronic boost-control switch: OFF (`0x7D80C = 00`), so the actuator path

@@ -6,11 +6,12 @@ Order is deliberate and deterministic:
 1. verify the root stock BIN, base_roms copy, and original SRF payload;
 2. install the existing Ghidra-verified boost-control component;
 3. replace its donor MAP transfer with the exact Omni Power MAP-SUP-3BR data;
-4. install always-on mafless speed density with committed-state dual VE;
-5. install the permanent four-stock-O2 delete / former-MAF wideband component;
-6. install barometrically referenced forced-open-loop and latched lean-cut safety;
-7. apply the conservative 5 psi / 98 RON / STI-pink / 6800-RPM calibration;
-8. apply the speed-density component's predictable 3200/3000-RPM AVLS policy
+4. install the bounded, default-off rotational-idle timing post-processor;
+5. install always-on mafless speed density with committed-state dual VE;
+6. install the permanent four-stock-O2 delete / former-MAF wideband component;
+7. install barometrically referenced forced-open-loop and latched lean-cut safety;
+8. apply the conservative 5 psi / 98 RON / STI-pink / 6800-RPM calibration;
+9. apply the speed-density component's predictable 3200/3000-RPM AVLS policy
    and write/verify the Subaru checksum.
 
 Generated ROMs are never accepted as input.  The root stock ROM is never
@@ -38,6 +39,7 @@ for directory in (PATCH_DIR, SD_DIR, BASE_TURBO_DIR, FUEL_SAFETY_DIR, HERE):
 import extract_srf  # noqa: E402
 import patch_boost as boost  # noqa: E402
 import patch_speed_density as speed_density  # noqa: E402
+import patch_rotational_idle as rotational_idle  # noqa: E402
 import build_base_turbo_map as base_turbo  # noqa: E402
 import wideband_component as wideband  # noqa: E402
 import fueling_safety_component as fueling_safety  # noqa: E402
@@ -181,6 +183,7 @@ def build_image() -> tuple[
     component_blobs: dict[str, list[tuple[str, int, bytes]]] = {}
     component_blobs["boost"] = boost.apply_to_rom(rom)
     apply_omni_map_calibration(rom)
+    component_blobs["rotational_idle"] = rotational_idle.apply_to_rom(rom)
     component_blobs["speed_density"] = speed_density.apply_to_rom(rom)
     component_blobs["wideband_O2_delete"] = wideband.apply_to_rom(rom)
     component_blobs["fueling_safety"] = fueling_safety.apply_to_rom(rom)
@@ -259,6 +262,7 @@ def main(argv: list[str] | None = None) -> None:
     print("  boost switches    : EBCS OFF; independent hard overboost cut ON")
     print("  default boost cmd : spring-only (WGDC/Kp/max duty all zero), 5 psi targets")
     print("  oxygen sensors    : four stock paths removed; former MAF ADC -> 50-4110 P0/P1")
+    print("  rotational idle   : installed, bounded retard-only, default OFF")
     print("  pressure OL guard : ON; baro-referenced, 0.5 psi pre-boost margin")
     print("  lean fuel cut     : ON; 13.0 AFR, delayed/confirmed, boost-release latched")
     print(

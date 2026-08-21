@@ -1,10 +1,8 @@
-# Standalone Rotational-Idle Development Patch
+# Rotational-Idle Component and Master Integration
 
-Target: D2WD610H / ECU ID `3C5A387116`, Renesas SH7055. This component is intentionally
-standalone. It is **not** included in `patch_combined.py`,
-`patch/D2WD610H_boost_single_front_af.bin`, or the current `base_turbo_map` image. Its guarded
-`apply_to_rom()` interface and free-space allocation are ready for a later combined-patch merge
-after standalone testing.
+Target: D2WD610H / ECU ID `3C5A387116`, Renesas SH7055. The guarded component is now
+integrated into `master_patch` and defaults OFF. It remains absent from the historical
+combined patch and `base_turbo_map` calibration source.
 
 ## What it does
 
@@ -67,29 +65,24 @@ retains the original stock angle. The patch does not add hysteresis or retain st
 
 | File | Purpose |
 |---|---|
-| `patch/patch_rotational_idle.py` | Pinned stock-to-standalone-ROM builder and reusable component API |
-| `patch/verify_rotational_idle.py` | Exact rebuild, opcode, policy, change-ownership, and future-composition audit |
-| `patch/D2WD610H_rotational_idle.bin` | Generated 512-KiB development image; defaults OFF |
-| `defs/D2WD610H_AVLS_rotational_idle_patch.xml` | Self-contained metric D2WD610H RomRaider definition |
+| `patch/patch_rotational_idle.py` | Reusable guarded component API; can still build a local standalone test image |
+| `patch/verify_rotational_idle.py` | Standalone opcode, policy, and ownership audit |
+| `master_patch/D2WD610H_master_patch.bin` | Only committed flashable generated image; includes this component OFF |
+| `master_patch/D2WD610H_master_patch.xml` | Current definition containing all rotational-idle controls |
 
 From the repository root:
 
 ```sh
-python3 patch/patch_rotational_idle.py
-python3 patch/verify_rotational_idle.py
-python3 patch/verify_romraider_toggles.py
+python3 master_patch/build_master_patch.py
+python3 master_patch/build_definition.py
+python3 master_patch/verify_master_patch.py
 ```
 
-The builder always reads the canonical root `2005 BLE MT.bin`, requires SHA-256
-`ed0fe0341d97fb760c2cda3f07277f861495d32f6520e3ce8047b8b0f7bfd4ee`, and refuses to overwrite
-or alias it. The current output SHA-256 is
-`f5ce45cb46b244e0c3973e3dfab699a3a2a13a1b296b758c96ec19f655ed7165`. Exactly 404 bytes differ
-from stock: the guarded task-pointer edit and the dedicated component allocation.
+The master builder always reads the canonical root `2005 BLE MT.bin`, verifies its pinned
+SHA-256 and SRF/base copies, and writes a checksum-valid separate output. The standalone
+builder remains only as a local component test and its generated BIN is no longer committed.
 
-The builder does not correct the Subaru checksum. A checksum-valid save must be produced and
-independently verified before flashing.
-
-## Allocation and later merge boundary
+## Allocation and master boundary
 
 | Item | Address / extent |
 |---|---:|
@@ -99,12 +92,10 @@ independently verified before flashing.
 | Reserved component ceiling | `0x7DCFF` |
 | Stock final-timing task-pointer hook | `0x11E30`: `0x279CC` -> `0x7DB90` |
 
-The existing boost component owns flash beginning at `0x7D790`; the front-A/F/rear-delete
-component ends at `0x7DB3B`. The rotational component begins at `0x7DB40`, leaving those
-allocations untouched. Its verifier independently applies boost, front-A/F, and rotational-idle
-components to stock, proves their changed-byte sets are pairwise disjoint, then exercises their
-three-way union in memory. No combined file is generated and no current combined source or ROM
-is modified by that test.
+The rotational component begins at `0x7DB40` and ends at `0x7DCEB`; speed density starts at
+`0x7DD00`. The master verifier owns every component blob and hook, decodes this wrapper,
+executes its policy model, and rejects any overlap with boost, SD, wideband, fueling safety,
+calibration, or RAM state.
 
 ## Commissioning limits
 
@@ -115,7 +106,7 @@ not remove them.
 
 Before enabling it:
 
-1. Produce and verify a valid checksum, then first run the standalone image with the switch OFF.
+1. Verify the generated master checksum, then first run the master image with the switch OFF.
 2. Confirm stock idle quality and log ECT, RPM, throttle, vehicle speed, MAP, Ignition Timing,
    battery voltage, both fuel corrections, lambda, and all six misfire counters.
 3. Test only fully warm, stationary, in neutral, with working cooling and an immediate shutdown

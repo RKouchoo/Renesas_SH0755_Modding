@@ -261,7 +261,7 @@ def main():
     print("  runtime switch : 0x%05X=00 by default; only 01 enables" % patch.ROT_IDLE_ENABLE_ADDR)
     print("  final outputs  : six stock angles post-processed in place; no fuel cut or RAM allocation")
     print("  composition    : boost + front-A/F + rotational-idle byte sets are pairwise disjoint")
-    print("  combined patch : unchanged; compatibility was exercised in memory only")
+    print("  master merge   : verified separately by master_patch/verify_master_patch.py")
 
 
 if __name__ == "__main__":

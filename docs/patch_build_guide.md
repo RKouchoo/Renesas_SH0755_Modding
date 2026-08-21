@@ -1,5 +1,9 @@
 # Boost-Control Patch — Build and Commissioning Guide
 
+> Current status: this boost component is composed by `master_patch`. The old standalone and
+> boost-plus-single-front generated ROMs are no longer committed; commands below that build a
+> standalone image produce ignored local regression artifacts only.
+
 The reverse engineering behind this patch is recorded in
 [boost_repurpose_notes.md](boost_repurpose_notes.md),
 [boost_donor_A2WC510N.md](boost_donor_A2WC510N.md),
@@ -50,33 +54,26 @@ The extractor parses the SRF chunk table and verifies that its `MEMD` payload at
 is exactly 512 KiB and byte-identical to both stock BIN copies. It leaves an already-identical
 `base_roms/2005 BLE MT.bin` untouched and refuses to overwrite a differing file.
 
-For the combined boost + single-front-A/F/rear-O2-delete development image, use:
+For the current integrated image, use:
 
 ```sh
-python3 patch/patch_combined.py
-python3 patch/verify_combined.py
+python3 master_patch/build_master_patch.py
+python3 master_patch/build_definition.py
+python3 master_patch/verify_master_patch.py
 python3 patch/verify_romraider_toggles.py
 ```
 
-This writes `patch/D2WD610H_boost_single_front_af.bin` from a fresh root-stock copy. The builder
-dry-applies both components independently, proves their changed-byte sets do not overlap, then
-requires the composed result to be their exact union. Open that image only with
-`defs/D2WD610H_AVLS_boost_single_front_af_patch.xml`. Both standalone commissioning plans still
-apply before the combined image is flashed.
+This writes the committed master ROM from a fresh root-stock copy, proves component ownership and
+non-overlap, and regenerates its focused RomRaider definition. The master uses the former MAF input
+for the external wideband, removes all four stock O2 paths, adds MAFless speed density and fueling
+safeties, and includes rotational idle default OFF.
 
-For the separate conservative 5 psi / 98 RON starting calibration, run:
-
-```sh
-python3 base_turbo_map/build_base_turbo_map.py
-python3 base_turbo_map/verify_base_turbo_map.py
-```
-
-It reconstructs the same combined stage directly from the pinned stock/SRF payload, verifies the
-canonical combined hash, applies only documented calibration changes, and writes a valid Subaru
-checksum. It uses the 5 psi wastegate spring with zero electronic duty. Read
+The conservative 5 psi / 98 RON calibration is already applied by that master build. Its reusable
+calibration recipe remains in `base_turbo_map`; do not flash its superseded standalone output.
+It uses the 5 psi wastegate spring with zero electronic duty. Read
 [`base_turbo_map/README.md`](../base_turbo_map/README.md) and its commissioning checklist before
-using the artifact. The pinned A4TE002B factory calibration supplies the STI-pink injector starting
-values, but injector identity/condition, MAF/housing data, fuel-system capacity, and physical tests
+using the master. The pinned A4TE002B factory calibration supplies the STI-pink injector starting
+values, but injector identity/condition, MAP/IAT/wideband wiring, fuel-system capacity, and physical tests
 remain intentional flash blockers.
 
 ## Controller behavior

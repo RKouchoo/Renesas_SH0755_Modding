@@ -683,7 +683,7 @@ acceptance, hardware wiring correctness, or safe vehicle operation.
 
 # Integrated Master Patch Audit
 
-Audit date: 2026-08-21. Target: D2WD610H / ECU ID `3C5A387116`, Renesas SH7055,
+Audit date: 2026-08-22. Target: D2WD610H / ECU ID `3C5A387116`, Renesas SH7055,
 canonical stock `2005 BLE MT.bin`.
 
 ## Verdict
@@ -694,7 +694,8 @@ Power MAP-SUP-3BR scaling, EVAP-output boost control and safeties, a former-MAF 
 for the supplied seller-labelled 50-4110/30-4110-style P0/P1 output, logical removal of both
 stock front A/F and both rear O2 paths, STI-pink factory
 donor injector data, a base VE surface, and the conservative 5 psi / 98 RON / early-AVLS /
-6800-RPM calibration.
+6800-RPM calibration. It also includes the bounded retard-only rotational-idle component with its
+RomRaider switch default OFF, plus pressure-forced open loop and delayed/latched lean fuel cut.
 
 The binary, free-space ownership, injected opcodes, hooks, sensor policy, fuel/timing/injector/
 AVLS calibration, definition, logger fragment, checksum, and stock/SRF provenance pass static
@@ -705,14 +706,14 @@ enter boost solely because the automated audit passes.
 
 - Input SHA-256: `ed0fe0341d97fb760c2cda3f07277f861495d32f6520e3ce8047b8b0f7bfd4ee`.
 - Output: `master_patch/D2WD610H_master_patch.bin`, 512 KiB, CALID `D2WD610H`.
-- Output SHA-256: `00c34efc18ca65e0fd2619ed722b0bac236013b296adea7baf84ac9bf887a76b`.
-- Subaru additive checksum: `0xB86A1DE4`, verified.
+- Output SHA-256: `3e5a18d495e567e121f6692f0f8939b8a4dc8bf22f479186c56f66b82cf993a2`.
+- Subaru additive checksum: `0xB0B76582`, verified.
 - The root stock BIN, `base_roms` copy, and original SRF `MEMD` payload are byte-identical.
 - The builder refuses generated inputs and protected-source output aliases; every component is
   reconstructed on an in-memory copy of root stock.
-- Exactly 3,635 bytes differ from stock, all inside declared hooks, diagnostic switches,
-  calibration regions, and verified free flash. The separate rotational-idle reservation
-  `0x7DB40..0x7DCEB` remains byte-identical to stock.
+- Exactly 5,989 bytes differ from stock, all inside declared hooks, diagnostic switches,
+  calibration regions, and verified free flash. Rotational idle owns `0x7DB40..0x7DCEB` and
+  task pointer `0x11E30`; the master verifier proves this is disjoint from every other component.
 
 ## Live Ghidra revalidation
 
@@ -898,19 +899,18 @@ vehicle-speed-selected AVLS descriptions for the current master image.
 
 ## Artifacts and verification
 
-- Standalone single SD/VE artifact: `speed_density/D2WD610H_speed_density.bin`, SHA-256
-  `9cfcf45d075818c1a8320e540eb855979289ce25a6e03b8879a0c4767db49d16`,
-  checksum `0x051694B7`.
+- The standalone SD/VE regression image remains reproducible but is no longer committed; the
+  master is the only generated flash target retained in Git.
 - Master: `master_patch/D2WD610H_master_patch.bin`, SHA-256
-  `2950f98360aba3c47d3aeed072104141d506a8e070b14efb5e7e29e2517821eb`,
-  checksum `0xBAF9F280`.
-- Both generated XML files use the project's RomRaider SH float-endianness
+  `3e5a18d495e567e121f6692f0f8939b8a4dc8bf22f479186c56f66b82cf993a2`,
+  checksum `0xB0B76582`.
+- The retained component input and generated master XML use the project's RomRaider SH float-endianness
   convention and omit the obsolete full-range VE entry and inoperative
   variable AVLS controls. The legacy single-VE bytes remain inert in flash but
   cannot be referenced by the new wrapper.
-- The standalone and master verifiers independently rebuild from immutable
-  stock, audit hooks/opcodes/descriptors/axes/calibration/XML, validate checksum
-  and pinned hash, and confirm root stock/base/SRF provenance.
+- The component and master verifiers rebuild from immutable stock, audit
+  hooks/opcodes/descriptors/axes/calibration/XML, validate checksum and pinned hash, and confirm
+  root stock/base/SRF provenance.
 - Master free-space ownership is collision-checked byte-for-byte across boost,
   the speed-density core and its dual-VE segment, and wideband/O2 removal. The
   wideband reservation ends exactly at `0x7E63F`; the SD dual-VE segment begins
@@ -967,3 +967,30 @@ master verifier additionally audits flash/hook ownership, XML controls, logger
 addresses, fresh-build identity, checksum, and pinned hash. These checks are
 static; sensor transport delay and cut behavior still require controlled
 physical validation.
+
+# Rotational-idle master merge and repository consolidation
+
+Audit date: 2026-08-22.
+
+`master_patch/build_master_patch.py` now calls the guarded rotational-idle component after boost
+and Omni MAP scaling and before speed density. Periodic pointer `0x11E30` is owned by the wrapper
+at `0x7DB90`; that wrapper calls the complete stock
+`ign_final_timing_per_cylinder_update` (`0x279CC`) first, then post-processes the six final angles
+only when the exact enable byte and every warm/stationary/closed-throttle/high-vacuum gate pass.
+The generated master keeps `0x7DB40 = 00`, so the feature is installed but inactive by default.
+
+The verifier independently composes the rotational blobs, requires the wrapper to end at
+`0x7DCEB`, decodes its stock call, exact-`01` comparison, six-element loop, and final-angle store,
+and executes the standalone policy model. It additionally checks that rotational flash, hook,
+calibration, and RAM ownership do not collide with boost, speed density/dual VE, wideband/O2
+removal, fueling safety, or the final checksum. The focused RomRaider definition exposes the
+enable byte, ten scalar gates/limits, and six per-cylinder offsets at their exact master addresses.
+
+Repository cleanup makes `master_patch/D2WD610H_master_patch.bin` and its matching XML the only
+committed generated tuning target. Reproducible standalone boost, front-A/F, rotational-idle,
+speed-density, old combined, and pre-master base-turbo BINs were removed, along with their obsolete
+single-purpose XML outputs. Source component builders/verifiers and the two XML inputs actually
+used by the master definition generator remain. Python caches, macOS metadata, temporary workshop
+manual extracts, and Ghidra lock files were removed and are now ignored. The immutable root stock
+ROM, its `base_roms` copy, original SRF, Ghidra project database, engineering documentation, and
+current master artifacts remain tracked.
