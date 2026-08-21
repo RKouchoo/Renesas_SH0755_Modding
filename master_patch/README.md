@@ -4,8 +4,8 @@ This directory contains the single current integration target for the 2005 ADM
 Liberty 3.0R manual ECU (`D2WD610H`). It combines the previously separate
 firmware work into one deterministic stock-to-output build:
 
-- always-on MAFless speed density with a 13x17 MAP/RPM VE table and retained
-  post-intercooler IAT input;
+- always-on MAFless speed density with committed-state low/high-lift AVLS VE
+  tables and retained post-intercooler IAT input;
 - Omni Power `MAP-SUP-3BR` 3-bar MAP scaling;
 - EVAP-output boost control with throttle, wideband, speed-density-input/result,
   soft-overboost, and hard fuel-cut gates;
@@ -19,9 +19,9 @@ firmware work into one deterministic stock-to-output build:
 - a focused, self-contained D2WD610H RomRaider definition and logger fragment.
 
 The generated baseline is `D2WD610H_master_patch.bin`, SHA-256
-`00c34efc18ca65e0fd2619ed722b0bac236013b296adea7baf84ac9bf887a76b`.
+`a04a82a09f713801351f4fa849452d90187da526c0344857ab8834b799e221ce`.
 It is 512 KiB, contains CALID `D2WD610H`, and has a valid Subaru additive
-checksum (`0xB86A1DE4`). It is a development artifact, not a vehicle-tested tune.
+checksum (`0xB94E8916`). It is a development artifact, not a vehicle-tested tune.
 
 Only `Boost Control Patch Enable` remains a RomRaider firmware toggle. MAFless
 airflow and the external-wideband/four-stock-O2 replacement are intentionally
@@ -90,17 +90,21 @@ and checksum.
 | File | Purpose |
 |---|---|
 | `build_master_patch.py` | Deterministic stock-to-master builder. |
+| `../avls_ve/patch_avls_ve.py` | Committed-state dual-VE firmware component and predictable 3200/3000 RPM AVLS calibration. |
 | `wideband_component.py` | Permanent four-stock-O2 delete and former-MAF external-wideband input firmware. |
 | `verify_master_patch.py` | Independent binary, opcode, calibration, XML, logger, and provenance audit. |
 | `build_definition.py` | Generates the focused D2WD610H RomRaider definition. |
 | `D2WD610H_master_patch.xml` | Matching self-contained metric RomRaider definition. |
-| `D2WD610H_master_logger_ecuparams.xml` | Three D2WD610H-only RomRaider logger parameters. |
+| `D2WD610H_master_logger_ecuparams.xml` | Four D2WD610H-only RomRaider logger parameters, including committed AVLS state. |
 | `install_master_logger.py` | Adds those parameters to a copy of a normal SSM logger definition. |
 | `ghidra_scripts/ApplyMasterNames.java` | Reproducibly reapplies the names/comments confirmed in live Ghidra. |
 
 ## Hard limitations
 
 - The base VE table is mathematical, not measured on this engine.
+- The two AVLS VE tables are seeded from that same mathematical surface and
+  still require separate log calibration. Continuous AVCS position remains an
+  unmodeled influence within each lift state.
 - One post-turbo sensor now represents both banks; it cannot detect a bank-only
   mixture fault and has more transport delay than either original pre-cat sensor.
 - The supplied four-wire controller has a single-ended analog output and no

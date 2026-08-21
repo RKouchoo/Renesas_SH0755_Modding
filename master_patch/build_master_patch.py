@@ -8,8 +8,10 @@ Order is deliberate and deterministic:
 3. replace its donor MAP transfer with the exact Omni Power MAP-SUP-3BR data;
 4. install always-on mafless speed density and its base VE surface;
 5. install the permanent four-stock-O2 delete / former-MAF wideband component;
-6. apply the conservative 5 psi / 98 RON / STI-pink / 6800-RPM calibration;
-7. write and verify the Subaru checksum.
+6. install committed-AVLS-state low/high-lift VE selection;
+7. apply the conservative 5 psi / 98 RON / STI-pink / 6800-RPM calibration;
+8. replace the legacy road-speed AVLS request with a predictable 3200/3000
+   RPM switch and write/verify the Subaru checksum.
 
 Generated ROMs are never accepted as input.  The root stock ROM is never
 opened for writing.
@@ -29,7 +31,8 @@ ROOT = HERE.parent
 PATCH_DIR = ROOT / "patch"
 SD_DIR = ROOT / "speed_density"
 BASE_TURBO_DIR = ROOT / "base_turbo_map"
-for directory in (PATCH_DIR, SD_DIR, BASE_TURBO_DIR, HERE):
+AVLS_VE_DIR = ROOT / "avls_ve"
+for directory in (PATCH_DIR, SD_DIR, BASE_TURBO_DIR, AVLS_VE_DIR, HERE):
     sys.path.insert(0, str(directory))
 
 import extract_srf  # noqa: E402
@@ -37,6 +40,7 @@ import patch_boost as boost  # noqa: E402
 import patch_speed_density as speed_density  # noqa: E402
 import build_base_turbo_map as base_turbo  # noqa: E402
 import wideband_component as wideband  # noqa: E402
+import patch_avls_ve as avls_ve  # noqa: E402
 
 
 STOCK = (ROOT / "2005 BLE MT.bin").resolve()
@@ -179,10 +183,27 @@ def build_image() -> tuple[
     apply_omni_map_calibration(rom)
     component_blobs["speed_density"] = speed_density.apply_to_rom(rom)
     component_blobs["wideband_O2_delete"] = wideband.apply_to_rom(rom)
+    component_blobs["AVLS_dual_VE"] = avls_ve.apply_to_rom(rom)
 
     # Pin the exact firmware-component stage before applying any tune tables.
     component_reference = bytes(rom)
     calibration_writes = base_turbo.apply_calibration(rom, component_reference)
+
+    # The legacy base-turbo calibration predates committed-state dual VE and
+    # intentionally requested early AVLS through vehicle speed.  Master now
+    # replaces those values with the deterministic 3200/3000 RPM policy.  The
+    # component's standalone image uses the same helper.
+    predictable_avls = avls_ve.apply_predictable_avls_calibration(rom)
+    calibration_writes.update(predictable_avls)
+    _, calculated, _ = base_turbo.checksum_value(rom)
+    checksum_data = struct.pack(">I", calculated)
+    rom[
+        base_turbo.CHECKSUM_TABLE_ADDR + 8 : base_turbo.CHECKSUM_TABLE_ADDR + 12
+    ] = checksum_data
+    calibration_writes["Subaru checksum"] = (
+        base_turbo.CHECKSUM_TABLE_ADDR + 8,
+        checksum_data,
+    )
     output = bytes(rom)
 
     stored, calculated, _ = base_turbo.checksum_value(output)
@@ -230,7 +251,9 @@ def main(argv: list[str] | None = None) -> None:
         "  Omni MAP transfer : %.9f mmHg/V %+.9f mmHg; low CEL %.3f V"
         % (OMNI_MAP_MULTIPLIER, OMNI_MAP_OFFSET, MASTER_MAP_LOW_CEL_VOLTS)
     )
-    print("  speed density     : always-on MAFless, 13x17 base VE, 2.999 L")
+    print("  speed density     : always-on MAFless, committed-state dual VE, 2.999 L")
+    print("  AVLS VE ranges    : low 0..3200 RPM; high 3000..7500 RPM")
+    print("  AVLS switch       : fixed 3200 engage / 3000 release RPM")
     print("  boost             : EVAP PWM + throttle/SD-input/wideband/soft/hard gates")
     print("  default boost cmd : spring-only (WGDC/Kp/max duty all zero), 5 psi targets")
     print("  oxygen sensors    : four stock paths removed; former MAF ADC -> 50-4110 P0/P1")

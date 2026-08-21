@@ -23,6 +23,7 @@ PARAMETERS = {
     "E500": "External Wideband Lambda (D2WD610H master)*",
     "E501": "External Wideband Input ADC (D2WD610H master)*",
     "E502": "External Wideband Ready Metric (D2WD610H master)*",
+    "E503": "Committed AVLS VE State (D2WD610H master)*",
 }
 
 
@@ -129,6 +130,7 @@ def main(argv: list[str] | None = None) -> None:
     print("  E500              : external-wideband lambda / estimated AFR")
     print("  E501              : former-MAF raw ADC / input volts")
     print("  E502              : wideband readiness / one boost-duty prerequisite")
+    print("  E503              : committed AVLS mode used by the dual-VE selector")
     print(
         "Select the new output under RomRaider Logger -> Settings -> "
         "Logger Definition Location."

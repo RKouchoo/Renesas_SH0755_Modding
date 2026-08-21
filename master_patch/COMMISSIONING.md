@@ -58,10 +58,11 @@ Log at minimum:
 - E500 external-wideband lambda/estimated AFR;
 - E501 raw former-MAF ADC/input voltage;
 - E502 external-wideband readiness;
+- E503 committed AVLS VE state (mode 1 low lift, mode 3 high lift);
 - MAP, barometric pressure, RPM, IAT, modeled airflow, calculated load;
 - commanded fuel/lambda, short- and long-term correction, CL/OL state;
 - ignition timing, feedback knock, fine-learning knock, KCA, IAM;
-- AVLS requested/committed state, vehicle speed, engine-oil temperature, throttle, injector
+- AVLS requested state, throttle, injector
   duty/pulse width, and battery voltage;
 - purge/repurposed EBCS duty; and
 - independently measured fuel pressure and wideband/controller status with a
@@ -79,8 +80,10 @@ sample or average it into tuning data.
    lambda reference. Resolve any offset before changing VE or injector data.
 4. Calibrate idle and vacuum VE cells on a load-controlled dyno. Confirm MAP,
    IAT, airflow, load, fuel correction, and injector pulse width are plausible.
-5. Validate deceleration, tip-in, heat soak, fan operation, and the oil-temperature-selected,
-   vehicle-speed-gated AVLS transition.
+5. Validate deceleration, tip-in, heat soak, fan operation, and the fixed
+   3200-RPM engage / 3000-RPM release AVLS transition. Confirm E503 changes as
+   expected and independently verify physical OSV/lift operation; do not assign
+   VE samples from requested state alone.
    A 500 g/s airflow value while running is a fault indication: stop and find
    the invalid SD input rather than tuning around it.
 
@@ -111,8 +114,9 @@ Only after the naturally aspirated/vacuum region is stable:
    above the hard limit throughout the RPM/load range.
 3. Tune VE, commanded lambda, injector data, and timing in small steady-state
    steps using synchronized data and conservative knock limits.
-4. Validate each AVLS side and the transition separately, then transients,
-   restarts, heat soak, and altitude.
+4. Tune low- and high-lift VE separately using E503. Discard transition samples,
+   then validate the 3000..3200 hysteresis overlap, transients, restarts, heat
+   soak, and altitude.
 
 Do not add electronic duty until spring-only control and every protection have
 passed. Any later RomRaider edit creates a new calibration that no longer has

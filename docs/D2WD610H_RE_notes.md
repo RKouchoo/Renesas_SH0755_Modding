@@ -234,6 +234,8 @@ Definition layout:
   the canonical boost tables plus both unchanged runtime-enable switches.
 - `speed_density/D2WD610H_AVLS_speed_density_patch.xml` is the standalone always-on MAFless
   definition and removes the inherited MAF tables/diagnostics.
+- `avls_ve/D2WD610H_AVLS_dual_ve_patch.xml` layers committed-state low/high-lift VE tables and
+  fixed 3200/3000-RPM AVLS hysteresis onto the standalone MAFless definition.
 - `master_patch/D2WD610H_master_patch.xml` is the current focused integration definition. It
   retains only relevant engine-tuning controls plus AVLS, SD/VE, exact Omni MAP, boost, and AEM
   input calibration; it renames the active timing/KCA paths and the AVCS A/B targets by their
@@ -242,7 +244,7 @@ Definition layout:
 - `defs/romraider_ecu_defs.xml` is a clean upstream metric RomRaider snapshot and is not modified
   with project tables.
 
-All seven custom RomRaider ROM files are self-contained. The legacy variants embed metric
+All eight custom RomRaider ROM files are self-contained. The legacy variants embed metric
 `32BITBASE` pruned to the standard D2WD610H overrides; the master prunes that set further for its
 changed hardware architecture. Load only the custom ROM variant matching the image being edited.
 Stock AVLS values were verified against the ROM image 2026-07-14.
@@ -333,8 +335,8 @@ data registers (datasheet) instead of descending the call tree.
 - [x] **Current master composition built and audited.** `master_patch` reconstructs only from
       canonical stock, installs the MAFless model, Omni MAP-SUP-3BR transfer, EVAP-output boost
       control and gates, one former-MAF external-wideband producer for both fuel banks, complete
-      traced four-stock-O2 signal/diagnostic removal, STI-pink injector data, base VE/fueling/
-      timing, early AVLS, and the 6800-RPM limiter. The focused definition exposes only active
+      traced four-stock-O2 signal/diagnostic removal, STI-pink injector data, dual AVLS-state
+      VE/fueling/timing, fixed 3200/3000-RPM AVLS, and the 6800-RPM limiter. The focused definition exposes only active
       A/D and C/F timing identities plus relevant tune/patch tables. This remains a static
       development baseline requiring bench/dyno validation, not vehicle proof.
 - [ ] Define 0x25F8/0x2628/0x2654 as functions in Ghidra and rename (interp_2axis_float32/s8/s16)
@@ -432,6 +434,10 @@ _(underscore names only — strict naming enforcement is ON)_
 - 0x0001E0C8 → **injector_flow_scaling_factor_update** (consumes flow scaling at 0x76014)
 - 0x0000A9A8 → **injector_control_lookup_sequence_a9a8**
 - 0x0003EB68 → **knock_correction_advance_max_select** (KCA A normal cam / KCA B AVLS high cam)
+- 0x000024B0 → **float_minimum_select** (returns the lower float; confirmed while tracing AVLS)
+- 0x0003FDBC → **avls_control_sequence_update** (request state machine, commit copy, then OSV gate)
+- 0x000405B2 → **avls_mode_commit_copy** (CD87 requested mode → CD86 committed mode)
+- 0x000405CC → **avls_osv_actuation_gate** (retained timing/status gate for lift actuation)
 - 0x0003FFDA → **avls_threshold_curve_selector_state_update**
 - 0x000400EE → **avls_curve_selector_oil_temp_band_latches_update**
 - 0x00018AEA → **vehicle_speed_conditioned_snapshot_copy** (B4C8 → AVLS km/h compare B46C)
@@ -677,3 +683,11 @@ and 0x1B81E.
   newly inspected math helpers and downstream controller were also assigned project-convention
   names. A local RomRaider check showed that loading the standalone speed-density XML against the
   unchanged `D2WD610H` CALID explains why the master binary can still appear with legacy labels.
+- 2026-08-21: the master airflow wrapper was extended to select VE from committed AVLS state
+  `0xFFFFCD86`: mode 3 selects a 13x11 high-lift table covering 3000..7500 RPM and all other
+  modes select a 13x9 low-lift table covering 0..3200 RPM. Both are cloned/resampled from the
+  same conservative seed. The 3000..3200 overlap is real hysteresis coverage. All table-driven
+  and fixed/fallback vehicle-speed request thresholds are 110 km/h, above the verified 100-km/h
+  conditioner cap, leaving a predictable 3200-RPM engage / 3000-RPM release policy. The stock
+  request/commit/actuation sequence remains. The focused XML omits controls made inoperative by
+  this policy and E503 logs the committed state used by the VE selector.

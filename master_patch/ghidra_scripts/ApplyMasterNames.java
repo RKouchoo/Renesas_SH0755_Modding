@@ -30,6 +30,7 @@ public class ApplyMasterNames extends GhidraScript {
     public void run() throws Exception {
         createOrRename("00001884", "diagnostic_request_download_handle");
         createOrRename("00002458", "float_divide_guarded");
+        createOrRename("000024b0", "float_minimum_select");
         createOrRename("000024c0", "float_clamp");
         createOrRename("000024fc", "float_difference_exceeds_tolerance");
         createOrRename("000078ac", "analog_sensor_abac_range_classify");
@@ -78,11 +79,14 @@ public class ApplyMasterNames extends GhidraScript {
         createOrRename("000353b0", "intake_avcs_target_by_avls_mode_update");
         createOrRename("00035750", "intake_avcs_tracking_control_update");
         createOrRename("0003eb68", "knock_correction_advance_max_select");
+        createOrRename("0003fdbc", "avls_control_sequence_update");
         createOrRename("0003ffda", "avls_threshold_curve_selector_state_update");
         createOrRename(
             "000400ee", "avls_curve_selector_oil_temp_band_latches_update"
         );
         createOrRename("00040168", "avls_cam_mode_state_machine");
+        createOrRename("000405b2", "avls_mode_commit_copy");
+        createOrRename("000405cc", "avls_osv_actuation_gate");
         createOrRename("00047000", "engine_oil_temperature_fallback_select");
         createOrRename("00064fd0", "front_af_sensor_bank1_inhibit_check");
         createOrRename("0006500c", "front_af_sensor_bank2_inhibit_check");
@@ -155,6 +159,25 @@ public class ApplyMasterNames extends GhidraScript {
             "not engine load. Low lift requests high at curve + 10 km/h; high " +
             "lift releases below the raw curve. State 1 uses fixed 15 km/h " +
             "thresholds. Stock hard-RPM override is 4000/3800 RPM."
+        );
+        setPlateComment(
+            toAddr("0003fdbc"),
+            "Runs the AVLS selector, state machine, committed-mode copy, and " +
+            "OSV actuation sequence. Master dual VE deliberately reads the " +
+            "post-decision committed byte 0xFFFFCD86 rather than requested " +
+            "mode 0xFFFFCD87."
+        );
+        setPlateComment(
+            toAddr("000405b2"),
+            "Copies requested AVLS mode 0xFFFFCD87 into committed mode " +
+            "0xFFFFCD86 before the retained OSV actuation sequence. The dual-VE " +
+            "airflow wrapper selects high-lift VE only when this committed byte is 3."
+        );
+        setPlateComment(
+            toAddr("000405cc"),
+            "Retained OSV actuation gate. Uses the minimum-RPM calibration at " +
+            "0x7D4AC and synchronized state/phase checks before commanding all " +
+            "three high-lift actuators."
         );
         setPlateComment(
             toAddr("0000f474"),

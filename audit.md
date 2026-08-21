@@ -850,3 +850,61 @@ injectors/fuel pressure, scope the purge output and EBCS polarity/frequency, cal
 vacuum before boost, simulate all gates/cuts without deliberately overboosting, and complete
 spring-only load-dyno validation. Stop on invalid airflow, sensor disagreement, lean mixture,
 knock, fuel-pressure loss, or boost creep.
+
+# Committed-state AVLS dual-VE and master integration audit
+
+Audit date: 2026-08-21. This section supersedes the earlier single-13x17-VE and
+vehicle-speed-selected AVLS descriptions for the current master image.
+
+## Result
+
+- The speed-density airflow wrapper now selects two VE surfaces from the
+  Ghidra-verified committed AVLS byte `0xFFFFCD86`. Mode 3 selects high lift;
+  all other values select low lift. Requested byte `0xFFFFCD87` is not used for
+  fueling selection.
+- The low-lift surface is 13x9 and exposes only 0..3200 RPM. The high-lift
+  surface is 13x11 and exposes only 3000..7500 RPM. Their 3000..3200 overlap is
+  the actual hysteresis region, selected by committed state.
+- Both seed surfaces are resampled from the same conservative original VE model
+  and agree in their overlap. This avoids deliberately introducing a fueling
+  discontinuity, but it is not measured VE data.
+- Both RPM-indexed AVLS speed-request maps and both fixed/fallback thresholds are
+  110 km/h. Because the conditioned source is capped at 100 km/h, the old
+  vehicle-speed/oil-band high-lift request is unreachable. High lift engages at
+  3200 RPM and releases at 3000 RPM; actuation minimum is 3000 RPM.
+- The stock request/commit sequencing, status checks, and OSV actuation gates
+  remain. Continuous AVCS effect on VE also remains and must be tuned within
+  each lift surface.
+
+## Ghidra evidence and naming
+
+- `FUN_000024b0` was inspected and renamed `float_minimum_select`.
+- `FUN_0003fdbc` was inspected and renamed `avls_control_sequence_update`.
+- Existing named functions `avls_cam_mode_state_machine` (`0x40168`),
+  `avls_mode_commit_copy` (`0x405B2`), `avls_osv_actuation_gate` (`0x405CC`),
+  `intake_avcs_target_by_avls_mode_update` (`0x353B0`), and the airflow hook at
+  `0x172A4` were rechecked. The sequence calls the state machine, commits the
+  requested mode, then runs the actuation gate.
+- `avls_ve/ghidra_scripts/ApplyAvlsVeNames.java` and the updated master naming
+  script reproduce these names/comments.
+
+## Artifacts and verification
+
+- Standalone: `avls_ve/D2WD610H_avls_dual_ve.bin`, SHA-256
+  `9cfcf45d075818c1a8320e540eb855979289ce25a6e03b8879a0c4767db49d16`,
+  checksum `0x051694B7`.
+- Master: `master_patch/D2WD610H_master_patch.bin`, SHA-256
+  `a04a82a09f713801351f4fa849452d90187da526c0344857ab8834b799e221ce`,
+  checksum `0xB94E8916`.
+- Both generated XML files use the project's RomRaider SH float-endianness
+  convention and omit the obsolete full-range VE entry and inoperative
+  variable AVLS controls. The legacy single-VE bytes remain inert in flash but
+  cannot be referenced by the new wrapper.
+- The standalone and master verifiers independently rebuild from immutable
+  stock, audit hooks/opcodes/descriptors/axes/calibration/XML, validate checksum
+  and pinned hash, and confirm root stock/base/SRF provenance.
+- Master logger parameter E503 exposes committed AVLS state so tuning samples
+  can be assigned to the correct VE table.
+
+Static verification passes; bench ECU, harness, AVLS actuation, fueling,
+transition, and dyno validation remain required.

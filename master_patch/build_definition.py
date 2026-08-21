@@ -18,7 +18,7 @@ import xml.etree.ElementTree as ET
 HERE = Path(__file__).resolve().parent
 ROOT = HERE.parent
 SOURCE = ROOT / "defs" / "D2WD610H_AVLS.xml"
-SD_SOURCE = ROOT / "speed_density" / "D2WD610H_AVLS_speed_density_patch.xml"
+SD_SOURCE = ROOT / "avls_ve" / "D2WD610H_AVLS_dual_ve_patch.xml"
 BOOST_SOURCE = ROOT / "defs" / "D2WD610H_AVLS_boost_patch.xml"
 OUTPUT = HERE / "D2WD610H_master_patch.xml"
 
@@ -29,7 +29,8 @@ SD_NAMES = (
     "Speed Density MAP Valid Range",
     "Speed Density RPM Valid Range",
     "Speed Density IAT Valid Range",
-    "Speed Density VE (MAP x RPM)",
+    "Speed Density VE - AVLS Low Lift",
+    "Speed Density VE - AVLS High Lift",
     "Speed Density IAT Density Correction",
 )
 
@@ -50,15 +51,18 @@ WIDEBAND_NAMES = (
 )
 
 AVLS_NAMES = (
-    "AVLS Vehicle Speed Threshold (Normal Oil Temperature)",
-    "AVLS Vehicle Speed Threshold (High Oil Temperature)",
     "AVLS High Cam Engage RPM",
     "AVLS High Cam Release RPM",
+)
+
+HIDDEN_AVLS_NAMES = {
+    "AVLS Vehicle Speed Threshold (Normal Oil Temperature)",
+    "AVLS Vehicle Speed Threshold (High Oil Temperature)",
     "AVLS Vehicle Speed Hysteresis (Normal Oil Temperature)",
     "AVLS Vehicle Speed Hysteresis (High Oil Temperature)",
     "AVLS Oil Temperature Selector Thresholds",
     "AVLS Actuation Minimum RPM",
-)
+}
 
 TIMING_RENAMES = {
     "Base Timing A": "Base Timing - Normal Cam (AVCS Tracking Ratio 1.0)",
@@ -97,7 +101,7 @@ DROP_NAMES = {
     # Not an engine-tuning control and deliberately excluded from this focus.
     "Fuel Temp Sensor Scaling",
     "Force Pass Readiness Monitors",
-}
+} | HIDDEN_AVLS_NAMES
 
 DROP_CATEGORIES = {"Diagnostic Trouble Codes", "OBD-II"}
 
@@ -174,6 +178,19 @@ AVCS_DESCRIPTIONS = {
         "map, not a left/right-bank map, and it is selected rather than blended "
         "with the low-cam target. The load axis ends at 2.00 g/rev, so the stock "
         "lookup uses its last column above that breakpoint."
+    ),
+}
+
+PREDICTABLE_AVLS_DESCRIPTIONS = {
+    "AVLS High Cam Engage RPM": (
+        "Predictable committed-state high-lift engagement threshold. Master "
+        "defaults to 3200 RPM. The former vehicle-speed/oil-band request tables "
+        "are fixed unreachable and omitted; keep engage above release."
+    ),
+    "AVLS High Cam Release RPM": (
+        "Predictable high-lift release threshold. Master defaults to 3000 RPM, "
+        "creating a 200 RPM hysteresis band. Low- and high-lift VE tables both "
+        "cover this 3000-3200 RPM committed-state overlap."
     ),
 }
 
@@ -359,6 +376,8 @@ def add_wideband_templates(parent: ET.Element, target: ET.Element) -> None:
 
 def update_patch_descriptions(target: ET.Element) -> None:
     for name, description in BOOST_DESCRIPTIONS.items():
+        set_description(table_by_name(target, name), description)
+    for name, description in PREDICTABLE_AVLS_DESCRIPTIONS.items():
         set_description(table_by_name(target, name), description)
 
 

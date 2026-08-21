@@ -31,4 +31,12 @@
       <conversion units="ready metric" storagetype="float" expr="x" format="0.0" gauge_min="0" gauge_max="50" gauge_step="5" />
     </conversions>
   </ecuparam>
+  <ecuparam id="E503" name="Committed AVLS VE State (D2WD610H master)*" desc="Committed AVLS mode byte at FFFFCD86 used directly by the dual-VE airflow wrapper. Value 1 is low lift and value 3 is high lift. Filter VE correction logs by this committed state and discard samples around the transition; do not substitute requested state." target="1">
+    <ecu id="3C5A387116">
+      <address length="1">0xFFCD86</address>
+    </ecu>
+    <conversions>
+      <conversion units="AVLS mode (1 low, 3 high)" storagetype="uint8" expr="x" format="0" gauge_min="0" gauge_max="3" gauge_step="1" />
+    </conversions>
+  </ecuparam>
 </ecuparams>

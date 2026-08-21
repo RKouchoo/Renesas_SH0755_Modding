@@ -17,7 +17,8 @@ ROOT = HERE.parent
 PATCH_DIR = ROOT / "patch"
 SD_DIR = ROOT / "speed_density"
 BASE_TURBO_DIR = ROOT / "base_turbo_map"
-for directory in (PATCH_DIR, SD_DIR, BASE_TURBO_DIR, HERE):
+AVLS_VE_DIR = ROOT / "avls_ve"
+for directory in (PATCH_DIR, SD_DIR, BASE_TURBO_DIR, AVLS_VE_DIR, HERE):
     sys.path.insert(0, str(directory))
 
 import build_definition as definition  # noqa: E402
@@ -28,12 +29,13 @@ import patch_speed_density as speed_density  # noqa: E402
 import build_base_turbo_map as base_turbo  # noqa: E402
 import verify_base_turbo_map as base_turbo_verify  # noqa: E402
 import sh2_disasm  # noqa: E402
+import patch_avls_ve as avls_ve  # noqa: E402
 
 
 OUTPUT = HERE / "D2WD610H_master_patch.bin"
 DEFINITION = HERE / "D2WD610H_master_patch.xml"
 LOGGER_FRAGMENT = HERE / "D2WD610H_master_logger_ecuparams.xml"
-EXPECTED_OUTPUT_SHA256 = "00c34efc18ca65e0fd2619ed722b0bac236013b296adea7baf84ac9bf887a76b"
+EXPECTED_OUTPUT_SHA256 = "a04a82a09f713801351f4fa849452d90187da526c0344857ab8834b799e221ce"
 ROTATIONAL_IDLE_RESERVED_START = 0x0007DB40
 ROTATIONAL_IDLE_RESERVED_END = 0x0007DCEB
 
@@ -74,6 +76,7 @@ def rebuild_component_stage(stock: bytes) -> tuple[
     master.apply_omni_map_calibration(stage)
     blobs["speed_density"] = speed_density.apply_to_rom(stage)
     blobs["wideband"] = wideband.apply_to_rom(stage)
+    blobs["AVLS_dual_VE"] = avls_ve.apply_to_rom(stage)
     return bytes(stage), blobs
 
 
@@ -168,6 +171,74 @@ def verify_omni_map(image: bytes) -> None:
         < speed_density.MAP_MAX_MMHG
     ):
         fail("5 psi target is outside the speed-density MAP validity window")
+
+
+def verify_avls_dual_ve(image: bytes) -> None:
+    expected_low_desc = avls_ve.desc_3d_float(
+        len(speed_density.MAP_AXIS),
+        len(avls_ve.LOW_RPM_AXIS),
+        speed_density.MAP_AXIS_ADDR,
+        avls_ve.LOW_RPM_AXIS_ADDR,
+        avls_ve.LOW_VE_DATA_ADDR,
+    )
+    expected_high_desc = avls_ve.desc_3d_float(
+        len(speed_density.MAP_AXIS),
+        len(avls_ve.HIGH_RPM_AXIS),
+        speed_density.MAP_AXIS_ADDR,
+        avls_ve.HIGH_RPM_AXIS_ADDR,
+        avls_ve.HIGH_VE_DATA_ADDR,
+    )
+    expect(image, avls_ve.LOW_VE_DESC_ADDR, expected_low_desc, "low-lift VE descriptor")
+    expect(image, avls_ve.HIGH_VE_DESC_ADDR, expected_high_desc, "high-lift VE descriptor")
+    expect(
+        image,
+        avls_ve.WRAPPER_ADDR,
+        avls_ve.build_wrapper(),
+        "committed-state AVLS dual-VE airflow wrapper",
+    )
+    if speed_density.VE_DESC_ADDR.to_bytes(4, "big") in avls_ve.build_wrapper():
+        fail("master dual-VE wrapper still embeds the obsolete single VE descriptor")
+
+    low_axis = struct.unpack_from(
+        ">" + "f" * len(avls_ve.LOW_RPM_AXIS), image, avls_ve.LOW_RPM_AXIS_ADDR
+    )
+    high_axis = struct.unpack_from(
+        ">" + "f" * len(avls_ve.HIGH_RPM_AXIS), image, avls_ve.HIGH_RPM_AXIS_ADDR
+    )
+    if low_axis != avls_ve.LOW_RPM_AXIS or high_axis != avls_ve.HIGH_RPM_AXIS:
+        fail("master dual-VE axes do not match their real AVLS operating ranges")
+    if low_axis[-1] != avls_ve.AVLS_ENGAGE_RPM or high_axis[0] != avls_ve.AVLS_RELEASE_RPM:
+        fail("master dual-VE axes do not cover the real hysteresis endpoints")
+
+    for label, address, expected in (
+        ("low", avls_ve.LOW_VE_DATA_ADDR, avls_ve.LOW_VE_TABLE),
+        ("high", avls_ve.HIGH_VE_DATA_ADDR, avls_ve.HIGH_VE_TABLE),
+    ):
+        actual = struct.unpack_from(">" + "f" * len(expected), image, address)
+        if any(not math.isclose(a, b, abs_tol=1e-7) for a, b in zip(actual, expected)):
+            fail(f"master {label}-lift VE seed changed unexpectedly")
+
+    for address in (avls_ve.AVLS_NORMAL_SPEED_DATA_ADDR, avls_ve.AVLS_HOT_SPEED_DATA_ADDR):
+        actual = struct.unpack_from(">7f", image, address)
+        if actual != avls_ve.AVLS_SPEED_DISABLED:
+            fail(f"master retains a vehicle-speed AVLS request at 0x{address:05X}")
+    for address in (avls_ve.AVLS_FIXED_SPEED_A_ADDR, avls_ve.AVLS_FIXED_SPEED_B_ADDR):
+        if struct.unpack_from(">f", image, address)[0] != avls_ve.AVLS_SPEED_DISABLED_VALUE:
+            fail(f"master retains a fixed/fallback speed request at 0x{address:05X}")
+    actual_rpm_policy = tuple(
+        struct.unpack_from(">f", image, address)[0]
+        for address in (
+            avls_ve.AVLS_ACTUATION_MIN_RPM_ADDR,
+            avls_ve.AVLS_RELEASE_RPM_ADDR,
+            avls_ve.AVLS_ENGAGE_RPM_ADDR,
+        )
+    )
+    if actual_rpm_policy != (
+        avls_ve.AVLS_ACTUATION_MIN_RPM,
+        avls_ve.AVLS_RELEASE_RPM,
+        avls_ve.AVLS_ENGAGE_RPM,
+    ):
+        fail(f"master predictable AVLS RPM policy is {actual_rpm_policy}")
 
 
 def literal_pool_boundary(blob: bytes, base: int, required: set[int]) -> int:
@@ -455,22 +526,46 @@ def verify_definition() -> None:
         fail("definition target is not internally matched to D2WD610H")
 
     tables = {table.get("name"): table for table in target.findall("table")}
-    ve = tables.get("Speed Density VE (MAP x RPM)")
-    if ve is None or (
-        int(ve.get("sizex", "0")), int(ve.get("sizey", "0"))
-    ) != (len(speed_density.MAP_AXIS), len(speed_density.RPM_AXIS)):
-        fail("master definition VE dimensions do not match firmware")
-    axes = {
-        child.get("type"): int(child.get("storageaddress", "0"), 0)
-        for child in ve.findall("table")
+    expected_ve = {
+        "Speed Density VE - AVLS Low Lift": (
+            avls_ve.LOW_VE_DATA_ADDR,
+            len(avls_ve.LOW_RPM_AXIS),
+            avls_ve.LOW_RPM_AXIS_ADDR,
+        ),
+        "Speed Density VE - AVLS High Lift": (
+            avls_ve.HIGH_VE_DATA_ADDR,
+            len(avls_ve.HIGH_RPM_AXIS),
+            avls_ve.HIGH_RPM_AXIS_ADDR,
+        ),
     }
-    if axes != {
-        "X Axis": speed_density.MAP_AXIS_ADDR,
-        "Y Axis": speed_density.RPM_AXIS_ADDR,
-    }:
-        fail("master definition VE axes do not match firmware")
+    for name, (data_address, rows, rpm_axis) in expected_ve.items():
+        ve = tables.get(name)
+        if ve is None or (
+            int(ve.get("sizex", "0")), int(ve.get("sizey", "0"))
+        ) != (len(speed_density.MAP_AXIS), rows):
+            fail(f"master definition {name} dimensions do not match firmware")
+        if int(ve.get("storageaddress", "0"), 0) != data_address:
+            fail(f"master definition {name} data address is wrong")
+        axes = {
+            child.get("type"): int(child.get("storageaddress", "0"), 0)
+            for child in ve.findall("table")
+        }
+        if axes != {
+            "X Axis": speed_density.MAP_AXIS_ADDR,
+            "Y Axis": rpm_axis,
+        }:
+            fail(f"master definition {name} axes do not match firmware")
+    if "Speed Density VE (MAP x RPM)" in tables:
+        fail("master definition retains the obsolete single full-range VE table")
 
     parent_names = {table.get("name") for table in roms[0].findall("table")}
+    parent_tables = {table.get("name"): table for table in roms[0].findall("table")}
+    for name in expected_ve:
+        template = parent_tables.get(name)
+        if template is None or template.get("endian") != "little":
+            fail(f"master definition {name} has wrong RomRaider float endianness")
+        if any(axis.get("endian") != "little" for axis in template.findall("table")):
+            fail(f"master definition {name} axes have wrong RomRaider float endianness")
     target_names = set(tables)
     obsolete = definition.DROP_NAMES & (parent_names | target_names)
     if obsolete:
@@ -578,6 +673,7 @@ def verify_logger_fragment() -> None:
             {"x", "x*0.0000762939453125"},
         ),
         "E502": ("0xFFAE70", "4", "float", {"x"}),
+        "E503": ("0xFFCD86", "1", "uint8", {"x"}),
     }
     parameters = list(root.findall("ecuparam"))
     by_id = {parameter.get("id"): parameter for parameter in parameters}
@@ -606,6 +702,8 @@ def verify_logger_fragment() -> None:
         fail("logger lambda parameter does not document its 0.0 fault sentinel")
     if "greater than" not in (by_id["E502"].get("desc") or ""):
         fail("logger readiness parameter does not document the boost/CL threshold")
+    if "committed" not in (by_id["E503"].get("desc") or ""):
+        fail("logger AVLS parameter does not document committed-state selection")
 
 
 def verify_component_hooks(image: bytes, component_stage: bytes) -> None:
@@ -657,8 +755,8 @@ def verify_component_hooks(image: bytes, component_stage: bytes) -> None:
         (boost.REVWRAP_ADDR, len(boost.build_fuelcut_wrapper()), "overboost wrapper"),
         (
             speed_density.WRAPPER_ADDR,
-            len(speed_density.build_wrapper()),
-            "speed-density wrapper",
+            len(avls_ve.build_wrapper()),
+            "committed-state dual-VE speed-density wrapper",
         ),
         (
             wideband.WIDEBAND_UPDATE_ADDR,
@@ -685,6 +783,19 @@ def main() -> None:
     independently_calibrated = bytearray(component_stage)
     independent_writes = base_turbo.apply_calibration(
         independently_calibrated, component_stage
+    )
+    independent_writes.update(
+        avls_ve.apply_predictable_avls_calibration(independently_calibrated)
+    )
+    avls_ve.fix_checksum(independently_calibrated)
+    checksum_data = bytes(
+        independently_calibrated[
+            base_turbo.CHECKSUM_TABLE_ADDR + 8 : base_turbo.CHECKSUM_TABLE_ADDR + 12
+        ]
+    )
+    independent_writes["Subaru checksum"] = (
+        base_turbo.CHECKSUM_TABLE_ADDR + 8,
+        checksum_data,
     )
     if bytes(independently_calibrated) != expected:
         fail("independent component/calibration composition differs from master builder")
@@ -713,6 +824,7 @@ def main() -> None:
     verify_layout(stock, image, blobs, calibration_writes)
     verify_component_hooks(image, component_stage)
     verify_omni_map(image)
+    verify_avls_dual_ve(image)
     verify_wideband(image)
 
     # Reuse the already-audited tune-policy verifier against the new master
@@ -722,7 +834,6 @@ def main() -> None:
     base_turbo_verify.verify_base_timing(component_stage, image)
     base_turbo_verify.verify_kca(component_stage, image)
     base_turbo_verify.verify_injectors(component_stage, image)
-    base_turbo_verify.verify_avls(component_stage, image)
     base_turbo_verify.verify_auxiliary(component_stage, image)
     verify_definition()
     verify_logger_fragment()
@@ -737,14 +848,14 @@ def main() -> None:
     print(f"  stock SHA-256     : {master.STOCK_SHA256}")
     print(f"  output SHA-256    : {output_hash}")
     print(f"  checksum          : 0x{stored:08X} (valid={stored == calculated})")
-    print("  air model         : always-on MAFless 13x17 VE speed density")
+    print("  air model         : always-on MAFless committed-state dual VE speed density")
     print("  MAP               : Omni MAP-SUP-3BR 30..300 kPa / 0.60..4.75 V")
     print("  wideband/O2       : former-MAF 50-4110 P0/P1 input; four stock paths removed")
     print("  boost             : zero-duty spring baseline; throttle/SD/sensor/soft/hard gates")
     print("  injectors         : pinned A4TE002B STI-pink flow/deadtime translation")
-    print("  timing/AVLS       : cam + AVCS-tracking endpoints identified; conservative caps; early AVLS")
+    print("  timing/AVLS       : dual VE; fixed 3200/3000 lift switch; cam timing endpoints identified")
     print("  definition        : focused master XML; dormant timing pair and obsolete defs omitted")
-    print("  logger            : D2WD610H-only lambda/raw-ADC/readiness fragment validated")
+    print("  logger            : lambda/raw-ADC/readiness/committed-AVLS fragment validated")
     print("  provenance        : root stock, base copy, and SRF payload remain byte-identical")
 
 

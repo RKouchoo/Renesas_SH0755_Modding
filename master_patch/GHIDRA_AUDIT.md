@@ -19,6 +19,7 @@ reproducible without importing a modified ROM into the stock analysis project.
 |---:|---|---|
 | `0x2458` | `float_divide_guarded` | Guarded floating-point divide used by the AVCS tracking-ratio calculation. |
 | `0x24C0` | `float_clamp` | Bounds the calculated tracking ratio to 0..1. |
+| `0x24B0` | `float_minimum_select` | Returns the lower float; named while tracing AVLS threshold conditioning. |
 | `0x24FC` | `float_difference_exceeds_tolerance` | Near-zero/tolerance test used by AVCS target and tracking logic. |
 | `0x27088` | `constant_zero_return` | Exact `rts; mov #0,r0`; makes timing B/E selector branch dormant. |
 | `0x6504C` | `runtime_status_d26d_bit5_get` | Timing selector status input. |
@@ -31,6 +32,9 @@ reproducible without importing a modified ROM into the stock analysis project.
 | `0x3FFDA` | `avls_threshold_curve_selector_state_update` | Publishes internal AVLS curve-selector state 1/2/3. |
 | `0x400EE` | `avls_curve_selector_oil_temp_band_latches_update` | Builds engine-oil-temperature selector latches at 13/15 and 113/115 degrees C. |
 | `0x40168` | `avls_cam_mode_state_machine` | Compares conditioned vehicle speed with the oil-temperature-selected RPM-versus-speed boundary. |
+| `0x3FDBC` | `avls_control_sequence_update` | Runs AVLS request selection/state machine, committed-mode copy, then OSV actuation. |
+| `0x405B2` | `avls_mode_commit_copy` | Copies requested mode `0xFFFFCD87` to committed mode `0xFFFFCD86`. |
+| `0x405CC` | `avls_osv_actuation_gate` | Retained stock status/timing gate for lift-solenoid actuation. |
 | `0xF474` | `engine_oil_temperature_sensor_process` | Converts ADC AB12 through descriptor 0x60950 to B124 in degrees C. |
 | `0x3253C` | `engine_oil_temperature_logger_convert` | Logger conversion entry for B124. |
 | `0x47000` | `engine_oil_temperature_fallback_select` | Publishes valid B124 or the stock 70 C fallback to CF94. |
@@ -106,14 +110,14 @@ last column unless the existing axis is rescaled.
 ### How AVLS chooses low or high lift
 
 AVLS makes the lift decision before AVCS A/B selection. In the master baseline,
-high-lift OSV actuation is prohibited below 2500 RPM. Between 2500 and 3200 RPM,
-the state machine compares conditioned vehicle speed `0xFFFFB46C` in km/h with
-the currently selected RPM-versus-speed boundary. From low lift it requests high
-lift at `speed >= curve + 10 km/h`; from high lift it requests low lift below the
-raw curve. At 3200 RPM the hard override requests high lift regardless of speed and holds
-that override until RPM falls below 3000. The target mode is written at
-`0xFFFFCD87`; the committed mode at `0xFFFFCD86` changes after the existing
-timer, status, and OSV-actuation gates.
+the high-lift engage threshold is 3200 RPM, the release threshold is 3000 RPM,
+and the actuation minimum is 3000 RPM. Both RPM-indexed speed boundaries and
+both fixed/fallback thresholds are calibrated to 110 km/h. The conditioned
+speed source is capped at 100 km/h by `vehicle_speed_conditioned_source_update`,
+so the old vehicle-speed request route is unreachable. The requested mode is
+written at `0xFFFFCD87`; `avls_control_sequence_update` then calls
+`avls_mode_commit_copy` before the retained OSV actuation gate. The dual-VE
+wrapper selects from committed mode `0xFFFFCD86`, not the earlier request.
 
 The two switchover curves are not engage/release maps. Internal selector state
 `0xFFFFCD9C == 2` uses the normal-oil-temperature curve and state 3 uses the
@@ -123,6 +127,11 @@ degrees C. `engine_oil_temperature_fallback_select` publishes that value or a
 70 C fail-safe to `0xFFFFCF94`. The selector uses 13/15 and 113/115 C hysteretic
 bands, plus runtime/delay gates, to choose cold/fallback state 1, normal state 2,
 or hot state 3.
+
+The stock oil-temperature selector and speed-state machinery therefore still
+executes, but cannot cause a high-lift request in this calibration. It is omitted
+from the focused master definition to avoid exposing controls that no longer
+affect the chosen lift policy.
 
 This is separate from genuine engine load. The retained stock airflow task
 writes mass airflow `0xFFFFB420` in g/s, calculates raw load `0xFFFFB428` as
@@ -139,10 +148,16 @@ writes native mmHg absolute MAP. The raw diagnostic thresholds are separate at
 axis at `0x7B304`, and data at `0x7B318`; injector flow processing reads
 `0x76014`. These are the locations used by the builder and definition.
 
-### MAFless airflow
+### MAFless airflow and AVLS VE selection
 
-The existing speed-density component replaces the final airflow helper called
-inside the retained stock airflow/load task. The two raw MAF conversions, the
+The speed-density component replaces the final airflow helper called inside the
+retained stock airflow/load task. The master then replaces its single-VE wrapper
+with a committed-state selector: mode 3 uses a 13x11 high-lift surface covering
+3000..7500 RPM; all other modes use a 13x9 low-lift surface covering 0..3200
+RPM. The 3000..3200 overlap represents the real hysteresis region and is resolved
+by committed state. Both tables are initially resampled from the same seed.
+
+The two raw MAF conversions, the
 raw MAF limit update, high/low diagnostic task, and MAF-dependent temperature
 condition are bypassed. The shared ADC scan remains, so former-MAF ADC RAM
 `0xFFFFAB06` continues updating even though no airflow calculation consumes it.
@@ -174,11 +189,15 @@ sentinel. Only a fully valid state tail-calls the existing boost controller.
 |---:|---|
 | `0x7D790..0x7D91F` | Existing boost component and master signatures. |
 | `0x7DB40..0x7DCEB` | Reserved separate rotational-idle component; untouched. |
-| `0x7DCF0..0x7E39B` | Existing speed-density calibration and firmware. |
+| `0x7DCF0..0x7E18B` | Existing speed-density calibration and support data. |
+| `0x7E18C..0x7E3B3` | Committed-state dual-VE speed-density wrapper. |
 | `0x7E400..0x7E41B` | Wideband constants. |
 | `0x7E440..0x7E51B` | Wideband update routine. |
 | `0x7E520..0x7E53B` | Closed-loop inhibit helper. |
 | `0x7E560..0x7E63F` | Wideband/SD-input/result boost prerequisite guard. |
+| `0x7E640..0x7E667` | Low/high VE descriptors. |
+| `0x7E668..0x7E6B7` | Low 0..3200 and high 3000..7500 RPM axes. |
+| `0x7E6B8..0x7EAC7` | Low 13x9 and high 13x11 VE surfaces. |
 
 The verifier rejects overlap, writes outside declared stock hooks/calibration
 regions, unknown injected opcodes, stale generated XML, unexpected logger RAM

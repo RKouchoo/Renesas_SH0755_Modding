@@ -43,11 +43,20 @@ airflow_g_s =
     * global_multiplier
 ```
 
-The VE map is 13 MAP columns by 17 RPM rows. Its axes cover 150..1500 mmHg and
-0..7500 RPM. The supplied surface peaks at 1.15 and intentionally estimates
-charge conservatively around high load/early AVLS operation; it is not a
-measured EZ30R VE table. Global multiplier defaults to 1.0. IAT correction uses
-`293.15 / (IAT_C + 273.15)` from -50 through 150 degrees C.
+The airflow wrapper chooses one of two VE maps from committed AVLS state
+`0xFFFFCD86`: mode 3 uses high lift and every other value uses low lift. Both
+have 13 MAP columns covering 150..1500 mmHg absolute. Their RPM axes show only
+the ranges each state can genuinely occupy under the supplied hysteresis:
+
+- low lift: 9 rows, 0..3200 RPM;
+- high lift: 11 rows, 3000..7500 RPM.
+
+The 3000..3200 overlap is real: the selected table depends on committed state,
+not RPM alone. The two supplied surfaces are resampled from the same conservative
+single-map seed and agree in their shared region, so the generated baseline does
+not intentionally add a fueling step. They are not measured EZ30R VE maps and
+must be calibrated separately from logs. Global multiplier defaults to 1.0.
+IAT correction uses `293.15 / (IAT_C + 273.15)` from -50 through 150 degrees C.
 
 There is no MAF fallback and no speed-density OFF switch. Exact zero RPM writes
 zero. Invalid nonzero-RPM MAP, RPM, IAT, calibration, lookup, or arithmetic
@@ -170,15 +179,19 @@ Load axes extend to 3.0 g/rev. Timing is never increased by the builder. At
 1.40 g/rev columns. Positive Knock Correction Advance is zero from 1.22 g/rev
 up. High-IAT compensation reaches approximately -10.2 degrees at 110 C.
 
-AVLS actuation becomes eligible at 2500 RPM, releases at 3000 RPM, and forces
-the high-cam crossover at 3200 RPM. Below that hard override, AVLS does not use
-engine load: it compares conditioned vehicle speed with an RPM-indexed boundary
-selected by engine-oil temperature. The normal-temperature and high-temperature
-curves retain 10 km/h engage hysteresis. Oil-temperature selector bands are
-13/15 and 113/115 degrees C, with a 70 C fallback when the sensor path is not
-valid. The RomRaider definition exposes the speed curves, speed hysteresis,
-oil-temperature selector thresholds, oil-temperature sensor scaling, RPM gates,
-and hard override.
+The master baseline makes AVLS predictable: high lift engages at 3200 RPM and
+releases at 3000 RPM. Actuation minimum is 3000 RPM. Both RPM-indexed
+vehicle-speed request maps and both fixed/fallback thresholds are set to
+110 km/h, above the Ghidra-verified 100 km/h conditioned-speed cap. Therefore
+the old vehicle-speed/oil-band request route cannot select high lift. The stock
+request/commit delay, status gates, and OSV actuation remain in place.
+
+The master definition exposes only the 3200/3000 engage/release pair and omits
+the now-inoperative speed curves, speed hysteresis, oil-band selector thresholds,
+and actuation-minimum calibration. Committed state—not requested state—is the
+authority for VE, AVCS-target, ignition, and KCA table selection. Continuous
+intake AVCS angle can still alter VE inside either lift map; the patch does not
+attempt a time fade or cam-angle VE dimension.
 
 ### How to tune the four exposed base-timing surfaces
 
@@ -197,9 +210,10 @@ and hard override.
 4. Treat the ratio-0.0 and ratio-1.0 surfaces as a phasing-compensation pair,
    not aggressive and fallback maps. Confirm the interpolated final timing at
    intermediate tracking. Do not impose a fixed advance ordering between them.
-5. Check both sides of the AVLS transition under steady load. A step in torque,
-   lambda, or final timing at the cam change means the normal/high-cam surfaces
-   or the VE model need blending before another power run.
+5. Check both sides of the AVLS transition under steady load. Assign samples to
+   the low/high VE table by committed AVLS state and discard samples while state
+   is changing. A step in torque, lambda, or final timing means the corresponding
+   low/high VE, timing, or AVCS surfaces need correction before another power run.
 6. Leave positive high-load KCA at the supplied zero baseline until fueling,
    charge temperature, knock response, and repeatability are established. KCA
    is additional advance authority; it is not another base-timing map.
