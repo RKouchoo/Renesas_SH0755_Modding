@@ -4,8 +4,9 @@
 The metric D2WD610H AVLS definition remains the only stock-definition source.
 This generator removes stock MAF/O2/diagnostic material that is no longer part
 of the master architecture, gives the live timing maps their Ghidra-verified
-identities, and adds only the speed-density, boost, AVLS, external-wideband,
-pressure-open-loop, and lean-cut calibrations installed by build_master_patch.py.
+identities, groups the flat RomRaider menu by tuning workflow, and adds only the
+speed-density, boost, AVLS, external-wideband, pressure-open-loop, and lean-cut
+calibrations installed by build_master_patch.py.
 The generated target also exposes the integrated default-OFF rotational-idle
 switch, gates, limits, and six cylinder offsets.
 """
@@ -83,6 +84,114 @@ AVLS_NAMES = (
     "AVLS High Cam Engage RPM",
     "AVLS High Cam Release RPM",
 )
+
+# RomRaider presents categories as a flat, alphabetically sorted list.  Keep a
+# numbered tuning workflow here so inherited stock tables and installed patch
+# tables appear together by purpose instead of as unrelated stock/patch groups.
+CAT_AIR_MAP = "01.1 - Air Model - MAP Sensor"
+CAT_AIR_IAT = "01.2 - Air Model - IAT Sensor"
+CAT_AIR_SD = "01.3 - Air Model - Speed Density"
+CAT_AIR_VE = "01.4 - Air Model - VE Tables"
+CAT_AIR_LOAD = "01.5 - Air Model - Load Calculation"
+CAT_FUEL_INJECTORS = "02.1 - Fueling - Injectors"
+CAT_FUEL_OL = "02.2 - Fueling - Primary Open Loop"
+CAT_FUEL_CL = "02.3 - Fueling - Closed Loop"
+CAT_FUEL_TRANSITION = "02.4 - Fueling - CL/OL Transition"
+CAT_FUEL_CRANKING = "02.5 - Fueling - Cranking"
+CAT_FUEL_TIPIN = "02.6 - Fueling - Tip-in Enrichment"
+CAT_FUEL_LEARNING = "02.7 - Fueling - Correction and Learning"
+CAT_WIDEBAND = "03 - Wideband - Input Calibration"
+CAT_IGN_BASE = "04.1 - Ignition - Base Timing"
+CAT_IGN_COMP = "04.2 - Ignition - Compensations"
+CAT_IGN_KNOCK = "04.3 - Ignition - Knock Control"
+CAT_CAM_AVLS = "05.1 - Cam Control - AVLS Switching"
+CAT_CAM_AVCS = "05.2 - Cam Control - Intake AVCS Targets"
+CAT_BOOST_CONTROL = "06.1 - Boost - Electronic Control"
+CAT_BOOST_PROTECTION = "06.2 - Boost - Overboost Protection"
+CAT_PROTECTION_FUEL = "07.1 - Protection - Open Loop and Lean Cut"
+CAT_PROTECTION_RPM = "07.2 - Protection - RPM Limit"
+CAT_THROTTLE = "08 - Throttle - Drive-by-Wire"
+CAT_IDLE_TARGET = "09.1 - Idle - Speed Targets"
+CAT_IDLE_IGNITION = "09.2 - Idle - Ignition Timing"
+CAT_IDLE_ROTATIONAL = "09.3 - Idle - Rotational Idle"
+CAT_SENSOR_TEMPERATURE = "10.1 - Sensors - Temperature Scaling"
+CAT_COOLING_FANS = "10.2 - Cooling - Radiator Fans"
+CAT_CHECKSUM = "99 - ROM - Checksum"
+
+CATEGORY_ORDER = (
+    CAT_AIR_MAP,
+    CAT_AIR_IAT,
+    CAT_AIR_SD,
+    CAT_AIR_VE,
+    CAT_AIR_LOAD,
+    CAT_FUEL_INJECTORS,
+    CAT_FUEL_OL,
+    CAT_FUEL_CL,
+    CAT_FUEL_TRANSITION,
+    CAT_FUEL_CRANKING,
+    CAT_FUEL_TIPIN,
+    CAT_FUEL_LEARNING,
+    CAT_WIDEBAND,
+    CAT_IGN_BASE,
+    CAT_IGN_COMP,
+    CAT_IGN_KNOCK,
+    CAT_CAM_AVLS,
+    CAT_CAM_AVCS,
+    CAT_BOOST_CONTROL,
+    CAT_BOOST_PROTECTION,
+    CAT_PROTECTION_FUEL,
+    CAT_PROTECTION_RPM,
+    CAT_THROTTLE,
+    CAT_IDLE_TARGET,
+    CAT_IDLE_IGNITION,
+    CAT_IDLE_ROTATIONAL,
+    CAT_SENSOR_TEMPERATURE,
+    CAT_COOLING_FANS,
+    CAT_CHECKSUM,
+)
+
+CATEGORY_RENAMES = {
+    "Manifold Pressure Sensor": CAT_AIR_MAP,
+    "Mass Airflow / Engine Load": CAT_AIR_LOAD,
+    "Speed Density (patch)": CAT_AIR_SD,
+    "Speed Density - AVLS VE (patch)": CAT_AIR_VE,
+    "Fueling - Injectors": CAT_FUEL_INJECTORS,
+    "Fueling - Primary Open Loop": CAT_FUEL_OL,
+    "Fueling - Closed Loop": CAT_FUEL_CL,
+    "Fueling - CL/OL Transition": CAT_FUEL_TRANSITION,
+    "Fueling - Cranking": CAT_FUEL_CRANKING,
+    "Fueling - Tip-in Enrichment": CAT_FUEL_TIPIN,
+    "Fueling - AF Correction / Learning": CAT_FUEL_LEARNING,
+    "External Wideband Input (patch)": CAT_WIDEBAND,
+    "Ignition Timing - Advance": CAT_IGN_BASE,
+    "Ignition Timing - Compensation": CAT_IGN_COMP,
+    "Ignition Timing - Knock Control": CAT_IGN_KNOCK,
+    "AVLS": CAT_CAM_AVLS,
+    "Variable Valve Timing (AVCS)": CAT_CAM_AVCS,
+    "Boost Control (patch)": CAT_BOOST_CONTROL,
+    "Fueling - Pressure/Lean Safety (patch)": CAT_PROTECTION_FUEL,
+    "Miscellaneous - Limits": CAT_PROTECTION_RPM,
+    "Drive-by-Wire Throttle (DBW)": CAT_THROTTLE,
+    "Idle Control": CAT_IDLE_TARGET,
+    "Rotational Idle (master patch)": CAT_IDLE_ROTATIONAL,
+    "Miscellaneous - Sensor Scalings": CAT_SENSOR_TEMPERATURE,
+    "Miscellaneous - Thresholds": CAT_COOLING_FANS,
+    "Checksum Fix": CAT_CHECKSUM,
+}
+
+TABLE_CATEGORY_OVERRIDES = {
+    "Intake Temp Sensor Scaling": CAT_AIR_IAT,
+    "Speed Density IAT Density Correction": CAT_AIR_IAT,
+    "Knock Correction Advance Max - Normal Cam": CAT_IGN_KNOCK,
+    "Knock Correction Advance Max - AVLS High Cam": CAT_IGN_KNOCK,
+    "Base Timing Idle": CAT_IDLE_IGNITION,
+    "Base Timing Idle (Below Speed Threshold) ": CAT_IDLE_IGNITION,
+    "Base Timing Idle (Above Speed Threshold)": CAT_IDLE_IGNITION,
+    "Base Timing Idle Vehicle Speed Threshold": CAT_IDLE_IGNITION,
+    "Overboost Fuel Cut Enable": CAT_BOOST_PROTECTION,
+    "Boost Overboost Cut (Duty, soft)": CAT_BOOST_PROTECTION,
+    "Boost Overboost Fuel Cut (hard)": CAT_BOOST_PROTECTION,
+}
 
 HIDDEN_AVLS_NAMES = {
     "AVLS Vehicle Speed Threshold (Normal Oil Temperature)",
@@ -333,7 +442,7 @@ def add_wideband_templates(parent: ET.Element, target: ET.Element) -> None:
         {
             "type": "2D",
             "name": WIDEBAND_NAMES[0],
-            "category": "External Wideband Input (patch)",
+            "category": CAT_WIDEBAND,
             "storagetype": "float",
             "endian": "big",
             "sizey": "2",
@@ -372,7 +481,7 @@ def add_wideband_templates(parent: ET.Element, target: ET.Element) -> None:
         {
             "type": "2D",
             "name": WIDEBAND_NAMES[1],
-            "category": "External Wideband Input (patch)",
+            "category": CAT_WIDEBAND,
             "storagetype": "float",
             "endian": "big",
             "sizey": "2",
@@ -432,7 +541,7 @@ def add_scalar_template(
         {
             "type": "2D",
             "name": name,
-            "category": "Fueling - Pressure/Lean Safety (patch)",
+            "category": CAT_PROTECTION_FUEL,
             "storagetype": storagetype,
             "endian": "big",
             "sizey": "1",
@@ -460,7 +569,7 @@ def add_scalar_template(
 
 
 def add_rotational_idle_tables(target: ET.Element) -> None:
-    category = "Rotational Idle (master patch)"
+    category = CAT_IDLE_ROTATIONAL
     switch = ET.SubElement(
         target,
         "table",
@@ -630,6 +739,40 @@ def update_patch_descriptions(target: ET.Element) -> None:
         set_description(table_by_name(target, name), description)
 
 
+def apply_master_categories(parent: ET.Element, target: ET.Element) -> None:
+    """Assign and order the flat RomRaider menu categories by tuning workflow."""
+    for rom in (parent, target):
+        for table in rom.findall("table"):
+            current = table.get("category")
+            category = TABLE_CATEGORY_OVERRIDES.get(
+                table.get("name"), CATEGORY_RENAMES.get(current)
+            )
+            if category is not None:
+                table.set("category", category)
+
+    parent_categories = {
+        table.get("name"): table.get("category") for table in parent.findall("table")
+    }
+    rank = {category: index for index, category in enumerate(CATEGORY_ORDER)}
+
+    def resolved_category(table: ET.Element) -> str:
+        category = table.get("category") or parent_categories.get(table.get("name"))
+        if category not in rank:
+            raise SystemExit(
+                f"table {table.get('name')!r} has ungrouped category {category!r}"
+            )
+        return category
+
+    for rom in (parent, target):
+        tables = list(rom.findall("table"))
+        indexed = list(enumerate(tables))
+        indexed.sort(key=lambda item: (rank[resolved_category(item[1])], item[0]))
+        for table in tables:
+            rom.remove(table)
+        for _, table in indexed:
+            rom.append(table)
+
+
 def validate(root: ET.Element) -> None:
     roms = root.findall("rom")
     if len(roms) != 2:
@@ -674,6 +817,56 @@ def validate(root: ET.Element) -> None:
         raise SystemExit(f"obsolete tables survived master pruning: {present_forbidden}")
     if any(table.get("category") in DROP_CATEGORIES for table in parent.findall("table")):
         raise SystemExit("diagnostic/readiness category survived parent pruning")
+
+    allowed_categories = set(CATEGORY_ORDER)
+    parent_categories = {
+        table.get("name"): table.get("category") for table in parent.findall("table")
+    }
+    category_rank = {category: index for index, category in enumerate(CATEGORY_ORDER)}
+    for label, rom in (("parent", parent), ("target", target)):
+        resolved = [
+            table.get("category") or parent_categories.get(table.get("name"))
+            for table in rom.findall("table")
+        ]
+        unexpected = sorted({category for category in resolved if category not in allowed_categories})
+        if unexpected:
+            raise SystemExit(f"ungrouped {label} categories: {unexpected}")
+        ranks = [category_rank[category] for category in resolved]
+        if ranks != sorted(ranks):
+            raise SystemExit(f"{label} tables are not ordered by tuning workflow")
+
+    expected_categories = {
+        "Omni Power MAP-SUP-3BR Scaling": CAT_AIR_MAP,
+        "Intake Temp Sensor Scaling": CAT_AIR_IAT,
+        "Speed Density Global Airflow Multiplier": CAT_AIR_SD,
+        "Speed Density VE - AVLS Low Lift": CAT_AIR_VE,
+        "Engine Load Compensation (MP)": CAT_AIR_LOAD,
+        "Injector Flow Scaling ": CAT_FUEL_INJECTORS,
+        "Primary Open Loop Fueling A ": CAT_FUEL_OL,
+        "External Wideband Lambda Transfer": CAT_WIDEBAND,
+        "Base Timing - Normal Cam (AVCS Tracking Ratio 1.0)": CAT_IGN_BASE,
+        "Knock Correction Advance Max - Normal Cam": CAT_IGN_KNOCK,
+        "AVLS High Cam Engage RPM": CAT_CAM_AVLS,
+        "Intake AVCS Target - AVLS Low Cam": CAT_CAM_AVCS,
+        "Electronic Boost Control Enable": CAT_BOOST_CONTROL,
+        "Overboost Fuel Cut Enable": CAT_BOOST_PROTECTION,
+        "Lean Fuel Cut Enable": CAT_PROTECTION_FUEL,
+        "Rev Limit A": CAT_PROTECTION_RPM,
+        "Requested Torque (Accelerator Pedal)": CAT_THROTTLE,
+        "Idle Speed Target A": CAT_IDLE_TARGET,
+        "Base Timing Idle": CAT_IDLE_IGNITION,
+        "Rotational Idle Enable": CAT_IDLE_ROTATIONAL,
+        "Engine Oil Temperature Sensor Scaling": CAT_SENSOR_TEMPERATURE,
+        "Radiator Fan Modes A (ECT)": CAT_COOLING_FANS,
+        "Checksum Fix": CAT_CHECKSUM,
+    }
+    for name, expected_category in expected_categories.items():
+        table = table_by_name(target, name)
+        actual_category = table.get("category") or parent_categories.get(name)
+        if actual_category != expected_category:
+            raise SystemExit(
+                f"wrong category for {name}: {actual_category!r}, expected {expected_category!r}"
+            )
 
     expected_addresses = {
         "Base Timing - Normal Cam (AVCS Tracking Ratio 1.0)": "0x78AA0",
@@ -740,6 +933,7 @@ def build_tree() -> ET.ElementTree:
     add_wideband_templates(parent, target)
     add_fueling_safety_templates(parent, target)
     add_rotational_idle_tables(target)
+    apply_master_categories(parent, target)
 
     root = ET.Element("roms")
     root.append(

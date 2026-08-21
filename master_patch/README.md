@@ -86,6 +86,12 @@ AVCS A/B labels with functional AVLS-low-cam and AVLS-high-cam target names.
 Restart RomRaider after changing the definition file so no old parsed definition
 remains in memory.
 
+The master definition uses numbered workflow categories so related stock and
+patched calibrations stay together in RomRaider: air model, fueling, wideband,
+ignition, cam control, boost, protection, throttle, idle, sensors/cooling, then
+the checksum entry. The numbering controls RomRaider's otherwise alphabetical
+flat category list; it does not affect ROM addresses or calibration data.
+
 ## Build and verify
 
 Run from the repository root:

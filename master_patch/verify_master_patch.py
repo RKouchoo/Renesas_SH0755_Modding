@@ -1101,7 +1101,7 @@ def main() -> None:
     print("  timing/AVLS       : dual VE; fixed 3200/3000 lift switch; cam timing endpoints identified")
     print("  rotational idle   : bounded retard-only component installed, default OFF")
     print("  memory layout     : no component, hook, calibration, or RAM collisions")
-    print("  definition        : focused master XML; dormant timing pair and obsolete defs omitted")
+    print("  definition        : workflow-grouped master XML; dormant timing pair and obsolete defs omitted")
     print("  fueling safety    : pressure-forced OL ON; 13.0-AFR delayed/latched cut ON")
     print("  logger            : AFR/ADC/readiness/AVLS/lean-cut state fragment validated")
     print("  provenance        : root stock, base copy, and SRF payload remain byte-identical")
