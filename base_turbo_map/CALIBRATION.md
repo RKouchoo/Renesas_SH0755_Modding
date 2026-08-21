@@ -2,7 +2,7 @@
 
 All addresses are D2WD610H flash offsets. The reference is the verified combined image with
 SHA-256 `71b28714106dcc1eb7adfe59738fc8c6e968b2b94ca9337158f4442f46fcc1fe`.
-The base-turbo image changes 1,043 bytes beyond that reference, confined to the tables listed here
+The base-turbo image changes 1,141 bytes beyond that reference, confined to the tables listed here
 plus the four-byte checksum value.
 
 ## Boost control: spring pressure only
@@ -58,11 +58,20 @@ but these values still require cold/hot starts, voltage sweeps, trims, and trans
 
 ## Primary Open Loop fueling
 
-Tables A and B at `0x7777C` and `0x77868` remain 14-load by 10-RPM. Their separate load axes at
+Tables A and B at `0x7777C` and `0x77868` remain 14-load by 10-RPM. Their separate RPM axes at
+`0x77754` and `0x77840` change from the stock
+`3200, 3600, 4000, 4400, 4800, 5200, 5600, 6000, 6400, 6800` RPM grid to
+`1000, 1500, 2000, 2500, 3000, 3500, 4000, 5000, 6000, 6800` RPM. Each original bank surface is
+resampled onto that grid before any lambda cap is applied: values below 3200 RPM use the original
+3200-RPM endpoint, intermediate points are linearly interpolated, and raw uint8 results round
+toward richer enrichment. This preserves the original operating-point meaning instead of merely
+assigning new RPM labels to old rows.
+
+Their separate load axes at
 `0x7771C` and `0x77808` retain every breakpoint through 1.22 g/rev, then become 1.40, 1.60, 1.85,
 2.15, 2.50, and 3.00 g/rev instead of ending at 2.00. At each high-load cell, the builder uses the
 richer original bank value or the cap below, whichever is richer, then writes the same value to
-both banks. No data cell is made leaner than the combined image.
+both banks. No data cell is made leaner than the conservatively resampled combined-image surface.
 
 | Load (g/rev) | Maximum lambda below 6000 RPM | Gasoline AFR equivalent at 14.7 stoich | Maximum lambda at 6000+ RPM |
 |---:|---:|---:|---:|

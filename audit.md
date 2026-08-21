@@ -368,13 +368,14 @@ scaling, MAP validation, post-turbo wideband logging, and physical boost tests r
   `e3cc868a51476aaa25c1ffb63e8af8ba3e35ca4ace404e842f193bf117754b44`, flow raw `4900` at
   `0x2866B`, and latency raw `{697,372,245,171,95}` at `0x28673` before calibration is allowed.
 - Output SHA-256 is
-  `3564985c8e5d6e60b7d259408900e1b386bea51e372b90c805b04a32db4f404b`.
-- Exactly 1,043 bytes differ from the combined stage across 39 owned writes. Ownership covers the
-  paired Primary Open Loop axes/maps, CL-to-OL delay, shared timing and KCA axes, six base-timing
+  `e26a2c5ef25aa6585aca0bf915c7077f89392d71fbcd1f615a069c133ebc5f28`.
+- Exactly 1,141 bytes differ from the combined stage across 41 owned writes. Ownership covers the
+  paired Primary Open Loop load/RPM axes and maps, CL-to-OL delay, shared timing and KCA axes, six
+  base-timing
   maps, two KCA maps, IAT compensation, Rev Limit A, injector scalar/deadtime, four cranking maps,
   two tip-in maps and threshold, five AVLS tables, six boost calibration fields, and checksum.
 - The first Subaru checksum table entry remains `0x2000..0x7FAF7`; calculated/stored difference
-  `0x4DD4335A` satisfies additive target `0x5AA5A55A`.
+  `0x8CC3EF80` satisfies additive target `0x5AA5A55A`.
 - The matching combined RomRaider definition parses with all edited table addresses unchanged.
 - The canonical root/base stock ROMs, SRF, combined artifact, patch code/hooks, enable bytes, MAP
   scaling, O2 patch, and removed-sensor DTC edits remain unchanged.
@@ -388,10 +389,14 @@ scaling, MAP validation, post-turbo wideband logging, and physical boost tests r
 - Soft duty shutdown is 5.5 psi and hard fuel cut is 6.5 psi relative to 760 mmHg. The limits still
   depend completely on validating the installed donor-scaled MAP sensor and have no atmospheric
   compensation or hard-cut hysteresis.
-- Both 14x10 Primary Open Loop maps use the richer stock bank or the new lambda cap, then match
-  banks at each edited cell. No cell becomes leaner. Caps progress from lambda 0.93 at 0.96 g/rev
-  to 0.78 at 1.60+ g/rev, with 0.77 at 6000+ RPM. Both fuel axes, the shared timing axis, and both
-  KCA axes now end at 3.0 g/rev rather than 2.0.
+- Both 14x10 Primary Open Loop maps use the exact
+  `1000, 1500, 2000, 2500, 3000, 3500, 4000, 5000, 6000, 6800` RPM grid. Each
+  stock bank is conservatively resampled from its original 3200--6800 RPM grid before the richer
+  stock-bank/new-cap comparison, so no row is merely relabelled and no cell becomes leaner than
+  the resampled source. Banks then match at each capped cell. Caps progress from lambda 0.93 at
+  0.96 g/rev
+  to 0.78 at 1.60+ g/rev, with 0.77 at 6000+ RPM. Both fuel-load axes, the shared timing axis, and
+  both KCA axes now end at 3.0 g/rev rather than 2.0.
 - Both atmospheric CL-to-OL delay counters are zero, making the enriched Primary OL result decide
   the transition instead of the stock delayed threshold path.
 - All six base-timing maps are capped from 1.09 g/rev / 2000 RPM up, including the two high-cam
@@ -426,8 +431,9 @@ scaling, MAP validation, post-turbo wideband logging, and physical boost tests r
 6. Use a load-controlled dyno, monitor fuel/oil pressure externally, and follow
    `base_turbo_map/COMMISSIONING.md`; stop rather than tuning around a failed hardware gate.
 
-No Ghidra function was opened for this calibration revision. Every edited address was an already
-mapped, named RomRaider table, so there was no inspected function requiring a rename.
+The stock `axis_index_search_float` function at `0x26E0` was rechecked in live Ghidra for this
+revision and was already named to project convention. Its below-first-breakpoint return of index 0
+is the firmware evidence behind the conservative Primary Open Loop RPM-axis resampling policy.
 
 # Standalone Rotational-Idle Patch Audit
 
@@ -806,8 +812,9 @@ enter boost solely because the automated audit passes.
 
 - STI-pink scalar/deadtime data is translated from a SHA-pinned factory A4TE002B ROM. It displays
   as an estimated 552.47 cc/min, not a bench-flow guarantee for injectors marketed as 565 cc/min.
-- Both Primary Open Loop maps and all timing/KCA load axes extend to 3.0 g/rev. High-load fuel is
-  capped rich, all six timing surfaces are only held or retarded, high-load positive KCA is
+- Both Primary Open Loop maps use a corrected 1000--6800 RPM axis, and their load axes plus all
+  timing/KCA load axes extend to 3.0 g/rev. High-load fuel is capped rich, all six timing surfaces
+  are only held or retarded, high-load positive KCA is
   removed, and high-IAT retard is increased.
 - AVLS minimum/release/engage are 2500/3000/3200 RPM. Below the hard crossover, the tuned
   oil-temperature-selected vehicle-speed curves are 100/100/25/20/15/10/5 km/h for normal oil
@@ -894,8 +901,8 @@ vehicle-speed-selected AVLS descriptions for the current master image.
   `9cfcf45d075818c1a8320e540eb855979289ce25a6e03b8879a0c4767db49d16`,
   checksum `0x051694B7`.
 - Master: `master_patch/D2WD610H_master_patch.bin`, SHA-256
-  `e841cb315ae15643d5140cf4c484ab753d054c719579e09d560c0eb328f7458d`,
-  checksum `0xBB4C8915`.
+  `99f1e67932a001679117101ce09384ed1011331de99684410bae57bb94d91813`,
+  checksum `0xFA3C453B`.
 - Both generated XML files use the project's RomRaider SH float-endianness
   convention and omit the obsolete full-range VE entry and inoperative
   variable AVLS controls. The legacy single-VE bytes remain inert in flash but

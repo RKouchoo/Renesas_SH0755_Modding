@@ -6,10 +6,10 @@ boost + single-front-A/F/rear-O2-delete image for D2WD610H.
 Generated ROM:
 
 - `D2WD610H_5psi_98RON_base_turbo.bin`
-- SHA-256: `3564985c8e5d6e60b7d259408900e1b386bea51e372b90c805b04a32db4f404b`
+- SHA-256: `e26a2c5ef25aa6585aca0bf915c7077f89392d71fbcd1f615a069c133ebc5f28`
 - CALID: `D2WD610H`
 - Size: 512 KiB
-- Subaru additive checksum: valid (`0x4DD4335A`)
+- Subaru additive checksum: valid (`0x8CC3EF80`)
 - Matching definition: `../defs/D2WD610H_AVLS_boost_single_front_af_patch.xml`
 
 ## Important status
@@ -58,6 +58,10 @@ with table locations and conversions from
   760 mmHg by the current patch.
 - Richens and matches both high-load Primary Open Loop tables, reaching lambda 0.78 and lambda
   0.77 at 6000 RPM and above.
+- Rescales both Primary Open Loop RPM axes from the stock 3200--6800 RPM grid to
+  `1000, 1500, 2000, 2500, 3000, 3500, 4000, 5000, 6000, 6800` RPM. The builder
+  conservatively interpolates each original bank surface before applying the rich caps; it does
+  not relabel stock rows as different operating points.
 - Expands both fuel-load axes and all base-timing/KCA load axes from 2.0 to 3.0 g/rev so expected
   boosted operation has tuning resolution instead of immediately holding the last stock column.
 - Clears the atmospheric CL-to-OL delay so the enriched Primary Open Loop map controls the

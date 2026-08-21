@@ -19,9 +19,9 @@ firmware work into one deterministic stock-to-output build:
 - a focused, self-contained D2WD610H RomRaider definition and logger fragment.
 
 The generated baseline is `D2WD610H_master_patch.bin`, SHA-256
-`e841cb315ae15643d5140cf4c484ab753d054c719579e09d560c0eb328f7458d`.
+`99f1e67932a001679117101ce09384ed1011331de99684410bae57bb94d91813`.
 It is 512 KiB, contains CALID `D2WD610H`, and has a valid Subaru additive
-checksum (`0xBB4C8915`). It is a development artifact, not a vehicle-tested tune.
+checksum (`0xFA3C453B`). It is a development artifact, not a vehicle-tested tune.
 
 Two independent boost switches remain in RomRaider. `Electronic Boost Control
 Enable` defaults OFF and forces zero actuator duty for direct wastegate-spring

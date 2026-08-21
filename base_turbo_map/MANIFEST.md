@@ -8,7 +8,7 @@ Build date: 2026-08-21. Target: D2WD610H / ECU ID `3C5A387116`, 512 KiB Renesas 
 | Original SRF `../base_roms/2005 BLE MT.srf` | `05eae5322072449d90e20e20125d5333738675168d623a320735958bfc7619aa` |
 | Combined reference `../patch/D2WD610H_boost_single_front_af.bin` | `71b28714106dcc1eb7adfe59738fc8c6e968b2b94ca9337158f4442f46fcc1fe` |
 | A4TE002B STI-pink donor `../base_roms/A4TE002B-2003-JDM-Subaru-Impreza-STi.hex` | `e3cc868a51476aaa25c1ffb63e8af8ba3e35ca4ace404e842f193bf117754b44` |
-| Base turbo output `D2WD610H_5psi_98RON_base_turbo.bin` | `3564985c8e5d6e60b7d259408900e1b386bea51e372b90c805b04a32db4f404b` |
+| Base turbo output `D2WD610H_5psi_98RON_base_turbo.bin` | `e26a2c5ef25aa6585aca0bf915c7077f89392d71fbcd1f615a069c133ebc5f28` |
 
 The SRF parser confirms its `MEMD` payload at file offset `0x1CD` is byte-identical to both stock
 BIN copies. The combined stage is regenerated from that stock payload and must be byte-identical to
@@ -22,7 +22,7 @@ Final Subaru checksum table entry:
 
 - table: `0x7FB80`;
 - covered start/end: `0x00002000` / `0x0007FAF7`;
-- stored checksum difference: `0x4DD4335A`;
+- stored checksum difference: `0x8CC3EF80`;
 - additive target: `0x5AA5A55A`;
 - validation: pass.
 
@@ -34,8 +34,8 @@ Verification result:
 
 ```text
 base turbo map binary audit PASS
-calibration delta: 1043 bytes across 39 owned writes
-fueling: no high-load cell made leaner; both banks matched
+calibration delta: 1141 bytes across 41 owned writes
+fueling: OL RPM 1000..6800; conservative resample + both-bank rich caps
 injectors: A4TE002B STI-pink scalar/deadtime; ratio-scaled cranking/tip-in IPW
 ignition: no base/KCA cell made more advanced; axes extend to 3.0 g/rev
 AVLS: speed-gated from 2500 RPM by oil-temperature-selected curves; forced high cam 3200/3000 RPM
@@ -44,6 +44,6 @@ operating range: 6800/6770 RPM; 5 psi target held through redline
 MAF/load limits: MAF max-encoded; engine-load cap retained at 4.0 g/rev
 ```
 
-No Ghidra session was used for this calibration pass. All edited items were already identified,
-named, documented tables with matching RomRaider definitions; therefore no new Ghidra functions
-were inspected or left unnamed.
+The stock `axis_index_search_float` function at `0x26E0` was rechecked in live Ghidra and was
+already named to project convention. Its below-first-breakpoint return of index 0 confirms that
+the original 3200-RPM row was held below 3200 RPM and supports the documented resampling policy.

@@ -33,7 +33,7 @@ import sh2_disasm  # noqa: E402
 OUTPUT = HERE / "D2WD610H_master_patch.bin"
 DEFINITION = HERE / "D2WD610H_master_patch.xml"
 LOGGER_FRAGMENT = HERE / "D2WD610H_master_logger_ecuparams.xml"
-EXPECTED_OUTPUT_SHA256 = "e841cb315ae15643d5140cf4c484ab753d054c719579e09d560c0eb328f7458d"
+EXPECTED_OUTPUT_SHA256 = "99f1e67932a001679117101ce09384ed1011331de99684410bae57bb94d91813"
 ROTATIONAL_IDLE_RESERVED_START = 0x0007DB40
 ROTATIONAL_IDLE_RESERVED_END = 0x0007DCEB
 
@@ -968,6 +968,7 @@ def main() -> None:
     print("  MAP               : Omni MAP-SUP-3BR 30..300 kPa / 0.60..4.75 V")
     print("  wideband/O2       : former-MAF 50-4110 P0/P1 input; four stock paths removed")
     print("  boost             : EBCS OFF; independent hard cut ON; zero-duty spring baseline")
+    print("  primary OL        : exact 1000..6800 RPM axes; conservative resample verified")
     print("  injectors         : pinned A4TE002B STI-pink flow/deadtime translation")
     print("  timing/AVLS       : dual VE; fixed 3200/3000 lift switch; cam timing endpoints identified")
     print("  memory layout     : no ownership collisions; rotational-idle reservation untouched")

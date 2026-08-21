@@ -7,11 +7,11 @@ stock ROM, proves that stage is byte-identical to the canonical combined
 artifact, then applies calibration-only changes to an in-memory copy.
 
 This is a spring-pressure commissioning baseline, not a finished tune.  The
-5 psi wastegate spring is the only source of boost: base WGDC, proportional
-gain, and the final duty clamp are all zero.  The boost patch remains enabled
-so its hard MAP fuel cut remains active.  Injector data is translated from a
-hash-pinned A4TE002B factory STI-pink ROM; AVLS is brought in earlier, tuned
-load axes extend to 3.0 g/rev, and the operating limiter is set to 6800/6770 RPM.
+5 psi wastegate spring is the only source of boost: electronic control, base
+WGDC, proportional gain, and the final duty clamp are all disabled/zero while
+the independent hard MAP fuel cut remains active. Injector data is translated
+from a hash-pinned A4TE002B factory STI-pink ROM; AVLS is brought in earlier,
+tuned load axes extend to 3.0 g/rev, and the operating limiter is set to 6800/6770 RPM.
 
 Usage: python3 base_turbo_map/build_base_turbo_map.py [out.bin]
 """
@@ -152,9 +152,13 @@ TUNED_FUEL_LOAD_AXIS = (
     0.15, 0.35, 0.55, 0.70, 0.83, 0.96, 1.09,
     1.22, 1.40, 1.60, 1.85, 2.15, 2.50, 3.00,
 )
-EXPECTED_FUEL_RPM_AXIS = (
+STOCK_FUEL_RPM_AXIS = (
     3200.0, 3600.0, 4000.0, 4400.0, 4800.0,
     5200.0, 5600.0, 6000.0, 6400.0, 6800.0,
+)
+TUNED_FUEL_RPM_AXIS = (
+    1000.0, 1500.0, 2000.0, 2500.0, 3000.0,
+    3500.0, 4000.0, 5000.0, 6000.0, 6800.0,
 )
 STOCK_TIMING_LOAD_AXIS = (
     0.15, 0.35, 0.45, 0.55, 0.70, 0.83, 0.96, 1.09,
@@ -228,6 +232,8 @@ BOOST_TARGET_NATIVE = tuple(
 CALIBRATION_REGIONS = (
     ("Primary Open Loop Load Axis A", PRIMARY_OL_A_LOAD_AXIS, PRIMARY_OL_X * 4),
     ("Primary Open Loop Load Axis B", PRIMARY_OL_B_LOAD_AXIS, PRIMARY_OL_X * 4),
+    ("Primary Open Loop RPM Axis A", PRIMARY_OL_A_RPM_AXIS, PRIMARY_OL_Y * 4),
+    ("Primary Open Loop RPM Axis B", PRIMARY_OL_B_RPM_AXIS, PRIMARY_OL_Y * 4),
     ("Primary Open Loop Fueling A", PRIMARY_OL_A_ADDR, PRIMARY_OL_X * PRIMARY_OL_Y),
     ("Primary Open Loop Fueling B", PRIMARY_OL_B_ADDR, PRIMARY_OL_X * PRIMARY_OL_Y),
     ("CL to OL Delay", CL_OL_DELAY_ADDR, 4),
@@ -384,6 +390,38 @@ def merge_ranges(addresses: set[int]) -> list[tuple[int, int]]:
     return result
 
 
+def resample_primary_open_loop_rpm(
+    source: bytes,
+    source_axis: tuple[float, ...],
+    target_axis: tuple[float, ...],
+) -> bytes:
+    """Resample one row-major uint8 table, rounding toward richer enrichment."""
+    if len(source) != PRIMARY_OL_X * len(source_axis):
+        raise AssertionError("Primary OL source dimensions changed")
+    result = bytearray()
+    for rpm in target_axis:
+        if rpm <= source_axis[0]:
+            left = right = 0
+            fraction = 0.0
+        elif rpm >= source_axis[-1]:
+            left = right = len(source_axis) - 1
+            fraction = 0.0
+        else:
+            left = next(
+                index
+                for index in range(len(source_axis) - 1)
+                if source_axis[index] <= rpm <= source_axis[index + 1]
+            )
+            right = left + 1
+            fraction = (rpm - source_axis[left]) / (source_axis[right] - source_axis[left])
+        for column in range(PRIMARY_OL_X):
+            low = source[left * PRIMARY_OL_X + column]
+            high = source[right * PRIMARY_OL_X + column]
+            interpolated = low + (high - low) * fraction
+            result.append(max(0, min(255, math.ceil(interpolated - 1e-12))))
+    return bytes(result)
+
+
 def build_primary_open_loop(reference: bytes) -> tuple[bytes, bytes]:
     assert_axis(
         reference, PRIMARY_OL_A_LOAD_AXIS, STOCK_FUEL_LOAD_AXIS, "Primary OL A load axis"
@@ -391,19 +429,23 @@ def build_primary_open_loop(reference: bytes) -> tuple[bytes, bytes]:
     assert_axis(
         reference, PRIMARY_OL_B_LOAD_AXIS, STOCK_FUEL_LOAD_AXIS, "Primary OL B load axis"
     )
-    fuel_rpm = assert_axis(
-        reference, PRIMARY_OL_A_RPM_AXIS, EXPECTED_FUEL_RPM_AXIS, "Primary OL A RPM axis"
+    assert_axis(
+        reference, PRIMARY_OL_A_RPM_AXIS, STOCK_FUEL_RPM_AXIS, "Primary OL A RPM axis"
     )
     assert_axis(
-        reference, PRIMARY_OL_B_RPM_AXIS, EXPECTED_FUEL_RPM_AXIS, "Primary OL B RPM axis"
+        reference, PRIMARY_OL_B_RPM_AXIS, STOCK_FUEL_RPM_AXIS, "Primary OL B RPM axis"
     )
 
     old_a = reference[PRIMARY_OL_A_ADDR:PRIMARY_OL_A_ADDR + PRIMARY_OL_X * PRIMARY_OL_Y]
     old_b = reference[PRIMARY_OL_B_ADDR:PRIMARY_OL_B_ADDR + PRIMARY_OL_X * PRIMARY_OL_Y]
-    new_a = bytearray(old_a)
-    new_b = bytearray(old_b)
+    new_a = bytearray(
+        resample_primary_open_loop_rpm(old_a, STOCK_FUEL_RPM_AXIS, TUNED_FUEL_RPM_AXIS)
+    )
+    new_b = bytearray(
+        resample_primary_open_loop_rpm(old_b, STOCK_FUEL_RPM_AXIS, TUNED_FUEL_RPM_AXIS)
+    )
 
-    for y_index, rpm in enumerate(fuel_rpm):
+    for y_index, rpm in enumerate(TUNED_FUEL_RPM_AXIS):
         for x_index, load in enumerate(TUNED_FUEL_LOAD_AXIS):
             rounded_load = round(load, 2)
             if rounded_load not in FUEL_LAMBDA_CAPS:
@@ -523,6 +565,8 @@ def apply_calibration(rom: bytearray, reference: bytes) -> dict[str, tuple[int, 
     fuel_a, fuel_b = build_primary_open_loop(reference)
     write("Primary Open Loop Load Axis A", PRIMARY_OL_A_LOAD_AXIS, pack_floats(TUNED_FUEL_LOAD_AXIS))
     write("Primary Open Loop Load Axis B", PRIMARY_OL_B_LOAD_AXIS, pack_floats(TUNED_FUEL_LOAD_AXIS))
+    write("Primary Open Loop RPM Axis A", PRIMARY_OL_A_RPM_AXIS, pack_floats(TUNED_FUEL_RPM_AXIS))
+    write("Primary Open Loop RPM Axis B", PRIMARY_OL_B_RPM_AXIS, pack_floats(TUNED_FUEL_RPM_AXIS))
     write("Primary Open Loop Fueling A", PRIMARY_OL_A_ADDR, fuel_a)
     write("Primary Open Loop Fueling B", PRIMARY_OL_B_ADDR, fuel_b)
 

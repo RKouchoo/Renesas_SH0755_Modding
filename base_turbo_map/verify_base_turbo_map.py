@@ -4,6 +4,7 @@
 from __future__ import annotations
 
 from pathlib import Path
+import math
 import struct
 import sys
 import xml.etree.ElementTree as ET
@@ -18,7 +19,7 @@ import build_base_turbo_map as base  # noqa: E402
 
 OUTPUT = HERE / "D2WD610H_5psi_98RON_base_turbo.bin"
 DEFINITION = ROOT / "defs" / "D2WD610H_AVLS_boost_single_front_af_patch.xml"
-EXPECTED_OUTPUT_SHA256 = "3564985c8e5d6e60b7d259408900e1b386bea51e372b90c805b04a32db4f404b"
+EXPECTED_OUTPUT_SHA256 = "e26a2c5ef25aa6585aca0bf915c7077f89392d71fbcd1f615a069c133ebc5f28"
 
 
 def fail(message: str) -> None:
@@ -27,6 +28,28 @@ def fail(message: str) -> None:
 
 def read_float(image: bytes, address: int) -> float:
     return struct.unpack_from(">f", image, address)[0]
+
+
+def interpolated_reference_raw(source: bytes, rpm: float, column: int) -> int:
+    """Independent executable specification of conservative RPM resampling."""
+    axis = base.STOCK_FUEL_RPM_AXIS
+    if rpm <= axis[0]:
+        left = right = 0
+        fraction = 0.0
+    elif rpm >= axis[-1]:
+        left = right = len(axis) - 1
+        fraction = 0.0
+    else:
+        left = next(
+            index
+            for index in range(len(axis) - 1)
+            if axis[index] <= rpm <= axis[index + 1]
+        )
+        right = left + 1
+        fraction = (rpm - axis[left]) / (axis[right] - axis[left])
+    low = source[left * base.PRIMARY_OL_X + column]
+    high = source[right * base.PRIMARY_OL_X + column]
+    return math.ceil(low + (high - low) * fraction - 1e-12)
 
 
 def raw_to_lambda(raw: int) -> float:
@@ -118,6 +141,9 @@ def verify_fueling(reference: bytes, image: bytes) -> None:
     ):
         fail(f"Primary OL load axes are not the intended expanded axis: {load_axis}/{load_axis_b}")
     rpm_axis = base.read_floats(image, base.PRIMARY_OL_A_RPM_AXIS, base.PRIMARY_OL_Y)
+    rpm_axis_b = base.read_floats(image, base.PRIMARY_OL_B_RPM_AXIS, base.PRIMARY_OL_Y)
+    if rpm_axis != base.TUNED_FUEL_RPM_AXIS or rpm_axis_b != base.TUNED_FUEL_RPM_AXIS:
+        fail(f"Primary OL RPM axes are not the intended 1000..6800 range: {rpm_axis}/{rpm_axis_b}")
     data_size = base.PRIMARY_OL_X * base.PRIMARY_OL_Y
     ref_a = reference[base.PRIMARY_OL_A_ADDR:base.PRIMARY_OL_A_ADDR + data_size]
     ref_b = reference[base.PRIMARY_OL_B_ADDR:base.PRIMARY_OL_B_ADDR + data_size]
@@ -127,14 +153,19 @@ def verify_fueling(reference: bytes, image: bytes) -> None:
     for y_index, rpm in enumerate(rpm_axis):
         for x_index, load in enumerate(load_axis):
             offset = y_index * base.PRIMARY_OL_X + x_index
+            expected_a = interpolated_reference_raw(ref_a, rpm, x_index)
+            expected_b = interpolated_reference_raw(ref_b, rpm, x_index)
             rounded_load = round(load, 2)
             if rounded_load not in base.FUEL_LAMBDA_CAPS:
-                if out_a[offset] != ref_a[offset] or out_b[offset] != ref_b[offset]:
-                    fail(f"Primary OL changed outside high-load policy at {rpm:.0f} RPM/{load:.2f}")
+                if out_a[offset] != expected_a or out_b[offset] != expected_b:
+                    fail(
+                        f"Primary OL does not match conservative RPM resampling at "
+                        f"{rpm:.0f} RPM/{load:.2f}"
+                    )
                 continue
             if out_a[offset] != out_b[offset]:
                 fail(f"Primary OL bank targets differ at {rpm:.0f} RPM/{load:.2f}")
-            if out_a[offset] < ref_a[offset] or out_b[offset] < ref_b[offset]:
+            if out_a[offset] < expected_a or out_b[offset] < expected_b:
                 fail(f"Primary OL became leaner at {rpm:.0f} RPM/{load:.2f}")
             lambda_cap = base.FUEL_LAMBDA_CAPS[rounded_load]
             if rpm >= 6000.0 and load >= 1.22 - 1e-5:
@@ -346,7 +377,7 @@ def main() -> None:
     print(f"  combined stage   : {base.sha256(reference)}")
     print(f"  output SHA-256   : {base.sha256(image)}")
     print(f"  calibration delta: {len(changed)} bytes across {len(writes)} owned writes")
-    print("  fueling          : both-bank high-load caps, lambda 0.93 -> 0.78/0.77; no leaner cells")
+    print("  fueling          : OL RPM 1000..6800; conservative resample + both-bank rich caps")
     print("  injectors        : A4TE002B STI-pink flow/deadtime + ratio-scaled start/transient IPW")
     print("  ignition         : all six maps capped on expanded 3.0 g/rev axis; KCA zero >=1.22")
     print("  AVLS             : speed-gated from 2500 RPM; forced high cam 3200/3000 RPM")

@@ -250,6 +250,7 @@ def main(argv: list[str] | None = None) -> None:
     print("  speed density     : always-on MAFless, committed-state dual VE, 2.999 L")
     print("  AVLS VE ranges    : low 0..3200 RPM; high 3000..7500 RPM")
     print("  AVLS switch       : fixed 3200 engage / 3000 release RPM")
+    print("  primary OL RPM    : 1000..6800 RPM, conservative stock-surface resample")
     print("  boost             : EVAP PWM + throttle/SD-input/wideband/soft/hard gates")
     print("  boost switches    : EBCS OFF; independent hard overboost cut ON")
     print("  default boost cmd : spring-only (WGDC/Kp/max duty all zero), 5 psi targets")

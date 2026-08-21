@@ -119,8 +119,13 @@ maps, both tip-in maps, and the tip-in activation threshold as starting values.
 Confirm part numbers, base differential pressure, condition, flow spread, and
 fuel compatibility before use.
 
-Both Primary Open Loop maps use load axes extended to 3.0 g/rev. Existing cells
-are never made leaner; high-load caps progress through lambda 0.93, 0.88, 0.83,
+Both Primary Open Loop maps use load axes extended to 3.0 g/rev and an exact
+`1000, 1500, 2000, 2500, 3000, 3500, 4000, 5000, 6000, 6800` RPM grid. The
+builder resamples each original stock bank surface from its 3200--6800 RPM grid,
+clamping below the first stock point and rounding interpolation toward richer
+enrichment, before applying the caps. Existing cells are never made leaner than
+that conservative resample; high-load caps progress through lambda 0.93, 0.88,
+0.83,
 0.80, and 0.78, with another 0.01 enrichment at 6000 RPM and above from
 1.22 g/rev. The stock atmospheric CL-to-OL delay is cleared. These values are
 command targets only.

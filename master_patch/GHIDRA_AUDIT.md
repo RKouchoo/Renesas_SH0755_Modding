@@ -21,6 +21,7 @@ reproducible without importing a modified ROM into the stock analysis project.
 | `0x24C0` | `float_clamp` | Bounds the calculated tracking ratio to 0..1. |
 | `0x24B0` | `float_minimum_select` | Returns the lower float; named while tracing AVLS threshold conditioning. |
 | `0x24FC` | `float_difference_exceeds_tolerance` | Near-zero/tolerance test used by AVCS target and tracking logic. |
+| `0x26E0` | `axis_index_search_float` | Rechecked for Primary Open Loop indexing: inputs below the first breakpoint return index 0. |
 | `0x27088` | `constant_zero_return` | Exact `rts; mov #0,r0`; makes timing B/E selector branch dormant. |
 | `0x6504C` | `runtime_status_d26d_bit5_get` | Timing selector status input. |
 | `0x28354` | `ign_avcs_tracking_blend_factor_update` | Builds and clamps the measured/commanded intake-AVCS tracking factor `k` at `0xFFFFC17C`. |
@@ -210,6 +211,15 @@ stock endpoints `evap_purge_pwm_output_write` at `0xE8C4`,
 `rev_limiter_fuel_cut` at `0x24B24`, and `fuel_cut_flag_aggregate` at `0x23FC0`.
 The component and master verifiers independently pin both exact-`01` branches,
 their literal addresses, the zero-duty path, and the `0x80` fuel-cut flag write.
+
+The Primary Open Loop RPM-axis correction was also checked against the stock
+lookup behavior. `axis_index_search_float` at `0x26E0` was already meaningfully
+named and its decompilation confirms that a value below the first breakpoint
+selects index 0. Stock axes A/B at `0x77754`/`0x77840` therefore held their
+3200-RPM row below 3200 RPM. The master builder now writes both axes as
+`1000, 1500, 2000, 2500, 3000, 3500, 4000, 5000, 6000, 6800` RPM and
+conservatively resamples the complete original bank surfaces onto those points
+before applying high-load caps. Descriptor sizes and table storage do not move.
 
 ## Unresolved physical risks
 
