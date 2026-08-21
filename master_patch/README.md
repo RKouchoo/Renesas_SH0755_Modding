@@ -48,8 +48,9 @@ be connected until its transfer has been entered and the image rebuilt.
 
 See [WIRING.md](WIRING.md) before altering the harness,
 [CALIBRATION.md](CALIBRATION.md) for exact defaults, [COMMISSIONING.md](COMMISSIONING.md)
-for the required test sequence, and [GHIDRA_AUDIT.md](GHIDRA_AUDIT.md) for the
-stock-ROM evidence and remaining uncertainties.
+for the required test sequence, [MEMORY_LAYOUT.md](MEMORY_LAYOUT.md) for exact
+flash/RAM ownership, and [GHIDRA_AUDIT.md](GHIDRA_AUDIT.md) for the stock-ROM
+evidence and remaining uncertainties.
 
 ## RomRaider definition selection
 
@@ -90,9 +91,10 @@ and checksum.
 | File | Purpose |
 |---|---|
 | `build_master_patch.py` | Deterministic stock-to-master builder. |
-| `../avls_ve/patch_avls_ve.py` | Committed-state dual-VE firmware component and predictable 3200/3000 RPM AVLS calibration. |
+| `../speed_density/patch_speed_density.py` | Single MAFless SD component containing committed-state dual VE and predictable 3200/3000 RPM AVLS calibration. |
 | `wideband_component.py` | Permanent four-stock-O2 delete and former-MAF external-wideband input firmware. |
 | `verify_master_patch.py` | Independent binary, opcode, calibration, XML, logger, and provenance audit. |
+| `MEMORY_LAYOUT.md` | Exact injected-flash boundaries and collision policy. |
 | `build_definition.py` | Generates the focused D2WD610H RomRaider definition. |
 | `D2WD610H_master_patch.xml` | Matching self-contained metric RomRaider definition. |
 | `D2WD610H_master_logger_ecuparams.xml` | Four D2WD610H-only RomRaider logger parameters, including committed AVLS state. |

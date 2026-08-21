@@ -26,6 +26,7 @@ import sh2_disasm  # noqa: E402
 
 
 DEFAULT_IMAGE = HERE / "D2WD610H_speed_density.bin"
+EXPECTED_OUTPUT_SHA256 = "9cfcf45d075818c1a8320e540eb855979289ce25a6e03b8879a0c4767db49d16"
 
 
 def expect(image: bytes, address: int, expected: bytes, label: str) -> None:
@@ -57,13 +58,17 @@ def linear_interpolate(axis: tuple[float, ...], values: tuple[float, ...], point
     raise AssertionError("unreachable interpolation path")
 
 
-def interpolate_ve(map_mmhg: float, rpm: float) -> float:
+def interpolate_ve(map_mmhg: float, rpm: float, committed_avls_mode: int) -> float:
+    if committed_avls_mode == patch.AVLS_HIGH_MODE:
+        rpm_axis, table = patch.HIGH_RPM_AXIS, patch.HIGH_VE_TABLE
+    else:
+        rpm_axis, table = patch.LOW_RPM_AXIS, patch.LOW_VE_TABLE
     row_values = []
     width = len(patch.MAP_AXIS)
-    for row in range(len(patch.RPM_AXIS)):
-        values = patch.VE_TABLE[row * width : (row + 1) * width]
+    for row in range(len(rpm_axis)):
+        values = table[row * width : (row + 1) * width]
         row_values.append(linear_interpolate(patch.MAP_AXIS, values, map_mmhg))
-    return linear_interpolate(patch.RPM_AXIS, tuple(row_values), rpm)
+    return linear_interpolate(rpm_axis, tuple(row_values), rpm)
 
 
 def policy_model(
@@ -79,6 +84,7 @@ def policy_model(
     rpm_maximum: float = patch.RPM_MAX,
     iat_minimum: float = patch.IAT_MIN_C,
     iat_maximum: float = patch.IAT_MAX_C,
+    committed_avls_mode: int = 1,
 ) -> float:
     if not math.isfinite(rpm):
         return patch.FAILSAFE_AIRFLOW_G_S
@@ -110,7 +116,7 @@ def policy_model(
     if global_multiplier <= 0 or displacement_litres <= 0 or maximum_airflow <= 0:
         return patch.FAILSAFE_AIRFLOW_G_S
 
-    ve = interpolate_ve(map_mmhg, rpm)
+    ve = interpolate_ve(map_mmhg, rpm, committed_avls_mode)
     iat_correction = linear_interpolate(
         patch.IAT_AXIS, patch.IAT_DENSITY_CORRECTION, iat_c
     )
@@ -203,13 +209,13 @@ def verify_policy_model() -> None:
         raise SystemExit("FAIL: zero RPM did not override uninitialized sensor/calibration data")
 
     samples = (
-        ((300.0, 700.0, 20.0), 4.59107145),
-        ((760.0, 3000.0, 20.0), 90.27877076),
-        ((1018.5747, 6800.0, 20.0), 271.33833237),
-        ((1150.0, 6800.0, 40.0), 290.80075930),
+        ((300.0, 700.0, 20.0), 1, 4.59107145),
+        ((760.0, 3000.0, 20.0), 1, 90.27877076),
+        ((1018.5747, 6800.0, 20.0), 3, 271.33833237),
+        ((1150.0, 6800.0, 40.0), 3, 290.80075930),
     )
-    for arguments, expected in samples:
-        actual = policy_model(*arguments)
+    for arguments, mode, expected in samples:
+        actual = policy_model(*arguments, committed_avls_mode=mode)
         if not math.isclose(actual, expected, rel_tol=2e-7, abs_tol=2e-5):
             raise SystemExit(
                 "FAIL: model sample %r = %.9f (expected %.9f)"
@@ -217,11 +223,11 @@ def verify_policy_model() -> None:
             )
 
     load_samples = (
-        ((760.0, 3000.0, 20.0), 1.80557542),
-        ((1018.5747, 6800.0, 20.0), 2.39416176),
+        ((760.0, 3000.0, 20.0), 1, 1.80557542),
+        ((1018.5747, 6800.0, 20.0), 3, 2.39416176),
     )
-    for arguments, expected in load_samples:
-        airflow = policy_model(*arguments)
+    for arguments, mode, expected in load_samples:
+        airflow = policy_model(*arguments, committed_avls_mode=mode)
         actual = retained_stock_load_model(airflow, arguments[1])
         if not math.isclose(actual, expected, rel_tol=2e-7, abs_tol=2e-6):
             raise SystemExit(
@@ -229,7 +235,10 @@ def verify_policy_model() -> None:
                 % (arguments, actual, expected)
             )
 
-    capped = policy_model(1500.0, 7500.0, -10.0, maximum_airflow=300.0)
+    capped = policy_model(
+        1500.0, 7500.0, -10.0, maximum_airflow=300.0,
+        committed_avls_mode=3,
+    )
     if capped != 300.0:
         raise SystemExit("FAIL: maximum-airflow clamp model did not cap at 300 g/s")
 
@@ -261,7 +270,8 @@ def verify_definition() -> None:
         "Speed Density MAP Valid Range": patch.MAP_MIN_ADDR,
         "Speed Density RPM Valid Range": patch.RPM_MIN_ADDR,
         "Speed Density IAT Valid Range": patch.IAT_MIN_ADDR,
-        "Speed Density VE (MAP x RPM)": patch.VE_DATA_ADDR,
+        "Speed Density VE - AVLS Low Lift": patch.LOW_VE_DATA_ADDR,
+        "Speed Density VE - AVLS High Lift": patch.HIGH_VE_DATA_ADDR,
         "Speed Density IAT Density Correction": patch.IAT_DATA_ADDR,
     }
     tables = {table.get("name"): table for table in target.findall("table")}
@@ -275,31 +285,34 @@ def verify_definition() -> None:
                 "FAIL: %s address is 0x%X (expected 0x%X)" % (name, actual, address)
             )
 
-    ve = tables["Speed Density VE (MAP x RPM)"]
-    if int(ve.get("sizex", "0")) != len(patch.MAP_AXIS):
-        raise SystemExit("FAIL: RomRaider VE X dimension mismatch")
-    if int(ve.get("sizey", "0")) != len(patch.RPM_AXIS):
-        raise SystemExit("FAIL: RomRaider VE Y dimension mismatch")
-    child_addresses = {
-        child.get("type"): int(child.get("storageaddress", "0"), 16)
-        for child in ve.findall("table")
-    }
-    if child_addresses != {
-        "X Axis": patch.MAP_AXIS_ADDR,
-        "Y Axis": patch.RPM_AXIS_ADDR,
-    }:
-        raise SystemExit("FAIL: RomRaider VE axis addresses mismatch")
+    for name, rows, rpm_axis in (
+        ("Speed Density VE - AVLS Low Lift", len(patch.LOW_RPM_AXIS), patch.LOW_RPM_AXIS_ADDR),
+        ("Speed Density VE - AVLS High Lift", len(patch.HIGH_RPM_AXIS), patch.HIGH_RPM_AXIS_ADDR),
+    ):
+        ve = tables[name]
+        if (int(ve.get("sizex", "0")), int(ve.get("sizey", "0"))) != (
+            len(patch.MAP_AXIS), rows,
+        ):
+            raise SystemExit("FAIL: RomRaider %s dimensions mismatch" % name)
+        child_addresses = {
+            child.get("type"): int(child.get("storageaddress", "0"), 16)
+            for child in ve.findall("table")
+        }
+        if child_addresses != {"X Axis": patch.MAP_AXIS_ADDR, "Y Axis": rpm_axis}:
+            raise SystemExit("FAIL: RomRaider %s axis addresses mismatch" % name)
 
     inherited_names = {
         table.get("name")
         for rom in roms
         for table in rom.iter("table")
     }
-    leaked = definition.REMOVED_MAF_TABLES & inherited_names
+    leaked = (definition.REMOVED_MAF_TABLES | definition.HIDDEN_AVLS_TABLES) & inherited_names
     if leaked:
         raise SystemExit("FAIL: generated MAFless definition retains %s" % sorted(leaked))
     if "Speed Density Patch Enable" in inherited_names:
         raise SystemExit("FAIL: generated MAFless definition retains the old fallback switch")
+    if "Speed Density VE (MAP x RPM)" in inherited_names:
+        raise SystemExit("FAIL: generated definition retains the obsolete single VE table")
 
 
 def verify_composition(stock: bytes) -> None:
@@ -357,9 +370,20 @@ def main(argv: list[str] | None = None) -> None:
     stock_hash = hashlib.sha256(stock).hexdigest()
     if stock_hash != patch.STOCK_SHA256:
         raise SystemExit("FAIL: canonical root stock SHA-256 changed")
+    image_hash = hashlib.sha256(image).hexdigest()
+    if image_hash != EXPECTED_OUTPUT_SHA256:
+        raise SystemExit(
+            "FAIL: output SHA-256 is %s (expected %s)"
+            % (image_hash, EXPECTED_OUTPUT_SHA256)
+        )
+    stored_checksum, calculated_checksum = patch.checksum_value(image)
+    if stored_checksum != calculated_checksum:
+        raise SystemExit("FAIL: standalone speed-density checksum is invalid")
 
     expected = bytearray(stock)
     blobs = patch.apply_to_rom(expected)
+    avls_writes = patch.apply_predictable_avls_calibration(expected)
+    patch.fix_checksum(expected)
     if image != expected:
         difference = sorted(changed_set(expected, image))
         raise SystemExit(
@@ -471,20 +495,24 @@ def main(argv: list[str] | None = None) -> None:
     expected_changed.add(patch.P0103_SWITCH_ADDR)
     for _, address, data in blobs:
         expected_changed.update(range(address, address + len(data)))
+    for address, data in avls_writes.values():
+        expected_changed.update(range(address, address + len(data)))
+    expected_changed.update(range(patch.CHECKSUM_TABLE_ADDR + 8, patch.CHECKSUM_TABLE_ADDR + 12))
     actual_changed = changed_set(stock, image)
     if actual_changed - expected_changed:
         raise SystemExit("FAIL: image contains changes outside the guarded hook/component")
 
-    ve_descriptor = struct.unpack_from(">HHIIII", image, patch.VE_DESC_ADDR)
-    if ve_descriptor != (
-        len(patch.MAP_AXIS),
-        len(patch.RPM_AXIS),
-        patch.MAP_AXIS_ADDR,
-        patch.RPM_AXIS_ADDR,
-        patch.VE_DATA_ADDR,
-        0,
+    for label, address, rpm_axis, data_address in (
+        ("low", patch.LOW_VE_DESC_ADDR, patch.LOW_RPM_AXIS, patch.LOW_VE_DATA_ADDR),
+        ("high", patch.HIGH_VE_DESC_ADDR, patch.HIGH_RPM_AXIS, patch.HIGH_VE_DATA_ADDR),
     ):
-        raise SystemExit("FAIL: float 3D VE descriptor mismatch")
+        descriptor = struct.unpack_from(">HHIIII", image, address)
+        if descriptor != (
+            len(patch.MAP_AXIS), len(rpm_axis), patch.MAP_AXIS_ADDR,
+            patch.LOW_RPM_AXIS_ADDR if label == "low" else patch.HIGH_RPM_AXIS_ADDR,
+            data_address, 0,
+        ):
+            raise SystemExit("FAIL: %s-lift float 3D VE descriptor mismatch" % label)
     iat_descriptor = struct.unpack_from(">HBBII", image, patch.IAT_DESC_ADDR)
     if iat_descriptor != (
         len(patch.IAT_AXIS),
@@ -495,14 +523,32 @@ def main(argv: list[str] | None = None) -> None:
     ):
         raise SystemExit("FAIL: float 2D IAT descriptor mismatch")
 
-    for name, axis in (("MAP", patch.MAP_AXIS), ("RPM", patch.RPM_AXIS),
-                       ("IAT", patch.IAT_AXIS)):
+    for name, axis in (("MAP", patch.MAP_AXIS), ("low RPM", patch.LOW_RPM_AXIS),
+                       ("high RPM", patch.HIGH_RPM_AXIS), ("IAT", patch.IAT_AXIS)):
         if not all(axis[index] < axis[index + 1] for index in range(len(axis) - 1)):
             raise SystemExit("FAIL: %s axis is not strictly monotonic" % name)
-    if not all(0.0 < value <= 1.15 for value in patch.VE_TABLE):
-        raise SystemExit("FAIL: VE table contains an invalid default")
+    if not all(
+        0.0 < value <= 1.15 for value in patch.LOW_VE_TABLE + patch.HIGH_VE_TABLE
+    ):
+        raise SystemExit("FAIL: dual VE table contains an invalid default")
     if not all(math.isfinite(value) and value > 0 for value in patch.IAT_DENSITY_CORRECTION):
         raise SystemExit("FAIL: IAT correction contains an invalid default")
+
+    for address in (patch.AVLS_NORMAL_SPEED_DATA_ADDR, patch.AVLS_HOT_SPEED_DATA_ADDR):
+        if struct.unpack_from(">7f", image, address) != patch.AVLS_SPEED_DISABLED:
+            raise SystemExit("FAIL: vehicle-speed AVLS request remains active")
+    for address in (patch.AVLS_FIXED_SPEED_A_ADDR, patch.AVLS_FIXED_SPEED_B_ADDR):
+        if struct.unpack_from(">f", image, address)[0] != patch.AVLS_SPEED_DISABLED_VALUE:
+            raise SystemExit("FAIL: fixed/fallback AVLS speed request remains active")
+    if tuple(
+        struct.unpack_from(">f", image, address)[0]
+        for address in (
+            patch.AVLS_ACTUATION_MIN_RPM_ADDR,
+            patch.AVLS_RELEASE_RPM_ADDR,
+            patch.AVLS_ENGAGE_RPM_ADDR,
+        )
+    ) != (patch.AVLS_ACTUATION_MIN_RPM, patch.AVLS_RELEASE_RPM, patch.AVLS_ENGAGE_RPM):
+        raise SystemExit("FAIL: predictable AVLS RPM policy mismatch")
 
     # Decode the executable region only. Locate its single balanced return and
     # derive the aligned literal-pool boundary from the deterministic wrapper.
@@ -541,7 +587,9 @@ def main(argv: list[str] | None = None) -> None:
         patch.MAP_ADDR,
         patch.RPM_ADDR,
         patch.IAT_ADDR,
-        patch.VE_DESC_ADDR,
+        patch.AVLS_COMMITTED_MODE_ADDR,
+        patch.LOW_VE_DESC_ADDR,
+        patch.HIGH_VE_DESC_ADDR,
         patch.IAT_DESC_ADDR,
         patch.TABLE_3D_LOOKUP,
         patch.TABLE_2D_LOOKUP,
@@ -561,6 +609,10 @@ def main(argv: list[str] | None = None) -> None:
         raise SystemExit(
             "FAIL: MAFless airflow helper contains the retained stock task address"
         )
+    if patch.VE_DESC_ADDR in literal_values:
+        raise SystemExit("FAIL: wrapper still references the obsolete single VE descriptor")
+    if "cmp/eq #3,r0" not in decoded:
+        raise SystemExit("FAIL: wrapper lacks committed high-lift mode selection")
 
     verify_policy_model()
     verify_definition()
@@ -570,15 +622,16 @@ def main(argv: list[str] | None = None) -> None:
 
     print("speed-density binary audit PASS")
     print("  stock SHA-256   : %s" % stock_hash)
-    print("  output SHA-256  : %s" % hashlib.sha256(image).hexdigest())
+    print("  output SHA-256  : %s" % image_hash)
     print("  retained task   : 0x%05X -> 0x%05X; B420*60/RPM -> B428/B438 g/rev remains active"
           % (patch.AIRFLOW_TASK_PTR, patch.STOCK_MAF_AIRFLOW_TASK))
     print("  airflow hook    : helper pointer 0x%05X -> 0x%05X before B420 store"
           % (patch.FINAL_AIRFLOW_HELPER_PTR, patch.WRAPPER_ADDR))
     print("  MAF removal     : converter/raw filter/diagnostics bypassed; final calculation replaced")
-    print("  calibration     : %dx%d VE + %d-point IAT correction; %.3f L default"
-          % (len(patch.MAP_AXIS), len(patch.RPM_AXIS), len(patch.IAT_AXIS),
+    print("  calibration     : low 13x%d / high 13x%d VE + %d-point IAT; %.3f L"
+          % (len(patch.LOW_RPM_AXIS), len(patch.HIGH_RPM_AXIS), len(patch.IAT_AXIS),
              patch.DISPLACEMENT_LITRES))
+    print("  AVLS selection  : committed mode 3 high; fixed 3200/3000 RPM hysteresis")
     print("  output path     : final stock mass-airflow channel 0x%08X, capped at %.1f g/s"
           % (patch.FINAL_MASS_AIRFLOW_ADDR, patch.MAX_AIRFLOW_G_S))
     print("  fault policy    : fixed %.1f g/s rich/high-load value; zero only at zero RPM"

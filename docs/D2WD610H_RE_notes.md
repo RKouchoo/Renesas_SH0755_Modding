@@ -232,10 +232,9 @@ Definition layout:
   rotational-idle switch, operating gates, safety limits, and six timing offsets.
 - `defs/D2WD610H_AVLS_boost_single_front_af_patch.xml` is the combined-image variant containing
   the canonical boost tables plus both unchanged runtime-enable switches.
-- `speed_density/D2WD610H_AVLS_speed_density_patch.xml` is the standalone always-on MAFless
-  definition and removes the inherited MAF tables/diagnostics.
-- `avls_ve/D2WD610H_AVLS_dual_ve_patch.xml` layers committed-state low/high-lift VE tables and
-  fixed 3200/3000-RPM AVLS hysteresis onto the standalone MAFless definition.
+- `speed_density/D2WD610H_AVLS_speed_density_patch.xml` is the single standalone MAFless
+  definition. It contains committed-state low/high-lift VE, fixed 3200/3000-RPM AVLS
+  hysteresis, and removes inherited MAF tables/diagnostics.
 - `master_patch/D2WD610H_master_patch.xml` is the current focused integration definition. It
   retains only relevant engine-tuning controls plus AVLS, SD/VE, exact Omni MAP, boost, and AEM
   input calibration; it renames the active timing/KCA paths and the AVCS A/B targets by their
@@ -244,7 +243,7 @@ Definition layout:
 - `defs/romraider_ecu_defs.xml` is a clean upstream metric RomRaider snapshot and is not modified
   with project tables.
 
-All eight custom RomRaider ROM files are self-contained. The legacy variants embed metric
+All seven custom RomRaider ROM files are self-contained. The legacy variants embed metric
 `32BITBASE` pruned to the standard D2WD610H overrides; the master prunes that set further for its
 changed hardware architecture. Load only the custom ROM variant matching the image being edited.
 Stock AVLS values were verified against the ROM image 2026-07-14.
@@ -326,7 +325,7 @@ data registers (datasheet) instead of descending the call tree.
       Periodic pointer `0x11D20` retains `maf_airflow_temperature_compensation_update`
       (`0x172A4`) for its downstream `B428..B440` load/filter state. Its final-airflow helper
       pointer at `0x1743C` is redirected to the SD calculation at `0x7E18C` before the B420 store.
-      The helper uses a guarded MAP/RPM VE model and IAT density correction, with no MAF fallback
+      The helper uses guarded committed-AVLS low/high MAP/RPM VE surfaces and IAT density correction, with no MAF fallback
       or runtime OFF state; exact zero RPM writes zero and other invalid states write a fixed
       500 g/s rich/high-load fail-safe. The MAF high/low diagnostic task and both MAF-dependent
       temperature-condition calls are bypassed, and P0102/P0103 are disabled. Its standalone

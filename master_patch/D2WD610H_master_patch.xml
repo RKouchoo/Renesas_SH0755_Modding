@@ -886,7 +886,7 @@
    <table type="Y Axis" name="Engine Speed" storagetype="float" endian="little" logparam="P8">
     <scaling units="RPM" expression="x" to_byte="x" format="#" fineincrement="50" coarseincrement="100" />
    </table>
-   <description>VE fraction used only while committed AVLS mode 0xFFFFCD86 is not 3. Its RPM axis deliberately stops at the 3200 RPM high-lift engage threshold. High lift releases at 3000 RPM, so 3000-3200 is a real hysteresis overlap selected by committed state.</description>
+   <description>VE fraction used while committed AVLS mode 0xFFFFCD86 is not 3. The RPM axis stops at the 3200 RPM high-lift engage threshold. The 3000-3200 overlap is selected by committed state.</description>
   </table>
   <table type="3D" name="Speed Density VE - AVLS High Lift" category="Speed Density - AVLS VE (patch)" storagetype="float" endian="little" sizex="13" sizey="11" userlevel="2">
    <scaling units="VE fraction" expression="x" to_byte="x" format="0.000" fineincrement=".005" coarseincrement=".02" />
@@ -896,7 +896,7 @@
    <table type="Y Axis" name="Engine Speed" storagetype="float" endian="little" logparam="P8">
     <scaling units="RPM" expression="x" to_byte="x" format="#" fineincrement="50" coarseincrement="100" />
    </table>
-   <description>VE fraction used only while committed AVLS mode 0xFFFFCD86 is 3. Its RPM axis deliberately starts at the 3000 RPM high-lift release threshold and extends through 7500 RPM. The supplied values clone the original conservative VE surface and require log calibration.</description>
+   <description>VE fraction used only while committed AVLS mode 0xFFFFCD86 is 3. The RPM axis starts at the 3000 RPM release threshold and extends through 7500 RPM. Values are conservative seeds requiring log calibration.</description>
   </table>
   <table type="2D" name="Speed Density IAT Density Correction" category="Speed Density (patch)" storagetype="float" endian="little" sizey="10" userlevel="2">
    <scaling units="multiplier" expression="x" to_byte="x" format="0.000" fineincrement=".005" coarseincrement=".02" />

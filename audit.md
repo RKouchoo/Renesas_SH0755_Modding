@@ -885,12 +885,12 @@ vehicle-speed-selected AVLS descriptions for the current master image.
   `intake_avcs_target_by_avls_mode_update` (`0x353B0`), and the airflow hook at
   `0x172A4` were rechecked. The sequence calls the state machine, commits the
   requested mode, then runs the actuation gate.
-- `avls_ve/ghidra_scripts/ApplyAvlsVeNames.java` and the updated master naming
-  script reproduce these names/comments.
+- The merged `speed_density/ghidra_scripts/ApplyMaflessNames.java` and master
+  naming script reproduce these names/comments.
 
 ## Artifacts and verification
 
-- Standalone: `avls_ve/D2WD610H_avls_dual_ve.bin`, SHA-256
+- Standalone single SD/VE artifact: `speed_density/D2WD610H_speed_density.bin`, SHA-256
   `9cfcf45d075818c1a8320e540eb855979289ce25a6e03b8879a0c4767db49d16`,
   checksum `0x051694B7`.
 - Master: `master_patch/D2WD610H_master_patch.bin`, SHA-256
@@ -903,8 +903,23 @@ vehicle-speed-selected AVLS descriptions for the current master image.
 - The standalone and master verifiers independently rebuild from immutable
   stock, audit hooks/opcodes/descriptors/axes/calibration/XML, validate checksum
   and pinned hash, and confirm root stock/base/SRF provenance.
+- Master free-space ownership is collision-checked byte-for-byte across boost,
+  the speed-density core and its dual-VE segment, and wideband/O2 removal. The
+  wideband reservation ends exactly at `0x7E63F`; the SD dual-VE segment begins
+  at the adjacent `0x7E640`. Calibration
+  ownership is independently checked, with only the six explicit boost tune-data
+  regions permitted to overlap their component seed data. No calibration may
+  enter injected code, descriptors, speed-density, wideband, or dual-VE data.
 - Master logger parameter E503 exposes committed AVLS state so tuning samples
   can be assigned to the correct VE table.
 
 Static verification passes; bench ECU, harness, AVLS actuation, fueling,
 transition, and dyno validation remain required.
+
+## Component consolidation
+
+The dual-VE selector, tables, predictable AVLS calibration, definition, checksum
+handling, Ghidra naming, and verifier are now part of `speed_density` itself.
+`master_patch` calls only that one SD/VE component. The former `avls_ve` package
+and duplicate ROM/XML artifacts were removed. This reorganization is byte-neutral
+for the master ROM and retains its pinned hash and checksum.

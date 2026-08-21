@@ -1,4 +1,4 @@
-# D2WD610H MAFless speed-density component
+# D2WD610H MAFless speed-density and AVLS VE component
 
 This folder contains the standalone, always-on MAFless speed-density firmware component for the
 2005 ADM Liberty 3.0R BLE manual ROM `D2WD610H`.
@@ -20,9 +20,8 @@ the retained load/state calculations run.
 
 The retained stock normalization is Ghidra-verified: `0xFFFFB428 = 0xFFFFB420 [g/s] * 60 /
 0xFFFFB544 [RPM]`, followed by the stock conditioning path to `0xFFFFB438` in g/rev. AVCS,
-ignition, fueling, and knock maps continue to consume that conditioned g/rev value. The separate
-AVLS lift-switch state machine does not use it: its RPM curves compare conditioned vehicle speed
-in km/h and are selected by engine-oil temperature.
+ignition, fueling, and knock maps continue to consume that conditioned g/rev value. The same
+component reads committed AVLS lift state to select the matching VE surface.
 
 It also:
 
@@ -36,13 +35,19 @@ It also:
 - removes the MAF limit, scaling, compensation, P0102, and P0103 entries from this component's
   generated RomRaider definition.
 
-The replacement helper validates native absolute MAP, RPM, IAT, and its calibration values, looks
-up a 13×17 VE surface, applies displacement and IAT-density corrections, caps normal output, and
+The replacement helper validates native absolute MAP, RPM, IAT, and its calibration values,
+selects a 13×9 low-lift or 13×11 high-lift VE surface, applies displacement and IAT-density corrections, caps normal output, and
 writes modeled mass airflow to the existing final channel at `0xFFFFB420`. Existing load,
 fueling, trim, timing, diagnostic, and logging consumers therefore receive speed-density airflow
 without being individually patched. It also mirrors the synthetic result to the former raw-MAF
 state channels `B448/B458/B45C`; this keeps the retained task's next-cycle internal state coherent
 without sampling the physical MAF.
+
+Committed AVLS mode `0xFFFFCD86 == 3` selects high lift; all other values select
+low lift. Low-lift VE covers 0..3200 RPM and high-lift VE covers 3000..7500 RPM.
+The overlap reflects the real 3200-RPM engage / 3000-RPM release hysteresis and
+is resolved by committed state, not RPM alone. The patch also makes all stock
+vehicle-speed AVLS request paths unreachable so the switchover is predictable.
 
 There is deliberately no stock-MAF fallback or runtime OFF switch. Exact zero RPM writes zero
 airflow. Any other invalid input, calibration, table result, or arithmetic state writes a fixed
@@ -65,8 +70,10 @@ Outputs:
 - `speed_density/D2WD610H_AVLS_speed_density_patch.xml`
 
 The current deterministic standalone ROM SHA-256 is
-`548fc5353338248c683098507aed79a6c5f377bb2462b65a091a2f02b0899467`.
-It is not included in the main combined patch or base turbo map.
+`9cfcf45d075818c1a8320e540eb855979289ce25a6e03b8879a0c4767db49d16`.
+Its Subaru additive checksum is valid (`0x051694B7`).
+This exact component is included directly by `master_patch`; there is no
+separate AVLS-VE patch layer.
 
 ## Calibration model
 
@@ -99,8 +106,10 @@ At VE 1.0, 20 °C, and 2.999 L, this is approximately 1.81 g/rev at 760 mmHg abs
 2.42 g/rev at about 5 psi gauge. This confirms the scaling and dimensional path; it does not
 validate the supplied VE values for the real engine.
 
-The supplied VE surface is only a conservative mathematical starting point. It is not a measured
-EZ30R VE map and must be calibrated from synchronized lambda, MAP, RPM, IAT, fuel-pressure, and
+Both supplied VE surfaces are resampled from the same conservative mathematical
+starting point, so the baseline does not deliberately introduce a switch step.
+They are not measured EZ30R data and must be calibrated separately using
+committed AVLS state plus synchronized lambda, MAP, RPM, IAT, fuel-pressure, and
 load data on a load-controlled dyno.
 
 ## Required hardware
@@ -124,3 +133,4 @@ load data on a load-controlled dyno.
 Static implementation, Ghidra tracing, deterministic rebuilding, opcode checks, definition checks,
 and multi-component overlap checks pass. Vehicle validation does not. Follow
 [COMMISSIONING.md](COMMISSIONING.md) before any boosted operation.
+See [GHIDRA_AUDIT.md](GHIDRA_AUDIT.md) for the merged stock-code evidence.

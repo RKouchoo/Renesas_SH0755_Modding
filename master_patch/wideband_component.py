@@ -121,7 +121,10 @@ READY_THRESHOLD_ADDR = 0x0007E418
 WIDEBAND_UPDATE_ADDR = 0x0007E440
 INHIBIT_HELPER_ADDR = 0x0007E520
 BOOST_READY_GUARD_ADDR = 0x0007E560
-COMPONENT_END = 0x0007E6FF
+# Exact end of the guard allocation.  Dual-VE ownership begins at 0x7E640;
+# keeping this bound exact makes any future wideband growth fail instead of
+# silently entering the next component's region.
+COMPONENT_END = 0x0007E63F
 
 # Supplied P0/P1 table: 0 V = 10.00 gasoline AFR and each 0.125 V step adds
 # 0.25 AFR.  The same sheet defines gasoline AFR as lambda * 14.64.

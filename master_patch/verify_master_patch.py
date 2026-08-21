@@ -17,8 +17,7 @@ ROOT = HERE.parent
 PATCH_DIR = ROOT / "patch"
 SD_DIR = ROOT / "speed_density"
 BASE_TURBO_DIR = ROOT / "base_turbo_map"
-AVLS_VE_DIR = ROOT / "avls_ve"
-for directory in (PATCH_DIR, SD_DIR, BASE_TURBO_DIR, AVLS_VE_DIR, HERE):
+for directory in (PATCH_DIR, SD_DIR, BASE_TURBO_DIR, HERE):
     sys.path.insert(0, str(directory))
 
 import build_definition as definition  # noqa: E402
@@ -29,7 +28,6 @@ import patch_speed_density as speed_density  # noqa: E402
 import build_base_turbo_map as base_turbo  # noqa: E402
 import verify_base_turbo_map as base_turbo_verify  # noqa: E402
 import sh2_disasm  # noqa: E402
-import patch_avls_ve as avls_ve  # noqa: E402
 
 
 OUTPUT = HERE / "D2WD610H_master_patch.bin"
@@ -60,6 +58,8 @@ def changed_set(before: bytes, after: bytes) -> set[int]:
 
 
 def add_range(owned: set[int], address: int, size: int, label: str) -> None:
+    if size <= 0 or address < 0 or address + size > master.ROM_SIZE:
+        fail(f"invalid declared range for {label}: 0x{address:05X} + 0x{size:X}")
     region = set(range(address, address + size))
     overlap = owned & region
     if overlap:
@@ -76,7 +76,6 @@ def rebuild_component_stage(stock: bytes) -> tuple[
     master.apply_omni_map_calibration(stage)
     blobs["speed_density"] = speed_density.apply_to_rom(stage)
     blobs["wideband"] = wideband.apply_to_rom(stage)
-    blobs["AVLS_dual_VE"] = avls_ve.apply_to_rom(stage)
     return bytes(stage), blobs
 
 
@@ -91,6 +90,25 @@ def verify_layout(
         for name, address, data in component_blobs:
             add_range(free_owned, address, len(data), f"{component}/{name}")
 
+    # Component reservations are deliberately adjacent at the live boundary:
+    # the wideband prerequisite guard ends at 0x7E63F and dual VE starts at
+    # 0x7E640.  These exact checks prevent a later component expansion from
+    # relying only on today's blob lengths.
+    wideband_guard_end = (
+        wideband.BOOST_READY_GUARD_ADDR
+        + len(wideband.build_boost_ready_guard())
+        - 1
+    )
+    if wideband.COMPONENT_END != wideband_guard_end:
+        fail(
+            "wideband reserved end does not equal its final guard byte: "
+            f"0x{wideband.COMPONENT_END:05X} vs 0x{wideband_guard_end:05X}"
+        )
+    if wideband.COMPONENT_END + 1 != speed_density.DUAL_VE_START:
+        fail("wideband and speed-density dual-VE segments are not exactly adjacent")
+    if speed_density.COMPONENT_END >= wideband.CONSTANTS_ADDR:
+        fail("speed-density reservation enters the wideband component region")
+
     # The optional rotational-idle component has a reserved, intentionally
     # unused allocation between boost and speed density.  Master must not
     # silently absorb or alter it.
@@ -98,35 +116,73 @@ def verify_layout(
         ROTATIONAL_IDLE_RESERVED_START : ROTATIONAL_IDLE_RESERVED_END + 1
     ]:
         fail("master modifies the separate rotational-idle reserved region")
+    rotational_reserved = set(
+        range(ROTATIONAL_IDLE_RESERVED_START, ROTATIONAL_IDLE_RESERVED_END + 1)
+    )
+    if free_owned & rotational_reserved:
+        fail("declared component ownership enters the rotational-idle reservation")
 
-    allowed = set(free_owned)
+    calibration_owned: set[int] = set()
+    for label, (address, data) in calibration_writes.items():
+        add_range(calibration_owned, address, len(data), f"calibration/{label}")
+
+    # These are deliberate tune-data replacements inside the boost component.
+    # No calibration write is allowed to touch injected executable code,
+    # descriptors, SD data, wideband data, or dual-VE data.
+    expected_component_calibration = set()
     for address, size in (
-        (boost.MAP_SCALING_ADDR, 8),
-        (master.MAP_LOW_CEL_RAW_ADDR, 2),
-        (boost.HIJACK_LITERAL, 4),
-        (boost.REVLIM_FNPTR, 4),
-        (speed_density.FINAL_AIRFLOW_HELPER_PTR, 4),
-        (speed_density.MAF_LIMIT_UPDATE_CALL_ADDR, 2),
-        (speed_density.MAF_INPUT_DIAGNOSTIC_TASK_PTR, 4),
-        (wideband.FRONT_AF_PROCESS_ENTRY, 12),
-        (wideband.BANK1_INHIBIT_ENTRY, 12),
-        (wideband.BANK2_INHIBIT_ENTRY, 12),
-        (wideband.FRONT_PUMP_DIAG_TASK_PTR, 4),
-        (wideband.REAR_O2_PROCESS_ENTRY, 12),
+        (boost.TARGET_DATA, len(base_turbo.BOOST_TARGET_NATIVE) * 4),
+        (boost.BASE_DATA, len(boost.BASE_DUTY)),
+        (boost.KP_ADDR, 4),
+        (boost.MAXR_ADDR, 4),
+        (boost.OVERB_ADDR, 4),
+        (boost.OVERB_FC_ADDR, 4),
     ):
-        allowed.update(range(address, address + size))
+        expected_component_calibration.update(range(address, address + size))
+    component_calibration_overlap = free_owned & calibration_owned
+    if component_calibration_overlap != expected_component_calibration:
+        unexpected = component_calibration_overlap - expected_component_calibration
+        missing = expected_component_calibration - component_calibration_overlap
+        fail(
+            "component/calibration ownership differs from the explicit boost-data "
+            "exception: unexpected=%s missing=%s"
+            % (
+                [f"0x{x:05X}" for x in sorted(unexpected)[:8]],
+                [f"0x{x:05X}" for x in sorted(missing)[:8]],
+            )
+        )
+
+    hook_owned: set[int] = set()
+    for address, size, label in (
+        (boost.MAP_SCALING_ADDR, 8, "Omni MAP scaling"),
+        (master.MAP_LOW_CEL_RAW_ADDR, 2, "Omni MAP low diagnostic threshold"),
+        (boost.HIJACK_LITERAL, 4, "composed boost/wideband output hook"),
+        (boost.REVLIM_FNPTR, 4, "overboost fuel-cut task hook"),
+        (speed_density.FINAL_AIRFLOW_HELPER_PTR, 4, "speed-density airflow hook"),
+        (speed_density.MAF_LIMIT_UPDATE_CALL_ADDR, 2, "MAF-limit bypass"),
+        (speed_density.MAF_INPUT_DIAGNOSTIC_TASK_PTR, 4, "MAF diagnostic bypass"),
+        (wideband.FRONT_AF_PROCESS_ENTRY, 12, "front A/F process hook"),
+        (wideband.BANK1_INHIBIT_ENTRY, 12, "bank-1 inhibit hook"),
+        (wideband.BANK2_INHIBIT_ENTRY, 12, "bank-2 inhibit hook"),
+        (wideband.FRONT_PUMP_DIAG_TASK_PTR, 4, "front pump diagnostic bypass"),
+        (wideband.REAR_O2_PROCESS_ENTRY, 12, "rear O2 process bypass"),
+    ):
+        add_range(hook_owned, address, size, f"hook/{label}")
     for address in speed_density.MAF_CONVERSION_CALL_ADDRS:
-        allowed.update(range(address, address + 2))
+        add_range(hook_owned, address, 2, f"hook/MAF conversion bypass @0x{address:05X}")
     for address in speed_density.TEMPERATURE_MAF_CONDITION_TASK_PTRS:
-        allowed.update(range(address, address + 4))
+        add_range(hook_owned, address, 4, f"hook/MAF temperature bypass @0x{address:05X}")
     for address in (speed_density.P0102_SWITCH_ADDR, speed_density.P0103_SWITCH_ADDR):
-        allowed.add(address)
+        add_range(hook_owned, address, 1, f"hook/MAF DTC switch @0x{address:05X}")
     for address, _, _ in wideband.REAR_O2_TASK_POINTERS:
-        allowed.update(range(address, address + 4))
+        add_range(hook_owned, address, 4, f"hook/rear O2 task bypass @0x{address:05X}")
     for address in wideband.DISABLED_O2_DTC_SWITCHES.values():
-        allowed.add(address)
-    for _, (address, data) in calibration_writes.items():
-        allowed.update(range(address, address + len(data)))
+        add_range(hook_owned, address, 1, f"hook/O2 DTC switch @0x{address:05X}")
+
+    if hook_owned & (free_owned | calibration_owned | rotational_reserved):
+        fail("stock hook ownership collides with component, calibration, or reserved space")
+
+    allowed = free_owned | hook_owned | calibration_owned
 
     actual = changed_set(stock, image)
     outside = actual - allowed
@@ -174,69 +230,69 @@ def verify_omni_map(image: bytes) -> None:
 
 
 def verify_avls_dual_ve(image: bytes) -> None:
-    expected_low_desc = avls_ve.desc_3d_float(
+    expected_low_desc = speed_density.desc_3d_float(
         len(speed_density.MAP_AXIS),
-        len(avls_ve.LOW_RPM_AXIS),
+        len(speed_density.LOW_RPM_AXIS),
         speed_density.MAP_AXIS_ADDR,
-        avls_ve.LOW_RPM_AXIS_ADDR,
-        avls_ve.LOW_VE_DATA_ADDR,
+        speed_density.LOW_RPM_AXIS_ADDR,
+        speed_density.LOW_VE_DATA_ADDR,
     )
-    expected_high_desc = avls_ve.desc_3d_float(
+    expected_high_desc = speed_density.desc_3d_float(
         len(speed_density.MAP_AXIS),
-        len(avls_ve.HIGH_RPM_AXIS),
+        len(speed_density.HIGH_RPM_AXIS),
         speed_density.MAP_AXIS_ADDR,
-        avls_ve.HIGH_RPM_AXIS_ADDR,
-        avls_ve.HIGH_VE_DATA_ADDR,
+        speed_density.HIGH_RPM_AXIS_ADDR,
+        speed_density.HIGH_VE_DATA_ADDR,
     )
-    expect(image, avls_ve.LOW_VE_DESC_ADDR, expected_low_desc, "low-lift VE descriptor")
-    expect(image, avls_ve.HIGH_VE_DESC_ADDR, expected_high_desc, "high-lift VE descriptor")
+    expect(image, speed_density.LOW_VE_DESC_ADDR, expected_low_desc, "low-lift VE descriptor")
+    expect(image, speed_density.HIGH_VE_DESC_ADDR, expected_high_desc, "high-lift VE descriptor")
     expect(
         image,
-        avls_ve.WRAPPER_ADDR,
-        avls_ve.build_wrapper(),
+        speed_density.WRAPPER_ADDR,
+        speed_density.build_wrapper(),
         "committed-state AVLS dual-VE airflow wrapper",
     )
-    if speed_density.VE_DESC_ADDR.to_bytes(4, "big") in avls_ve.build_wrapper():
+    if speed_density.VE_DESC_ADDR.to_bytes(4, "big") in speed_density.build_wrapper():
         fail("master dual-VE wrapper still embeds the obsolete single VE descriptor")
 
     low_axis = struct.unpack_from(
-        ">" + "f" * len(avls_ve.LOW_RPM_AXIS), image, avls_ve.LOW_RPM_AXIS_ADDR
+        ">" + "f" * len(speed_density.LOW_RPM_AXIS), image, speed_density.LOW_RPM_AXIS_ADDR
     )
     high_axis = struct.unpack_from(
-        ">" + "f" * len(avls_ve.HIGH_RPM_AXIS), image, avls_ve.HIGH_RPM_AXIS_ADDR
+        ">" + "f" * len(speed_density.HIGH_RPM_AXIS), image, speed_density.HIGH_RPM_AXIS_ADDR
     )
-    if low_axis != avls_ve.LOW_RPM_AXIS or high_axis != avls_ve.HIGH_RPM_AXIS:
+    if low_axis != speed_density.LOW_RPM_AXIS or high_axis != speed_density.HIGH_RPM_AXIS:
         fail("master dual-VE axes do not match their real AVLS operating ranges")
-    if low_axis[-1] != avls_ve.AVLS_ENGAGE_RPM or high_axis[0] != avls_ve.AVLS_RELEASE_RPM:
+    if low_axis[-1] != speed_density.AVLS_ENGAGE_RPM or high_axis[0] != speed_density.AVLS_RELEASE_RPM:
         fail("master dual-VE axes do not cover the real hysteresis endpoints")
 
     for label, address, expected in (
-        ("low", avls_ve.LOW_VE_DATA_ADDR, avls_ve.LOW_VE_TABLE),
-        ("high", avls_ve.HIGH_VE_DATA_ADDR, avls_ve.HIGH_VE_TABLE),
+        ("low", speed_density.LOW_VE_DATA_ADDR, speed_density.LOW_VE_TABLE),
+        ("high", speed_density.HIGH_VE_DATA_ADDR, speed_density.HIGH_VE_TABLE),
     ):
         actual = struct.unpack_from(">" + "f" * len(expected), image, address)
         if any(not math.isclose(a, b, abs_tol=1e-7) for a, b in zip(actual, expected)):
             fail(f"master {label}-lift VE seed changed unexpectedly")
 
-    for address in (avls_ve.AVLS_NORMAL_SPEED_DATA_ADDR, avls_ve.AVLS_HOT_SPEED_DATA_ADDR):
+    for address in (speed_density.AVLS_NORMAL_SPEED_DATA_ADDR, speed_density.AVLS_HOT_SPEED_DATA_ADDR):
         actual = struct.unpack_from(">7f", image, address)
-        if actual != avls_ve.AVLS_SPEED_DISABLED:
+        if actual != speed_density.AVLS_SPEED_DISABLED:
             fail(f"master retains a vehicle-speed AVLS request at 0x{address:05X}")
-    for address in (avls_ve.AVLS_FIXED_SPEED_A_ADDR, avls_ve.AVLS_FIXED_SPEED_B_ADDR):
-        if struct.unpack_from(">f", image, address)[0] != avls_ve.AVLS_SPEED_DISABLED_VALUE:
+    for address in (speed_density.AVLS_FIXED_SPEED_A_ADDR, speed_density.AVLS_FIXED_SPEED_B_ADDR):
+        if struct.unpack_from(">f", image, address)[0] != speed_density.AVLS_SPEED_DISABLED_VALUE:
             fail(f"master retains a fixed/fallback speed request at 0x{address:05X}")
     actual_rpm_policy = tuple(
         struct.unpack_from(">f", image, address)[0]
         for address in (
-            avls_ve.AVLS_ACTUATION_MIN_RPM_ADDR,
-            avls_ve.AVLS_RELEASE_RPM_ADDR,
-            avls_ve.AVLS_ENGAGE_RPM_ADDR,
+            speed_density.AVLS_ACTUATION_MIN_RPM_ADDR,
+            speed_density.AVLS_RELEASE_RPM_ADDR,
+            speed_density.AVLS_ENGAGE_RPM_ADDR,
         )
     )
     if actual_rpm_policy != (
-        avls_ve.AVLS_ACTUATION_MIN_RPM,
-        avls_ve.AVLS_RELEASE_RPM,
-        avls_ve.AVLS_ENGAGE_RPM,
+        speed_density.AVLS_ACTUATION_MIN_RPM,
+        speed_density.AVLS_RELEASE_RPM,
+        speed_density.AVLS_ENGAGE_RPM,
     ):
         fail(f"master predictable AVLS RPM policy is {actual_rpm_policy}")
 
@@ -528,14 +584,14 @@ def verify_definition() -> None:
     tables = {table.get("name"): table for table in target.findall("table")}
     expected_ve = {
         "Speed Density VE - AVLS Low Lift": (
-            avls_ve.LOW_VE_DATA_ADDR,
-            len(avls_ve.LOW_RPM_AXIS),
-            avls_ve.LOW_RPM_AXIS_ADDR,
+            speed_density.LOW_VE_DATA_ADDR,
+            len(speed_density.LOW_RPM_AXIS),
+            speed_density.LOW_RPM_AXIS_ADDR,
         ),
         "Speed Density VE - AVLS High Lift": (
-            avls_ve.HIGH_VE_DATA_ADDR,
-            len(avls_ve.HIGH_RPM_AXIS),
-            avls_ve.HIGH_RPM_AXIS_ADDR,
+            speed_density.HIGH_VE_DATA_ADDR,
+            len(speed_density.HIGH_RPM_AXIS),
+            speed_density.HIGH_RPM_AXIS_ADDR,
         ),
     }
     for name, (data_address, rows, rpm_axis) in expected_ve.items():
@@ -755,7 +811,7 @@ def verify_component_hooks(image: bytes, component_stage: bytes) -> None:
         (boost.REVWRAP_ADDR, len(boost.build_fuelcut_wrapper()), "overboost wrapper"),
         (
             speed_density.WRAPPER_ADDR,
-            len(avls_ve.build_wrapper()),
+            len(speed_density.build_wrapper()),
             "committed-state dual-VE speed-density wrapper",
         ),
         (
@@ -785,9 +841,9 @@ def main() -> None:
         independently_calibrated, component_stage
     )
     independent_writes.update(
-        avls_ve.apply_predictable_avls_calibration(independently_calibrated)
+        speed_density.apply_predictable_avls_calibration(independently_calibrated)
     )
-    avls_ve.fix_checksum(independently_calibrated)
+    speed_density.fix_checksum(independently_calibrated)
     checksum_data = bytes(
         independently_calibrated[
             base_turbo.CHECKSUM_TABLE_ADDR + 8 : base_turbo.CHECKSUM_TABLE_ADDR + 12
@@ -854,6 +910,7 @@ def main() -> None:
     print("  boost             : zero-duty spring baseline; throttle/SD/sensor/soft/hard gates")
     print("  injectors         : pinned A4TE002B STI-pink flow/deadtime translation")
     print("  timing/AVLS       : dual VE; fixed 3200/3000 lift switch; cam timing endpoints identified")
+    print("  memory layout     : no ownership collisions; rotational-idle reservation untouched")
     print("  definition        : focused master XML; dormant timing pair and obsolete defs omitted")
     print("  logger            : lambda/raw-ADC/readiness/committed-AVLS fragment validated")
     print("  provenance        : root stock, base copy, and SRF payload remain byte-identical")

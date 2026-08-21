@@ -150,9 +150,9 @@ axis at `0x7B304`, and data at `0x7B318`; injector flow processing reads
 
 ### MAFless airflow and AVLS VE selection
 
-The speed-density component replaces the final airflow helper called inside the
-retained stock airflow/load task. The master then replaces its single-VE wrapper
-with a committed-state selector: mode 3 uses a 13x11 high-lift surface covering
+The single speed-density component replaces the final airflow helper called
+inside the retained stock airflow/load task and contains the committed-state
+selector directly: mode 3 uses a 13x11 high-lift surface covering
 3000..7500 RPM; all other modes use a 13x9 low-lift surface covering 0..3200
 RPM. The 3000..3200 overlap represents the real hysteresis region and is resolved
 by committed state. Both tables are initially resampled from the same seed.
