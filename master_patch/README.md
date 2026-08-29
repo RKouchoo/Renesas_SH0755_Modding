@@ -5,7 +5,8 @@ Liberty 3.0R manual ECU (`D2WD610H`). It combines the previously separate
 firmware work into one deterministic stock-to-output build:
 
 - always-on MAFless speed density with committed-state low/high-lift AVLS VE
-  tables and retained post-intercooler IAT input;
+  tables and a provisional Haltech HT-010206 post-intercooler IAT calibration
+  converted for an assumed 2.49 kOhm ECU pull-up;
 - Omni Power `MAP-SUP-3BR` 3-bar MAP scaling;
 - EVAP-output boost control with throttle, wideband, speed-density-input/result,
   soft-overboost, and hard fuel-cut gates;
@@ -23,9 +24,9 @@ firmware work into one deterministic stock-to-output build:
 - a focused, self-contained D2WD610H RomRaider definition and logger fragment.
 
 The generated baseline is `D2WD610H_master_patch.bin`, SHA-256
-`71095d0e72dca8bb5493e694426e0172bcf7d19d0c560c98abfa0f518dfb215f`.
+`f3efa36f8e3bef4e1eaa68544d0c1bc0578c6dbc53e7a13f87e08f8dcba01e6d`.
 It is 512 KiB, contains CALID `D2WD610H`, and has a valid Subaru additive
-checksum (`0x80ED1E3A`). It is a development artifact, not a vehicle-tested tune.
+checksum (`0xC96A0526`). It is a development artifact, not a vehicle-tested tune.
 
 Two independent boost switches remain in RomRaider. `Electronic Boost Control
 Enable` defaults OFF and forces zero actuator duty for direct wastegate-spring
@@ -56,6 +57,15 @@ The MAP transfer comes from the supplied
 0.60 V at 30 kPa absolute and 4.75 V at 300 kPa absolute. The advertised
 Subaru fitment does not specifically name the EZ30R application, so connector
 keying and terminal continuity still require physical confirmation.
+
+The IAT transfer uses the published Haltech HT-010206 voltage/temperature
+points, which Haltech documents for a 1 kOhm pull-up to 5 V. The builder
+converts those points back to thermistor resistance and then to voltage for an
+assumed 2.49 kOhm D2WD610H pull-up. That ECU resistance has not been confirmed
+from a D2WD610H primary source or an installed-circuit measurement. The cold
+tail below -10 C is extrapolated. It is therefore a useful starting reference,
+not a verified sensor calibration; see [CALIBRATION.md](CALIBRATION.md) and
+[COMMISSIONING.md](COMMISSIONING.md).
 
 The only supported wideband transfer in this baseline is the P0/P1 table in the
 instruction sheet supplied with the seller-labelled `AEM 50-4110` unit:
@@ -118,8 +128,8 @@ provenance and checksum.
 | File | Purpose |
 |---|---|
 | `build_master_patch.py` | Deterministic stock-to-master builder. |
-| `master_calibration.py` | Fuel, timing, KCA, AVCS, STI-pink injector, spring-only boost, rev-limit, and Subaru-checksum implementation. |
-| `verify_master_calibration.py` | Independent fuel, timing, KCA, AVCS, injector, boost, limiter, and checksum policy checks used by the master verifier. |
+| `master_calibration.py` | IAT, fuel, timing, KCA, AVCS, STI-pink injector, spring-only boost, rev-limit, and Subaru-checksum implementation. |
+| `verify_master_calibration.py` | Independent IAT, fuel, timing, KCA, AVCS, injector, boost, limiter, and checksum policy checks used by the master verifier. |
 | `../speed_density/patch_speed_density.py` | Single MAFless SD component containing committed-state dual VE and predictable 3200/3000 RPM AVLS calibration. |
 | `wideband_component.py` | Permanent four-stock-O2 delete and former-MAF external-wideband input firmware. |
 | `../fueling_safety/fueling_safety_component.py` | Pressure-forced-open-loop and latched lean-cut component. |
@@ -135,6 +145,9 @@ provenance and checksum.
 ## Hard limitations
 
 - The base VE table is mathematical, not measured on this engine.
+- The HT-010206 IAT curve assumes a 2.49 kOhm ECU pull-up. A wrong pull-up,
+  sensor-ground offset, or cold-tail extrapolation directly biases
+  speed-density airflow and all load-indexed tuning.
 - The two AVLS VE tables are seeded from that same mathematical surface and
   still require separate log calibration. Continuous AVCS position remains an
   unmodeled influence within each lift state.

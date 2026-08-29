@@ -23,8 +23,19 @@ Service-manual references:
 
 The airflow cable shield terminates at ECM B136-32; it is not a controller power
 ground. The old MAF element is removed, but B3-4/B3-5 remain the live factory
-IAT circuit. A replacement thermistor must have the stock transfer or its ECU
-calibration must be changed before the speed-density result can be trusted.
+IAT circuit. The master now contains a provisional Haltech HT-010206 transfer
+based on a 2.49 kOhm internal ECU pull-up assumption. Connect HT-010206 pin 1 to
+B3-4/B136-13 (signal) and pin 2 to B3-5/B136-35 (sensor ground); the thermistor
+itself is not polarity-sensitive, but retaining those signal/ground roles keeps
+the harness consistent. Do not apply an external 5 V supply to either lead.
+
+Before relying on that curve, confirm the input resistance. With key on and the
+sensor unplugged, record B3-4 relative to B3-5, then place a measured 1.00 kOhm
+1% resistor between B3-4 and B3-5 and record the loaded voltage. A 2.49 kOhm
+pull-up produces a loaded voltage approximately 28.65% of the unloaded voltage
+(about 1.43 V for 5.00 V unloaded). Remove the test resistor before connecting
+the sensor. Also compare logged IAT with a trusted temperature reference at
+multiple temperatures; the table's -20 through -40 C region is extrapolated.
 
 ## Seller-labelled AEM 50-4110 / 30-4110-style controller
 

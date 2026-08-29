@@ -42,7 +42,7 @@
    <table type="Y Axis" name="Intake Temp Sensor" storagetype="float" endian="little">
     <scaling units="volts" expression="x" to_byte="x" format="0.00" fineincrement=".01" coarseincrement=".1" />
    </table>
-   <description>This is the scaling of the intake temp sensor.</description>
+   <description>Provisional Haltech HT-010206 intake-air-temperature transfer for the retained B3-4/B136-13 signal and B3-5/B136-35 sensor ground. The 30-point voltage axis converts Haltech's published 1.00-kohm/5-V calibration to an assumed 2.49-kohm ECU pull-up. Points below -10 C are extrapolated. Treat this as a commissioning base reference: verify the ECU pull-up on the installed circuit and compare logged temperature against a trusted reference before tuning VE or entering boost. This table converts sensor voltage to degrees C; the separate Speed Density IAT Density Correction table applies the air-density multiplier.</description>
   </table>
   <table type="2D" name="Speed Density IAT Density Correction" category="01.2 - Air Model - IAT Sensor" storagetype="float" endian="little" sizey="10" userlevel="2">
    <scaling units="multiplier" expression="x" to_byte="x" format="0.000" fineincrement=".005" coarseincrement=".02" />

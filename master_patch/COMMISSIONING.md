@@ -11,7 +11,8 @@ and keep the root stock image unchanged.
 2. Verify root stock, `base_roms` stock, and original SRF payload hashes using
    the master verifier.
 3. Trace B3-2/B3-3 to B136-31/B136-23 and B3-4/B3-5 to B136-13/B136-35.
-4. Confirm the separate IAT sensor curve and post-intercooler installation.
+4. Confirm the HT-010206 post-intercooler installation. Treat the supplied
+   2.49 kOhm-converted curve as provisional until the input check below passes.
 5. Confirm E28 MAP ground, signal, and regulated supply by measurement.
 6. Disconnect and insulate all four factory oxygen-sensor connectors.
 7. Confirm all six injector part numbers, test/cleaning data, base fuel
@@ -28,25 +29,30 @@ Use a fused, current-limited setup and do not backfeed an unpowered ECU.
 1. Pressure-test the Omni MAP across vacuum, local atmospheric pressure, and
    the intended positive-pressure range. Compare `0xFFFFABC4` against the
    calibrated reference, not only the sensor endpoints.
-2. Set the supplied 50-4110-style controller to P0 or P1. Power red from its own
+2. With the IAT sensor unplugged, measure B3-4 relative to B3-5 key-on, then
+   load the input with a measured 1.00 kOhm 1% resistor. A true 2.49 kOhm ECU
+   pull-up gives `V_loaded / V_unloaded = 0.2865` (about 1.43 V from 5.00 V).
+   Remove the resistor, reconnect the sensor, and compare logged IAT against a
+   trusted reference at ambient and at least one controlled warmer point.
+3. Set the supplied 50-4110-style controller to P0 or P1. Power red from its own
    switched 10-18 V / 10 A fused supply and ground black at a clean power/engine
    ground. Never connect black to B3-2/B136-31. Compare white-to-black voltage
    with B136-23-to-B136-31 voltage under normal electrical loads to quantify
    ground offset.
-3. Sweep a protected 0-5 V source through the former-MAF input and verify:
+4. Sweep a protected 0-5 V source through the former-MAF input and verify:
    - below 0.50 V: logger AFR fault sentinel (raw 0.0), ready 0.0, EBCS command zero;
    - 0.50..4.50 V: gasoline `AFR = 2*V + 10`, ready 50.0;
    - above 4.50 V: logger AFR fault sentinel (raw 0.0), ready 0.0, EBCS command zero.
-4. With the actual controller, record display and white-to-black voltage during
+5. With the actual controller, record display and white-to-black voltage during
    cold warm-up, warmed free air, and a disconnected sensor. An in-window result
    is not proof of controller health and must not be presented as such.
-5. Confirm both patched bank feedback values are identical and both inhibit
+6. Confirm both patched bank feedback values are identical and both inhibit
    helpers switch together. Do not substitute a 5 V rail directly without
    current limiting and a proven common reference.
-6. With wideband input valid, separately move MAP, RPM, and IAT outside each SD
+7. With wideband input valid, separately move MAP, RPM, and IAT outside each SD
    validity window, below the first 1500-RPM boost breakpoint, and force the
    500 g/s SD fault sentinel. Every case must leave EBCS command at zero.
-7. Confirm `Rotational Idle Enable` is OFF before first flash.
+8. Confirm `Rotational Idle Enable` is OFF before first flash.
 
 ## 3. Install logging
 

@@ -276,6 +276,58 @@ def verify_auxiliary(reference: bytes, image: bytes) -> None:
              base.IAT_TIMING_COMP_ADDR + len(base.IAT_TIMING_COMP_RAW)] != base.IAT_TIMING_COMP_RAW:
         fail("IAT timing compensation bytes do not match the intended curve")
 
+    descriptor = struct.unpack_from(">HBBII", image, base.IAT_SENSOR_DESC_ADDR)
+    expected_descriptor = (
+        base.IAT_SENSOR_POINT_COUNT,
+        0,
+        0,
+        base.IAT_SENSOR_VOLTAGE_AXIS_ADDR,
+        base.IAT_SENSOR_TEMPERATURE_ADDR,
+    )
+    if descriptor != expected_descriptor:
+        fail(f"IAT sensor descriptor is {descriptor}, expected {expected_descriptor}")
+    voltage_axis = base.read_floats(
+        image, base.IAT_SENSOR_VOLTAGE_AXIS_ADDR, base.IAT_SENSOR_POINT_COUNT
+    )
+    temperatures = base.read_floats(
+        image, base.IAT_SENSOR_TEMPERATURE_ADDR, base.IAT_SENSOR_POINT_COUNT
+    )
+    expected_voltage = base.read_floats(
+        base.pack_floats(base.IAT_SENSOR_VOLTAGE_AXIS), 0, base.IAT_SENSOR_POINT_COUNT
+    )
+    expected_temperature = base.read_floats(
+        base.pack_floats(base.IAT_SENSOR_TEMPERATURE_C), 0, base.IAT_SENSOR_POINT_COUNT
+    )
+    if voltage_axis != expected_voltage:
+        fail("IAT voltage axis does not match the provisional HT-010206/2.49k curve")
+    if temperatures != expected_temperature:
+        fail("IAT temperature data does not match the provisional HT-010206 curve")
+    if not all(a < b for a, b in zip(voltage_axis, voltage_axis[1:])):
+        fail("IAT voltage axis is not strictly increasing")
+    if not all(a > b for a, b in zip(temperatures, temperatures[1:])):
+        fail("IAT temperature data is not strictly decreasing")
+
+    # Independently reconstruct every published Haltech point from its
+    # 1.00-kohm divider voltage and require the corresponding table knot to
+    # match its 2.49-kohm Subaru-divider voltage within float32 precision.
+    for temperature, haltech_voltage in base.HALTECH_IAT_REFERENCE_POINTS:
+        resistance = (
+            base.IAT_SENSOR_REFERENCE_PULLUP_OHMS
+            * haltech_voltage
+            / (base.IAT_SENSOR_SUPPLY_VOLTS - haltech_voltage)
+        )
+        converted_voltage = (
+            base.IAT_SENSOR_SUPPLY_VOLTS
+            * resistance
+            / (base.IAT_SENSOR_PULLUP_OHMS + resistance)
+        )
+        index = base.IAT_SENSOR_TEMPERATURE_C.index(temperature)
+        if abs(voltage_axis[index] - converted_voltage) > 2e-7:
+            fail(
+                f"IAT {temperature:.0f} C knot is {voltage_axis[index]:.9f} V, "
+                f"expected {converted_voltage:.9f} V"
+            )
+
     rev_cut, rev_resume = base.read_floats(image, base.REV_LIMIT_A_ADDR, 2)
     if (rev_cut, rev_resume) != (base.REV_LIMIT_CUT_RPM, base.REV_LIMIT_RESUME_RPM):
         fail(

@@ -28,6 +28,43 @@ The upper limit is about 213 kPa absolute, comfortably above this 5 psi
 baseline but intentionally below the sensor's electrical ceiling. An invalid
 running input selects the fixed 500 g/s high-load fail-safe value.
 
+## IAT sensor
+
+The retained stock IAT descriptor at `0x609B8` still contains 30 points and
+still addresses voltage axis `0x72960` and temperature data `0x729D8`. The
+master calibration replaces both arrays with a provisional transfer for the
+[Haltech HT-010206](https://www.haltech.com/product/ht-010206-air-temp-sensor/).
+
+Haltech's published voltage points assume a 1.00 kOhm pull-up to 5 V. The
+builder converts each published point through:
+
+```text
+thermistor_ohms = 1000 * V_haltech / (5 - V_haltech)
+V_D2WD610H      = 5 * thermistor_ohms / (2490 + thermistor_ohms)
+```
+
+The exact published knots become:
+
+| Temperature | Master-table voltage |
+|---:|---:|
+| 120 C | 0.191010 V |
+| 100 C | 0.345506 V |
+| 90 C | 0.440721 V |
+| 70 C | 0.782504 V |
+| 50 C | 1.392125 V |
+| 30 C | 2.336735 V |
+| 10 C | 3.407748 V |
+| -10 C | 4.231286 V |
+
+The remaining in-range knots use log-resistance versus inverse-temperature
+interpolation at 5 C intervals. The final -20, -30, and -40 C entries
+extrapolate the published -10..10 C segment. The 2.49 kOhm ECU pull-up is an
+unverified working assumption, so compare the installed circuit with a trusted
+temperature reference before using this curve for VE tuning or boost. The
+`Speed Density IAT Density Correction` table remains the separate ideal-gas
+multiplier; it must not be edited merely to compensate for an incorrect sensor
+transfer.
+
 ## Speed density
 
 The modeled airflow is:
@@ -56,7 +93,8 @@ not RPM alone. The two supplied surfaces are resampled from the same conservativ
 single-map seed and agree in their shared region, so the generated baseline does
 not intentionally add a fueling step. They are not measured EZ30R VE maps and
 must be calibrated separately from logs. Global multiplier defaults to 1.0.
-IAT correction uses `293.15 / (IAT_C + 273.15)` from -50 through 150 degrees C.
+IAT density correction uses `293.15 / (IAT_C + 273.15)` from -50 through 150
+degrees C after the provisional sensor-voltage transfer above has produced IAT.
 
 There is no MAF fallback and no speed-density OFF switch. Exact zero RPM writes
 zero. Invalid nonzero-RPM MAP, RPM, IAT, calibration, lookup, or arithmetic

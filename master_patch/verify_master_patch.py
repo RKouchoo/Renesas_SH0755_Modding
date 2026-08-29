@@ -37,7 +37,7 @@ import verify_fueling_safety as fueling_safety_verify  # noqa: E402
 OUTPUT = HERE / "D2WD610H_master_patch.bin"
 DEFINITION = HERE / "D2WD610H_master_patch.xml"
 LOGGER_FRAGMENT = HERE / "D2WD610H_master_logger_ecuparams.xml"
-EXPECTED_OUTPUT_SHA256 = "71095d0e72dca8bb5493e694426e0172bcf7d19d0c560c98abfa0f518dfb215f"
+EXPECTED_OUTPUT_SHA256 = "f3efa36f8e3bef4e1eaa68544d0c1bc0578c6dbc53e7a13f87e08f8dcba01e6d"
 
 
 def fail(message: str) -> None:
@@ -706,6 +706,12 @@ def verify_definition() -> None:
 
     parent_names = {table.get("name") for table in roms[0].findall("table")}
     parent_tables = {table.get("name"): table for table in roms[0].findall("table")}
+    iat_template = parent_tables.get("Intake Temp Sensor Scaling")
+    if (
+        iat_template is None
+        or iat_template.findtext("description") != definition.IAT_SENSOR_DESCRIPTION
+    ):
+        fail("master definition lacks the provisional HT-010206/2.49k IAT warning")
     for name in expected_ve:
         template = parent_tables.get(name)
         if template is None or template.get("endian") != "little":
@@ -1097,6 +1103,7 @@ def main() -> None:
     print(f"  checksum          : 0x{stored:08X} (valid={stored == calculated})")
     print("  air model         : always-on MAFless committed-state dual VE speed density")
     print("  MAP               : Omni MAP-SUP-3BR 30..300 kPa / 0.60..4.75 V")
+    print("  IAT               : provisional HT-010206 curve; assumed 2.49-kohm ECU pull-up")
     print("  wideband/O2       : former-MAF 50-4110 P0/P1 input; four stock paths removed")
     print("  boost             : EBCS OFF; independent hard cut ON; zero-duty spring baseline")
     print("  load axes         : all eight active axes extend to 4.0 g/rev")

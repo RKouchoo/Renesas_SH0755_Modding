@@ -1009,3 +1009,40 @@ independent policy functions used by the master verifier moved to
 builder/output verifier, and duplicated/outdated calibration, manifest, and commissioning files
 were not carried forward. The master continues to source predictable AVLS exclusively from the
 speed-density component. A before/after rebuild retained the exact master SHA-256 and checksum.
+
+# Haltech HT-010206 IAT base calibration
+
+Audit date: 2026-08-29. This section supersedes earlier master artifact hashes.
+
+The master tune now replaces the stock 30-point IAT voltage axis at `0x72960`
+and temperature data at `0x729D8`. The unchanged D2WD610H descriptor at
+`0x609B8` is `(30, axis 0x72960, data 0x729D8)`. Haltech's eight published
+HT-010206 voltage/temperature points assume a 1.00 kOhm pull-up to 5 V. Each
+published voltage is converted back to thermistor resistance and then through
+an assumed 2.49 kOhm D2WD610H pull-up. The exact converted knots are 0.191010 V
+at 120 C, 0.345506 V at 100 C, 0.440721 V at 90 C, 0.782504 V at 70 C,
+1.392125 V at 50 C, 2.336735 V at 30 C, 3.407748 V at 10 C, and 4.231286 V at
+-10 C.
+
+The remaining normal-range entries use log-resistance versus inverse-Kelvin
+interpolation. The -20, -30, and -40 C tail is extrapolated from Haltech's
+published -10..10 C segment. Both the RomRaider definition and commissioning
+documentation label the curve provisional because the 2.49 kOhm resistance has
+not been established from a D2WD610H primary source or an installed-circuit
+measurement. A 1.00 kOhm test load should produce 28.65% of the unloaded input
+voltage if the assumption is correct. Logged IAT must also be checked against a
+trusted temperature reference before VE tuning or boost.
+
+The sensor transfer is distinct from the injected speed-density density curve:
+the former converts ADC voltage to degrees C, while the latter applies
+`293.15 / (IAT_C + 273.15)` to modeled airflow. No density compensation was
+altered to hide sensor-transfer error. No function was opened in Ghidra for
+this table-only calibration change; the existing named IAT processing path and
+verified descriptor layout were retained unchanged.
+
+The fresh master build changes 6,451 bytes from canonical stock, has SHA-256
+`f3efa36f8e3bef4e1eaa68544d0c1bc0578c6dbc53e7a13f87e08f8dcba01e6d`, and
+has valid Subaru additive checksum `0xC96A0526`. The independent verifier checks
+all 30 float32 knots, monotonicity, all eight published-point conversions,
+descriptor identity, XML warning text, collision ownership, deterministic
+rebuild identity, checksum, and immutable stock/base/SRF provenance.

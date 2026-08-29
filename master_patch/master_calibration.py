@@ -8,7 +8,9 @@ spring remains the only source of commanded boost: EBCS, base WGDC,
 proportional gain, and the duty clamp are disabled/zero while the independent
 hard MAP cut stays active. Injector data is translated from the hash-pinned
 A4TE002B factory STI-pink ROM, tune axes extend to 4.0 g/rev, and the limiter is
-6800/6770 RPM.
+6800/6770 RPM. The retained IAT conversion table is seeded for a Haltech
+HT-010206 thermistor on an explicitly provisional 2.49-kohm ECU pull-up
+assumption.
 """
 
 from __future__ import annotations
@@ -83,6 +85,10 @@ AVCS_MAPS = (
 )
 
 IAT_TIMING_COMP_ADDR = 0x7834C
+IAT_SENSOR_DESC_ADDR = 0x609B8
+IAT_SENSOR_VOLTAGE_AXIS_ADDR = 0x72960
+IAT_SENSOR_TEMPERATURE_ADDR = 0x729D8
+IAT_SENSOR_POINT_COUNT = 30
 REV_LIMIT_A_ADDR = 0x7644C
 
 # Installed Denso/Subaru STI pink-injector calibration.  The source bytes are
@@ -212,6 +218,42 @@ TIMING_LOAD_OFFSETS = {
 # axis.  Quantized values are 0, -1.05, -2.11, -4.22, -6.33, -8.09, -10.20 deg.
 IAT_TIMING_COMP_RAW = bytes((128, 125, 122, 116, 110, 105, 99))
 
+# Provisional Haltech HT-010206 air-temperature transfer for the original IAT
+# input, assuming the ECU's internal pull-up is 2.49 kohm to 5 V. Haltech's
+# published eight voltage points assume a 1.00 kohm pull-up; those voltages are
+# first converted back to thermistor resistance, then to the Subaru divider
+# voltage. Intermediate 5 C points use log(resistance) versus inverse-Kelvin
+# interpolation. The -20/-30/-40 C tail extrapolates the published -10..10 C
+# segment and therefore remains a base reference pending an installed-circuit
+# resistance/temperature check.
+IAT_SENSOR_PULLUP_OHMS = 2490.0
+IAT_SENSOR_REFERENCE_PULLUP_OHMS = 1000.0
+IAT_SENSOR_SUPPLY_VOLTS = 5.0
+HALTECH_IAT_REFERENCE_POINTS = (
+    (120.0, 0.45),
+    (100.0, 0.78),
+    (90.0, 0.97),
+    (70.0, 1.58),
+    (50.0, 2.45),
+    (30.0, 3.43),
+    (10.0, 4.21),
+    (-10.0, 4.66),
+)
+IAT_SENSOR_TEMPERATURE_C = (
+    120.0, 115.0, 110.0, 105.0, 100.0, 95.0, 90.0, 85.0, 80.0, 75.0,
+    70.0, 65.0, 60.0, 55.0, 50.0, 45.0, 40.0, 35.0, 30.0, 25.0,
+    20.0, 15.0, 10.0, 5.0, 0.0, -5.0, -10.0, -20.0, -30.0, -40.0,
+)
+IAT_SENSOR_VOLTAGE_AXIS = (
+    0.191009805, 0.220619962, 0.255526662, 0.296751082, 0.345505774,
+    0.389820039, 0.440720797, 0.507652879, 0.585732102, 0.676713109,
+    0.782503605, 0.905015707, 1.046307683, 1.208200932, 1.392124534,
+    1.596926212, 1.823920131, 2.071560383, 2.336735010, 2.601084471,
+    2.872020960, 3.143183231, 3.407747984, 3.639829397, 3.856733322,
+    4.054732323, 4.231286049, 4.516235352, 4.714883804, 4.842593670,
+)
+assert len(IAT_SENSOR_VOLTAGE_AXIS) == len(IAT_SENSOR_TEMPERATURE_C) == IAT_SENSOR_POINT_COUNT
+
 REV_LIMIT_CUT_RPM = 6800.0
 REV_LIMIT_RESUME_RPM = 6770.0
 SOFT_OVERBOOST_PSI = 5.5
@@ -241,6 +283,8 @@ CALIBRATION_REGIONS = (
       for name, _, load_addr, _, _ in AVCS_MAPS),
     *((name, addr, AVCS_X * rows * 2) for name, addr, _, _, rows in AVCS_MAPS),
     ("Timing Compensation IAT", IAT_TIMING_COMP_ADDR, len(IAT_TIMING_COMP_RAW)),
+    ("Haltech IAT Voltage Axis", IAT_SENSOR_VOLTAGE_AXIS_ADDR, IAT_SENSOR_POINT_COUNT * 4),
+    ("Haltech IAT Temperature Data", IAT_SENSOR_TEMPERATURE_ADDR, IAT_SENSOR_POINT_COUNT * 4),
     ("Rev Limit A", REV_LIMIT_A_ADDR, 8),
     ("Injector Flow Scaling", INJECTOR_FLOW_ADDR, 4),
     ("Injector Latency", INJECTOR_LATENCY_ADDR, INJECTOR_LATENCY_SIZE),
@@ -711,6 +755,25 @@ def apply_calibration(rom: bytearray, reference: bytes) -> dict[str, tuple[int, 
         )
 
     write("Timing Compensation IAT", IAT_TIMING_COMP_ADDR, IAT_TIMING_COMP_RAW)
+    descriptor = struct.unpack_from(">HBBII", reference, IAT_SENSOR_DESC_ADDR)
+    if descriptor != (
+        IAT_SENSOR_POINT_COUNT,
+        0,
+        0,
+        IAT_SENSOR_VOLTAGE_AXIS_ADDR,
+        IAT_SENSOR_TEMPERATURE_ADDR,
+    ):
+        raise SystemExit(f"REFUSING: unexpected stock IAT descriptor {descriptor}")
+    write(
+        "Haltech IAT Voltage Axis",
+        IAT_SENSOR_VOLTAGE_AXIS_ADDR,
+        pack_floats(IAT_SENSOR_VOLTAGE_AXIS),
+    )
+    write(
+        "Haltech IAT Temperature Data",
+        IAT_SENSOR_TEMPERATURE_ADDR,
+        pack_floats(IAT_SENSOR_TEMPERATURE_C),
+    )
     # Firmware/Ghidra ordering is cut first, resume second.
     write(
         "Rev Limit A",

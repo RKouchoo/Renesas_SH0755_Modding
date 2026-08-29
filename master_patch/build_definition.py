@@ -222,6 +222,18 @@ MAP_RENAMES = {
     "Manifold Pressure Sensor CEL Delays": "Omni Power MAP-SUP-3BR CEL Delays",
 }
 
+IAT_SENSOR_DESCRIPTION = (
+    "Provisional Haltech HT-010206 intake-air-temperature transfer for the "
+    "retained B3-4/B136-13 signal and B3-5/B136-35 sensor ground. The 30-point "
+    "voltage axis converts Haltech's published 1.00-kohm/5-V calibration to an "
+    "assumed 2.49-kohm ECU pull-up. Points below -10 C are extrapolated. Treat "
+    "this as a commissioning base reference: verify the ECU pull-up on the "
+    "installed circuit and compare logged temperature against a trusted "
+    "reference before tuning VE or entering boost. This table converts sensor "
+    "voltage to degrees C; the separate Speed Density IAT Density Correction "
+    "table applies the air-density multiplier."
+)
+
 DROP_NAMES = {
     # The master is permanently MAFless and the former MAF signal is wideband.
     "MAF Limit (Maximum) ",
@@ -919,6 +931,9 @@ def build_tree() -> ET.ElementTree:
     }
     prune_and_rename(parent, inherited_drop_names)
     prune_and_rename(target, inherited_drop_names)
+    set_description(
+        table_by_name(parent, "Intake Temp Sensor Scaling"), IAT_SENSOR_DESCRIPTION
+    )
 
     target.find("romid/xmlid").text = "D2WD610H_MASTER_PATCH"
     target.find("romid/author").text = "Renesas_SH0755_modding master_patch"
