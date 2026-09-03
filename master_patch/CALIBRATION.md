@@ -292,6 +292,42 @@ Stop adding timing if torque no longer rises, knock activity appears, lambda or
 fuel pressure moves out of bounds, or the result is not repeatable. The supplied
 timing is a conservative commissioning surface, not a finished optimum tune.
 
+## Fuel-pump diagnostic commands
+
+The master definition now exposes the two reduced-speed FPCU command levels
+without changing their generated defaults; the shared high-mode scale is shown
+for traceability but deliberately remains fixed:
+
+| RomRaider item | Flash | Stock |
+|---|---:|---:|
+| Fuel Pump Low-Speed Command | `0x2A610` | 33.3% |
+| Fuel Pump Medium-Speed Command | `0x2A60C` | 66.7% |
+| High mode / PWM normalization (fixed, not editable) | `0x2A5FC` | 100.0% |
+
+Live Ghidra traces `fuel_pump_pwm_command_output_update @ 0x2A53A` selecting
+one of those values, copying it to `0xFFFFC298`, dividing by 100, and sending
+the ratio to `fuel_pump_pwm_output_write @ 0xDEAA`. Standard SSM P47 is backed
+by that same RAM value through `fuel_pump_duty_logger_value_get @ 0x3191C`.
+
+For the specific stationary mode-transition test, make a copy of the generated
+master BIN and set both Low-Speed and Medium-Speed Command to `100.0`. The
+100.0 high-mode constant is deliberately not editable because the same literal
+also normalizes every command before the PWM writer. This preserves the ECU's
+pump-off state but makes every running speed mode request full command. Log P47
+and battery voltage while measuring voltage directly across the pump's positive
+and negative terminals
+and watching rail-pressure differential and AFR. If the lean onset moves or
+disappears at the same time P47 no longer falls, investigate the controller,
+wiring/current capacity, regulator and upgraded pump compatibility. If P47 is
+unchanged or the lean event remains with stable differential pressure, this
+test does not support pump mode as the cause.
+
+Do not enter values outside `0..100`, change only one reduced-speed command, or
+use these controls as a substitute for current and fuel-pressure measurement.
+Continuous full-speed operation can increase pump current, returned-fuel heat,
+noise and regulator bypass demand. Restore 33.3/66.7/100.0 after the diagnostic
+unless the installed system has been electrically and hydraulically validated.
+
 ## Rotational idle
 
 The component is installed in master but `Rotational Idle Enable` defaults OFF.

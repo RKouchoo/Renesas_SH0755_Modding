@@ -7,6 +7,11 @@ __pycache__/
 *.lock~
 tmp/
 
+# Windows applications are deployment tools, not master-patch source/artifacts.
+master_patch/*.exe
+master_patch/*.zip
+master_patch/logs/
+
 # Standalone component/test ROMs are reproducible local outputs.  The focused
 # master ROM is the only generated flash target kept under version control.
 patch/D2WD610H_*.bin

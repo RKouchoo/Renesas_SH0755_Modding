@@ -58,7 +58,15 @@ reproducible without importing a modified ROM into the stock analysis project.
 | `0xB690` | `front_af_sensor_pair_signal_process` | Original paired-front conversion entry replaced by the external-wideband hook. |
 | `0x192A8` | `front_af_sensor_pump_current_pair_offset_clamp_update` | Obsolete front pump-current diagnostic path. |
 | `0x18DAC` | `front_af_sensor_lambda_condition_filter` | Conditions lambda for stock closed-loop consumers. |
+| `0x18FDC` | `front_af_sensor_closed_loop_status_pair_update` | Updates the paired front-feedback status consumed by closed-loop logic. |
+| `0x1BE8E` | `fuel_trim_state_initialize` | Initializes retained fuel-trim controller state. |
+| `0x1DD04` | `final_fueling_multiplier_compose` | Combines short-term and learned trim inputs into final fueling. |
 | `0x1EE74` | `closed_loop_fuel_control_bank_update` | Confirms bank feedback/readiness consumption. |
+| `0x1F1DC` | `closed_loop_short_term_correction_publish` | Publishes/resets per-bank short-term correction state. |
+| `0x1FB16` | `closed_loop_lambda_delay_coefficients_update` | Builds the stock 21-element lambda response/delay vector. |
+| `0x1FCD4` | `closed_loop_lambda_delay_filter_update` | Applies the 21-sample feedback history against the target lambda. |
+| `0x20326` | `closed_loop_bank_feedback_correction_update` | Updates the retained per-bank feedback correction. |
+| `0x2104E` | `closed_loop_bank_trim_state_update` | Updates the long-term closed-loop trim state. |
 | `0x13330` | `runtime_status_b6c0_bit7_is_set` | Supporting front-feedback gate. |
 | `0x1D228` | `runtime_status_b748_bit7_is_set` | Supporting front-feedback gate. |
 | `0x1884` | `diagnostic_request_download_handle` | Named while separating diagnostic infrastructure from sensor tasks. |
@@ -308,3 +316,165 @@ so task pointer `0x1055C` is repointed to an explicit zero initializer at
 - MAP transfer, injector behavior, PWM frequency/polarity, fuel pressure,
   modeled VE, timing, boost creep, and protection response all remain physical
   commissioning items.
+
+## Closed-loop lean-out investigation (2026-09-03)
+
+The current master wideband hook publishes its converted value to both stock
+front-bank lambda words and forces their ready metric to 50 whenever the former
+MAF input is between 0.50 and 4.50 V. This preserves the stock per-bank
+closed-loop controller, but does not preserve its original sensor location or
+dynamics: the AEM sensor is post-turbo, while the original feedback was
+pre-turbo.
+
+Live canonical-stock disassembly confirms that
+`closed_loop_lambda_delay_coefficients_update` builds a 21-element response
+vector and `closed_loop_lambda_delay_filter_update` shifts a 21-sample history
+using conditioned lambda `0xFFFFB4E8/0xFFFFB4EC` and target lambda
+`0xFFFFB8F4/0xFFFFB8F8`. Neither routine nor its response calibrations is
+changed by master_patch. The additional exhaust volume and turbine delay are
+therefore unmodelled and may cause feedback hunting or overshoot. The final
+fueling path also consumes short-term corrections at `0xFFFFB8D4/B8D8` and
+learned trims at `0xFFFFBCB8/BCBC`; learned trim can carry a bad feedback result
+into later open-loop operation.
+
+The originally supplied `../logs/romraiderlog_20260903_022932.csv` is an
+engine-off/invalid capture. The later
+`../logs/romraiderlog_20260903_023334.csv` contains the actual start and rules out
+closed-loop feedback as the cause of this particular lean-out. Engine speed
+first becomes nonzero at 5.009 seconds. External-wideband readiness becomes
+50 at 11.062 seconds, initially at 17.11 AFR, and CL/OL status remains 7 for
+every running sample. The logger definition identifies status 7 as open loop
+due to insufficient coolant temperature; coolant remains 31--32 C.
+
+The measured AFR reaches roughly 14.5 at 15.4 seconds, spends approximately
+15.4--31.5 seconds between about 14.5 and 15.6, then trends through 16.1 at
+31.8 seconds and 18.6 at 35.8 seconds. At 36.153 seconds the ADC exceeds the
+4.50-V acceptance limit and the patch correctly publishes zero AFR/readiness.
+RPM remains approximately 1300 and modeled airflow/load remain approximately
+10.7 g/s and 0.49--0.50 g/rev during the final lean trend. Battery voltage is
+stable around 14.3 V, coolant is stable, and indicated IAT falls from 5 to 3 C.
+The ECU and gauge transfer agree with the raw ADC, so this is not a closed-loop
+command or an ECU-side AFR-conversion error.
+
+The observed timing is strongly compatible with after-start enrichment decaying
+and revealing an under-fuelled base VE/deadtime/fuel-pressure condition. At
+18.6 AFR versus a 14.7 target, approximately 27 percent more delivered fuel
+would be required if combustion and the wideband reading are valid. Do not
+blindly add that amount to VE: a fuel-pump duty transition, falling rail
+pressure, injector latency error, exhaust leak, or misfire can produce the same
+trace. The false cold IAT indication is not a mechanism for the lean-out because
+the SD density model adds modeled air and fuel as indicated IAT falls.
+
+Do not run under load. The white-wire isolation test is no longer needed for
+this event because the ECU remained open loop throughout it. Check mechanical
+rail pressure from prime through at least 40 seconds and compare it with logged
+fuel-pump duty. A new minimal log must include RPM, MAP, IAT, modeled
+airflow/load, injector pulse width and latency, battery voltage, fuel-pump duty,
+wideband AFR/raw/ready, primary and final fueling multipliers, both short-term
+corrections, both learned trims, roughness/misfire counters, and CL/OL status.
+
+The retained post-turbo closed-loop architecture remains an independent design
+risk once the engine warms, but it did not cause this cold, open-loop event.
+Resolve the open-loop delivered-fuel error first. A dedicated feedback
+controller would still require its own transport-delay and gain calibration;
+treating the downpipe signal as a drop-in front-sensor replacement is not
+considered verified.
+
+## Fuel-pump command definition trace (2026-09-03)
+
+The standard SSM handler pointer table starts at `0x4B6FC`; byte address
+`0x3B` resolves to pointer slot `0x4B7E8` and
+`fuel_pump_duty_logger_value_get @ 0x3191C`. That handler reads float RAM
+`0xFFFFC298` and applies the standard P47 byte scaling.
+
+The only runtime producer is
+`fuel_pump_pwm_command_output_update @ 0x2A53A`. It selects zero or one of
+three float literals—33.3% at `0x2A610`, 66.7% at `0x2A60C`, and 100.0% at
+`0x2A5FC`—from the fuel-pump mode bits at `0xFFFFC2AC`. It publishes the
+selected percentage to `0xFFFFC298`, divides by 100, then tail-calls
+`fuel_pump_pwm_output_write @ 0xDEAA`. The writer scales that ratio against the
+ATU period and writes the complementary compare value to `0xFFFFF592`.
+
+The master definition exposes the low and medium literals as direct big-endian
+float scalars. The 100.0 literal is also the divisor that normalizes the selected
+percentage before the PWM writer, so it is deliberately fixed and omitted from
+the editor. The generated master image does not alter any of them. Setting both
+reduced-speed commands to 100.0 in a copied BIN provides a bounded diagnostic:
+all running pump modes request full command, but the ECU's explicit pump-off
+state remains zero. The mode-selection thresholds and timers remain hidden
+from the focused editor. The engine-runtime threshold is now identified below,
+but changing it is unnecessary for the diagnostic and the surrounding
+state-machine gates are not yet suitable as user-facing calibration controls.
+
+A subsequent ECU-learning reset reproduced the same result, and measured rail
+pressure remained stable. Stored trim and pressure collapse are therefore no
+longer leading causes. After-start enrichment decay exposing the base
+SD/injector calibration is the primary software hypothesis; injector latency,
+misfire, and an exhaust leak ahead of the sensor remain unresolved until the
+reduced parameter set is captured.
+
+## Engine-runtime timer cross-reference (2026-09-03)
+
+No ROM bytes were changed by this trace. Ghidra xrefs establish that
+`engine_run_counter_update @ 0x1A838` is the producer of saturating u16 RAM
+counter `0xFFFFB688`. It increments from the main engine-control periodic task
+and resets while `runtime_status_b748_bit7_is_set` is true. The approximately
+10 ms cadence used below is derived from the scheduler grouping and the
+consistent physical meaning of several stock calibrations, including the
+977-count radiator-fan startup gate (about 9.77 seconds); it has not been
+measured on a running ECU with an instrumented task pin.
+
+Manual data-flow checks were performed after a ROM-wide B688 xref and candidate
+constant scan. This distinction matters because merely finding a 16-bit value
+inside a function does not prove that it is compared with B688.
+
+| Consumer | Direct B688 calibration | Approximate time | Relevance |
+|---|---:|---:|---|
+| `fuel_pump_control_state_update @ 0x2A614` | `0x794DA = 3750` | 37.5 s | Direct fuel-pump mode gate. This is D2WD610H evidence, not an inference from another Subaru ROM. |
+| `after_start_enrichment_group_c_residual_decay_update @ 0x22CE4` | `0x75E8E = 5000` | 50.0 s | Updates the group-C residual state; group output `0xFFFFBE40` is read by final fueling. |
+| `ign_timing_cylinder_minimum_check_update @ 0x28C38` | `0x77D44 = 2500` | 25.0 s | Ignition/cylinder-minimum logic, not a direct fuel-delivery command. |
+| `diagnostic_monitor_enable_state_update_6e338 @ 0x6E338` | `0x74D44 = 2500` | 25.0 s | Diagnostic enable gate, not base fueling. |
+
+The recorded run lasted 34.813 seconds from first to last nonzero RPM, and the
+sustained lean trend was already visible about 26.8 seconds after first nonzero
+RPM. If B688 reset with the non-running state as its producer indicates, the
+specific 37.5-second fuel-pump gate was not reached in this capture. B688 itself
+was not logged, so this is a strong timing exclusion rather than a measured
+counter value; P47 remains the direct way to confirm any earlier pump-mode
+change caused by another state-machine condition.
+
+Three initially suspicious candidates were rejected after following the actual
+compare operands: `diagnostic_enable_runtime_latch_update_123f6` uses a
+500-count B688 gate (about 5 seconds),
+`diagnostic_monitor_11_condition_counter_update` uses 375 counts (about
+3.75 seconds), and `diagnostic_monitor_state_latch_update_6b6fc` uses 625
+counts (about 6.25 seconds). Values near 20--40 seconds loaded elsewhere in
+those functions belong to other operands and are not their B688 thresholds.
+
+The fixed-duration list is not the whole after-start fuel story. Groups A and B
+at `0x1E1B0` and `0x1E47A` also read B688, but their delay and decay behavior is
+coolant-dependent rather than one universal 30-second switch. They publish
+`0xFFFFB834` and `0xFFFFB854`; related compensation routines publish
+`0xFFFFB868` and `0xFFFFB874`. Together with group-C `0xFFFFBE40` and group-D
+`0xFFFFBE48`, these values are consumed by
+`final_fueling_multiplier_compose @ 0x1DD04`. Their decay can gradually expose
+an under-fuelled steady-state VE/injector calibration while CL/OL status remains
+open loop, matching the shape of the supplied cold-start trace better than a
+closed-loop correction event.
+
+`closed_loop_feedback_bank_state_update @ 0x1F0D8` has a separate
+`0xFFFFBC98` counter capped by `0x75E5E = 31`. That is 31 scheduler calls, not
+31 seconds and not the B688 engine-runtime clock. The captured CL/OL status was
+7 throughout, so this counter cannot explain that event. Likewise, the float
+30 used by `evap_purge_condition_counter_update` is a signal threshold and the
+integer 30 values in the ignition scheduler are crank-angle/event quantities,
+not post-start timers.
+
+The most discriminating next stationary test is to capture the after-start
+fueling/additive states together with injector pulse width, then use P47 to
+exclude an earlier pump-mode change. Temporarily setting the editable low- and
+medium-pump commands to 100% in a copy of the ROM remains a useful secondary
+test. If the AFR trend remains with a constant 100% request and stable
+differential rail pressure, calibration work should focus on the after-start
+additive states, injector latency at idle pulse width, and the steady-state
+low-load VE cells. Do not use the present result as authority for load testing.

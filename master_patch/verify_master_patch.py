@@ -39,8 +39,9 @@ OUTPUT = HERE / "D2WD610H_master_patch.bin"
 DEFINITION = HERE / "D2WD610H_master_patch.xml"
 LOGGER_FRAGMENT = HERE / "D2WD610H_master_logger_ecuparams.xml"
 LOGGER_DEFINITION = HERE / "D2WD610H_master_logger.xml"
+LOGGER_PROFILE = HERE / "D2WD610H_idle_diagnostic_profile.xml"
 EXPECTED_OUTPUT_SHA256 = "f3efa36f8e3bef4e1eaa68544d0c1bc0578c6dbc53e7a13f87e08f8dcba01e6d"
-EXPECTED_LOGGER_SHA256 = "b266a942ece0638ed98f506ff977b02d40bdfb78ca2699bc170fe1ab63b71587"
+EXPECTED_LOGGER_SHA256 = "9e16c1d8c39152d06af9e5a97070d2b97f581d4ab244e5d60539a71436626d2e"
 
 
 def fail(message: str) -> None:
@@ -729,6 +730,39 @@ def verify_definition() -> None:
     if categories & definition.DROP_CATEGORIES:
         fail("master definition retains diagnostic/readiness categories")
 
+    expected_pump_commands = {
+        "Fuel Pump Low-Speed Command": (0x0002A610, 33.3),
+        "Fuel Pump Medium-Speed Command": (0x0002A60C, 66.7),
+    }
+    stock = master.STOCK.read_bytes()
+    patched = OUTPUT.read_bytes()
+    for name, (address, expected_value) in expected_pump_commands.items():
+        table = tables.get(name)
+        if table is None:
+            fail(f"master definition is missing {name}")
+        if int(table.get("storageaddress", "0"), 0) != address:
+            fail(f"master definition {name} points at the wrong code literal")
+        if (
+            table.get("type") != "1D"
+            or table.get("storagetype") != "float"
+            or table.get("endian") != "big"
+            or table.get("category") != definition.CAT_FUEL_PUMP
+        ):
+            fail(f"master definition {name} has unsafe type/category metadata")
+        stock_value = struct.unpack_from(">f", stock, address)[0]
+        patched_value = struct.unpack_from(">f", patched, address)[0]
+        if not math.isclose(stock_value, expected_value, abs_tol=1e-4):
+            fail(f"stock {name} literal is {stock_value}, expected {expected_value}")
+        if patched_value != stock_value:
+            fail(f"master build unexpectedly changes stock {name}")
+        description = table.findtext("description", "")
+        if "P47" not in description:
+            fail(f"master definition {name} does not document P47 verification")
+    if not math.isclose(
+        struct.unpack_from(">f", stock, 0x0002A5FC)[0], 100.0, abs_tol=1e-6
+    ) or patched[0x0002A5FC:0x0002A600] != stock[0x0002A5FC:0x0002A600]:
+        fail("fuel-pump 100-percent normalization/high-mode literal changed")
+
     expected_timing_addresses = {
         "Base Timing - Normal Cam (AVCS Tracking Ratio 1.0)": 0x00078AA0,
         "Base Timing - AVLS High Cam (AVCS Tracking Ratio 1.0)": 0x00078CD0,
@@ -891,7 +925,9 @@ def verify_logger_definition() -> None:
     if "<!DOCTYPE logger [" not in text:
         fail("complete master logger definition lost its embedded DTD")
     try:
-        logger_definition.validate_generated(text, retained=53)
+        logger_definition.validate_generated(
+            text, retained=len(logger_definition.STOCK_ECU_PARAMETER_IDS)
+        )
     except SystemExit as exc:
         fail(str(exc))
 
@@ -917,6 +953,42 @@ def verify_logger_definition() -> None:
     for parameter_id in sorted(fragment):
         if xml_signature(generated[parameter_id]) != xml_signature(fragment[parameter_id]):
             fail(f"complete logger parameter {parameter_id} is stale relative to fragment")
+
+
+def verify_logger_profile() -> None:
+    try:
+        profile = ET.parse(LOGGER_PROFILE).getroot()
+        logger = ET.parse(LOGGER_DEFINITION).getroot()
+    except (OSError, ET.ParseError) as exc:
+        fail(f"idle diagnostic logger profile is missing or invalid: {exc}")
+    if profile.tag != "profile" or profile.get("protocol") != "SSM":
+        fail("idle diagnostic logger profile is not an SSM profile")
+    profile_parameters = profile.findall("./parameters/parameter")
+    selected_ids = {item.get("id") for item in profile_parameters}
+    logger_ids = {
+        item.get("id")
+        for path in (
+            "./protocols/protocol/parameters/parameter",
+            "./protocols/protocol/ecuparams/ecuparam",
+        )
+        for item in logger.findall(path)
+    }
+    if not selected_ids or not selected_ids <= logger_ids:
+        fail("idle diagnostic profile refers to absent logger parameters")
+    live_custom = {
+        item.get("id")
+        for item in profile_parameters
+        if item.get("livedata") == "selected" and item.get("id") in logger_definition.PARAMETER_IDS
+    }
+    if live_custom != logger_definition.PARAMETER_IDS:
+        fail("idle diagnostic profile does not log all master parameters")
+    dashboard_custom = {
+        item.get("id")
+        for item in profile_parameters
+        if item.get("dash") == "selected" and item.get("id") in logger_definition.PARAMETER_IDS
+    }
+    if dashboard_custom != logger_definition.PARAMETER_IDS:
+        fail("idle diagnostic profile has the wrong master dashboard channels")
 
 
 def verify_component_hooks(image: bytes, component_stage: bytes) -> None:
@@ -1145,6 +1217,7 @@ def main() -> None:
     verify_definition()
     verify_logger_fragment()
     verify_logger_definition()
+    verify_logger_profile()
 
     if master.STOCK.read_bytes() != stock or master.BASE_STOCK.read_bytes() != stock:
         fail("canonical stock or base_roms stock changed during verification")

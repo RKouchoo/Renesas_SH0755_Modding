@@ -1117,6 +1117,14 @@
    <table type="Y Axis" storageaddress="0x76514" />
   </table>
   <table name="A/F Learning Airflow Ranges" storageaddress="0x7616C" />
+  <table type="1D" name="Fuel Pump Low-Speed Command" category="02.8 - Fueling - Fuel Pump Control" storagetype="float" endian="big" sizey="1" userlevel="2" storageaddress="0x2A610">
+   <scaling units="%" expression="x" to_byte="x" format="0.0" fineincrement="0.1" coarseincrement="1.0" />
+   <description>Stock 33.3 percent low-speed command. P47 reports the selected command and fuel_pump_pwm_command_output_update @ 0x2A53A sends the same value to fuel_pump_pwm_output_write @ 0xDEAA. For a stationary full-speed diagnostic, set this and Medium-Speed Command to 100.0; the shared high-mode/PWM-scale constant remains fixed at 100.0. This does not override the ECU's pump-off state. Restore the stock value after the test unless wiring, fuel temperature, current draw, pressure and regulator capacity have been proven.</description>
+  </table>
+  <table type="1D" name="Fuel Pump Medium-Speed Command" category="02.8 - Fueling - Fuel Pump Control" storagetype="float" endian="big" sizey="1" userlevel="2" storageaddress="0x2A60C">
+   <scaling units="%" expression="x" to_byte="x" format="0.0" fineincrement="0.1" coarseincrement="1.0" />
+   <description>Stock 66.7 percent medium-speed command. The Ghidra-verified selector at 0x2A53A copies this exact float to P47 RAM 0xFFFFC298 and to the fuel-pump PWM output. Set Low- and Medium-Speed Command to 100.0 together for the stationary full-speed diagnostic; changing only one leaves another reduced mode available.</description>
+  </table>
   <table name="External Wideband Lambda Transfer" storageaddress="0x7E404" />
   <table name="External Wideband Valid Voltage Range" storageaddress="0x7E40C" />
   <table name="Base Timing - Normal Cam (AVCS Tracking Ratio 1.0)" storageaddress="0x78AA0" sizey="14">

@@ -41,19 +41,45 @@ public class ApplyMasterNames extends GhidraScript {
     @Override
     public void run() throws Exception {
         createOrRename("00001884", "diagnostic_request_download_handle");
+        createOrRename("00005d0e", "hardware_register_value_initialize_5d0e");
         createOrRename("00002458", "float_divide_guarded");
         createOrRename("000024b0", "float_minimum_select");
         createOrRename("000024c0", "float_clamp");
         createOrRename("000024fc", "float_difference_exceeds_tolerance");
+        // Correct an earlier mid-function entry at 0x6892. The real wrapper
+        // starts with its PR save and function-pointer load at 0x688E.
+        Function misplacedPeriodicWrapper = getFunctionAt(toAddr("00006892"));
+        if (misplacedPeriodicWrapper != null) {
+            currentProgram.getFunctionManager().removeFunction(toAddr("00006892"));
+        }
+        createOrRename("0000684c", "engine_control_periodic_wrapper");
+        createOrRename("0000688e", "diagnostic_monitor_periodic_wrapper");
         createOrRename("000078ac", "analog_sensor_abac_range_classify");
+        createOrRename("00007d08", "analog_signal_scaled_accumulator_update_7d08");
         createOrRename("000079b4", "analog_sensor_abbc_range_classify");
         createOrRename("00007a14", "map_sensor_voltage_to_pressure_process");
         createOrRename("00007a56", "map_sensor_raw_adc_range_classify");
+        createOrRename("0000938c", "actuator_schedule_countdown_update");
+        createOrRename("000093d4", "actuator_schedule_event_commit");
         createOrRename("000098cc", "injector_battery_voltage_latency_lookup");
         createOrRename("00010a28", "engine_control_periodic_task_dispatch");
+        createOrRename(
+            "00011914", "fueling_compensation_periodic_dispatch_11914"
+        );
+        createOrRename(
+            "00011f9c", "diagnostic_condition_sequence_update_11f9c"
+        );
+        createOrRename(
+            "000123f6", "diagnostic_enable_runtime_latch_update_123f6"
+        );
         createOrRename("0000a9a8", "injector_control_lookup_sequence_a9a8");
         createOrRename("0000b690", "front_af_sensor_pair_signal_process");
+        createOrRename("0000deaa", "fuel_pump_pwm_output_write");
         createOrRename("0000f474", "engine_oil_temperature_sensor_process");
+        createOrRename("0000f5f6", "hardware_register_word_initialize_f5f6");
+        createOrRename(
+            "0000f710", "hardware_register_guarded_initialize_f710"
+        );
         createOrRename("00013330", "runtime_status_b6c0_bit7_is_set");
         createOrRename("000172a4", "maf_airflow_temperature_compensation_update");
         createOrRename(
@@ -78,25 +104,87 @@ public class ApplyMasterNames extends GhidraScript {
         createOrRename("00018a68", "vehicle_speed_conditioned_filter_update");
         createOrRename("00018aea", "vehicle_speed_conditioned_snapshot_copy");
         createOrRename("00018dac", "front_af_sensor_lambda_condition_filter");
+        createOrRename("00018fdc", "front_af_sensor_closed_loop_status_pair_update");
         createOrRename(
             "000192a8", "front_af_sensor_pump_current_pair_offset_clamp_update"
         );
+        createOrRename("0001a838", "engine_run_counter_update");
+        createOrRename("0001be8e", "fuel_trim_state_initialize");
+        createOrRename("0001cc34", "cranking_fuel_state_periodic_update");
+        createOrRename("0001cfee", "cranking_fuel_state_initialize");
+        createOrRename(
+            "0001d200", "cranking_clear_flood_throttle_hysteresis_update"
+        );
+        createOrRename("0001dd04", "final_fueling_multiplier_compose");
         createOrRename("0001d228", "runtime_status_b748_bit7_is_set");
         createOrRename("0001e0c8", "injector_flow_scaling_factor_update");
+        createOrRename("0001e142", "after_start_enrichment_group_a_initialize");
+        createOrRename("0001e1b0", "after_start_enrichment_group_a_decay_update");
+        createOrRename("0001e41c", "after_start_enrichment_group_b_initialize");
+        createOrRename("0001e47a", "after_start_enrichment_group_b_decay_update");
+        createOrRename(
+            "0001e5e8", "after_start_fueling_compensation_b868_update"
+        );
+        createOrRename(
+            "0001e7e8", "after_start_fueling_compensation_b874_update"
+        );
         createOrRename("0001ee74", "closed_loop_fuel_control_bank_update");
+        createOrRename("0001f0d8", "closed_loop_feedback_bank_state_update");
+        createOrRename("0001f1dc", "closed_loop_short_term_correction_publish");
+        createOrRename("0001fb16", "closed_loop_lambda_delay_coefficients_update");
+        createOrRename("0001fcd4", "closed_loop_lambda_delay_filter_update");
+        createOrRename("00020326", "closed_loop_bank_feedback_correction_update");
+        createOrRename("000205fa", "closed_loop_feedback_bank_counter_update");
+        createOrRename(
+            "000207ac", "closed_loop_feedback_entry_compensation_update"
+        );
+        createOrRename(
+            "00020e5e", "long_term_fuel_trim_learning_condition_update"
+        );
+        createOrRename("0002104e", "closed_loop_bank_trim_state_update");
+        createOrRename(
+            "00021ac0", "airflow_range_threshold_compensation_update"
+        );
+        createOrRename("00021b1c", "airflow_range_delay_latch_update");
         createOrRename("00022454", "primary_open_loop_fueling_target_update");
         createOrRename("00022756", "cl_ol_transition_delay_update");
         createOrRename("00022948", "cl_ol_delay_condition_and_counter_update");
         createOrRename("00022aae", "cl_ol_transition_state_update");
         createOrRename("00022ac2", "cl_ol_transition_state_initialize");
+        createOrRename("00022b38", "after_start_enrichment_group_c_initialize");
+        createOrRename("00022b7e", "after_start_enrichment_group_c_decay_update");
+        createOrRename(
+            "00022ce4", "after_start_enrichment_group_c_residual_decay_update"
+        );
+        createOrRename("00022e00", "after_start_enrichment_group_d_initialize");
+        createOrRename("00022e0e", "after_start_enrichment_group_d_update");
         createOrRename("0002331e", "fueling_state_flag_clear_on_condition");
         createOrRename("00023fc0", "fuel_cut_flag_aggregate");
         createOrRename("00024b24", "rev_limiter_fuel_cut");
         createOrRename("000279cc", "ign_final_timing_per_cylinder_update");
+        createOrRename("00029794", "ignition_event_schedule_update_29794");
+        createOrRename(
+            "00029aa8", "ignition_event_schedule_reinitialize_29aa8"
+        );
+        createOrRename("00029c62", "ignition_cycle_position_delta_wrap");
+        createOrRename("00029ca8", "ignition_cycle_position_wrap");
+        createOrRename("00029f72", "ignition_event_output_window_clear");
+        createOrRename(
+            "0002a0a6", "ignition_schedule_position_threshold_check"
+        );
         createOrRename("00027088", "constant_zero_return");
         createOrRename("00028354", "ign_avcs_tracking_blend_factor_update");
         createOrRename("00028418", "ign_base_timing_map_blend");
         createOrRename("000284b8", "ign_base_timing_select");
+        createOrRename("0002a50c", "fuel_pump_control_initialize");
+        createOrRename("0002a53a", "fuel_pump_pwm_command_output_update");
+        createOrRename("0002a614", "fuel_pump_control_state_update");
+        createOrRename("0002a7a6", "fuel_pump_control_mode_gate_update");
+        createOrRename("0002a910", "fuel_pump_control_mode_select");
+        createOrRename(
+            "0002ad6c", "vehicle_speed_dependent_filter_update_2ad6c"
+        );
+        createOrRename("0003191c", "fuel_pump_duty_logger_value_get");
         createOrRename("0003253c", "engine_oil_temperature_logger_convert");
         createOrRename(
             "00033964", "rear_o2_sensor_response_integrator_initialize"
@@ -116,6 +204,9 @@ public class ApplyMasterNames extends GhidraScript {
         createOrRename("0003d95a", "ign_per_cylinder_correction_initialize");
         createOrRename("0003d980", "ign_per_cylinder_correction_array_clear");
         createOrRename("0003eb68", "knock_correction_advance_max_select");
+        createOrRename("0003f5f0", "radiator_fan_state_timeout_update");
+        createOrRename("0003f650", "radiator_fan_control_state_update");
+        createOrRename("0003fd38", "evap_purge_condition_counter_update");
         createOrRename("0003fdbc", "avls_control_sequence_update");
         createOrRename("0003ffda", "avls_threshold_curve_selector_state_update");
         createOrRename(
@@ -124,12 +215,98 @@ public class ApplyMasterNames extends GhidraScript {
         createOrRename("00040168", "avls_cam_mode_state_machine");
         createOrRename("000405b2", "avls_mode_commit_copy");
         createOrRename("000405cc", "avls_osv_actuation_gate");
+        createOrRename(
+            "0004178c", "diagnostic_counter_event_state_update_4178c"
+        );
+        createOrRename("00041de4", "diagnostic_mode_sequence_update_41de4");
+        createOrRename("00042a80", "diagnostic_state_initialize_42a80");
+        createOrRename(
+            "00045350", "diagnostic_condition_snapshot_update_45350"
+        );
         createOrRename("00047000", "engine_oil_temperature_fallback_select");
         createOrRename("00047db2", "atmospheric_pressure_source_select_update");
+        createOrRename(
+            "000490ca", "diagnostic_monitor_counter_update_490ca"
+        );
         createOrRename("00064fd0", "front_af_sensor_bank1_inhibit_check");
         createOrRename("0006500c", "front_af_sensor_bank2_inhibit_check");
         createOrRename("0006504c", "runtime_status_d26d_bit5_get");
+        createOrRename("00067bf8", "diagnostic_threshold_pair_update_67bf8");
+        createOrRename(
+            "0006b6fc", "diagnostic_monitor_state_latch_update_6b6fc"
+        );
+        createOrRename(
+            "0006e338", "diagnostic_monitor_enable_state_update_6e338"
+        );
+        createOrRename(
+            "00071836", "diagnostic_monitor_11_condition_counter_update"
+        );
+        createOrRenameData("0002a5fc", "fuel_pump_high_speed_command_percent");
+        createOrRenameData("0002a60c", "fuel_pump_medium_speed_command_percent");
+        createOrRenameData("0002a610", "fuel_pump_low_speed_command_percent");
+        createOrRenameData("ffffc298", "fuel_pump_duty_percent");
         createOrRenameData("ffffcfbc", "atmospheric_pressure_native");
+
+        setPlateComment(
+            toAddr("0002a53a"),
+            "Selects the stock discrete fuel-pump commands from mode bits at " +
+            "0xFFFFC2AC: 0, low 33.3% at 0x2A610, medium 66.7% at 0x2A60C, " +
+            "or high 100.0% at 0x2A5FC. Publishes the selected percent at " +
+            "0xFFFFC298, divides it by 100, and tail-calls the ATU PWM writer " +
+            "at 0xDEAA. The low and medium literals are exposed by the master " +
+            "RomRaider definition for a stationary diagnostic; the shared " +
+            "100% high-mode/normalization literal remains fixed."
+        );
+        setPlateComment(
+            toAddr("0001a838"),
+            "Updates the saturating engine-run counter at 0xFFFFB688 and the " +
+            "adjacent runtime counter at 0xFFFFB68A. Both reset while " +
+            "runtime_status_b748_bit7_is_set is true. This task is reached by " +
+            "the main engine-control periodic dispatch; timer conversions in " +
+            "the audit use its derived 10 ms cadence."
+        );
+        setPlateComment(
+            toAddr("0002a614"),
+            "Fuel-pump mode state machine. It reads engine-run counter " +
+            "0xFFFFB688 and directly compares it with big-endian u16 " +
+            "calibration 0x794DA = 0x0EA6 (3750 periodic calls, approximately " +
+            "37.5 s at the derived 10 ms cadence). Its other 31/63/94-count " +
+            "tests are private mode counters, not additional 30-second clocks."
+        );
+        setPlateComment(
+            toAddr("0001e1b0"),
+            "After-start enrichment group A decay. Reads engine-run counter " +
+            "0xFFFFB688, applies coolant-dependent delay/decay calibrations, " +
+            "and publishes the additive state at 0xFFFFB834 consumed by final " +
+            "fueling."
+        );
+        setPlateComment(
+            toAddr("0001e47a"),
+            "After-start enrichment group B decay. Reads engine-run counter " +
+            "0xFFFFB688, applies coolant-dependent delay/decay calibrations, " +
+            "and publishes the additive state at 0xFFFFB854 consumed by final " +
+            "fueling."
+        );
+        setPlateComment(
+            toAddr("00022ce4"),
+            "Residual decay for after-start enrichment group C. Reads " +
+            "0xFFFFB688 and uses calibration 0x75E8E = 5000 periodic calls " +
+            "(approximately 50 s at the derived 10 ms cadence) while updating " +
+            "0xFFFFBE44. Group output 0xFFFFBE40 is consumed by final fueling."
+        );
+        setPlateComment(
+            toAddr("0001f0d8"),
+            "Closed-loop feedback bank-state update. Counter 0xFFFFBC98 is " +
+            "bounded by calibration 0x75E5E = 31 scheduler calls. This is an " +
+            "independent readiness/sample counter, not engine-run seconds; the " +
+            "captured event remained CL/OL status 7 (open loop)."
+        );
+        setPlateComment(
+            toAddr("0003191c"),
+            "Standard SSM byte address 0x3B dispatches here through pointer " +
+            "table slot 0x4B7E8. Reads the selected fuel-pump percent from " +
+            "0xFFFFC298 and scales it for P47 Fuel Pump Duty."
+        );
 
         setPlateComment(
             toAddr("00022454"),
@@ -342,6 +519,28 @@ public class ApplyMasterNames extends GhidraScript {
             toAddr("0001ee74"),
             "Retained per-bank closed-loop fuel consumer. In master_patch both banks " +
             "receive the same external-wideband lambda source."
+        );
+        setPlateComment(
+            toAddr("0001fb16"),
+            "Builds the stock 21-element per-bank closed-loop lambda response/delay " +
+            "coefficient vector. Master patch supplies both banks from one post-turbo " +
+            "AEM signal; these stock pre-turbo response calibrations remain unchanged."
+        );
+        setPlateComment(
+            toAddr("0001fcd4"),
+            "Applies the stock 21-sample lambda history/delay model using conditioned " +
+            "feedback B4E8/B4EC and targets B8F4/B8F8. Moving feedback post-turbo adds " +
+            "uncalibrated transport delay."
+        );
+        setPlateComment(
+            toAddr("00020326"),
+            "Updates each bank's closed-loop feedback correction. In master_patch both " +
+            "instances receive the same post-turbo AEM measurement."
+        );
+        setPlateComment(
+            toAddr("0001dd04"),
+            "Composes final fueling using short-term corrections B8D4/B8D8 and learned " +
+            "trims BCB8/BCBC among other factors; learned trims can affect open loop."
         );
         setPlateComment(
             toAddr("0006504c"),

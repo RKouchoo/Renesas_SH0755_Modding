@@ -65,6 +65,11 @@ FUELING_SAFETY_NAMES = (
     "Lean Fuel Cut Confirmation Count",
 )
 
+FUEL_PUMP_NAMES = (
+    "Fuel Pump Low-Speed Command",
+    "Fuel Pump Medium-Speed Command",
+)
+
 ROTATIONAL_IDLE_NAMES = (
     "Rotational Idle Enable",
     "Rotational Idle Minimum Coolant Temperature",
@@ -100,6 +105,7 @@ CAT_FUEL_TRANSITION = "02.4 - Fueling - CL/OL Transition"
 CAT_FUEL_CRANKING = "02.5 - Fueling - Cranking"
 CAT_FUEL_TIPIN = "02.6 - Fueling - Tip-in Enrichment"
 CAT_FUEL_LEARNING = "02.7 - Fueling - Correction and Learning"
+CAT_FUEL_PUMP = "02.8 - Fueling - Fuel Pump Control"
 CAT_WIDEBAND = "03 - Wideband - Input Calibration"
 CAT_IGN_BASE = "04.1 - Ignition - Base Timing"
 CAT_IGN_COMP = "04.2 - Ignition - Compensations"
@@ -131,6 +137,7 @@ CATEGORY_ORDER = (
     CAT_FUEL_CRANKING,
     CAT_FUEL_TIPIN,
     CAT_FUEL_LEARNING,
+    CAT_FUEL_PUMP,
     CAT_WIDEBAND,
     CAT_IGN_BASE,
     CAT_IGN_COMP,
@@ -687,6 +694,63 @@ def add_rotational_idle_tables(target: ET.Element) -> None:
     )
 
 
+def add_fuel_pump_tables(target: ET.Element) -> None:
+    """Expose the three verified discrete FPCU commands used by stock code."""
+    specs = (
+        (
+            FUEL_PUMP_NAMES[0],
+            "0x2A610",
+            "Stock 33.3 percent low-speed command. P47 reports the selected "
+            "command and fuel_pump_pwm_command_output_update @ 0x2A53A sends "
+            "the same value to fuel_pump_pwm_output_write @ 0xDEAA. For a "
+            "stationary full-speed diagnostic, set this and Medium-Speed "
+            "Command to 100.0; the shared high-mode/PWM-scale constant remains "
+            "fixed at 100.0. "
+            "This does not override the ECU's pump-off state. Restore the "
+            "stock value after the test unless wiring, fuel temperature, "
+            "current draw, pressure and regulator capacity have been proven.",
+        ),
+        (
+            FUEL_PUMP_NAMES[1],
+            "0x2A60C",
+            "Stock 66.7 percent medium-speed command. The Ghidra-verified "
+            "selector at 0x2A53A copies this exact float to P47 RAM "
+            "0xFFFFC298 and to the fuel-pump PWM output. Set Low- and "
+            "Medium-Speed Command to 100.0 together for the stationary "
+            "full-speed diagnostic; changing only one leaves another reduced "
+            "mode available.",
+        ),
+    )
+    for name, address, description in specs:
+        table = ET.SubElement(
+            target,
+            "table",
+            {
+                "type": "1D",
+                "name": name,
+                "category": CAT_FUEL_PUMP,
+                "storagetype": "float",
+                "endian": "big",
+                "sizey": "1",
+                "userlevel": "2",
+                "storageaddress": address,
+            },
+        )
+        ET.SubElement(
+            table,
+            "scaling",
+            {
+                "units": "%",
+                "expression": "x",
+                "to_byte": "x",
+                "format": "0.0",
+                "fineincrement": "0.1",
+                "coarseincrement": "1.0",
+            },
+        )
+        set_description(table, description)
+
+
 def add_fueling_safety_templates(parent: ET.Element, target: ET.Element) -> None:
     exact_switch = (
         "Exact 01 enables this guard; any other value disables only this guard. "
@@ -813,6 +877,7 @@ def validate(root: ET.Element) -> None:
         + BOOST_NAMES
         + WIDEBAND_NAMES
         + FUELING_SAFETY_NAMES
+        + FUEL_PUMP_NAMES
         + ROTATIONAL_IDLE_NAMES
         + AVLS_NAMES
     )
@@ -857,6 +922,7 @@ def validate(root: ET.Element) -> None:
         "Engine Load Compensation (MP)": CAT_AIR_LOAD,
         "Injector Flow Scaling ": CAT_FUEL_INJECTORS,
         "Primary Open Loop Fueling A ": CAT_FUEL_OL,
+        "Fuel Pump Low-Speed Command": CAT_FUEL_PUMP,
         "External Wideband Lambda Transfer": CAT_WIDEBAND,
         "Base Timing - Normal Cam (AVCS Tracking Ratio 1.0)": CAT_IGN_BASE,
         "Knock Correction Advance Max - Normal Cam": CAT_IGN_KNOCK,
@@ -904,6 +970,8 @@ def validate(root: ET.Element) -> None:
         "Lean Fuel Cut AFR Threshold": "0x7EADC",
         "Lean Fuel Cut Sensor Transport Delay": "0x7EAE8",
         "Lean Fuel Cut Confirmation Count": "0x7EAEA",
+        "Fuel Pump Low-Speed Command": "0x2A610",
+        "Fuel Pump Medium-Speed Command": "0x2A60C",
         "Rotational Idle Enable": "0x7DB40",
         "Rotational Idle Minimum Coolant Temperature": "0x7DB44",
         "Rotational Idle Maximum Coolant Temperature": "0x7DB48",
@@ -949,6 +1017,7 @@ def build_tree() -> ET.ElementTree:
     update_patch_descriptions(target)
     add_wideband_templates(parent, target)
     add_fueling_safety_templates(parent, target)
+    add_fuel_pump_tables(target)
     add_rotational_idle_tables(target)
     apply_master_categories(parent, target)
 

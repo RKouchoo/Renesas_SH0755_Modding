@@ -24,6 +24,40 @@ FRAGMENT = HERE / "D2WD610H_master_logger_ecuparams.xml"
 ECU_ID = "3C5A387116"
 PARAMETER_IDS = {"E500", "E501", "E502", "E503", "E504", "E505", "E506"}
 
+# The upstream logger contains a global catalogue for many Subaru ECUs, TCMs,
+# diesel engines, and DCCD controllers.  Standard SSM parameters do not carry
+# an ECU ID, so RomRaider can display irrelevant entries even after it has
+# identified D2WD610H.  Keep a deliberately small H6-MT commissioning set.
+STANDARD_PARAMETER_IDS = {
+    "P1", "P2", "P3", "P4", "P5", "P6", "P7", "P8", "P9", "P10",
+    "P11", "P12", "P13", "P17", "P19", "P21", "P22", "P23", "P24",
+    "P25", "P29", "P30", "P35", "P38", "P46", "P47", "P48", "P49",
+    "P50", "P51", "P52", "P53", "P60", "P63", "P64", "P69", "P70",
+    "P71", "P72", "P73", "P74", "P75", "P76", "P82", "P90", "P91",
+    "P92", "P115", "P122", "P123", "P124", "P125", "P126", "P127",
+    "P151", "P152", "P153", "P200", "P201", "P202", "P239", "P240",
+    "P241",
+}
+
+STANDARD_SWITCH_IDS = {
+    "S2", "S4", "S5", "S7", "S9", "S11", "S15", "S16", "S17",
+    "S18", "S19", "S20", "S21", "S22", "S23", "S24", "S25", "S26",
+    "S27", "S28", "S29", "S30", "S32", "S62", "S63", "S64", "S65",
+    "S66", "S67", "S68", "S70", "S71", "S73", "S74", "S130", "S131",
+    "S132", "S133", "S148", "S149", "S154", "S155", "S158", "S169",
+    "S170", "S171",
+}
+
+# Prefer one high-resolution representation where the v370 source supplies
+# duplicates.  Both banks are retained because the master writes the same
+# external-wideband result into two independent stock feedback paths.
+STOCK_ECU_PARAMETER_IDS = {
+    "E31", "E32", "E33", "E39", "E40", "E41", "E44", "E45", "E46",
+    "E47", "E48", "E50", "E51", "E53", "E54", "E55", "E56", "E57",
+    "E58", "E59", "E60", "E61", "E62", "E63", "E64", "E65", "E66",
+    "E81", "E84", "E91", "E105", "E109", "E113", "E121", "E123",
+}
+
 
 def default_output(source: Path) -> Path:
     extension = source.suffix or ".xml"
@@ -91,19 +125,38 @@ def build_definition(source_text: str) -> tuple[str, int]:
         fail(f"source contains {len(ssm_protocols)} SSM protocol blocks")
 
     protocol = deepcopy(ssm_protocols[0])
+
+    standard_parameters = protocol.find("parameters")
+    if standard_parameters is None:
+        fail("SSM protocol has no standard <parameters> block")
+    for parameter in list(standard_parameters.findall("parameter")):
+        if parameter.get("id") not in STANDARD_PARAMETER_IDS:
+            standard_parameters.remove(parameter)
+
+    standard_switches = protocol.find("switches")
+    if standard_switches is None:
+        fail("SSM protocol has no standard <switches> block")
+    for switch in list(standard_switches.findall("switch")):
+        if switch.get("id") not in STANDARD_SWITCH_IDS:
+            standard_switches.remove(switch)
+
     containers = list(protocol.findall("ecuparams"))
     if len(containers) != 1:
         fail("SSM protocol must contain exactly one <ecuparams> block")
     container = containers[0]
 
-    existing_ids = [parameter.get("id") for parameter in container.findall("ecuparam")]
-    collisions = sorted(PARAMETER_IDS & set(existing_ids))
-    if collisions:
-        fail("master parameter IDs already exist: " + ", ".join(collisions))
+    # Accept a previously generated master file as regeneration input without
+    # duplicating the custom block.  Normal upstream sources have no E500-E506.
+    for parameter in list(container.findall("ecuparam")):
+        if parameter.get("id") in PARAMETER_IDS:
+            container.remove(parameter)
 
     retained = 0
     target_was_supported = False
     for parameter in list(container.findall("ecuparam")):
+        if parameter.get("id") not in STOCK_ECU_PARAMETER_IDS:
+            container.remove(parameter)
+            continue
         matching_ecus: list[ET.Element] = []
         for ecu in parameter.findall("ecu"):
             if ECU_ID in ecu_ids(ecu):
@@ -124,6 +177,19 @@ def build_definition(source_text: str) -> tuple[str, int]:
 
     if not target_was_supported:
         fail(f"the source SSM definition has no ECU-specific support for {ECU_ID}")
+    if retained != len(STOCK_ECU_PARAMETER_IDS):
+        fail(
+            "source is missing focused D2WD610H extended parameters: "
+            + ", ".join(
+                sorted(
+                    STOCK_ECU_PARAMETER_IDS
+                    - {
+                        parameter.get("id")
+                        for parameter in container.findall("ecuparam")
+                    }
+                )
+            )
+        )
 
     for parameter in load_fragment():
         container.append(deepcopy(parameter))
@@ -164,6 +230,20 @@ def validate_generated(text: str, retained: int | None = None) -> None:
         fail("generated logger does not contain exactly one master parameter set")
     if retained is not None and len(parameters) != retained + len(PARAMETER_IDS):
         fail("generated logger lost or gained an ECU-specific parameter")
+
+    standard_parameters = {
+        item.get("id") for item in protocols[0].findall("parameters/parameter")
+    }
+    if standard_parameters != STANDARD_PARAMETER_IDS:
+        fail("generated logger has missing or unrelated standard parameters")
+    standard_switches = {
+        item.get("id") for item in protocols[0].findall("switches/switch")
+    }
+    if standard_switches != STANDARD_SWITCH_IDS:
+        fail("generated logger has missing or unrelated standard switches")
+    stock_extended = set(ids) - PARAMETER_IDS
+    if stock_extended != STOCK_ECU_PARAMETER_IDS:
+        fail("generated logger has missing or unrelated stock extended parameters")
 
     for parameter in parameters:
         ecus = list(parameter.findall("ecu"))

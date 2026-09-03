@@ -70,6 +70,13 @@ logger release without modifying the source file:
 python3 master_patch/install_master_logger.py /path/to/logger.xml
 ```
 
+RomRaider keeps Data, Graph, and Dashboard selections separately. Load
+`D2WD610H_idle_diagnostic_profile.xml` after the ECU has connected to select the
+complete cold-idle capture in Data and place all E500--E506 master channels plus
+the key standard channels on Dashboard. If an old profile leaves the custom gauges absent, load this profile
+or delete the stale profile and create a new one after confirming ECU ID
+`3C5A387116`.
+
 Log at minimum:
 
 - E500 external-wideband AFR (raw lambda remains an alternate conversion);
@@ -79,6 +86,7 @@ Log at minimum:
 - E504 lean-cut state and E505 task-call counter;
 - E506 raw CL/OL flags;
 - MAP, barometric pressure, RPM, IAT, modeled airflow, calculated load;
+- standard P47 Fuel Pump Duty and battery voltage;
 - commanded fuel/lambda, short- and long-term correction, CL/OL state;
 - ignition timing, feedback knock, fine-learning knock, KCA, IAM;
 - AVLS requested state, throttle, injector
@@ -89,6 +97,16 @@ Log at minimum:
 
 E500 equal to zero means invalid input. Never treat it as an extremely rich
 sample or average it into tuning data.
+
+For a stationary full-speed fuel-pump mode test, edit a copy of the generated
+master BIN with the matching ECU definition: set `Fuel Pump Low-Speed Command`
+and `Fuel Pump Medium-Speed Command` to `100.0`. The fixed high-mode/PWM-scale
+constant remains 100.0 and is intentionally not exposed. Do not edit the stock
+root BIN. Capture P47 from before cranking
+through at least 45 seconds and measure voltage across both pump terminals,
+rail-pressure differential, AFR and current/temperature where practical. The
+test leaves the pump-off state intact. Restore the stock 33.3/66.7/100.0 values
+after diagnosis unless continuous full-speed operation has been validated.
 
 ## 4. First start with no boost route
 

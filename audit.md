@@ -852,12 +852,13 @@ enter boost solely because the automated audit passes.
   master XML alone for this image; selecting a standalone/legacy definition can make the same
   binary appear with anonymous A--F names and an incomplete table set.
 - `D2WD610H_master_logger.xml` is the complete generated metric SSM logger artifact. It
-  retains the standard SSM channels and 53 stock extended parameters applicable to ECU ID
-  `3C5A387116`, adds E500--E506 exactly once, and removes every unrelated ECU-specific
-  address record. `D2WD610H_master_logger_ecuparams.xml` is builder input only, not a
-  selectable complete definition. The verifier checks the complete document, embedded DTD,
-  single-protocol/D2WD-only scope, generated-file hash, and equality of all seven custom
-  entries with the fragment.
+  filters the upstream global catalogue to 63 H6-MT standard parameters, 46 relevant
+  switches, and 35 useful stock extended parameters for ECU ID `3C5A387116`, then adds
+  E500--E506 exactly once. TCU/DCCD, diesel/common-rail/DPF, removed stock-O2/MAF, and
+  unrelated-model dashboard entries are omitted. `D2WD610H_master_logger_ecuparams.xml`
+  is builder input only, not a selectable complete definition. The verifier checks the
+  complete document, embedded DTD, focused parameter sets, generated-file hash, and
+  equality of all seven custom entries with the fragment.
 - Run `python3 master_patch/verify_master_patch.py` from the repository root. A pass means the
   checked development baseline matches this audit; it does not approve a later RomRaider edit.
 
@@ -1050,3 +1051,170 @@ has valid Subaru additive checksum `0xC96A0526`. The independent verifier checks
 all 30 float32 knots, monotonicity, all eight published-point conversions,
 descriptor identity, XML warning text, collision ownership, deterministic
 rebuild identity, checksum, and immutable stock/base/SRF provenance.
+
+# Closed-loop feedback lean-out investigation
+
+Audit date: 2026-09-03. No firmware bytes were changed in this investigation.
+
+The master external-wideband hook correctly converts the former MAF ADC with
+the stock-proven `5/65536` volts/count scale and publishes AEM gasoline AFR as
+`(2*V + 10)`, or lambda `(2*V + 10)/14.64`. Ghidra confirms that the stock front
+sensor path uses lambda above 1.0 as lean and below 1.0 as rich, so the basic
+transfer and feedback polarity are correct.
+
+The control dynamics are not yet correct for the installed location. The hook
+duplicates one post-turbo AEM measurement into both front-bank feedback words
+and asserts sensor readiness for any 0.50--4.50 V input. The retained stock
+code then conditions those values and applies a 21-sample lambda history/delay
+model originally calibrated for the two pre-turbo front sensors. The final fuel
+multiplier consumes both the resulting short-term corrections and persistent
+learned trims. A downpipe sensor has extra turbine/exhaust transport delay, so
+the unchanged stock response model can hunt or overshoot and can teach an
+incorrect long-term trim.
+
+The first RomRaider CSV supplied was engine-off, but the later
+`romraiderlog_20260903_023334.csv` contains the reported start. RPM becomes
+nonzero at 5.009 seconds. The external-wideband channel becomes valid at 11.062
+seconds and initially reads 17.11 AFR. Most importantly, CL/OL status is 7 for
+every running sample; the D2WD logger definition identifies 7 as open loop due
+to insufficient coolant temperature, consistent with the logged 31--32 C.
+Closed-loop correction therefore did not cause this particular event.
+
+AFR recovers to about 14.5 at 15.4 seconds, fluctuates mostly between 14.5 and
+15.6 until 31.5 seconds, then rises through 16.1 and 18.6. At 36.153 seconds the
+raw input exceeds the configured 4.50-V/19-AFR plausibility limit, so the patch
+correctly publishes zero AFR and zero readiness. RPM, modeled airflow/load,
+battery voltage, and coolant remain broadly stable during that transition.
+The raw ADC, converted ECU AFR, and gauge behavior agree, which rules out the
+ECU transfer function as the explanation.
+
+The evidence instead points to time-dependent open-loop delivered fueling.
+After-start enrichment decay can mask an under-fuelled base VE/injector model;
+a fuel-pump duty transition or falling rail pressure can produce the same
+pattern. At 18.6 AFR versus a 14.7 target, the apparent deficit is approximately
+27 percent, too large to correct blindly before measuring pressure. Exhaust
+leakage or misfire can also make a wideband indicate very lean without the
+corresponding commanded-fuel deficit. The false cold IAT reading cannot directly
+explain the trend because the SD calculation adds fuel for colder indicated air.
+
+Do not run the engine under load. The next stationary test should measure rail
+pressure continuously from key-on prime through at least 40 seconds and log
+fuel-pump duty. Limit the RomRaider selection to RPM, MAP, IAT, modeled
+airflow/load, injector pulse width and latency, battery voltage, fuel-pump duty,
+AEM AFR/raw/ready, primary/final fueling multipliers, short-term corrections,
+learned trims, roughness counters, and CL/OL status. Those channels separate
+after-start/base-calibration error from falling fuel pressure and misfire.
+
+The post-turbo closed-loop controller remains a separate warm-engine design risk
+because its stock transport-delay model is unchanged, but it did not produce
+this cold open-loop lean-out. Resolve the open-loop delivered-fuel fault before
+changing feedback strategy. Ghidra names/comments for every function opened in
+this trace were updated and made reproducible in
+`master_patch/ghidra_scripts/ApplyMasterNames.java`.
+
+Follow-up on 2026-09-03: resetting ECU learning produced the same behavior and
+measured rail pressure did not fall during the event. This removes stored fuel
+trim and fuel-pressure collapse as the leading explanations. The primary
+software hypothesis is now stock after-start enrichment decaying and exposing
+an under-fuelled steady-state SD/injector model. Remaining physical alternatives
+are injector latency/flow mismatch at the short idle pulse width, an exhaust
+leak ahead of the downpipe sensor, or combustion misfire causing oxygen-rich
+exhaust. The next capture must retain injector pulse width/latency, Primary Open
+Loop Map Enrichment, Final Fueling Base, MAP, roughness counters, and CL/OL
+status; wideband alone cannot separate commanded under-fuelling from misfire.
+
+Fuel-pump-control clarification: the 2005 Legacy/Liberty H6 is not a simple
+relay-only pump circuit when the original rear harness and module remain. Subaru
+training material identifies a separate fuel-pump control unit and three ECM
+commands (33, 67, and 100 percent duty). Related Subaru logic selects the
+33-percent low-speed mode after approximately 30 seconds of warm idle. The
+observed sustained lean ramp begins about 26.8 seconds after engine start, so
+P47 was selected as a specific test target even though static rail pressure
+appeared stable. Log standard parameter P47 Fuel Pump Duty and measure voltage
+directly across the pump positive and negative terminals; measuring pump
+positive to chassis alone misses the controller's modulated ground. Also verify
+the upgraded pump's current demand is within the original module/wiring limits.
+If the pump has been genuinely relay-hardwired around the control unit, P47 may
+still change but cannot alter pump voltage.
+
+Public-source cross-check (2026-09-03): Subaru technical-training material
+explicitly identifies the Legacy H6 fuel-pump control unit and its 33/67/100%
+modes. The same training volume documents a 30-second post-start 100%-to-33%
+transition for Subaru's related turbo fuel system. A subsequent direct D2WD610H
+Ghidra trace supersedes the earlier inference: `fuel_pump_control_state_update`
+reads engine-run counter `0xFFFFB688` and compares it with big-endian u16
+`0x794DA = 3750`, approximately 37.5 seconds at the derived 10 ms task cadence.
+The logged engine run lasted only 34.813 seconds and the lean trend was already
+obvious by about 26.8 seconds. If B688 reset with the non-running state as the
+code path indicates, this specific 37.5-second gate was not reached in the
+capture and is not the leading explanation for that event. The counter itself
+was not logged, so P47 remains worthwhile as a direct confirmation. COBB also
+documents a tunable "Fuel Pump Duty Post-Start High Level" duration and advises
+comparing pressure at 100% and 33% duty after pump-system modifications. A 2004
+Liberty GT owner separately reported an upgraded DW65c struggling specifically
+when its controller dropped to roughly 30%, with a concurrent system-voltage
+dip. This is a close platform anecdote, not proof of the EZ30 fault. Conversely,
+fuel-system guidance notes that duty alone should not change mixture when the
+regulator maintains the correct differential pressure. Sources:
+[Subaru technical training](https://manuals.plus/m/a76e3d12d6a4062e483dcbc5345464274a33e0c18b6980e4c202e6e853e44992),
+[COBB technical bulletin](https://cobbtuning.atlassian.net/wiki/spaces/PRS/pages/2630156289/Tech%2BBulletin%2B-%2BFuel%2BPump%2BDuty%2BPost-Start%2BHigh%2BLevel%2BActivation%2BMax.%2BEngine%2BRun%2BTime),
+[Liberty/DW65c report](https://www.subyclub.com/topic/12585-installed-dw65c-but-fuel-starvation-issue/),
+and [HP Academy fuel-system discussion](https://www.hpacademy.com/forum/pdm-installation-and-configuration/show/fuel-pump-upgrade-rewiring-and-dual-voltage-issue/).
+
+The same B688 audit found other overlapping but independent stock behavior.
+After-start enrichment groups A and B use coolant-dependent delay/decay paths
+and feed final fueling directly. Group C has a verified 5000-count residual
+gate (approximately 50 seconds). Separate 2500-count gates at about 25 seconds
+belong to ignition-minimum and diagnostic-monitor logic. The closed-loop
+feedback counter capped at 31 is a scheduler-call counter, not a 31-second
+timer, and CL/OL status stayed open loop in the supplied capture. These results
+are documented in `master_patch/GHIDRA_AUDIT.md`; no ROM bytes were changed.
+
+# Neutral-switch DTC regression check
+
+Audit date: 2026-09-03. No firmware bytes were changed by this check.
+
+The D2WD610H definition maps P0851 Neutral Switch Input Low to flash byte
+`0x5BD6C` and P0852 Neutral Switch Input High to `0x5BD70`. Both bytes are
+`0x01` in canonical stock and remain `0x01` in
+`master_patch/D2WD610H_master_patch.bin`; the surrounding `0x5BD60..0x5BD7F`
+region is also stock-identical. The only master changes in the nearby DTC block
+are `0x5BD57` and `0x5BD58`, deliberately changed from `0x01` to `0x00` to
+disable P0102/P0103 after the MAF input was repurposed.
+
+No master component references the neutral-position input or hooks its input or
+diagnostic path. The default-off rotational-idle component gates on processed
+vehicle speed `0xFFFFB538`, not on the neutral switch. The master verifier again
+passed its complete changed-byte ownership, hook, calibration, RAM-collision,
+deterministic-build, checksum, and provenance audit. On present evidence, a
+neutral-switch DTC is therefore not caused by an accidental master-patch write.
+Capture the exact code and log standard switch S4 Neutral Position Switch while
+moving the gearbox between neutral and a selected gear; if S4 never changes,
+diagnose the gearbox switch, connector, harness continuity, and ECU input rather
+than suppressing the DTC.
+
+# Fuel-pump control definitions
+
+Audit date: 2026-09-03. The generated master ROM remains unchanged by this
+definitions-only addition.
+
+Live canonical-stock Ghidra tracing confirms that standard SSM address `0x3B`
+dispatches through pointer slot `0x4B7E8` to
+`fuel_pump_duty_logger_value_get @ 0x3191C`, which reads float RAM
+`0xFFFFC298` for P47. `fuel_pump_pwm_command_output_update @ 0x2A53A` is the
+runtime producer: it selects 0, 33.3, 66.7, or 100.0 percent, stores the same
+reported value at `0xFFFFC298`, divides by 100, and calls
+`fuel_pump_pwm_output_write @ 0xDEAA`. The three nonzero literals have isolated
+data xrefs within this pump chain: high at `0x2A5FC`, medium at `0x2A60C`, and
+low at `0x2A610`.
+
+`master_patch/D2WD610H_master_patch.xml` now exposes the low and medium values
+under `02.8 - Fueling - Fuel Pump Control`, retaining stock defaults. The
+100.0 literal is also the common PWM divisor and is intentionally left fixed.
+A stationary full-speed diagnostic should be made only in a copy of the
+generated master BIN: set both reduced commands to 100.0 and log P47 from before
+cranking through at least 45 seconds while measuring voltage across both pump
+terminals, rail-pressure differential, AFR and battery voltage. The zero/off
+command remains untouched. Restore 33.3/66.7/100.0 afterward unless continuous
+full-speed operation and current/heat/regulator capacity have been validated.
+The unresolved mode timers and threshold surfaces are deliberately not exposed.
