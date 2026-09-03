@@ -21,12 +21,14 @@ firmware work into one deterministic stock-to-output build:
 - a factory-ROM-derived STI pink injector scalar/deadtime starting point;
 - a conservative 5 psi / 98 RON fuel, ignition, AVLS, and 6800 RPM starting
   calibration with every active engine-load axis extended to 4.0 g/rev; and
-- a focused, self-contained D2WD610H RomRaider definition and logger fragment.
+- focused, self-contained D2WD610H RomRaider ECU and logger definitions.
 
 The generated baseline is `D2WD610H_master_patch.bin`, SHA-256
 `f3efa36f8e3bef4e1eaa68544d0c1bc0578c6dbc53e7a13f87e08f8dcba01e6d`.
 It is 512 KiB, contains CALID `D2WD610H`, and has a valid Subaru additive
 checksum (`0xC96A0526`). It is a development artifact, not a vehicle-tested tune.
+The complete generated logger definition has SHA-256
+`b266a942ece0638ed98f506ff977b02d40bdfb78ca2699bc170fe1ab63b71587`.
 
 Two independent boost switches remain in RomRaider. `Electronic Boost Control
 Enable` defaults OFF and forces zero actuator duty for direct wastegate-spring
@@ -96,6 +98,13 @@ AVCS A/B labels with functional AVLS-low-cam and AVLS-high-cam target names.
 Restart RomRaider after changing the definition file so no old parsed definition
 remains in memory.
 
+The matching logger artifact is `D2WD610H_master_logger.xml`. It is a complete
+metric SSM logger definition, not an XML fragment. It retains the standard SSM
+channels and the 53 stock extended parameters that contain an address for ECU
+ID `3C5A387116`, adds master parameters E500--E506, and contains no unrelated
+ECU-specific address records. The smaller `*_ecuparams.xml` file is builder
+input only and must not be selected as a complete logger definition.
+
 The master definition uses numbered workflow categories so related stock and
 patched calibrations stay together in RomRaider: air model, fueling, wideband,
 ignition, cam control, boost, protection, throttle, idle, sensors/cooling, then
@@ -112,6 +121,17 @@ python3 master_patch/build_definition.py
 python3 master_patch/verify_master_patch.py
 ```
 
+The checked-in complete logger was generated from the metric-English file in
+the [RomRaider logger v370 package](https://www.romraider.com/forum/viewtopic.php?start=1&t=1642),
+`logger_METRIC_EN_v370.xml` (source SHA-256
+`e5fa42e381eae904437f87319bd891cc497340d1c4758dde6f652f8eeeccc68f`):
+
+```sh
+python3 master_patch/install_master_logger.py \
+  /path/to/logger_METRIC_EN_v370.xml \
+  master_patch/D2WD610H_master_logger.xml
+```
+
 The builder reads only the immutable root `2005 BLE MT.bin`, verifies its
 SHA-256, checks the byte-identical `base_roms` copy and de-encapsulated original
 SRF payload, applies each component to an in-memory copy, then writes the
@@ -120,8 +140,8 @@ separate output. Generated ROMs are never accepted as build inputs.
 `verify_master_patch.py` independently reconstructs the image, audits changed
 regions, disassembles new firmware, tests sensor boundary policy, checks every
 hook and diagnostic switch, runs the independent master-calibration policy
-checks, validates the RomRaider definition and logger fragment, and verifies
-provenance and checksum.
+checks, validates both complete RomRaider definitions and the logger fragment,
+and verifies provenance and checksum.
 
 ## Files
 
@@ -138,8 +158,9 @@ provenance and checksum.
 | `MEMORY_LAYOUT.md` | Exact injected-flash boundaries and collision policy. |
 | `build_definition.py` | Generates the focused D2WD610H RomRaider definition. |
 | `D2WD610H_master_patch.xml` | Matching self-contained metric RomRaider definition. |
-| `D2WD610H_master_logger_ecuparams.xml` | Seven D2WD610H-only RomRaider logger parameters, including AFR, AVLS state, and lean-cut state/counter. |
-| `install_master_logger.py` | Adds those parameters to a copy of a normal SSM logger definition. |
+| `D2WD610H_master_logger.xml` | Complete metric, SSM-only logger definition for ECU ID `3C5A387116`; ready artifact generated from logger v370. |
+| `D2WD610H_master_logger_ecuparams.xml` | Internal seven-parameter fragment used to generate the complete logger definition. |
+| `install_master_logger.py` | Generates a complete D2WD610H-only logger from a normal complete logger XML, retaining its DTD and applicable stock channels. |
 | `ghidra_scripts/ApplyMasterNames.java` | Reproducibly reapplies the names/comments confirmed in live Ghidra. |
 
 ## Hard limitations

@@ -56,7 +56,15 @@ Use a fused, current-limited setup and do not backfeed an unpowered ECU.
 
 ## 3. Install logging
 
-Add the project fragment to a copy of a normal SSM logger definition:
+Use the complete generated definition:
+
+```text
+master_patch/D2WD610H_master_logger.xml
+```
+
+Do not select `D2WD610H_master_logger_ecuparams.xml`; it is only the internal
+seven-parameter fragment. To regenerate the complete file from another normal
+logger release without modifying the source file:
 
 ```sh
 python3 master_patch/install_master_logger.py /path/to/logger.xml

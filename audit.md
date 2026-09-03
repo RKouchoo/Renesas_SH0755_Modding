@@ -851,9 +851,13 @@ enter boost solely because the automated audit passes.
 - All D2WD610H images retain the factory CALID. RomRaider must therefore be configured with the
   master XML alone for this image; selecting a standalone/legacy definition can make the same
   binary appear with anonymous A--F names and an incomplete table set.
-- `D2WD610H_master_logger_ecuparams.xml` exposes E500 AFR/raw lambda, E501 raw ADC/volts,
-  E502 readiness, E503 committed AVLS state, and E504--E506 lean-cut/CL-OL state only for ECU ID `3C5A387116`. Its IDs, RAM addresses, lengths, storage
-  types, formulas, and fault descriptions are verifier-checked.
+- `D2WD610H_master_logger.xml` is the complete generated metric SSM logger artifact. It
+  retains the standard SSM channels and 53 stock extended parameters applicable to ECU ID
+  `3C5A387116`, adds E500--E506 exactly once, and removes every unrelated ECU-specific
+  address record. `D2WD610H_master_logger_ecuparams.xml` is builder input only, not a
+  selectable complete definition. The verifier checks the complete document, embedded DTD,
+  single-protocol/D2WD-only scope, generated-file hash, and equality of all seven custom
+  entries with the fragment.
 - Run `python3 master_patch/verify_master_patch.py` from the repository root. A pass means the
   checked development baseline matches this audit; it does not approve a later RomRaider edit.
 

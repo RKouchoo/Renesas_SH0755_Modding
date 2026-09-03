@@ -50,6 +50,7 @@ full **ignition-timing** blend/selection logic. See the notes.
 | [defs/D2WD610H_AVLS_boost_patch.xml](defs/D2WD610H_AVLS_boost_patch.xml) | Internal boost-definition source used by the master generator; not the current flash target. |
 | [speed_density/D2WD610H_AVLS_speed_density_patch.xml](speed_density/D2WD610H_AVLS_speed_density_patch.xml) | Internal speed-density-definition source used by the master generator; not the current flash target. |
 | [master_patch/D2WD610H_master_patch.xml](master_patch/D2WD610H_master_patch.xml) | Current focused metric definition: active timing/KCA identities, fuel/injectors, AVLS, SD/VE, exact Omni MAP, boost, wideband, pressure/lean safety, and default-OFF rotational idle. |
+| [master_patch/D2WD610H_master_logger.xml](master_patch/D2WD610H_master_logger.xml) | Complete metric SSM logger definition generated for master patch ECU ID `3C5A387116`; standard channels plus D2WD610H-only extended parameters. |
 | [defs/romraider_ecu_defs.xml](defs/romraider_ecu_defs.xml) | Clean upstream RomRaider metric definition set from SubaruDefs Stable; no project AVLS/boost modifications. |
 
 > Load the AVLS-only definition for the stock/AVLS-only ROM, or the focused master definition

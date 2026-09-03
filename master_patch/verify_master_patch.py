@@ -32,12 +32,15 @@ import verify_master_calibration as calibration_verify  # noqa: E402
 import sh2_disasm  # noqa: E402
 import fueling_safety_component as fueling_safety  # noqa: E402
 import verify_fueling_safety as fueling_safety_verify  # noqa: E402
+import install_master_logger as logger_definition  # noqa: E402
 
 
 OUTPUT = HERE / "D2WD610H_master_patch.bin"
 DEFINITION = HERE / "D2WD610H_master_patch.xml"
 LOGGER_FRAGMENT = HERE / "D2WD610H_master_logger_ecuparams.xml"
+LOGGER_DEFINITION = HERE / "D2WD610H_master_logger.xml"
 EXPECTED_OUTPUT_SHA256 = "f3efa36f8e3bef4e1eaa68544d0c1bc0578c6dbc53e7a13f87e08f8dcba01e6d"
+EXPECTED_LOGGER_SHA256 = "b266a942ece0638ed98f506ff977b02d40bdfb78ca2699bc170fe1ab63b71587"
 
 
 def fail(message: str) -> None:
@@ -865,6 +868,57 @@ def verify_logger_fragment() -> None:
         fail("logger lean-cut counter does not document task-call units")
 
 
+def xml_signature(element: ET.Element) -> tuple:
+    return (
+        element.tag,
+        tuple(sorted(element.attrib.items())),
+        (element.text or "").strip(),
+        tuple(xml_signature(child) for child in element),
+    )
+
+
+def verify_logger_definition() -> None:
+    if not LOGGER_DEFINITION.exists():
+        fail(f"missing complete master logger definition {LOGGER_DEFINITION}")
+    logger_bytes = LOGGER_DEFINITION.read_bytes()
+    logger_hash = hashlib.sha256(logger_bytes).hexdigest()
+    if logger_hash != EXPECTED_LOGGER_SHA256:
+        fail(
+            "complete master logger definition hash is "
+            f"{logger_hash}, expected {EXPECTED_LOGGER_SHA256}"
+        )
+    text = logger_bytes.decode("utf-8")
+    if "<!DOCTYPE logger [" not in text:
+        fail("complete master logger definition lost its embedded DTD")
+    try:
+        logger_definition.validate_generated(text, retained=53)
+    except SystemExit as exc:
+        fail(str(exc))
+
+    root = ET.fromstring(text)
+    if root.get("version") != "370":
+        fail("complete master logger definition is not based on metric v370")
+    protocol = root.find("./protocols/protocol")
+    if protocol is None:
+        fail("complete master logger definition has no SSM protocol")
+    for required in ("transports", "parameters", "switches", "dtcodes", "ecuparams"):
+        if protocol.find(required) is None:
+            fail(f"complete master logger definition is missing <{required}>")
+
+    generated = {
+        item.get("id"): item
+        for item in protocol.findall("ecuparams/ecuparam")
+        if item.get("id") in logger_definition.PARAMETER_IDS
+    }
+    fragment_root = ET.parse(LOGGER_FRAGMENT).getroot()
+    fragment = {item.get("id"): item for item in fragment_root.findall("ecuparam")}
+    if set(generated) != set(fragment):
+        fail("complete logger and project fragment have different master parameters")
+    for parameter_id in sorted(fragment):
+        if xml_signature(generated[parameter_id]) != xml_signature(fragment[parameter_id]):
+            fail(f"complete logger parameter {parameter_id} is stale relative to fragment")
+
+
 def verify_component_hooks(image: bytes, component_stage: bytes) -> None:
     expect(
         image,
@@ -1090,6 +1144,7 @@ def main() -> None:
     calibration_verify.verify_auxiliary(component_stage, image)
     verify_definition()
     verify_logger_fragment()
+    verify_logger_definition()
 
     if master.STOCK.read_bytes() != stock or master.BASE_STOCK.read_bytes() != stock:
         fail("canonical stock or base_roms stock changed during verification")
@@ -1114,7 +1169,7 @@ def main() -> None:
     print("  memory layout     : no component, hook, calibration, or RAM collisions")
     print("  definition        : workflow-grouped master XML; dormant timing pair and obsolete defs omitted")
     print("  fueling safety    : pressure-forced OL ON; 13.0-AFR delayed/latched cut ON")
-    print("  logger            : AFR/ADC/readiness/AVLS/lean-cut state fragment validated")
+    print("  logger            : complete D2WD610H-only SSM definition and fragment validated")
     print("  provenance        : root stock, base copy, and SRF payload remain byte-identical")
 
 
