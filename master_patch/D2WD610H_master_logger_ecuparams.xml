@@ -63,4 +63,61 @@
       <conversion units="raw flags" storagetype="uint8" expr="x" format="0" gauge_min="0" gauge_max="255" gauge_step="16" />
     </conversions>
   </ecuparam>
+  <ecuparam id="E507" name="Engine Run Counter (D2WD610H diagnostic)*" desc="Stock saturating engine-run counter at FFFFB688. It increments in the main periodic engine task and resets while the engine-not-running state is active. The approximately 10 ms/count interpretation is derived from scheduler behavior and must be confirmed from the capture." target="1">
+    <ecu id="3C5A387116">
+      <address length="2">0xFFB688</address>
+    </ecu>
+    <conversions>
+      <conversion units="task calls" storagetype="uint16" expr="x" format="0" gauge_min="0" gauge_max="6000" gauge_step="500" />
+      <conversion units="derived seconds" storagetype="uint16" expr="x/100" format="0.00" gauge_min="0" gauge_max="60" gauge_step="5" />
+    </conversions>
+  </ecuparam>
+  <ecuparam id="E508" name="After-Start Fuel Group A (D2WD610H diagnostic)*" desc="Raw additive after-start fueling state at FFFFB834, published by the Ghidra-identified group-A decay path and consumed by final fueling. Log from before cranking until the lean trend is complete." target="1">
+    <ecu id="3C5A387116">
+      <address length="4">0xFFB834</address>
+    </ecu>
+    <conversions>
+      <conversion units="raw additive factor" storagetype="float" expr="x" format="0.0000" gauge_min="-0.5" gauge_max="1.5" gauge_step="0.1" />
+    </conversions>
+  </ecuparam>
+  <ecuparam id="E509" name="After-Start Fuel Group B (D2WD610H diagnostic)*" desc="Raw additive after-start fueling state at FFFFB854, published by the Ghidra-identified group-B decay path and consumed by final fueling. Log from before cranking until the lean trend is complete." target="1">
+    <ecu id="3C5A387116">
+      <address length="4">0xFFB854</address>
+    </ecu>
+    <conversions>
+      <conversion units="raw additive factor" storagetype="float" expr="x" format="0.0000" gauge_min="-0.5" gauge_max="1.5" gauge_step="0.1" />
+    </conversions>
+  </ecuparam>
+  <ecuparam id="E510" name="After-Start Fuel Compensation A (D2WD610H diagnostic)*" desc="Raw after-start fueling compensation state at FFFFB868, published by the Ghidra-identified B868 update path and consumed by final fueling." target="1">
+    <ecu id="3C5A387116">
+      <address length="4">0xFFB868</address>
+    </ecu>
+    <conversions>
+      <conversion units="raw additive factor" storagetype="float" expr="x" format="0.0000" gauge_min="-0.5" gauge_max="1.5" gauge_step="0.1" />
+    </conversions>
+  </ecuparam>
+  <ecuparam id="E511" name="After-Start Fuel Compensation B (D2WD610H diagnostic)*" desc="Raw after-start fueling compensation state at FFFFB874, published by the Ghidra-identified B874 update path and consumed by final fueling." target="1">
+    <ecu id="3C5A387116">
+      <address length="4">0xFFB874</address>
+    </ecu>
+    <conversions>
+      <conversion units="raw additive factor" storagetype="float" expr="x" format="0.0000" gauge_min="-0.5" gauge_max="1.5" gauge_step="0.1" />
+    </conversions>
+  </ecuparam>
+  <ecuparam id="E512" name="After-Start Fuel Group C (D2WD610H diagnostic)*" desc="Raw group-C after-start fueling output at FFFFBE40. Its Ghidra-identified residual path uses the engine-run counter and a 5000-call calibration before the residual state decays; final fueling consumes this output." target="1">
+    <ecu id="3C5A387116">
+      <address length="4">0xFFBE40</address>
+    </ecu>
+    <conversions>
+      <conversion units="raw additive factor" storagetype="float" expr="x" format="0.0000" gauge_min="-0.5" gauge_max="1.5" gauge_step="0.1" />
+    </conversions>
+  </ecuparam>
+  <ecuparam id="E513" name="After-Start Fuel Group D (D2WD610H diagnostic)*" desc="Raw group-D after-start fueling output at FFFFBE48, published by the Ghidra-identified group-D update path and consumed by final fueling." target="1">
+    <ecu id="3C5A387116">
+      <address length="4">0xFFBE48</address>
+    </ecu>
+    <conversions>
+      <conversion units="raw additive factor" storagetype="float" expr="x" format="0.0000" gauge_min="-0.5" gauge_max="1.5" gauge_step="0.1" />
+    </conversions>
+  </ecuparam>
 </ecuparams>

@@ -12,7 +12,7 @@ and keep the root stock image unchanged.
    the master verifier.
 3. Trace B3-2/B3-3 to B136-31/B136-23 and B3-4/B3-5 to B136-13/B136-35.
 4. Confirm the HT-010206 post-intercooler installation. Treat the supplied
-   2.49 kOhm-converted curve as provisional until the input check below passes.
+   1.00 kOhm curve as provisional until the input check below passes.
 5. Confirm E28 MAP ground, signal, and regulated supply by measurement.
 6. Disconnect and insulate all four factory oxygen-sensor connectors.
 7. Confirm all six injector part numbers, test/cleaning data, base fuel
@@ -30,8 +30,8 @@ Use a fused, current-limited setup and do not backfeed an unpowered ECU.
    the intended positive-pressure range. Compare `0xFFFFABC4` against the
    calibrated reference, not only the sensor endpoints.
 2. With the IAT sensor unplugged, measure B3-4 relative to B3-5 key-on, then
-   load the input with a measured 1.00 kOhm 1% resistor. A true 2.49 kOhm ECU
-   pull-up gives `V_loaded / V_unloaded = 0.2865` (about 1.43 V from 5.00 V).
+   load the input with a measured 1.00 kOhm 1% resistor. A true 1.00 kOhm ECU
+   pull-up gives `V_loaded / V_unloaded = 0.5000` (about 2.50 V from 5.00 V).
    Remove the resistor, reconnect the sensor, and compare logged IAT against a
    trusted reference at ambient and at least one controlled warmer point.
 3. Set the supplied 50-4110-style controller to P0 or P1. Power red from its own
@@ -63,28 +63,36 @@ master_patch/D2WD610H_master_logger.xml
 ```
 
 Do not select `D2WD610H_master_logger_ecuparams.xml`; it is only the internal
-seven-parameter fragment. To regenerate the complete file from another normal
+fourteen-parameter fragment. To regenerate the complete file from another normal
 logger release without modifying the source file:
 
 ```sh
 python3 master_patch/install_master_logger.py /path/to/logger.xml
 ```
 
+Fully exit RomRaider after selecting a different logger definition, then start
+it again. E500--E513 and the nine high-resolution stock channels used by the
+lean-out test are unconditional in this D2WD610H-only logger and must be
+listed in the Data, Graph, and Dashboard parameter panes even before connecting
+to the ECU. If they are absent, RomRaider is using another file or a stale
+in-memory definition; reselect the exact complete path above and restart.
+
 RomRaider keeps Data, Graph, and Dashboard selections separately. Load
-`D2WD610H_idle_diagnostic_profile.xml` after the ECU has connected to select the
-complete cold-idle capture in Data and place all E500--E506 master channels plus
-the key standard channels on Dashboard. If an old profile leaves the custom gauges absent, load this profile
-or delete the stale profile and create a new one after confirming ECU ID
-`3C5A387116`.
+`D2WD610H_idle_diagnostic_profile.xml` to select the complete cold-idle capture
+in Data and place the lean-out subset of E500--E513 plus the key stock channels
+on Dashboard. It intentionally omits E503--E505 (AVLS and boost-only lean-cut
+state) from this stationary test to preserve K-line sample rate. If an old
+profile leaves the gauges absent, load this profile or delete the stale profile
+and create a new one.
 
 Log at minimum:
 
 - E500 external-wideband AFR (raw lambda remains an alternate conversion);
 - E501 raw former-MAF ADC/input voltage;
 - E502 external-wideband readiness;
-- E503 committed AVLS VE state (mode 1 low lift, mode 3 high lift);
-- E504 lean-cut state and E505 task-call counter;
 - E506 raw CL/OL flags;
+- E507 engine-run counter;
+- E508--E513 raw after-start fueling groups/compensations;
 - MAP, barometric pressure, RPM, IAT, modeled airflow, calculated load;
 - standard P47 Fuel Pump Duty and battery voltage;
 - commanded fuel/lambda, short- and long-term correction, CL/OL state;
@@ -94,6 +102,10 @@ Log at minimum:
 - purge/repurposed EBCS duty; and
 - independently measured fuel pressure and wideband/controller status with a
   common timestamp.
+
+Add E503 for an AVLS/VE transition capture. Add E504 and E505 for positive-
+pressure lean-cut commissioning; they are not useful in the stationary
+vacuum-only lean-out test.
 
 E500 equal to zero means invalid input. Never treat it as an extremely rich
 sample or average it into tuning data.

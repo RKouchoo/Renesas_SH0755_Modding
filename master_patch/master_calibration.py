@@ -9,7 +9,7 @@ proportional gain, and the duty clamp are disabled/zero while the independent
 hard MAP cut stays active. Injector data is translated from the hash-pinned
 A4TE002B factory STI-pink ROM, tune axes extend to 4.0 g/rev, and the limiter is
 6800/6770 RPM. The retained IAT conversion table is seeded for a Haltech
-HT-010206 thermistor on an explicitly provisional 2.49-kohm ECU pull-up
+HT-010206 thermistor on an explicitly provisional 1.00-kohm ECU pull-up
 assumption.
 """
 
@@ -219,14 +219,13 @@ TIMING_LOAD_OFFSETS = {
 IAT_TIMING_COMP_RAW = bytes((128, 125, 122, 116, 110, 105, 99))
 
 # Provisional Haltech HT-010206 air-temperature transfer for the original IAT
-# input, assuming the ECU's internal pull-up is 2.49 kohm to 5 V. Haltech's
-# published eight voltage points assume a 1.00 kohm pull-up; those voltages are
-# first converted back to thermistor resistance, then to the Subaru divider
-# voltage. Intermediate 5 C points use log(resistance) versus inverse-Kelvin
-# interpolation. The -20/-30/-40 C tail extrapolates the published -10..10 C
-# segment and therefore remains a base reference pending an installed-circuit
-# resistance/temperature check.
-IAT_SENSOR_PULLUP_OHMS = 2490.0
+# input, assuming the ECU's internal pull-up is 1.00 kohm to 5 V. Haltech's
+# published eight voltage points use the same 1.00-kohm pull-up, so those table
+# knots retain their published voltages. Intermediate 5 C points use
+# log(resistance) versus inverse-Kelvin interpolation. The -20/-30/-40 C tail
+# extrapolates the published -10..10 C segment and therefore remains a base
+# reference pending an installed-circuit resistance/temperature check.
+IAT_SENSOR_PULLUP_OHMS = 1000.0
 IAT_SENSOR_REFERENCE_PULLUP_OHMS = 1000.0
 IAT_SENSOR_SUPPLY_VOLTS = 5.0
 HALTECH_IAT_REFERENCE_POINTS = (
@@ -245,12 +244,12 @@ IAT_SENSOR_TEMPERATURE_C = (
     20.0, 15.0, 10.0, 5.0, 0.0, -5.0, -10.0, -20.0, -30.0, -40.0,
 )
 IAT_SENSOR_VOLTAGE_AXIS = (
-    0.191009805, 0.220619962, 0.255526662, 0.296751082, 0.345505774,
-    0.389820039, 0.440720797, 0.507652879, 0.585732102, 0.676713109,
-    0.782503605, 0.905015707, 1.046307683, 1.208200932, 1.392124534,
-    1.596926212, 1.823920131, 2.071560383, 2.336735010, 2.601084471,
-    2.872020960, 3.143183231, 3.407747984, 3.639829397, 3.856733322,
-    4.054732323, 4.231286049, 4.516235352, 4.714883804, 4.842593670,
+    0.450000000, 0.515455216, 0.591240273, 0.678875972, 0.780000000,
+    0.869630124, 0.970000000, 1.097956243, 1.241731109, 1.402239351,
+    1.580000000, 1.774827567, 1.986054849, 2.212002468, 2.450000000,
+    2.694213317, 2.942324656, 3.189331373, 3.430000000, 3.648591983,
+    3.853374404, 4.041231621, 4.210000000, 4.347536497, 4.468076426,
+    4.571949797, 4.660000000, 4.793777500, 4.881450331, 4.935570910,
 )
 assert len(IAT_SENSOR_VOLTAGE_AXIS) == len(IAT_SENSOR_TEMPERATURE_C) == IAT_SENSOR_POINT_COUNT
 

@@ -40,8 +40,8 @@ DEFINITION = HERE / "D2WD610H_master_patch.xml"
 LOGGER_FRAGMENT = HERE / "D2WD610H_master_logger_ecuparams.xml"
 LOGGER_DEFINITION = HERE / "D2WD610H_master_logger.xml"
 LOGGER_PROFILE = HERE / "D2WD610H_idle_diagnostic_profile.xml"
-EXPECTED_OUTPUT_SHA256 = "f3efa36f8e3bef4e1eaa68544d0c1bc0578c6dbc53e7a13f87e08f8dcba01e6d"
-EXPECTED_LOGGER_SHA256 = "9e16c1d8c39152d06af9e5a97070d2b97f581d4ab244e5d60539a71436626d2e"
+EXPECTED_OUTPUT_SHA256 = "0390ff9d856c66f58e0c44db9c8a4024e26072b905540ef30a116fffca9b9f86"
+EXPECTED_LOGGER_SHA256 = "e21f5d6633605369faa013027155adeeca8583ef0f1a9486d603dbbca2e68e0b"
 
 
 def fail(message: str) -> None:
@@ -715,7 +715,7 @@ def verify_definition() -> None:
         iat_template is None
         or iat_template.findtext("description") != definition.IAT_SENSOR_DESCRIPTION
     ):
-        fail("master definition lacks the provisional HT-010206/2.49k IAT warning")
+        fail("master definition lacks the provisional HT-010206/1.00k IAT warning")
     for name in expected_ve:
         template = parent_tables.get(name)
         if template is None or template.get("endian") != "little":
@@ -866,6 +866,13 @@ def verify_logger_fragment() -> None:
         "E504": ("0xFFC860", "1", "uint8", {"x"}),
         "E505": ("0xFFC85C", "2", "uint16", {"x"}),
         "E506": ("0xFFBE38", "1", "uint8", {"x"}),
+        "E507": ("0xFFB688", "2", "uint16", {"x", "x/100"}),
+        "E508": ("0xFFB834", "4", "float", {"x"}),
+        "E509": ("0xFFB854", "4", "float", {"x"}),
+        "E510": ("0xFFB868", "4", "float", {"x"}),
+        "E511": ("0xFFB874", "4", "float", {"x"}),
+        "E512": ("0xFFBE40", "4", "float", {"x"}),
+        "E513": ("0xFFBE48", "4", "float", {"x"}),
     }
     parameters = list(root.findall("ecuparam"))
     by_id = {parameter.get("id"): parameter for parameter in parameters}
@@ -900,6 +907,11 @@ def verify_logger_fragment() -> None:
         fail("logger lean-cut state does not document latch release")
     if "not milliseconds" not in (by_id["E505"].get("desc") or ""):
         fail("logger lean-cut counter does not document task-call units")
+    if "derived" not in (by_id["E507"].get("desc") or ""):
+        fail("logger engine-run counter does not qualify its derived timebase")
+    for parameter_id in ("E508", "E509", "E510", "E511", "E512", "E513"):
+        if "final fueling" not in (by_id[parameter_id].get("desc") or ""):
+            fail(f"logger {parameter_id} does not document its fueling-path role")
 
 
 def xml_signature(element: ET.Element) -> tuple:
@@ -943,16 +955,21 @@ def verify_logger_definition() -> None:
 
     generated = {
         item.get("id"): item
-        for item in protocol.findall("ecuparams/ecuparam")
+        for item in protocol.findall("parameters/parameter")
         if item.get("id") in logger_definition.PARAMETER_IDS
     }
     fragment_root = ET.parse(LOGGER_FRAGMENT).getroot()
-    fragment = {item.get("id"): item for item in fragment_root.findall("ecuparam")}
+    fragment = {
+        item.get("id"): logger_definition.make_unconditional_parameter(item)
+        for item in fragment_root.findall("ecuparam")
+    }
     if set(generated) != set(fragment):
         fail("complete logger and project fragment have different master parameters")
     for parameter_id in sorted(fragment):
         if xml_signature(generated[parameter_id]) != xml_signature(fragment[parameter_id]):
             fail(f"complete logger parameter {parameter_id} is stale relative to fragment")
+        if generated[parameter_id].find("address") is None:
+            fail(f"complete logger parameter {parameter_id} is not always visible")
 
 
 def verify_logger_profile() -> None:
@@ -975,20 +992,25 @@ def verify_logger_profile() -> None:
     }
     if not selected_ids or not selected_ids <= logger_ids:
         fail("idle diagnostic profile refers to absent logger parameters")
+    expected_custom = logger_definition.PARAMETER_IDS - {"E503", "E504", "E505"}
     live_custom = {
         item.get("id")
         for item in profile_parameters
         if item.get("livedata") == "selected" and item.get("id") in logger_definition.PARAMETER_IDS
     }
-    if live_custom != logger_definition.PARAMETER_IDS:
-        fail("idle diagnostic profile does not log all master parameters")
+    if live_custom != expected_custom:
+        fail("idle diagnostic profile has the wrong project parameter set")
     dashboard_custom = {
         item.get("id")
         for item in profile_parameters
         if item.get("dash") == "selected" and item.get("id") in logger_definition.PARAMETER_IDS
     }
-    if dashboard_custom != logger_definition.PARAMETER_IDS:
-        fail("idle diagnostic profile has the wrong master dashboard channels")
+    if dashboard_custom != expected_custom:
+        fail("idle diagnostic profile has the wrong project dashboard channels")
+    expected_stock_diagnostics = logger_definition.ALWAYS_VISIBLE_STOCK_PARAMETER_IDS
+    selected_stock_diagnostics = selected_ids & expected_stock_diagnostics
+    if selected_stock_diagnostics != expected_stock_diagnostics:
+        fail("idle diagnostic profile omits a required stock high-resolution channel")
 
 
 def verify_component_hooks(image: bytes, component_stage: bytes) -> None:
@@ -1231,7 +1253,7 @@ def main() -> None:
     print(f"  checksum          : 0x{stored:08X} (valid={stored == calculated})")
     print("  air model         : always-on MAFless committed-state dual VE speed density")
     print("  MAP               : Omni MAP-SUP-3BR 30..300 kPa / 0.60..4.75 V")
-    print("  IAT               : provisional HT-010206 curve; assumed 2.49-kohm ECU pull-up")
+    print("  IAT               : provisional HT-010206 curve; assumed 1.00-kohm ECU pull-up")
     print("  wideband/O2       : former-MAF 50-4110 P0/P1 input; four stock paths removed")
     print("  boost             : EBCS OFF; independent hard cut ON; zero-duty spring baseline")
     print("  load axes         : all eight active axes extend to 4.0 g/rev")

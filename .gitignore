@@ -6,6 +6,7 @@ __pycache__/
 *.lock
 *.lock~
 tmp/
+/local_only/
 
 # Windows applications are deployment tools, not master-patch source/artifacts.
 master_patch/*.exe

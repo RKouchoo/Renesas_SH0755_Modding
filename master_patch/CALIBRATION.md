@@ -36,31 +36,33 @@ master calibration replaces both arrays with a provisional transfer for the
 [Haltech HT-010206](https://www.haltech.com/product/ht-010206-air-temp-sensor/).
 
 Haltech's published voltage points assume a 1.00 kOhm pull-up to 5 V. The
-builder converts each published point through:
+master baseline now assumes the D2WD610H input has the same 1.00 kOhm pull-up.
+The calculation remains explicit:
 
 ```text
 thermistor_ohms = 1000 * V_haltech / (5 - V_haltech)
-V_D2WD610H      = 5 * thermistor_ohms / (2490 + thermistor_ohms)
+V_D2WD610H      = 5 * thermistor_ohms / (1000 + thermistor_ohms)
 ```
 
 The exact published knots become:
 
 | Temperature | Master-table voltage |
 |---:|---:|
-| 120 C | 0.191010 V |
-| 100 C | 0.345506 V |
-| 90 C | 0.440721 V |
-| 70 C | 0.782504 V |
-| 50 C | 1.392125 V |
-| 30 C | 2.336735 V |
-| 10 C | 3.407748 V |
-| -10 C | 4.231286 V |
+| 120 C | 0.450000 V |
+| 100 C | 0.780000 V |
+| 90 C | 0.970000 V |
+| 70 C | 1.580000 V |
+| 50 C | 2.450000 V |
+| 30 C | 3.430000 V |
+| 10 C | 4.210000 V |
+| -10 C | 4.660000 V |
 
 The remaining in-range knots use log-resistance versus inverse-temperature
 interpolation at 5 C intervals. The final -20, -30, and -40 C entries
-extrapolate the published -10..10 C segment. The 2.49 kOhm ECU pull-up is an
-unverified working assumption, so compare the installed circuit with a trusted
-temperature reference before using this curve for VE tuning or boost. The
+extrapolate the published -10..10 C segment. The 1.00 kOhm ECU pull-up is a
+user-reported, unverified working assumption, so compare the installed circuit
+with a trusted temperature reference before using this curve for VE tuning or
+boost. The
 `Speed Density IAT Density Correction` table remains the separate ideal-gas
 multiplier; it must not be edited merely to compensate for an incorrect sensor
 transfer.

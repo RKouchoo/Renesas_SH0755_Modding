@@ -2,11 +2,8 @@
 <profile protocol="SSM">
     <parameters>
         <parameter id="P2" livedata="selected" />
-        <parameter id="P3" livedata="selected" />
         <parameter id="P4" livedata="selected" />
-        <parameter id="P5" livedata="selected" />
         <parameter id="P6" livedata="selected" />
-        <parameter id="P7" livedata="selected" dash="selected" />
         <parameter id="P8" livedata="selected" dash="selected" />
         <parameter id="P11" livedata="selected" dash="selected" />
         <parameter id="P12" livedata="selected" />
@@ -14,7 +11,6 @@
         <parameter id="P17" livedata="selected" dash="selected" />
         <parameter id="P21" livedata="selected" dash="selected" />
         <parameter id="P24" livedata="selected" />
-        <parameter id="P25" livedata="selected" dash="selected" />
         <parameter id="P47" livedata="selected" dash="selected" />
         <parameter id="P63" livedata="selected" />
         <parameter id="P64" livedata="selected" />
@@ -22,18 +18,25 @@
         <parameter id="P70" livedata="selected" />
         <parameter id="P151" livedata="selected" />
         <parameter id="P152" livedata="selected" />
-        <parameter id="P201" livedata="selected" />
         <parameter id="E32" livedata="selected" />
         <parameter id="E33" livedata="selected" dash="selected" />
         <parameter id="E50" livedata="selected" />
+        <parameter id="E51" livedata="selected" dash="selected" />
+        <parameter id="E60" livedata="selected" />
+        <parameter id="E81" livedata="selected" />
         <parameter id="E84" livedata="selected" dash="selected" />
+        <parameter id="E105" livedata="selected" />
         <parameter id="E123" livedata="selected" dash="selected" />
         <parameter id="E500" livedata="selected" dash="selected" />
         <parameter id="E501" livedata="selected" dash="selected" />
         <parameter id="E502" livedata="selected" dash="selected" />
-        <parameter id="E503" livedata="selected" dash="selected" />
-        <parameter id="E504" livedata="selected" dash="selected" />
-        <parameter id="E505" livedata="selected" dash="selected" />
         <parameter id="E506" livedata="selected" dash="selected" />
+        <parameter id="E507" livedata="selected" dash="selected" />
+        <parameter id="E508" livedata="selected" dash="selected" />
+        <parameter id="E509" livedata="selected" dash="selected" />
+        <parameter id="E510" livedata="selected" dash="selected" />
+        <parameter id="E511" livedata="selected" dash="selected" />
+        <parameter id="E512" livedata="selected" dash="selected" />
+        <parameter id="E513" livedata="selected" dash="selected" />
     </parameters>
 </profile>

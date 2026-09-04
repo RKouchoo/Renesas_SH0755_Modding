@@ -232,8 +232,8 @@ MAP_RENAMES = {
 IAT_SENSOR_DESCRIPTION = (
     "Provisional Haltech HT-010206 intake-air-temperature transfer for the "
     "retained B3-4/B136-13 signal and B3-5/B136-35 sensor ground. The 30-point "
-    "voltage axis converts Haltech's published 1.00-kohm/5-V calibration to an "
-    "assumed 2.49-kohm ECU pull-up. Points below -10 C are extrapolated. Treat "
+    "voltage axis uses Haltech's published 1.00-kohm/5-V calibration with an "
+    "assumed 1.00-kohm ECU pull-up. Points below -10 C are extrapolated. Treat "
     "this as a commissioning base reference: verify the ECU pull-up on the "
     "installed circuit and compare logged temperature against a trusted "
     "reference before tuning VE or entering boost. This table converts sensor "

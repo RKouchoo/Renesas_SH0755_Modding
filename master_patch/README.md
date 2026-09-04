@@ -6,7 +6,7 @@ firmware work into one deterministic stock-to-output build:
 
 - always-on MAFless speed density with committed-state low/high-lift AVLS VE
   tables and a provisional Haltech HT-010206 post-intercooler IAT calibration
-  converted for an assumed 2.49 kOhm ECU pull-up;
+  based on an assumed 1.00 kOhm ECU pull-up;
 - Omni Power `MAP-SUP-3BR` 3-bar MAP scaling;
 - EVAP-output boost control with throttle, wideband, speed-density-input/result,
   soft-overboost, and hard fuel-cut gates;
@@ -24,11 +24,11 @@ firmware work into one deterministic stock-to-output build:
 - focused, self-contained D2WD610H RomRaider ECU and logger definitions.
 
 The generated baseline is `D2WD610H_master_patch.bin`, SHA-256
-`f3efa36f8e3bef4e1eaa68544d0c1bc0578c6dbc53e7a13f87e08f8dcba01e6d`.
+`0390ff9d856c66f58e0c44db9c8a4024e26072b905540ef30a116fffca9b9f86`.
 It is 512 KiB, contains CALID `D2WD610H`, and has a valid Subaru additive
-checksum (`0xC96A0526`). It is a development artifact, not a vehicle-tested tune.
+checksum (`0xBEB878AA`). It is a development artifact, not a vehicle-tested tune.
 The complete generated logger definition has SHA-256
-`9e16c1d8c39152d06af9e5a97070d2b97f581d4ab244e5d60539a71436626d2e`.
+`e21f5d6633605369faa013027155adeeca8583ef0f1a9486d603dbbca2e68e0b`.
 
 Two independent boost switches remain in RomRaider. `Electronic Boost Control
 Enable` defaults OFF and forces zero actuator duty for direct wastegate-spring
@@ -62,12 +62,12 @@ keying and terminal continuity still require physical confirmation.
 
 The IAT transfer uses the published Haltech HT-010206 voltage/temperature
 points, which Haltech documents for a 1 kOhm pull-up to 5 V. The builder
-converts those points back to thermistor resistance and then to voltage for an
-assumed 2.49 kOhm D2WD610H pull-up. That ECU resistance has not been confirmed
-from a D2WD610H primary source or an installed-circuit measurement. The cold
-tail below -10 C is extrapolated. It is therefore a useful starting reference,
-not a verified sensor calibration; see [CALIBRATION.md](CALIBRATION.md) and
-[COMMISSIONING.md](COMMISSIONING.md).
+now assumes the D2WD610H input also has a 1 kOhm pull-up, so the eight published
+knots retain their Haltech voltages. That ECU resistance is based on the
+reported value and has not been confirmed from a D2WD610H primary source or an
+installed-circuit measurement. The cold tail below -10 C is extrapolated. It is
+therefore a useful starting reference, not a verified sensor calibration; see
+[CALIBRATION.md](CALIBRATION.md) and [COMMISSIONING.md](COMMISSIONING.md).
 
 The only supported wideband transfer in this baseline is the P0/P1 table in the
 instruction sheet supplied with the seller-labelled `AEM 50-4110` unit:
@@ -99,13 +99,17 @@ Restart RomRaider after changing the definition file so no old parsed definition
 remains in memory.
 
 The matching logger artifact is `D2WD610H_master_logger.xml`. It is a complete
-metric SSM logger definition, not an XML fragment. It deliberately reduces the
-upstream global catalogue to 63 H6-MT standard parameters, 46 relevant switches,
-35 useful stock extended parameters for ECU ID `3C5A387116`, and master
-parameters E500--E506. TCU/DCCD, diesel/common-rail/DPF, removed stock-O2/MAF,
-and unrelated-model dashboard entries are omitted. The smaller
-`*_ecuparams.xml` file is builder input only and must not be selected as a
-complete logger definition.
+metric SSM K-line ECU logger definition, not an XML fragment. It deliberately
+reduces the upstream global catalogue to 63 H6-MT standard parameters, 46
+relevant switches, and 35 useful stock extended parameters. Nine stock
+high-resolution channels required for the lean-out capture are converted to
+unconditional direct SSM-address entries; the other 26 remain restricted to ECU
+ID `3C5A387116`. Project parameters E500--E513 are also unconditional. The
+complete diagnostic set therefore remains visible in Data, Graph, and Dashboard
+before RomRaider completes ECU identification. TCU/DCCD, diesel/common-rail/DPF,
+removed stock-O2/MAF, and unrelated-model dashboard entries are omitted. The
+smaller `*_ecuparams.xml` file is builder input only and must not be selected
+as a complete logger definition.
 
 The master definition uses numbered workflow categories so related stock and
 patched calibrations stay together in RomRaider: air model, fueling, wideband,
@@ -166,15 +170,15 @@ and verifies provenance and checksum.
 | `build_definition.py` | Generates the focused D2WD610H RomRaider definition. |
 | `D2WD610H_master_patch.xml` | Matching self-contained metric RomRaider definition. |
 | `D2WD610H_master_logger.xml` | Complete metric, SSM-only logger definition for ECU ID `3C5A387116`; ready artifact generated from logger v370. |
-| `D2WD610H_master_logger_ecuparams.xml` | Internal seven-parameter fragment used to generate the complete logger definition. |
-| `D2WD610H_idle_diagnostic_profile.xml` | RomRaider profile selecting the cold-idle diagnostic channels in Data and all E500--E506 custom channels on Dashboard. |
+| `D2WD610H_master_logger_ecuparams.xml` | Internal fourteen-parameter fragment used to generate the complete logger definition. |
+| `D2WD610H_idle_diagnostic_profile.xml` | Focused cold-idle profile selecting all required high-resolution and after-start channels while omitting AVLS and boost-only state from this stationary test. |
 | `install_master_logger.py` | Generates a complete D2WD610H-only logger from a normal complete logger XML, retaining its DTD and applicable stock channels. |
 | `ghidra_scripts/ApplyMasterNames.java` | Reproducibly reapplies the names/comments confirmed in live Ghidra. |
 
 ## Hard limitations
 
 - The base VE table is mathematical, not measured on this engine.
-- The HT-010206 IAT curve assumes a 2.49 kOhm ECU pull-up. A wrong pull-up,
+- The HT-010206 IAT curve assumes a 1.00 kOhm ECU pull-up. A wrong pull-up,
   sensor-ground offset, or cold-tail extrapolation directly biases
   speed-density airflow and all load-indexed tuning.
 - The two AVLS VE tables are seeded from that same mathematical surface and

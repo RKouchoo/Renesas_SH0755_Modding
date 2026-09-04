@@ -851,14 +851,20 @@ enter boost solely because the automated audit passes.
 - All D2WD610H images retain the factory CALID. RomRaider must therefore be configured with the
   master XML alone for this image; selecting a standalone/legacy definition can make the same
   binary appear with anonymous A--F names and an incomplete table set.
-- `D2WD610H_master_logger.xml` is the complete generated metric SSM logger artifact. It
+- `D2WD610H_master_logger.xml` is the complete generated metric SSM K-line ECU logger artifact. It
   filters the upstream global catalogue to 63 H6-MT standard parameters, 46 relevant
-  switches, and 35 useful stock extended parameters for ECU ID `3C5A387116`, then adds
-  E500--E506 exactly once. TCU/DCCD, diesel/common-rail/DPF, removed stock-O2/MAF, and
+  switches, and 35 useful stock extended parameters. Nine high-resolution stock channels
+  required for the lean-out capture and all project channels E500--E513 are unconditional
+  direct-address SSM parameters; the other 26 extended channels remain restricted to ECU ID
+  `3C5A387116`. This keeps the entire diagnostic set visible on Data, Graph, and Dashboard
+  before ECU identification; the prior ECU-ID-gated form could disappear whenever
+  initialization had not completed. E507 is the stock engine-run counter and E508--E513 are
+  the six raw after-start fueling outputs identified in the Ghidra audit.
+  TCU/DCCD, diesel/common-rail/DPF, removed stock-O2/MAF, and
   unrelated-model dashboard entries are omitted. `D2WD610H_master_logger_ecuparams.xml`
   is builder input only, not a selectable complete definition. The verifier checks the
   complete document, embedded DTD, focused parameter sets, generated-file hash, and
-  equality of all seven custom entries with the fragment.
+  equality of all fourteen project entries with the fragment.
 - Run `python3 master_patch/verify_master_patch.py` from the repository root. A pass means the
   checked development baseline matches this audit; it does not approve a later RomRaider edit.
 
@@ -1017,26 +1023,27 @@ speed-density component. A before/after rebuild retained the exact master SHA-25
 
 # Haltech HT-010206 IAT base calibration
 
-Audit date: 2026-08-29. This section supersedes earlier master artifact hashes.
+Audit updated: 2026-09-04. This section supersedes the 2026-08-29 2.49 kOhm
+working assumption and earlier master artifact hashes.
 
 The master tune now replaces the stock 30-point IAT voltage axis at `0x72960`
 and temperature data at `0x729D8`. The unchanged D2WD610H descriptor at
 `0x609B8` is `(30, axis 0x72960, data 0x729D8)`. Haltech's eight published
 HT-010206 voltage/temperature points assume a 1.00 kOhm pull-up to 5 V. Each
 published voltage is converted back to thermistor resistance and then through
-an assumed 2.49 kOhm D2WD610H pull-up. The exact converted knots are 0.191010 V
-at 120 C, 0.345506 V at 100 C, 0.440721 V at 90 C, 0.782504 V at 70 C,
-1.392125 V at 50 C, 2.336735 V at 30 C, 3.407748 V at 10 C, and 4.231286 V at
--10 C.
+the user-reported 1.00 kOhm D2WD610H pull-up. Because the reference and assumed
+ECU pull-ups are equal, the exact published knots remain 0.450000 V at 120 C,
+0.780000 V at 100 C, 0.970000 V at 90 C, 1.580000 V at 70 C, 2.450000 V at
+50 C, 3.430000 V at 30 C, 4.210000 V at 10 C, and 4.660000 V at -10 C.
 
 The remaining normal-range entries use log-resistance versus inverse-Kelvin
 interpolation. The -20, -30, and -40 C tail is extrapolated from Haltech's
 published -10..10 C segment. Both the RomRaider definition and commissioning
-documentation label the curve provisional because the 2.49 kOhm resistance has
+documentation label the curve provisional because the 1.00 kOhm resistance has
 not been established from a D2WD610H primary source or an installed-circuit
-measurement. A 1.00 kOhm test load should produce 28.65% of the unloaded input
-voltage if the assumption is correct. Logged IAT must also be checked against a
-trusted temperature reference before VE tuning or boost.
+measurement. A 1.00 kOhm test load should produce 50.0% of the unloaded input
+voltage if the new assumption is correct. Logged IAT must also be checked
+against a trusted temperature reference before VE tuning or boost.
 
 The sensor transfer is distinct from the injected speed-density density curve:
 the former converts ADC voltage to degrees C, while the latter applies
@@ -1045,9 +1052,9 @@ altered to hide sensor-transfer error. No function was opened in Ghidra for
 this table-only calibration change; the existing named IAT processing path and
 verified descriptor layout were retained unchanged.
 
-The fresh master build changes 6,451 bytes from canonical stock, has SHA-256
-`f3efa36f8e3bef4e1eaa68544d0c1bc0578c6dbc53e7a13f87e08f8dcba01e6d`, and
-has valid Subaru additive checksum `0xC96A0526`. The independent verifier checks
+The fresh master build changes 6,444 bytes from canonical stock, has SHA-256
+`0390ff9d856c66f58e0c44db9c8a4024e26072b905540ef30a116fffca9b9f86`, and
+has valid Subaru additive checksum `0xBEB878AA`. The independent verifier checks
 all 30 float32 knots, monotonicity, all eight published-point conversions,
 descriptor identity, XML warning text, collision ownership, deterministic
 rebuild identity, checksum, and immutable stock/base/SRF provenance.
@@ -1218,3 +1225,37 @@ terminals, rail-pressure differential, AFR and battery voltage. The zero/off
 command remains untouched. Restore 33.3/66.7/100.0 afterward unless continuous
 full-speed operation and current/heat/regulator capacity have been validated.
 The unresolved mode timers and threshold surfaces are deliberately not exposed.
+
+# Master logger visibility repair
+
+Audit date: 2026-09-04. No firmware bytes were changed by this logger-only
+repair; the simultaneously rebuilt ROM change is solely the separately audited
+1.00 kOhm IAT calibration.
+
+The prior complete logger placed E500--E506 inside `<ecuparams>`, each gated by
+ECU ID `3C5A387116`. RomRaider's own `LoggerDefinitionHandler` adds an
+`ecuparam` only when initialization has returned an exact matching ECU ID. As a
+result, a disconnected logger or incomplete initialization removed every
+master channel from all three parameter panes. XML parsing alone did not catch
+this runtime visibility condition.
+
+The generated D2WD610H-only logger now converts all fourteen E500--E513 fragment
+records to unconditional direct-address `<parameter>` entries. It also converts
+the nine stock high-resolution channels needed for the lean-out investigation
+(`E32`, `E33`, `E50`, `E51`, `E60`, `E81`, `E84`, `E105`, and `E123`) to direct
+entries because this is a D2WD610H-only artifact. The other 26 stock extended
+parameters remain correctly ID-gated. The generator also retains only
+the SSM `iso9141` K-line ECU transport, removing unused CAN/TCU module records
+and their duplicate XML IDs. The complete output now passes its embedded DTD
+with `xmllint`.
+
+A compatibility test using RomRaider's compiled Java classes parsed the checked
+logger with no ECU initialization and exposed 86 parameters, including every
+one of the 23 always-visible project/high-resolution diagnostic channels.
+Repeating with ECU ID `3C5A387116` exposed every required channel again. The
+RomRaider logger loads every parsed ECU parameter into the Data, Graph, and
+Dashboard parameter models. The master verifier additionally requires the
+fourteen generated project records and nine diagnostic stock records to be
+direct parameters, requires the exact K-line/ECU transport, compares every
+project entry with its source fragment, and pins complete logger SHA-256
+`e21f5d6633605369faa013027155adeeca8583ef0f1a9486d603dbbca2e68e0b`.

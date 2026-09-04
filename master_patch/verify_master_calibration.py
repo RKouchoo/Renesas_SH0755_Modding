@@ -299,7 +299,7 @@ def verify_auxiliary(reference: bytes, image: bytes) -> None:
         base.pack_floats(base.IAT_SENSOR_TEMPERATURE_C), 0, base.IAT_SENSOR_POINT_COUNT
     )
     if voltage_axis != expected_voltage:
-        fail("IAT voltage axis does not match the provisional HT-010206/2.49k curve")
+        fail("IAT voltage axis does not match the provisional HT-010206/1.00k curve")
     if temperatures != expected_temperature:
         fail("IAT temperature data does not match the provisional HT-010206 curve")
     if not all(a < b for a, b in zip(voltage_axis, voltage_axis[1:])):
@@ -307,9 +307,60 @@ def verify_auxiliary(reference: bytes, image: bytes) -> None:
     if not all(a > b for a, b in zip(temperatures, temperatures[1:])):
         fail("IAT temperature data is not strictly decreasing")
 
+    # Independently reconstruct the complete curve from Haltech's eight
+    # published points. Intermediate and cold-tail points use the same stated
+    # log(resistance) versus inverse-Kelvin method, but not the calibration's
+    # precomputed voltage tuple.
+    reference_resistance = tuple(
+        (
+            temperature,
+            base.IAT_SENSOR_REFERENCE_PULLUP_OHMS
+            * voltage
+            / (base.IAT_SENSOR_SUPPLY_VOLTS - voltage),
+        )
+        for temperature, voltage in base.HALTECH_IAT_REFERENCE_POINTS
+    )
+    for index, temperature in enumerate(base.IAT_SENSOR_TEMPERATURE_C):
+        if temperature >= reference_resistance[0][0]:
+            upper, lower = reference_resistance[0:2]
+        elif temperature <= reference_resistance[-1][0]:
+            upper, lower = reference_resistance[-2:]
+        else:
+            upper, lower = next(
+                (left, right)
+                for left, right in zip(
+                    reference_resistance, reference_resistance[1:]
+                )
+                if left[0] >= temperature >= right[0]
+            )
+        inverse_kelvin = 1.0 / (temperature + 273.15)
+        upper_inverse_kelvin = 1.0 / (upper[0] + 273.15)
+        lower_inverse_kelvin = 1.0 / (lower[0] + 273.15)
+        interpolation = (
+            (inverse_kelvin - upper_inverse_kelvin)
+            / (lower_inverse_kelvin - upper_inverse_kelvin)
+        )
+        resistance = math.exp(
+            math.log(upper[1])
+            + (math.log(lower[1]) - math.log(upper[1])) * interpolation
+        )
+        independently_converted_voltage = (
+            base.IAT_SENSOR_SUPPLY_VOLTS
+            * resistance
+            / (base.IAT_SENSOR_PULLUP_OHMS + resistance)
+        )
+        if abs(voltage_axis[index] - independently_converted_voltage) > 3e-7:
+            fail(
+                f"IAT {temperature:.0f} C interpolation is "
+                f"{voltage_axis[index]:.9f} V, expected "
+                f"{independently_converted_voltage:.9f} V"
+            )
+
     # Independently reconstruct every published Haltech point from its
     # 1.00-kohm divider voltage and require the corresponding table knot to
-    # match its 2.49-kohm Subaru-divider voltage within float32 precision.
+    # match its assumed 1.00-kohm Subaru-divider voltage within float32
+    # precision. With equal reference and ECU pull-ups, this must also retain
+    # the published Haltech voltage directly.
     for temperature, haltech_voltage in base.HALTECH_IAT_REFERENCE_POINTS:
         resistance = (
             base.IAT_SENSOR_REFERENCE_PULLUP_OHMS
@@ -326,6 +377,11 @@ def verify_auxiliary(reference: bytes, image: bytes) -> None:
             fail(
                 f"IAT {temperature:.0f} C knot is {voltage_axis[index]:.9f} V, "
                 f"expected {converted_voltage:.9f} V"
+            )
+        if abs(voltage_axis[index] - haltech_voltage) > 2e-7:
+            fail(
+                f"IAT {temperature:.0f} C knot does not retain Haltech's "
+                f"published {haltech_voltage:.9f} V point"
             )
 
     rev_cut, rev_resume = base.read_floats(image, base.REV_LIMIT_A_ADDR, 2)
