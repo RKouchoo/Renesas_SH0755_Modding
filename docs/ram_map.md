@@ -69,15 +69,18 @@ allocates no RAM and does not alter the stock correction array.
 | 0xFFFFCF94 | Validated oil temperature, or stock 70 C fallback, used by the 13/15 and 113/115 C selector bands |
 | 0xFFFFB528 | Phase/crank counter (OSV actuation sync) |
 
-## EVAP purge / boost-patch target (see boost_repurpose_notes.md)
+## Radiator fan and actual EVAP purge (see boost_repurpose_notes.md)
 | RAM addr | Meaning |
 |---|---|
-| **0xFFFFCD54** | Purge duty %% (write target to drive the output) |
-| 0xFFFFCD77 | Purge state machine (cases 0..7) |
-| 0xFFFFCD81 | Purge status byte (bit 0x80 = enabled) |
-| 0xFFFFCD58 / CD5C | Purge duty caches |
-| 0xFFFFB0F0 | Purge duty count (16.16 fixed) |
-| 0xFFFFAB84 | Purge PWM period (frequency) |
+| **0xFFFFCD54** | Stock radiator-fan request, percent; P92. The old purge/EBCS identity is retracted. |
+| **0xFFFFB6D4** | Actual CPC purge-duty ratio; P38. Current master publishes zero. |
+| **0xFFFFB6D8** | Actual modeled purge airflow; current master publishes zero. |
+| **0xFFFFBE60 / BE64** | Bank purge-fuel subtraction terms; current master independently publishes zero. |
+
+The earlier CD77/CD81/CD58/CD5C/B0F0/AB84 purge labels were based on the
+misidentified fan subsystem. They must not be used to identify CPC hardware.
+See the master audit for the verified `3FD8C -> E8C4` fan route and
+`1BBFC -> B182` actual CPC route.
 
 ## Closed-loop / open-loop fuel (see notes §7, task #4)
 | RAM addr | Meaning |
@@ -93,10 +96,17 @@ allocates no RAM and does not alter the stock correction array.
 | 0xFFFFAB18 / AB00 | u16 | Stock RH/LH front A/F raw channels; unused by the master feedback producer after both stock front sensors are disconnected |
 | 0xFFFFAE60 / AE64 | float | Master synthetic lambda Bank 1 / Bank 2, both written from the same valid former-MAF external-wideband input |
 | 0xFFFFAE68 / AE6C | float | Master pump-current placeholders, always 0.0 |
-| 0xFFFFAE70 / AE74 | float | Master readiness: 50.0 valid, 0.0 invalid; both bank-inhibit helpers require greater than 35.0, and this is one prerequisite of the wider EBCS sensor/SD gate |
+| 0xFFFFAE70 / AE74 | float | Master readiness: 50.0 valid, 0.0 invalid; both bank-inhibit helpers require greater than 35.0. Electronic boost actuator/guard is retired. |
 | 0xFFFFB4E8 / B4EC | float | Retained stock conditioned front feedback/logger paths; both ultimately follow the same synthetic lambda in the master image |
 | 0xFFFFAB20 / AB0C | u16 | Stock rear narrowband raw channels; master bypasses conversion and every traced rear monitor stage |
 | 0xFFFFB098 / B09C | float | Master external-wideband logger mirrors E500 (same lambda when valid, 0.0 fault sentinel); no longer rear-O2 results in the master image |
+| 0xFFFFABCC / ABD0 | float | Legacy front-O2 voltage channels from raw AB22/AB0E; stock conversion and some consumers remain. Distinct from external-wideband ADC AB06. |
+| 0xFFFFD114 / D118 | float | Auxiliary bank fuel adders using legacy O2 voltage plus conditioned lambda; current master zeros both selectable constants so this publisher always produces zero. |
+| 0xFFFFBC64 / BC68 | float | Legacy front-O2 voltage snapshots from ABCC/ABD0, copied by 1F0D8; not the external-wideband lambda. |
+| 0xFFFFB900 / B904 | float | Legacy-voltage bank offsets from 20564, added to lambda targets and used by CEFC/CF00 correction. Current master makes both selectable values zero. |
+| 0xFFFFBD20 / BD24 | float | Filtered legacy front-O2 voltages, still updated by 219C6 and used by the retained voltage loop. |
+| 0xFFFFBD04 / BD08 | float | Separate voltage-loop trims from 21F0C, with stored 8200/8208 baseline when inactive. Current master excludes these reads from the lambda-target composer 202B8; diagnostic/learning paths remain. |
+| 0xFFFFB8F4 / B8F8 | float | Per-bank lambda feedback targets from 202B8; main lambda feedback and other target terms remain after the scoped legacy-voltage repair. |
 | 0xFFFFC85C | u16 | Master lean-cut delay/confirmation counter, reclaimed only after every traced rear-O2 runtime task is bypassed |
 | 0xFFFFC860 | u8 | Master lean-cut state: 0 idle, 1 sensor delay, 2 AFR monitoring, 3 fuel-cut latched |
 

@@ -5,13 +5,22 @@ achieve the commanded values. All pressure figures described as boost are
 relative to the firmware's fixed 760 mmHg reference unless stated otherwise.
 
 The September 8 corrected build has SHA-256
-`fbc1a8fad234dbf09934da8dda8a0eda8629965c3d162eb957c06c46a4d9848e`
-and checksum `0x503BE476`. It restores stock radiator-fan control and deletes
+`5a1b3e389bdb1a6099b6ed39c3f59d53dfc1808b2d16e56f05148c127c4f48b5`
+and checksum `0xCAACD6C4`. It restores stock radiator-fan control and deletes
 actual CPC purge duty/modeled flow/fuel subtraction, without changing VE,
 injector, timing or AVLS calibrations. No new cam-hold policy was selected.
 Earlier images, including the first-VE ROM, retain the erroneous fan hook and
 must not be run. The corrected firmware is statically tested, not
 vehicle-validated or a demonstrated lean-out cure.
+
+The retained-sensor follow-up sets factory lambda atmospheric compensation
+to unity (`0x73E08`, four Q15 coefficients) and zeros both legacy O2-voltage
+auxiliary fuel adders (`0x76384/0x76388`) and bank target offset (`0x760F0`).
+Two one-word substitutions at `0x202CC/0x202D0` exclude separate legacy voltage
+trims BD04/BD08 from the lambda targets, including their stored baseline.
+Other target terms and main lambda feedback remain. These are fixed architecture
+changes owned by the wideband component, not VE or after-start tuning controls.
+See [RETAINED_ROUTINE_AUDIT.md](RETAINED_ROUTINE_AUDIT.md).
 
 ## MAP sensor
 

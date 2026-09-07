@@ -1,11 +1,15 @@
 # D2WD610H master-patch Ghidra audit
 
-> **Repair implemented — 2026-09-08:** the current `fbc1a8...` development image
+> **Repair implemented — 2026-09-08:** the current `5a1b3e...` development image
 > restores stock radiator-fan control and deletes actual CPC output/purge fuel
 > subtraction. Previous images overriding fan PWM remain quarantined, including
 > `0600d73a...`. Passing tests does not establish a lean-out cure or physical
 > validation. See the repair and idle-timing clarification at the end of this
 > file; earlier purge-output identification and EBCS safety claims are retracted.
+> The [retained-routine follow-up](RETAINED_ROUTINE_AUDIT.md) additionally
+> neutralizes factory lambda atmospheric correction, auxiliary adders, and two
+> feedback-target contributions dependent on removed stock O2 voltage channels.
+> No lean-out cure is claimed.
 
 ## Result
 
@@ -731,8 +735,11 @@ closed-loop correction event.
 
 `closed_loop_feedback_bank_state_update @ 0x1F0D8` has a separate
 `0xFFFFBC98` counter capped by `0x75E5E = 31`. That is 31 scheduler calls, not
-31 seconds and not the B688 engine-runtime clock. The captured CL/OL status was
-7 throughout, so this counter cannot explain that event. Likewise, the float
+31 seconds and not the B688 engine-runtime clock. **September 8 correction:**
+status 7 alone does not exclude this family's auxiliary fuel effects. Its bank
+offsets also feed CEFC/CF00 outside the main short-term correction; their gates
+and event-time values must be checked separately. See the
+[retained-routine follow-up](RETAINED_ROUTINE_AUDIT.md). Likewise, the float
 30 used by `evap_purge_condition_counter_update` is a signal threshold and the
 integer 30 values in the ignition scheduler are crank-angle/event quantities,
 not post-start timers.

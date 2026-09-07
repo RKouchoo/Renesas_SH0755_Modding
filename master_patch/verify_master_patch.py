@@ -37,6 +37,7 @@ import install_master_logger as logger_definition  # noqa: E402
 import purge_delete_component as purge_delete  # noqa: E402
 import test_purge_delete as purge_delete_test  # noqa: E402
 import test_actuator_retirement as actuator_retirement_test  # noqa: E402
+import test_stock_sensor_corrections as stock_sensor_test  # noqa: E402
 
 
 OUTPUT = HERE / "D2WD610H_master_patch.bin"
@@ -44,7 +45,7 @@ DEFINITION = HERE / "D2WD610H_master_patch.xml"
 LOGGER_FRAGMENT = HERE / "D2WD610H_master_logger_ecuparams.xml"
 LOGGER_DEFINITION = HERE / "D2WD610H_master_logger.xml"
 LOGGER_PROFILE = HERE / "D2WD610H_idle_diagnostic_profile.xml"
-EXPECTED_OUTPUT_SHA256 = "fbc1a8fad234dbf09934da8dda8a0eda8629965c3d162eb957c06c46a4d9848e"
+EXPECTED_OUTPUT_SHA256 = "5a1b3e389bdb1a6099b6ed39c3f59d53dfc1808b2d16e56f05148c127c4f48b5"
 EXPECTED_LOGGER_SHA256 = "e21f5d6633605369faa013027155adeeca8583ef0f1a9486d603dbbca2e68e0b"
 
 
@@ -194,6 +195,8 @@ def verify_layout(
         add_range(hook_owned, address, size, f"hook/{label}")
     for name, address, data in blobs["purge_delete"]:
         add_range(hook_owned, address, len(data), f"in-place/{name}")
+    for label, address, _, data in wideband.STOCK_SENSOR_PATCHES:
+        add_range(hook_owned, address, len(data), f"sensor correction/{label}")
     for address in speed_density.MAF_CONVERSION_CALL_ADDRS:
         add_range(hook_owned, address, 2, f"hook/MAF conversion bypass @0x{address:05X}")
     for address in speed_density.TEMPERATURE_MAF_CONDITION_TASK_PTRS:
@@ -365,6 +368,9 @@ def wideband_policy(raw_adc: int) -> tuple[float, float] | None:
 
 
 def verify_wideband(image: bytes) -> None:
+    wideband.check_stock_sensor_consumers(image)
+    for label, address, _, replacement in wideband.STOCK_SENSOR_PATCHES:
+        expect(image, address, replacement, label)
     expect(
         image,
         wideband.FRONT_AF_PROCESS_ENTRY,
@@ -1205,6 +1211,7 @@ def main() -> None:
     verify_omni_map(image)
     verify_avls_dual_ve(image)
     verify_wideband(image)
+    stock_sensor_test.verify_execution(image)
     try:
         fueling_safety_verify.verify_image(image)
     except AssertionError as exc:
@@ -1240,7 +1247,7 @@ def main() -> None:
     print("  idle VE trial     : 0.624 -> 0.985 near 1300 RPM/315 mmHg; not a verified repair")
     print("  MAP               : Omni MAP-SUP-3BR 30..300 kPa / 0.60..4.75 V")
     print("  IAT               : provisional HT-010206 curve; assumed 1.00-kohm ECU pull-up")
-    print("  wideband/O2       : former-MAF 50-4110 P0/P1 input; four stock paths removed")
+    print("  wideband/O2       : P0/P1; unity lambda baro; legacy voltage adders/target terms neutralized")
     print("  boost             : electronic actuator retired; independent hard cut ON")
     print("  fan / purge       : stock fan command retained; CPC duty/flow/bank subtraction zero")
     print("  load axes         : all eight active axes extend to 4.0 g/rev")

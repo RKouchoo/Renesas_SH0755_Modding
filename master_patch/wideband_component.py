@@ -25,11 +25,17 @@ actuator guard is retired: its output was misidentified radiator-fan PWM.
 Its reserved allocation contains only a return and erased bytes. Stock fan
 control remains intact; independent overboost and lean fuel cuts are separate
 components, not an electronic wastegate controller.
+
+The retained-sensor audit neutralizes factory atmospheric lambda correction,
+auxiliary fuel adders, and feedback-target corrections dependent on legacy O2
+voltages. Some other raw
+voltage consumers remain; this is not a claim of complete circuit independence.
 """
 
 from __future__ import annotations
 
 from pathlib import Path
+import hashlib
 import struct
 import sys
 
@@ -138,6 +144,79 @@ VALID_MIN_VOLTS = 0.50
 VALID_MAX_VOLTS = 4.50
 READY_VALID_VALUE = 50.0
 READY_THRESHOLD = 35.0
+
+# These factory-sensor corrections are incompatible with an externally decoded
+# lambda source. Neutralize their data while retaining the surrounding logic.
+# 18DAC computes 1 + (lambda - 1) * lookup(5EA2C, baro); Q15 0x8000 is unity.
+# 49B20 adds either zero or one of the two constants below to D114/D118 after
+# comparing conditioned lambda with disconnected legacy O2 voltages ABCC/ABD0.
+# This is an additive fuel term, NOT the main short-term feedback controller.
+STOCK_SENSOR_DATA_PATCHES = (
+    ("external lambda: unity factory atmospheric correction", 0x73E08,
+     bytes.fromhex("b3339b448df48000"), bytes.fromhex("8000800080008000")),
+    ("legacy O2-voltage auxiliary fuel adders disabled", 0x76384,
+     bytes.fromhex("3e8000003e800000"), b"\x00" * 8),
+    ("legacy O2-voltage bank target offset disabled", 0x760F0,
+     bytes.fromhex("bd23d70a"), b"\x00" * 4),
+)
+# 202B8 forms the main lambda-feedback target. BD04/BD08 are a separate
+# voltage-based trim produced by 21F0C, including its stored 8200/8208 baseline.
+# Ignore this contribution at the consumer; retain every other target term,
+# clamp, main lambda-feedback controller and its ordinary learned fuel trims.
+# Bank 1's load is in a BRA delay slot: FLDI0 is also a single SH-2E word.
+STOCK_SENSOR_CODE_PATCHES = (
+    ("bank 1 target ignores legacy voltage trim", 0x202CC,
+     bytes.fromhex("f428"), bytes.fromhex("f48d")),
+    ("bank 2 target ignores legacy voltage trim", 0x202D0,
+     bytes.fromhex("f418"), bytes.fromhex("f48d")),
+)
+STOCK_SENSOR_PATCHES = STOCK_SENSOR_DATA_PATCHES + STOCK_SENSOR_CODE_PATCHES
+STOCK_SENSOR_CONSUMER_HASHES = (
+    (0x18DAC, 0x18FDC, "1c5f196779bd34ad348440281a7f5bbc543e67f5e8fd72f6671fe0017f4d27d1"),
+    (0x49B20, 0x49C40, "f4cd9c92dfdee0fc56ac14dbfc5b2a606fff3b74184184b6894ead97b8533f31"),
+    (0x20564, 0x205FA, "b3df6ac4d1137c21bc3c9f222bf0249297e5a9875623f6cc7c5b3fcab155e510"),
+    (0x20658, 0x20680, "d9ce9ccc0ba9fb1efcd180b4b97aa8ac03a24c1f856e439b1ab400033b87f292"),
+    (0x202B8, 0x20326, "466008c5b2ede9cabc599b40d2f21850c7a9d0f54eaabaee4b1a098449924fea"),
+    (0x203C2, 0x203F0, "1a671f5b7eb9738953e0036c9f0e8c67e021122561cfe74dddadebdf5eaecfcd"),
+    (0x24C0, 0x24DA, "418acd98c9daff410179b5f38d2b96369b6c6eebc47674aa744cfbacd88b09d3"),
+)
+
+
+def check_stock_sensor_consumers(rom: bytes | bytearray) -> None:
+    if bytes(rom[0x5EA2C:0x5EA40]) != bytes.fromhex(
+        "0004080000073df800073e083800000000000000"
+    ):
+        raise SystemExit("REFUSING: factory lambda atmospheric descriptor changed")
+    for address, expected in (
+        (0x5F2E8, "000504000007689c000768b03ba0000000000000"),
+        (0x4B27C, "ffffb8f4ffffbb50ffffb900ffffb910ffffb8f8ffffbb54ffffb904ffffb914"),
+        (0x4B2CC, "ffffb918ffffbb64ffffbc64ffffbca9ffffb919ffffbb66ffffbc68ffffbcaa"),
+        (0x760F4, "00000000"),  # Other bank-offset branch must also stay zero.
+    ):
+        data = bytes.fromhex(expected)
+        if bytes(rom[address:address + len(data)]) != data:
+            raise SystemExit(f"REFUSING: legacy voltage descriptor/data changed @0x{address:05X}")
+    for start, end, digest in STOCK_SENSOR_CONSUMER_HASHES:
+        consumer = bytearray(rom[start:end])
+        # Verify stock and installed images with the same anchors. Only exact
+        # replacement words are normalized; any other modification still fails.
+        for _, address, expected, replacement in STOCK_SENSOR_CODE_PATCHES:
+            if start <= address and address + len(replacement) <= end:
+                offset = address - start
+                if consumer[offset:offset + len(replacement)] == replacement:
+                    consumer[offset:offset + len(expected)] = expected
+        if hashlib.sha256(consumer).hexdigest() != digest:
+            raise SystemExit(f"REFUSING: factory sensor consumer changed @0x{start:05X}")
+
+
+def apply_stock_sensor_corrections(rom: bytearray) -> None:
+    """Guard every anchor before any bounded data/instruction writes."""
+    check_stock_sensor_consumers(rom)
+    for label, address, expected, _ in STOCK_SENSOR_PATCHES:
+        if bytes(rom[address:address + len(expected)]) != expected:
+            raise SystemExit(f"REFUSING: {label} bytes changed @0x{address:05X}")
+    for _, address, _, replacement in STOCK_SENSOR_PATCHES:
+        rom[address:address + len(replacement)] = replacement
 
 
 def be32(value: int) -> bytes:
@@ -312,6 +391,13 @@ def apply_to_rom(rom: bytearray) -> list[tuple[str, int, bytes]]:
     if bytes(rom[boost.HIJACK_LITERAL : boost.HIJACK_LITERAL + 4]) != be32(boost.STOCK_OUTPUT):
         raise SystemExit("REFUSING: stock radiator-fan output literal was changed")
 
+    # Preflight the consumer identity and original correction bytes before any
+    # wideband edits. The final writes below use the same guarded helper.
+    check_stock_sensor_consumers(rom)
+    for label, address, expected, _ in STOCK_SENSOR_PATCHES:
+        if bytes(rom[address:address + len(expected)]) != expected:
+            raise SystemExit(f"REFUSING: {label} bytes changed @0x{address:05X}")
+
     blobs = build_blobs()
     for name, address, data in blobs:
         end = address + len(data)
@@ -369,6 +455,7 @@ def apply_to_rom(rom: bytearray) -> list[tuple[str, int, bytes]]:
 
     for _, address, data in blobs:
         rom[address : address + len(data)] = data
+    apply_stock_sensor_corrections(rom)
     return blobs
 
 

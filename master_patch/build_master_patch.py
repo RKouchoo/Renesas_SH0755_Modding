@@ -262,7 +262,7 @@ def main(argv: list[str] | None = None) -> None:
     print("  fan / purge       : stock fan PWM retained; actual CPC + fuel subtraction deleted")
     print("  boost switch      : independent hard overboost cut ON; EBCS not available")
     print("  default boost     : mechanical 5 psi spring; no electronic target command")
-    print("  oxygen sensors    : four stock paths removed; former MAF ADC -> 50-4110 P0/P1")
+    print("  oxygen sensors    : former MAF ADC -> P0/P1; factory baro/legacy voltage fuel terms neutralized")
     print("  rotational idle   : installed, bounded retard-only, default OFF")
     print("  pressure OL guard : ON; baro-referenced, 0.5 psi pre-boost margin")
     print("  lean fuel cut     : ON; 13.0 AFR, delayed/confirmed, boost-release latched")

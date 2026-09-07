@@ -750,7 +750,42 @@ public class ApplyMasterNames extends GhidraScript {
         setPlateComment(
             toAddr("00018dac"),
             "Retained downstream condition/filter. Master patch feeds its AE60/AE64 " +
-            "inputs from the single external wideband."
+            "inputs from the single external wideband. Stock computes " +
+            "1+(lambda-1)*K(CFBC) using descriptor 5EA2C and Q15 data 73E08. " +
+            "The retained-sensor repair sets all four coefficients to unity; " +
+            "readiness, fallback and filter code remain unchanged."
+        );
+        setPlateComment(
+            toAddr("00007ab0"),
+            "Converts ADC AB22/AB0E to voltage ABCC/ABD0 using 5/65536. " +
+            "SSM 16/17 and 1A/1B handlers identify these as legacy front-O2 " +
+            "voltage channels. Separate from master external-wideband ADC AB06. " +
+            "Conversion remains active; do not claim all raw-voltage consumers " +
+            "were removed by the principal O2 conversion/monitor bypasses."
+        );
+        setPlateComment(
+            toAddr("00049b20"),
+            "Auxiliary per-bank fuel adders D114/D118 depend on legacy O2 " +
+            "voltages ABCC/ABD0 <0.3 V and conditioned lambda B4E8/B4EC >=1.05, " +
+            "plus D110/B90C/BDF8/BE48 gates. Stock chooses 0 or one of two " +
+            "0.25 constants at 76384/76388. Master zeros both constants, leaving " +
+            "this consumer unchanged. Not a demonstrated cold lean-out cause."
+        );
+        setPlateComment(
+            toAddr("00020564"),
+            "Legacy-voltage bank offsets B900/B904 via structures 4B2CC/4B2DC " +
+            "and 4B27C/4B28C. Gates BCAB!=1, B90C==0, BB64/BB66>0; " +
+            "BC64/BC68 below lookup 5F2E8 selects -0.04 at 760F0, otherwise " +
+            "zero at 760F4. Master zeros 760F0; active flags remain stock. " +
+            "Offsets feed lambda targets and CEFC/CF00 reciprocal correction."
+        );
+        setPlateComment(
+            toAddr("000202b8"),
+            "Bank lambda-target composer. Stock includes BD04/BD08 voltage-loop " +
+            "trim (21F0C), including stored 8200/8208 baseline when inactive. " +
+            "Master substitutes FLDI0 FR4 at 202CC (BRA delay slot) and 202D0 " +
+            "to exclude only this input. Other terms, clamps and main external-" +
+            "lambda feedback remain; see RETAINED_ROUTINE_AUDIT.md."
         );
         setPlateComment(
             toAddr("0001ee74"),

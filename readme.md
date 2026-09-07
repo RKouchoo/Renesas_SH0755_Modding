@@ -9,11 +9,12 @@
 > cure. See [the master audit](master_patch/GHIDRA_AUDIT.md).
 
 Current master SHA-256:
-`fbc1a8fad234dbf09934da8dda8a0eda8629965c3d162eb957c06c46a4d9848e`
-(Subaru checksum `0x503BE476`). The corrective build changes 436 bytes from
-the preceding `0600d73a...` image, confined to fan-hook/actuator retirement,
-actual purge deletion and checksum. VE, injector and timing calibrations are
-unchanged; the second idle-VE trial remains unvalidated.
+`5a1b3e389bdb1a6099b6ed39c3f59d53dfc1808b2d16e56f05148c127c4f48b5`
+(Subaru checksum `0xCAACD6C4`). The retained-sensor audit adds a 20-byte repair
+to `fbc1a8...`: unity factory lambda atmospheric compensation, neutralized
+fuel adders and target corrections dependent on removed O2 voltages, and
+checksum. VE, injector and timing calibrations are unchanged; the second idle-VE trial
+remains unvalidated. See [the retained-routine audit](master_patch/RETAINED_ROUTINE_AUDIT.md).
 
 ## About this ECU
 
@@ -53,6 +54,7 @@ full **ignition-timing** blend/selection logic. See the notes.
 | [speed_density/README.md](speed_density/README.md) | Single always-on MAFless MAP/RPM/IAT component with committed-state low/high-lift VE, Ghidra trace, verifier, and commissioning boundary. |
 | [master_patch/README.md](master_patch/README.md) | **Current integrated target** — architecture, exact hardware assumptions, deterministic builder, artifact, definition, logger, and limitations. |
 | [master_patch/GHIDRA_AUDIT.md](master_patch/GHIDRA_AUDIT.md) | Stock-ROM function evidence, injected layout, verified decisions, and unresolved physical risks for the master. |
+| [master_patch/RETAINED_ROUTINE_AUDIT.md](master_patch/RETAINED_ROUTINE_AUDIT.md) | Retained factory sensor assumptions: atmospheric lambda, O2-voltage fuel adders and feedback-target repairs, execution tests and unresolved cold-idle paths. |
 | [solenoid_subsystem.md](docs/solenoid_subsystem.md) | Historical PWM subsystem research; its former purge-output identification is superseded by the master audit. |
 | [ram_map.md](docs/ram_map.md) | Consolidated confirmed RAM variables (RPM, MAP, ECT, ignition, AVLS, purge, CL/OL, oxygen sensors, solenoids). |
 | [hardware_io_map.md](docs/hardware_io_map.md) | SH7055 memory map, ROM landmarks, identified peripheral registers, sensor channels, and key ROM data structures. |

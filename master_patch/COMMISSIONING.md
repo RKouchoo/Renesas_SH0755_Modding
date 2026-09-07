@@ -1,8 +1,8 @@
 # Master-patch commissioning order
 
 > **September 8 corrected development image:** SHA-256
-> `fbc1a8fad234dbf09934da8dda8a0eda8629965c3d162eb957c06c46a4d9848e`,
-> checksum `0x503BE476`, restores `0x3FD8C -> 0xE8C4` stock fan control and
+> `5a1b3e389bdb1a6099b6ed39c3f59d53dfc1808b2d16e56f05148c127c4f48b5`,
+> checksum `0xCAACD6C4`, restores `0x3FD8C -> 0xE8C4` stock fan control and
 > deletes actual CPC purge duty/modeled flow/fuel subtraction. Electronic boost
 > control is removed. Do not run earlier images with the erroneous fan hook,
 > including the first-VE ROM. Static checks pass; vehicle behavior and a cure
@@ -24,6 +24,16 @@ the old first-VE BIN. VE, injector, timing and AVLS calibrations were not change
 by the fan/purge correction, and no new cam-hold policy was selected.
 Leave the newly exposed load-filter response at stock 6% for the initial
 comparison; its presence alone is not justification for setting it to 100%.
+
+The retained-sensor correction also makes factory lambda atmospheric
+compensation unity and neutralizes O2-voltage-dependent fuel adders, bank
+offsets and separate voltage trims in the lambda target. Main lambda feedback,
+its ordinary learned fuel corrections and all after-start enrichment remain.
+Removing a formerly active positive correction can lower delivered fuel, so do
+not assume this repair will
+richen idle or cure the observed lean-out. Compare external lambda with stock
+conditioned bank lambda, and capture final fuel factors and injector duration.
+See [the audit](RETAINED_ROUTINE_AUDIT.md) for exact scope and remaining paths.
 
 ## 1. Confirm parts and harness with power off
 

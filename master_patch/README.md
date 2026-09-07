@@ -37,9 +37,9 @@ firmware work into one deterministic stock-to-output build:
 - focused, self-contained D2WD610H RomRaider ECU and logger definitions.
 
 The generated baseline is `D2WD610H_master_patch.bin`, SHA-256
-`fbc1a8fad234dbf09934da8dda8a0eda8629965c3d162eb957c06c46a4d9848e`.
+`5a1b3e389bdb1a6099b6ed39c3f59d53dfc1808b2d16e56f05148c127c4f48b5`.
 It is 512 KiB, contains CALID `D2WD610H`, and has a valid Subaru additive
-checksum (`0x503BE476`). It is a development artifact, not a vehicle-tested tune.
+checksum (`0xCAACD6C4`). It is a development artifact, not a vehicle-tested tune.
 Its second idle-VE increase is an unvalidated trial derived from a still-rising
 AFR endpoint. The old recommendation to continue running the first-VE ROM is
 withdrawn: that image also used the erroneous fan hook. Any future first-VE
@@ -53,6 +53,17 @@ update. The subsequent fan/purge repair changes no VE, injector, timing or AVLS
 calibration either; no new cam-hold policy was selected. The rebuilt master
 still contains the existing second-VE trial and is not a like-for-like
 calibration comparison with the previously logged first-VE ROM.
+The subsequent [retained-routine audit](RETAINED_ROUTINE_AUDIT.md) neutralizes
+factory lambda atmospheric compensation, auxiliary fuel adders and two
+feedback-target contributions driven by removed stock O2 voltage channels.
+It changes 20 bytes from `fbc1a8...`, including two instruction words and the
+checksum. The second pass changes ten bytes from `89ce82...`. No VE, injector,
+timing or after-start data changes. Removing positive fuel corrections can
+reduce fuel wherever they previously activated; this is an architecture repair,
+not a proved lean-out cure. Main lambda feedback and its ordinary learned trims
+remain; the target ignores the separate voltage trim, including stored history.
+Other raw-voltage consumers and closed-loop transport dynamics remain audit
+limits; this does not establish total independence from the removed circuits.
 The complete generated logger definition has SHA-256
 `e21f5d6633605369faa013027155adeeca8583ef0f1a9486d603dbbca2e68e0b`.
 
@@ -202,6 +213,8 @@ and verifies provenance and checksum.
 | `wideband_component.py` | Permanent four-stock-O2 delete and former-MAF external-wideband input firmware. |
 | `purge_delete_component.py` | Guarded in-place CPC duty, modeled-flow and bank fuel-subtraction delete; no new RAM or free-flash allocation. |
 | `test_purge_delete.py` | Executable leaf/ABI tests for zero CPC request and both bank subtraction terms, plus ownership and refusal checks. |
+| `RETAINED_ROUTINE_AUDIT.md` | Stock sensor-assumption mismatches, exact 14-byte correction, cold-idle evidence and remaining audit limits. |
+| `test_stock_sensor_corrections.py` | Retained auxiliary-adder, bank-offset and lambda-target opcode execution, atmospheric lambda model, negative controls and guarded ownership. |
 | `../fueling_safety/fueling_safety_component.py` | Pressure-forced-open-loop and latched lean-cut component. |
 | `../patch/patch_rotational_idle.py` | Reusable bounded rotational-idle component, integrated default OFF. |
 | `verify_master_patch.py` | Independent binary, opcode, calibration, XML, logger, and provenance audit. |

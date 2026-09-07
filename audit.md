@@ -1574,3 +1574,74 @@ including adversarial sensor/register cases and a negative-control mutation.
 Tests model the lookup callees and do not prove ECU timing or physical fueling.
 Definitions, commissioning notes, memory map and repeatable Ghidra annotations
 are updated. Full evidence: `master_patch/GHIDRA_AUDIT.md` implementation section.
+
+## 2026-09-08 — Retained factory-sensor assumptions, scoped repair
+
+The user confirms the ECU is still on the September 7 image. That image is
+not cleared by tests of the later fan/purge/SD repairs. The earlier saved
+`1ebbc91` baseline is available, but the separately documented ECU readback
+file is absent from its recorded path; exact installed bytes were not asserted.
+
+Live stock assembly and SSM dispatch identify legacy O2 voltage channels
+ABCC/ABD0, still produced from raw AB22/AB0E. The retained auxiliary routine
+49B20 combines these disconnected-circuit values with synthetic lambda and
+can add 0.25 to each bank's final fueling terms D114/D118. Its two constants
+76384/76388 now contain zero. The ordinary feedback controller is retained.
+Factory lambda conditioner 18DAC also still applied its barometric coefficient
+to external lambda. Its four Q15 coefficients at 73E08 now equal unity.
+
+These corrections change exactly ten data bytes and four checksum bytes from
+the preceding fbc1a8 master. No executable, VE, injector, timing, AVCS,
+after-start or pump bytes change. New master SHA-256:
+`89ce82dd995b2676e7ff6e58f2f787b637603d9cc3d80d157d8b014cced116c8`,
+checksum `0x0E62FFBA`. The second-VE trial remains unvalidated.
+
+The full verifier passes. New tests execute retained 49B20 instructions across
+192 gate/input combinations, with helper results enumerated, both-bank and ABI
+checks, and restored-constant negative controls. The atmospheric check models
+the pinned Q15 descriptor and arithmetic. This is not whole-ECU validation.
+No live traffic or flashing was performed. Removing the positive adder can
+lower fueling if it previously activated; this is not a claimed lean-out cure.
+Other raw-voltage consumers, actual injector/fuel factors and cam behavior
+remain unresolved. See `master_patch/RETAINED_ROUTINE_AUDIT.md` for evidence,
+source attribution, exact ownership, and next discriminating measurements.
+
+## 2026-09-08 — Retained voltage corrections still reached fuel targets
+
+Continued stock-assembly tracing found two further dependencies on the removed
+front-O2 voltage circuits. 20564 uses snapshots BC64/BC68 to publish B900/B904:
+under its gates, voltage below 0.2978515625 V selects -0.04. This offset feeds
+both lambda target 202B8 and the independent CEFC/CF00 reciprocal correction.
+The 760F0 constant now equals zero, matching its already-zero alternate 760F4.
+
+219C6/21F0C separately turn filtered raw voltages into BD04/BD08 trims. Even
+when inactive, that loop republishes the stored 8200/8208 baseline. Replacing
+the two BD04/BD08 loads at 202CC/202D0 with FLDI0 FR4 excludes this input at
+the lambda-target consumer. Other target terms, clamps, main external-lambda
+feedback, its delay filter and ordinary learned trims remain. The legacy loop
+and its diagnostic/learning effects remain an audit boundary, not a claimed
+complete four-circuit runtime deletion.
+
+The new change is exactly ten bytes from 89ce82: six actual instruction/data
+bytes plus four checksum bytes. Current master SHA-256:
+`5a1b3e389bdb1a6099b6ed39c3f59d53dfc1808b2d16e56f05148c127c4f48b5`,
+checksum `0xCAACD6C4`. Both retained-sensor passes together change 20 bytes
+from fbc1a8. No new free flash/RAM, VE, injector, timing, after-start or pump
+calibration changes. Root stock remains unchanged and the second VE trial
+remains unvalidated.
+
+Tests execute 20564 in 486 bank/gate/voltage combinations and 202B8 in 312
+bank/trim/other-input combinations, including the original clamp instructions.
+They restore the old constant and each original load as negative controls,
+check ABI/output writes, and prove the patched target does not read voltage
+trim even if stale/NaN. The existing 192 auxiliary-adder cases also pass.
+The voltage lookup remains a descriptor-derived model; upstream scheduling
+and whole-ECU behavior are not emulated. Full master verification and all eight
+SD-wrapper execution groups pass. Exact evidence and remaining mode/diagnostic
+paths are in `master_patch/RETAINED_ROUTINE_AUDIT.md`.
+
+These warm/history-gated paths are not established causes of the September 7
+cold event. B90C reload 120 is a count, not a demonstrated 30-second timer.
+The older claim that status 7 alone excludes the BC98 family's effect was
+corrected: auxiliary CEFC/CF00 fuel terms also consume its bank offsets.
+No ECU traffic, flash, or learning reset was performed.

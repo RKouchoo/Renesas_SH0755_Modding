@@ -10,11 +10,14 @@ wastegate-spring operation. Older fan-hook images remain quarantined, including
 EBCS-OFF images. Static verification does not prove this fixes the cold lean-out
 or makes the ROM vehicle-validated; see the latest master Ghidra audit.
 
-Corrected master SHA-256:
-`fbc1a8fad234dbf09934da8dda8a0eda8629965c3d162eb957c06c46a4d9848e`,
-checksum `0x503BE476`. Its 436-byte difference from the preceding `0600d73a...`
-image is confined to fan-hook/actuator retirement, actual purge deletion and
-checksum; VE, injector and timing calibration bytes are unchanged.
+Current master SHA-256:
+`5a1b3e389bdb1a6099b6ed39c3f59d53dfc1808b2d16e56f05148c127c4f48b5`,
+checksum `0xCAACD6C4`. The fan/purge repair first produced `fbc1a8...` with a
+436-byte difference from `0600d73a...`. The two retained-sensor passes then
+change 20 bytes from `fbc1a8...`, neutralizing atmospheric lambda correction,
+auxiliary O2-voltage fuel adders and two legacy-voltage contributions to the
+lambda targets. VE, injector and timing calibration bytes are unchanged by
+these repairs. See [the retained-routine audit](../master_patch/RETAINED_ROUTINE_AUDIT.md).
 
 Current cold-idle investigation: the second VE increase is an unvalidated
 trial, not a proved repair. The latest run used the first increase, but its
@@ -769,3 +772,14 @@ and 0x1B81E.
   renamed in Ghidra and added to `ApplyMasterNames.java`. The dedicated AUD design note records
   the eight CPU signals, the required 5 V PVCC2-domain interface, protocol, expected bandwidth,
   and why safe live map editing needs a RAM-shadow patch rather than stock RAMER.
+
+- **2026-09-08 retained-sensor follow-up:** stock lambda conditioner `18DAC`
+  still applied factory barometric compensation to the decoded external lambda;
+  master now pins `73E08..73E0F` to four Q15 unity coefficients. Stock auxiliary
+  adder `49B20` combines legacy front-O2 voltage channels `ABCC/ABD0` with
+  conditioned lambda and feeds `D114/D118` into `1DD04`; both selectable 0.25
+  constants at `76384/76388` are now zero. Instructions and all VE/injector/
+  timing/after-start data are unchanged from the prior repaired master.
+  This is a 14-byte correction including checksum, not a proved cold lean-out
+  cure or complete elimination of every raw-voltage consumer. Evidence and
+  executable regression scope: [retained-routine audit](../master_patch/RETAINED_ROUTINE_AUDIT.md).

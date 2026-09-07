@@ -6,8 +6,8 @@ build fails on any overlap except the explicit replacement of boost component
 seed data by the final boost calibration.
 
 Current corrected master SHA-256 is
-`fbc1a8fad234dbf09934da8dda8a0eda8629965c3d162eb957c06c46a4d9848e`
-(checksum `0x503BE476`). The fan/purge repair adds no RAM or free-flash
+`5a1b3e389bdb1a6099b6ed39c3f59d53dfc1808b2d16e56f05148c127c4f48b5`
+(checksum `0xCAACD6C4`). The fan/purge repair adds no RAM or free-flash
 allocation; the contiguous unallocated tail remains 3,344 bytes.
 
 ## Injected flash
@@ -77,6 +77,16 @@ registers and add no stack frame. Residual filter state cannot produce either
 bank subtraction because the final publisher stores zero independently of it.
 
 ## RAM
+
+The retained-sensor correction additionally owns 24 in-place bytes:
+`0x73E08..0x73E0F` (four Q15 unity atmospheric coefficients),
+`0x76384..0x7638B` (two zero auxiliary O2-dependent fuel adders),
+`0x760F0..0x760F3` (zero legacy-voltage bank target offset), and the instruction
+words at `0x202CC/0x202D0` (`fldi0 fr4` excludes legacy voltage trim from each
+lambda target). The wideband component guards the surrounding code, literals,
+bank/lookup descriptors and existing data before writing. Only exact installed
+instruction replacements are normalized when checking consumer hashes.
+It adds no RAM or free-flash allocation.
 
 The fueling-safety component reserves `0xFFFFC85C` as a 16-bit task-call counter
 and `0xFFFFC860` as an 8-bit state (`0` idle, `1` sensor delay, `2` monitoring,
