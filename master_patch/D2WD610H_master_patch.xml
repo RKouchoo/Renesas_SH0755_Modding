@@ -104,7 +104,7 @@
    <table type="Y Axis" name="Engine Speed" storagetype="float" endian="little" logparam="P8">
     <scaling units="RPM" expression="x" to_byte="x" format="#" fineincrement="50" coarseincrement="100" />
    </table>
-   <description>VE fraction used while committed AVLS mode 0xFFFFCD86 is not 3. The RPM axis stops at the 3200 RPM high-lift engage threshold. The 3000-3200 overlap is selected by committed state.</description>
+   <description>VE fraction used while committed AVLS mode 0xFFFFCD86 is not 3. The RPM axis stops at the 3200 RPM high-lift engage threshold. The 3000-3200 overlap is selected by committed state. The generated baseline contains an unvalidated second idle-VE trial near 1300 RPM/315 mmHg, raising VE from about 0.624 to 0.985. The added correction tapers to zero by 2500 RPM and 1150 mmHg. The latest log used the first trial and its AFR was still rising, so the second increase is not a verified repair. Validate with measured MAP and fuel data after after-start enrichment fully decays.</description>
   </table>
   <table type="3D" name="Speed Density VE - AVLS High Lift" category="01.4 - Air Model - VE Tables" storagetype="float" endian="little" sizex="13" sizey="11" userlevel="2">
    <scaling units="VE fraction" expression="x" to_byte="x" format="0.000" fineincrement=".005" coarseincrement=".02" />
@@ -132,6 +132,13 @@
     <scaling units="RPM" expression="x" to_byte="x" format="#" fineincrement="50" coarseincrement="100" />
    </table>
    <description>This is the compensation of engine load based on RPM and manifold pressure.</description>
+  </table>
+  <table type="2D" name="Speed Density Load Filter Response" category="01.5 - Air Model - Load Calculation" storagetype="float" endian="little" sizey="1" userlevel="3">
+   <scaling units="% per update" expression="x*100" to_byte="x/100" format="0.0" fineincrement=".5" coarseincrement="1" />
+   <table type="Static Y Axis" name="Load smoothing" sizey="1">
+    <data>Response</data>
+   </table>
+   <description>Retained first-order load-filter response from raw load 0xFFFFB428 to filtered load 0xFFFFB42C, upstream of normal conditioned load. The stock default is 6% toward the new load per update. Larger values respond faster; 100% passes the new load through. 0% normally freezes the previous load except for initialization/snap conditions: do not use it. Keep a finite value above 0% and no greater than 100%. Update cadence is not established, so this is not a time in milliseconds. Leave the stock default until MAP noise and transient response are measured; changing it is not a verified lean-out repair.</description>
   </table>
   <table type="2D" name="Injector Latency" category="02.1 - Fueling - Injectors" storagetype="uint16" endian="big" sizey="5" userlevel="2" logparam="E50">
    <scaling units="Latency (ms)" expression="x*.00025" to_byte="x/.00025" format="0.00" fineincrement=".01" coarseincrement=".1" />
@@ -456,7 +463,7 @@
     <data>Minimum valid voltage</data>
     <data>Maximum valid voltage</data>
    </table>
-   <description>Inclusive operating-plausibility window. Default 0.50 to 4.50 V corresponds to 11.00 to 19.00 gasoline AFR on the supplied P0/P1 curve. Outside it the ECU publishes a zero logger sentinel, inhibits closed-loop feedback, and forces EBCS duty to zero. In-range voltage does not prove controller or sensor health; a warm-up/disconnected output may remain in range. MAP/RPM/IAT, minimum-RPM, and SD-result prerequisites must also pass.</description>
+   <description>Inclusive operating-plausibility window. Default 0.50 to 4.50 V corresponds to 11.00 to 19.00 gasoline AFR on the supplied P0/P1 curve. Outside it the ECU publishes a zero logger sentinel, inhibits closed-loop feedback. In-range voltage does not prove controller or sensor health; a warm-up/disconnected output may remain in range. The independent lean fuel cut treats invalid or not-ready samples as lean after its pressure and delay gates.</description>
   </table>
   <table type="3D" name="Base Timing - Normal Cam (AVCS Tracking Ratio 1.0)" category="04.1 - Ignition - Base Timing" storagetype="uint8" endian="big" sizex="15" sizey="18" userlevel="1" logparam="E53">
    <scaling units="Base Ignition Timing (degrees BTDC)" expression="(x*.3515625)-20" to_byte="(x+20)/.3515625" format="0.00" fineincrement=".2" coarseincrement="1" />
@@ -1023,6 +1030,7 @@
    <table type="X Axis" storageaddress="0x74274" />
    <table type="Y Axis" storageaddress="0x74298" />
   </table>
+  <table name="Speed Density Load Filter Response" storageaddress="0x73968" category="01.5 - Air Model - Load Calculation" />
   <table name="Injector Latency" storageaddress="0x7B318">
    <table type="Y Axis" storageaddress="0x7B304" />
   </table>
@@ -1218,45 +1226,10 @@
    <table type="Y Axis" storageaddress="0x7C71C" />
    <description>Intake-cam advance target, in degrees, selected while committed AVLS cam mode 0xFFFFCD86 is 3 (high lift). Live Ghidra at intake_avcs_target_by_avls_mode_update @ 0x353B0 selects descriptor 0x60C50 and data 0x7C764 in this state. Legacy table B is an AVLS-mode map, not a left/right-bank map, and it is selected rather than blended with the low-cam target. The master load axis is resampled through the stock 2.00 g/rev range and extended to 4.00 g/rev; higher-load columns retain the stock final-column target as a safe starting point.</description>
   </table>
-  <table type="Switch" name="Electronic Boost Control Enable" category="06.1 - Boost - Electronic Control" sizey="1" userlevel="1" storageaddress="0x7D80C">
-   <state name="on" data="01" />
-   <state name="off" data="00" />
-   <description>Exact 01 permits the EVAP-output EBCS controller to command duty. Default 00 forces zero EBCS duty for direct wastegate-spring control without disabling the independent hard overboost cut. This does not restore the removed MAF/O2 logic or stock MAP scaling. The master prerequisite guard still forces zero duty unless the external-wideband input is ready, MAP/RPM/IAT are inside their speed-density validity windows, RPM is at least the first shared boost-axis breakpoint, and modeled airflow is not the 500 g/s fault sentinel.</description>
-  </table>
-  <table type="2D" name="Boost Wastegate Duty (RPM)" category="06.1 - Boost - Electronic Control" storagetype="uint8" endian="big" sizey="8" userlevel="1" storageaddress="0x7D7C4">
-   <scaling units="wastegate duty %" expression="x" to_byte="x" format="0" fineincrement="1" coarseincrement="5" />
-   <table type="Y Axis" name="Engine Speed" storagetype="float" endian="big" storageaddress="0x7D7A4">
-    <scaling units="RPM" expression="x" to_byte="x" format="0" fineincrement="50" coarseincrement="250" />
-   </table>
-   <description>Feed-forward EBCS duty versus RPM. The master commissioning image is zero at every breakpoint, so the 5 psi mechanical spring alone sets boost. Do not add duty until plumbing/polarity, spring boost, lambda, and both overboost actions have been physically proven.</description>
-  </table>
-  <table type="2D" name="Boost Target (RPM)" category="06.1 - Boost - Electronic Control" storagetype="float" endian="big" sizey="8" userlevel="1" storageaddress="0x7D7E0">
-   <scaling units="psi relative 760 mmHg" expression="(x-760)/51.71493257" to_byte="(x*51.71493257)+760" format="0.00" fineincrement="0.1" coarseincrement="0.5" />
-   <table type="Y Axis" name="Engine Speed" storagetype="float" endian="big" storageaddress="0x7D7A4">
-    <scaling units="RPM" expression="x" to_byte="x" format="0" fineincrement="50" coarseincrement="250" />
-   </table>
-   <description>Controller target stored in native mmHg absolute and displayed as psi relative to 760 mmHg. The commissioning curve rises to 5.0 psi. This target alone cannot raise boost while Kp, feed-forward duty, and the maximum-duty ratio remain zero. The first shared RPM-axis breakpoint also acts as the minimum electronic-control speed.</description>
-  </table>
-  <table type="1D" name="Boost Kp (proportional gain)" category="06.1 - Boost - Electronic Control" storagetype="float" endian="big" sizey="1" userlevel="2" storageaddress="0x7D800">
-   <scaling units="WGDC percentage points per psi error" expression="x*5171.493257" to_byte="x/5171.493257" format="0.00" fineincrement="0.1" coarseincrement="0.5" />
-   <description>Proportional EBCS gain. Default is 0.0 for spring-only commissioning. There is no integral term. Tune only after the zero-duty system and overboost protections have been proven on the installed hardware.</description>
-  </table>
-  <table type="1D" name="Boost Max Duty Ratio" category="06.1 - Boost - Electronic Control" storagetype="float" endian="big" sizey="1" userlevel="2" storageaddress="0x7D804">
-   <scaling units="ratio (1.0 = 100%)" expression="x" to_byte="x" format="0.00" fineincrement="0.01" coarseincrement="0.05" />
-   <description>Final EBCS duty clamp, where 1.0 is 100 percent. Default is 0.0, which independently guarantees spring-only boost even if another duty or gain table is edited.</description>
-  </table>
-  <table type="1D" name="Boost Minimum Throttle" category="06.1 - Boost - Electronic Control" storagetype="float" endian="big" sizey="1" userlevel="1" storageaddress="0x7D8BC">
-   <scaling units="throttle opening" expression="x" to_byte="x" format="0.0" fineincrement="1" coarseincrement="5" />
-   <description>Driver-demand gate. At or below this processed-throttle value the controller commands zero EBCS duty. Default native value is 30.0.</description>
-  </table>
   <table type="Switch" name="Overboost Fuel Cut Enable" category="06.2 - Boost - Overboost Protection" sizey="1" userlevel="1" storageaddress="0x7D80D">
    <state name="on" data="01" />
    <state name="off" data="00" />
-   <description>Exact 01 independently enables the added hard MAP fuel cut through the verified stock rev-limiter flag path. Default is ON even while electronic boost control is OFF. Any other value retains the stock RPM limiter but bypasses only the added MAP cut. This is a last-resort software protection and cannot replace correct wastegate plumbing.</description>
-  </table>
-  <table type="1D" name="Boost Overboost Cut (Duty, soft)" category="06.2 - Boost - Overboost Protection" storagetype="float" endian="big" sizey="1" userlevel="1" storageaddress="0x7D808">
-   <scaling units="psi relative 760 mmHg" expression="(x-760)/51.71493257" to_byte="(x*51.71493257)+760" format="0.00" fineincrement="0.1" coarseincrement="0.5" />
-   <description>Soft MAP limit. Above the default 5.5 psi relative-to-760-mmHg value, the controller commands zero EBCS duty. Keep below the hard cut and bench/dyno-prove the transition.</description>
+   <description>Exact 01 independently enables the added hard MAP fuel cut through the verified stock rev-limiter flag path. Default is ON with mechanical wastegate-spring boost control. Electronic actuator control is retired and the stock radiator-fan output is retained. Any other value retains the stock RPM limiter but bypasses only the added MAP cut. This is a last-resort software protection and cannot replace correct wastegate plumbing.</description>
   </table>
   <table type="1D" name="Boost Overboost Fuel Cut (hard)" category="06.2 - Boost - Overboost Protection" storagetype="float" endian="big" sizey="1" userlevel="1" storageaddress="0x7D8C0">
    <scaling units="psi relative 760 mmHg" expression="(x-760)/51.71493257" to_byte="(x*51.71493257)+760" format="0.00" fineincrement="0.1" coarseincrement="0.5" />

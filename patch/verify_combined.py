@@ -1,5 +1,8 @@
 #!/usr/bin/env python3
-"""Binary audit for the combined D2WD610H boost + single-front-A/F/rear-O2-delete image.
+"""Audit combined overboost fuel cut + single-front-A/F/rear-O2-delete image.
+
+The electronic actuator is retired and the real radiator-fan output remains
+stock. Legacy actuator data are preserved only as inert flash reservations.
 
 Usage: python3 patch/verify_combined.py [patched.bin]
 """
@@ -61,18 +64,34 @@ def main():
     if boost_changed & front_changed:
         raise SystemExit("FAIL: boost and front-A/F byte ownership overlaps")
 
-    # Pin the two boost hooks and both runtime decisions independently of the
-    # shared blob builders.
-    expect(image, boost.HIJACK_LITERAL, boost.be32(boost.STUB_ADDR), "boost output hook")
+    # Pin fan preservation, actuator retirement, and the remaining hard-cut
+    # hook independently of regeneration from the shared blob builders.
+    expect(stock, 0x3FD8C, bytes.fromhex("0000e8c4"), "canonical fan output identity")
+    expect(image, 0x3FD8C, bytes.fromhex("0000e8c4"), "preserved fan output")
     expect(image, boost.REVLIM_FNPTR, boost.be32(boost.REVWRAP_ADDR), "boost rev-limit hook")
-    expect(image, boost.EBCS_ENABLE_ADDR, b"\x00", "EBCS enable default")
+    expect(image, boost.EBCS_ENABLE_ADDR, b"\x00", "inert retired actuator byte")
     expect(image, boost.OVERBOOST_ENABLE_ADDR, b"\x01", "overboost enable default")
-    expect(image, boost.STUB_ADDR,
-           bytes.fromhex("d11e601088018903f48dd21d422b0009"),
-           "zero-duty disabled boost path")
+    expect(image, 0x7D810, bytes.fromhex("000b0009") + b"\xff" * 168,
+           "retired actuator return and erased 172-byte reservation")
+    expect(image, 0x7D8C4, bytes.fromhex("4f22d20a420b0009"),
+           "stock rev-limiter call before added pressure cut")
     expect(image, boost.REVWRAP_ADDR + 8,
            bytes.fromhex("d109601088018b09"),
            "added-fuel-cut disabled branch")
+    expect(image, 0x7D8DC, bytes.fromhex("f2358b03d1076010cb802100"),
+           "pressure comparison and fuel-cut flag write")
+    expect(image, 0x7D8F0,
+           bytes.fromhex("00024b240007d80dffffabc40007d8c0ffffbf6c"),
+           "hard-cut stock limiter, enable, MAP, threshold, and flag literals")
+
+    boost_allowed = set(range(boost.MAP_SCALING_ADDR, boost.MAP_SCALING_ADDR + 8))
+    boost_allowed.update(range(boost.REVLIM_FNPTR, boost.REVLIM_FNPTR + 4))
+    for _, address, data in boost.build_blobs():
+        boost_allowed.update(range(address, address + len(data)))
+    if boost_changed - boost_allowed:
+        raise SystemExit("FAIL: boost component changes bytes outside its retained allocations")
+    if set(range(0x3FD8C, 0x3FD90)) & (boost_changed | front_changed):
+        raise SystemExit("FAIL: fan output pointer belongs to neither patch's changed bytes")
 
     # Pin all front-A/F hooks, enable branches, and generated DTC edits.
     expect(image, front.FRONT_AF_PROCESS_ENTRY,
@@ -139,7 +158,6 @@ def main():
         raise SystemExit("FAIL: post-rear-patch free region is not stock/erased")
 
     instruction_spans = [
-        (boost.STUB_ADDR, 0x7D88C),
         (boost.REVWRAP_ADDR, 0x7D8F0),
         (front.FRONT_MIRROR_WRAPPER_ADDR, 0x7D950),
         (front.FRONT_ORIGINAL_TRAMPOLINE_ADDR, 0x7D9B4),
@@ -164,9 +182,10 @@ def main():
     print("  changed bytes  : %d = boost %d + front-A/F %d; no overlap"
           % (len(all_changed), len(boost_changed), len(front_changed)))
     print("  injected code  : %d decoded instructions; no unknown opcodes" % len(decoded))
-    print("  runtime enables: EBCS 0x%05X=00; hard cut 0x%05X=01; front-A/F 0x%05X=01"
-          % (boost.EBCS_ENABLE_ADDR, boost.OVERBOOST_ENABLE_ADDR,
-             front.FRONT_AF_ENABLE_ADDR))
+    print("  retired actuator: RTS/NOP plus erased padding; no switch can enable it")
+    print("  fan output     : 0x3FD8C remains stock 0x0000E8C4")
+    print("  runtime enables: hard cut 0x%05X=01; front-A/F 0x%05X=01"
+          % (boost.OVERBOOST_ENABLE_ADDR, front.FRONT_AF_ENABLE_ADDR))
     print("  O2 architecture: retained Bank-1 factory A/F; both rear narrowbands bypassed")
     print("  regenerated    : byte-identical from fresh stock; no generated input stacking")
 

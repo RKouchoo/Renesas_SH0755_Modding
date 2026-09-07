@@ -40,12 +40,147 @@ public class ApplyMasterNames extends GhidraScript {
 
     @Override
     public void run() throws Exception {
+        // September 8 retained-system audit: the old boost output was FAN,
+        // not CPC purge. Keep these identities reproducible on stock.
+        createOrRename("00014dcc", "throttle_position_sensor_process");
+        createOrRename("00015192", "runtime_b2bc_bit1_is_set");
+        createOrRename("00019c68", "runtime_b51c_bit7_is_set");
+        createOrRename("00027de8", "ign_idle_timing_blend_factor_update");
+        createOrRename("00027f3e", "ign_idle_timing_target_update");
+        createOrRename("00028166", "ign_base_and_idle_timing_update");
+        createOrRename("0001baf0", "canister_purge_airflow_and_duty_mode_dispatch");
+        createOrRename("0002300a", "purge_fuel_compensation_periodic_update");
+        createOrRename("00051194", "diagnostic_descriptor_enabled_return_one");
+        createOrRename("000057da", "canister_purge_pwm_compare_interrupt_service");
+        createOrRename("00028958", "ignition_c1a0_adjustment_update");
+        createOrRename("00029024", "ignition_retard_c1c8_update");
+        createOrRename("00029128", "ignition_retard_c1d0_update");
+        createOrRename("0002931a", "ignition_retard_c1e0_update");
+        createOrRename("0004ac6e", "post_ignition_periodic_state_update_4ac6e");
+        createOrRename("00007ab0", "analog_pair_abcc_abd0_voltage_process");
+        createOrRename("0002379c", "fueling_correction_beb8_bec0_initialize");
+        createOrRename("00023864", "fueling_correction_beb8_bec0_update");
+        createOrRename("00045258", "fueling_correction_cefc_cf00_update");
+        createOrRename("000452b8", "fueling_correction_cefc_cf00_reciprocal_compute");
+        createOrRename("00049b20", "fueling_correction_d114_d118_update");
+        createOrRename("00033b92", "intake_avcs_operating_state_flags_update");
+        createOrRename("00033ea0", "intake_avcs_runtime_temperature_permission_update");
+        createOrRename("00033ffc", "intake_avcs_rpm_oil_temperature_gate_update");
+        createOrRename("0003bb26", "runtime_cc4c_bit6_is_set");
+        createOrRename("00022fe8", "purge_fuel_compensation_filter_initialize");
+        createOrRename("0001bc16", "purge_airflow_from_pulsed_duty_update");
+        createOrRename("0001bc90", "purge_airflow_from_fixed_duty_update");
+        createOrRename("0001bcae", "purge_airflow_from_zero_duty_update");
+        createOrRename("0001bcca", "purge_airflow_target_and_duty_update");
+        createOrRename("0001bc0a", "purge_airflow_and_duty_clear");
+        createOrRename("0001bd34", "purge_duty_diagnostic_ramp_update");
+        createOrRename("0001b800", "purge_airflow_limit_and_correction_update");
+        createOrRename("0001b15e", "purge_operating_condition_flags_update");
+        createOrRename("00023300", "hot_iat_fuel_compensation_initialize");
+        createOrRename("0002333c", "hot_iat_fuel_compensation_update");
+        createOrRename("0002354c", "hot_iat_fuel_compensation_table_update");
+        createOrRename("000236d4", "hot_iat_fuel_compensation_blend_update");
+        createOrRename("000235d6", "hot_iat_fuel_compensation_enable_hysteresis_update");
+        createOrRename("00023482", "hot_iat_fuel_compensation_temperature_filter_update");
+        createOrRename("0003fc0a", "radiator_fan_duty_compute");
+        createOrRename("0003f9e4", "radiator_fan_operating_state_update");
+        createOrRename("0003fd38", "radiator_fan_condition_counter_update");
+        createOrRename("0000e8c4", "radiator_fan_pwm_output_write");
+        createOrRename("00046748", "radiator_fan_coolant_response_monitor");
+        createOrRename("0000b182", "canister_purge_pwm_duty_request_write");
+        createOrRename("0002bd5c", "idle_target_c460_with_fan_duty_limits_update");
+        createOrRename("0002e0e0", "idle_compensation_c540_with_fan_duty_update");
+        createOrRename("0001bfbc", "purge_status_b705_bit6_is_set");
+        createOrRename("00023054", "purge_bank_fuel_subtraction_publish");
+        createOrRename("000231d6", "airflow_compensation_mass_flow_filter_update");
+        createOrRename("00046fe8", "diagnostic_override_inactive_return_zero");
+        createOrRename("00031878", "ssm_radiator_fan_command_percent_read");
+        createOrRename("000318e8", "ssm_canister_purge_duty_ratio_read");
+        setPlateComment(
+            toAddr("0003fc0a"),
+            "Radiator fan request CD54, exported by SSM 0x2F / P92. Coolant " +
+            "tables 609C4/609D8 corroborate identity. Earlier purge label was " +
+            "wrong: pre-repair master images redirected 3FD8C and overrode " +
+            "this fan command even with EBCS OFF. September 8 repair preserves " +
+            "stock 3FD8C=E8C4 and retires both injected actuator allocations."
+        );
+        setPlateComment(
+            toAddr("0000e8c4"),
+            "Radiator fan PWM writer: F590 = AB84 minus scaled ratio. Physical " +
+            "fan fail-safe behavior unverified. Actual CPC request writer is B182."
+        );
+        setPlateComment(
+            toAddr("00027de8"),
+            "Idle/base timing blend C134 uses RPM, speed and debounced throttle " +
+            "idle flag B2BC bit1, not load directly. Stationary recognized idle " +
+            "ramps toward0 (idle target), base toward1. A/D table lookups alone " +
+            "do not establish actual idle ignition retard."
+        );
+        setPlateComment(
+            toAddr("00027f3e"),
+            "Idle target C138. Stationary maps7828F/78298 flat15.15625deg over " +
+            "400..2000RPM; load compensation782AC approximately0.039deg. " +
+            "Not final spark timing after downstream corrections."
+        );
+        setPlateComment(
+            toAddr("00028166"),
+            "Combines idleC138 and baseC150 using C134 into C130. 281AA is " +
+            "inside this function, not a separate function entry. Idle code " +
+            "and calibration unchanged by September8 fan/purge repair."
+        );
+        setPlateComment(
+            toAddr("0001baf0"),
+            "Actual CPC dispatcher, not fan. September8 master replaces first " +
+            "40bytes: B6D4 duty, B6D8 modeled flow and B720 mode zero; tail-call " +
+            "unchanged B182 with FR4=0. Canonical stock remains unpatched."
+        );
+        setPlateComment(
+            toAddr("00023054"),
+            "Both-bank purge fuel-subtraction publisher. September8 master " +
+            "replaces8bytes with unconditional zero store to caller R4 " +
+            "(BE60/BE64). Ordinary stock72C purge gate does not prove a " +
+            "cold lean-out cause."
+        );
+        createOrRename(
+            "000009f4", "bus_state_controller_and_ram_emulation_initialize"
+        );
+        createOrRename(
+            "00000a1e", "bus_and_port_registers_initialize_a1e"
+        );
+        createOrRename("00001b4a", "port_registers_initialize_1b4a");
         createOrRename("00001884", "diagnostic_request_download_handle");
         createOrRename("00005d0e", "hardware_register_value_initialize_5d0e");
+        createOrRename("0000209c", "table2d_lookup_dispatch");
+        createOrRename("00002150", "table3d_lookup_dispatch");
+        createOrRename("00002424", "float_first_order_filter_with_snap");
         createOrRename("00002458", "float_divide_guarded");
         createOrRename("000024b0", "float_minimum_select");
         createOrRename("000024c0", "float_clamp");
         createOrRename("000024fc", "float_difference_exceeds_tolerance");
+        createOrRename("0000257c", "u16_scale_offset_to_float");
+        createOrRename("0000258c", "float_scale_offset_to_u8_round_clamp");
+        createOrRename("000025cc", "integer_signal_first_order_filter_q8");
+        createOrRename("000025f8", "interp_2axis_float32");
+        createOrRename("000026e0", "axis_index_search_float");
+        createOrRename("000027d0", "axis_pair_index_search");
+        createOrRename("000027f0", "interp_1axis_float32");
+        createOrRename(
+            "0000505e", "hardware_register_byte_initialize_505e"
+        );
+        createOrRename("00005076", "no_operation_return_5076");
+        createOrRename("0000507a", "no_operation_return_507a");
+        createOrRename("0000507e", "no_operation_return_507e");
+        createOrRename("00005082", "port_registers_initialize_5082");
+        createOrRename("000050c6", "no_operation_return_50c6");
+        createOrRename("000050ca", "port_registers_initialize_50ca");
+        createOrRename("0000529c", "flash_ram_emulation_disable");
+        createOrRename("000052a4", "flash_ram_emulation_disable_thunk");
+        createOrRename(
+            "000052a8", "aud_system_control_and_module_standby_initialize"
+        );
+        createOrRename(
+            "000052da", "aud_enable_and_hudi_module_stop_dispatch"
+        );
         // Correct an earlier mid-function entry at 0x6892. The real wrapper
         // starts with its PR save and function-pointer load at 0x688E.
         Function misplacedPeriodicWrapper = getFunctionAt(toAddr("00006892"));
@@ -54,11 +189,18 @@ public class ApplyMasterNames extends GhidraScript {
         }
         createOrRename("0000684c", "engine_control_periodic_wrapper");
         createOrRename("0000688e", "diagnostic_monitor_periodic_wrapper");
+        createOrRename("000066c6", "sensor_adc_processing_task");
+        createOrRename("00006eac", "adc_scan_results_collect_and_schedule");
+        createOrRename("00006ff2", "adc_module_0_scan_results_copy");
         createOrRename("000078ac", "analog_sensor_abac_range_classify");
         createOrRename("00007d08", "analog_signal_scaled_accumulator_update_7d08");
         createOrRename("000079b4", "analog_sensor_abbc_range_classify");
         createOrRename("00007a14", "map_sensor_voltage_to_pressure_process");
         createOrRename("00007a56", "map_sensor_raw_adc_range_classify");
+        createOrRename("00008ac0", "engine_signal_timeout_latches_initialize");
+        createOrRename("00008ad6", "engine_signal_timeout_latch_update");
+        createOrRename("00008b2e", "engine_signal_primary_event_timeout_clear");
+        createOrRename("00008b80", "engine_signal_secondary_event_timeout_clear");
         createOrRename("0000938c", "actuator_schedule_countdown_update");
         createOrRename("000093d4", "actuator_schedule_event_commit");
         createOrRename("000098cc", "injector_battery_voltage_latency_lookup");
@@ -74,6 +216,7 @@ public class ApplyMasterNames extends GhidraScript {
         );
         createOrRename("0000a9a8", "injector_control_lookup_sequence_a9a8");
         createOrRename("0000b690", "front_af_sensor_pair_signal_process");
+        createOrRename("0000d24c", "periodic_status_counter_service_d24c");
         createOrRename("0000deaa", "fuel_pump_pwm_output_write");
         createOrRename("0000f474", "engine_oil_temperature_sensor_process");
         createOrRename("0000f5f6", "hardware_register_word_initialize_f5f6");
@@ -81,7 +224,10 @@ public class ApplyMasterNames extends GhidraScript {
             "0000f710", "hardware_register_guarded_initialize_f710"
         );
         createOrRename("00013330", "runtime_status_b6c0_bit7_is_set");
+        createOrRename("00016acc", "atmospheric_pressure_sensor_value_condition");
         createOrRename("000172a4", "maf_airflow_temperature_compensation_update");
+        createOrRename("0001785c", "airflow_state_coolant_initialization");
+        createOrRename("00011ad0", "periodic_engine_control_task_dispatcher");
         createOrRename(
             "00017984", "airflow_load_and_vehicle_speed_processing_sequence_update"
         );
@@ -108,7 +254,12 @@ public class ApplyMasterNames extends GhidraScript {
         createOrRename(
             "000192a8", "front_af_sensor_pump_current_pair_offset_clamp_update"
         );
+        createOrRename("0001add8", "runtime_status_b6b8_bit7_is_set");
         createOrRename("0001a838", "engine_run_counter_update");
+        createOrRename("00019f9c", "crank_event_state_publish_and_clear_b52c_bit7");
+        createOrRename("0001a0ee", "engine_runtime_b52c_bit6_warmup_gate_update");
+        createOrRename("0001a16e", "engine_runtime_b52c_bit7_update_from_ac0c");
+        createOrRename("0001a202", "engine_runtime_b52c_bit5_diagnostic_gate_update");
         createOrRename("0001be8e", "fuel_trim_state_initialize");
         createOrRename("0001cc34", "cranking_fuel_state_periodic_update");
         createOrRename("0001cfee", "cranking_fuel_state_initialize");
@@ -118,6 +269,10 @@ public class ApplyMasterNames extends GhidraScript {
         createOrRename("0001dd04", "final_fueling_multiplier_compose");
         createOrRename("0001d228", "runtime_status_b748_bit7_is_set");
         createOrRename("0001e0c8", "injector_flow_scaling_factor_update");
+        createOrRename("00011958", "crank_synchronous_engine_output_task");
+        createOrRename("00026208", "crank_output_mode_update_gate");
+        createOrRename("00026256", "crank_output_mode_select");
+        createOrRename("00026f8c", "injector_scheduled_pulse_width_channels_publish");
         createOrRename("0001e142", "after_start_enrichment_group_a_initialize");
         createOrRename("0001e1b0", "after_start_enrichment_group_a_decay_update");
         createOrRename("0001e41c", "after_start_enrichment_group_b_initialize");
@@ -185,6 +340,8 @@ public class ApplyMasterNames extends GhidraScript {
             "0002ad6c", "vehicle_speed_dependent_filter_update_2ad6c"
         );
         createOrRename("0003191c", "fuel_pump_duty_logger_value_get");
+        createOrRename("000312e0", "atmospheric_pressure_sample_trigger_state_get");
+        createOrRename("000317ec", "atmospheric_pressure_logger_value_get");
         createOrRename("0003253c", "engine_oil_temperature_logger_convert");
         createOrRename(
             "00033964", "rear_o2_sensor_response_integrator_initialize"
@@ -206,7 +363,6 @@ public class ApplyMasterNames extends GhidraScript {
         createOrRename("0003eb68", "knock_correction_advance_max_select");
         createOrRename("0003f5f0", "radiator_fan_state_timeout_update");
         createOrRename("0003f650", "radiator_fan_control_state_update");
-        createOrRename("0003fd38", "evap_purge_condition_counter_update");
         createOrRename("0003fdbc", "avls_control_sequence_update");
         createOrRename("0003ffda", "avls_threshold_curve_selector_state_update");
         createOrRename(
@@ -224,13 +380,22 @@ public class ApplyMasterNames extends GhidraScript {
             "00045350", "diagnostic_condition_snapshot_update_45350"
         );
         createOrRename("00047000", "engine_oil_temperature_fallback_select");
+        createOrRename("00047d6a", "atmospheric_pressure_estimate_initialize");
+        createOrRename("00047d74", "atmospheric_pressure_estimate_status_check");
         createOrRename("00047db2", "atmospheric_pressure_source_select_update");
+        createOrRename("00047dcc", "atmospheric_pressure_estimate_update");
+        createOrRename("00047ea6", "atmospheric_pressure_map_sample_gate_update");
+        createOrRename("00047f84", "atmospheric_pressure_running_update_gate");
         createOrRename(
             "000490ca", "diagnostic_monitor_counter_update_490ca"
         );
         createOrRename("00064fd0", "front_af_sensor_bank1_inhibit_check");
+        createOrRename("00064fbc", "atmospheric_pressure_estimate_fallback_status_get");
         createOrRename("0006500c", "front_af_sensor_bank2_inhibit_check");
         createOrRename("0006504c", "runtime_status_d26d_bit5_get");
+        createOrRename("00065168", "airflow_load_fallback_status_get");
+        createOrRename("00063174", "diagnostic_fallback_status_flags_update");
+        createOrRename("000374f0", "airflow_rpm_diagnostic_monitor_update");
         createOrRename("00067bf8", "diagnostic_threshold_pair_update_67bf8");
         createOrRename(
             "0006b6fc", "diagnostic_monitor_state_latch_update_6b6fc"
@@ -246,6 +411,7 @@ public class ApplyMasterNames extends GhidraScript {
         createOrRenameData("0002a610", "fuel_pump_low_speed_command_percent");
         createOrRenameData("ffffc298", "fuel_pump_duty_percent");
         createOrRenameData("ffffcfbc", "atmospheric_pressure_native");
+        createOrRenameData("ffff8e04", "atmospheric_pressure_stored_estimate");
 
         setPlateComment(
             toAddr("0002a53a"),
@@ -326,8 +492,26 @@ public class ApplyMasterNames extends GhidraScript {
         );
         setPlateComment(
             toAddr("00047db2"),
-            "Selects the live atmospheric-pressure source from 0xFFFF8E04 or " +
-            "0xFFFFB3A8 and publishes native mmHg absolute at 0xFFFFCFBC."
+            "Stock/master selector byte0x737D9=0 selects the MAP-derived stored " +
+            "estimate0xFFFF8E04 and publishes it to0xFFFFCFBC. A nonzero " +
+            "selector uses the conditioned sensor channel0xFFFFB3A8. The " +
+            "selected value is not an independent physical barometer reading."
+        );
+        setPlateComment(
+            toAddr("00047dcc"),
+            "Updates stored barometric estimate0xFFFF8E04. Fallback status2 " +
+            "selects760; CFD0 bit80 samples native MAP ABC4; bit40 learns from " +
+            "processed MAP B2A0 plus pressure-loss compensation CFC4; bit20 " +
+            "adds2.5. Otherwise holds the previous estimate. Output clamps to " +
+            "570..770 mmHg. Exact running-learning behavior on the modified " +
+            "engine remains unvalidated."
+        );
+        setPlateComment(
+            toAddr("000317ec"),
+            "P24 handler via SSM slot0x4B788. Selector0x737D9=0 reads stored " +
+            "baro estimate8E04; nonzero uses raw sensor state ABE8. Divides " +
+            "native mmHg by7.50063467 and rounds/clamps to a kPa byte. The " +
+            "logger displays720 mmHg for returned byte96 via x*7.5."
         );
         setPlateComment(
             toAddr("00024b24"),
@@ -461,7 +645,24 @@ public class ApplyMasterNames extends GhidraScript {
             "stock path forms raw engine load 0xFFFFB428 as airflow_g_s * 60 / " +
             "RPM, then conditions it into 0xFFFFB438 in g/rev. Master speed " +
             "density replaces the final-airflow helper only, preserving this " +
-            "native load normalization."
+            "native load normalization. Hardened SD at7E18C uses caller FR15 " +
+            "RPM saved172CE, also used by load divisor17550. MAP/IAT are " +
+            "captured once into saved FR12/13 and restored on all exits. " +
+            "No interrupt masking or new static RAM. B428->B42C uses alpha0.06; " +
+            "later normal B438 gains are1. Compensation descriptor 0x5EB6C " +
+            "currently yields 1.0 everywhere. ECT-override timer threshold " +
+            "u16@0x737FA is zero; the other override gate is B748 bit7. This " +
+            "path does not establish a 30-second load reduction. Master now " +
+            "redirects only local fallback literal173FC to27088 constantzero; " +
+            "global diagnostic and cranking/timeout paths remain intact."
+        );
+        setPlateComment(
+            toAddr("00026f8c"),
+            "Publishes existing scheduled cylinder pulse counts as microseconds " +
+            "(counts * 0.25) at C0B8 onward and latency at C0D8; forms latency-" +
+            "inclusive outputs C0D0/C0D4. E60 excludes latency, P21 includes it. " +
+            "Does not itself calculate per-cylinder fuel compensation. Previously " +
+            "named injector_per_cylinder_base_pulse_width_update."
         );
         setPlateComment(
             toAddr("00017984"),
@@ -487,8 +688,44 @@ public class ApplyMasterNames extends GhidraScript {
         );
         setPlateComment(
             toAddr("00007a14"),
-            "Converts MAP sensor volts with float offset/multiplier at 0x72810 " +
-            "and publishes native mmHg absolute at 0xFFFFABC4."
+            "Live MAP: AB04 -> Q8 filter 25CC with stock/master 72818=256, " +
+            "so the new ADC sample passes directly -> ABC8 -> volts using " +
+            "5/65536 -> offset 72810 + multiplier 72814 -> mmHg absolute ABC4. " +
+            "SD reads ABC4, not atmospheric estimate 8E04/CFBC. Converter adds " +
+            "no smoothing lag; acquisition/task latency remains unmeasured."
+        );
+        setPlateComment(
+            toAddr("000025cc"),
+            "Integer filter: new + trunc((1 - coefficient/256)*(previous-new)). " +
+            "Constant25F4=1/256. MAP coefficient72818=256 passes new sample exactly."
+        );
+        setPlateComment(
+            toAddr("00002424"),
+            "fr4=new,fr5=previous,fr6=alpha,fr7=snap epsilon. Returns " +
+            "new+(1-alpha)*(previous-new), snapping for nonfinite previous " +
+            "or near target. B428->B42C uses73968=0.06; normal later B438 " +
+            "gains73974..73980=1; B440 gain73984=0.5."
+        );
+        setPlateComment(
+            toAddr("00065168"),
+            "Returns2 iff D26F bit40 set, else0. Producer63174 reads status " +
+            "for P0102/P0103/P0101 through descriptors5BE2C/5BE40/5C5FC. " +
+            "Master switch bytes5BD57/58=0; P0101 switch5BDBB already0 stock. " +
+            "Stock: if2, airflow task replaces B438 with " +
+            "max(B2A0*0.00264-0.0851,0). Hardened master bypasses only its " +
+            "local173FC call via27088; this shared helper is unchanged."
+        );
+        setPlateComment(
+            toAddr("0000257c"),
+            "Returns float(unsigned u16 r4)*fr4 + fr5 in fr0. MAP converter " +
+            "uses fr4=5/65536 and fr5=0 for ADC-count to volts conversion."
+        );
+        setPlateComment(
+            toAddr("00006eac"),
+            "Collects ADC scan result images, then selects/starts next scans. " +
+            "Normal module0 scan sizes4/8/12 all include MAP channel2. " +
+            "Caller66C6 then converts MAP at7A14. Absolute task interval and " +
+            "end-to-end sensor latency are not established by this trace."
         );
         setPlateComment(
             toAddr("00007a56"),

@@ -1,39 +1,19 @@
 #!/usr/bin/env python3
 """
-Boost-control patch for Subaru EZ30R D2WD610H.
+Spring-pressure overboost-safety component for Subaru EZ30R D2WD610H.
 
-Proportional + feed-forward controller on the repurposed purge PWM output (ATU-II 0xFFFFF590):
+The former electronic actuator hook was misidentified: 0x3FC0A -> 0xE8C4
+controls radiator-fan PWM, not CPC purge. This builder now leaves that stock
+route intact and retires the actuator code as return-only reserved space.
+No EBCS switch can reactivate it. Use direct wastegate-spring plumbing.
 
-    base   = BaseDuty[rpm]                 (feed-forward, ratio)
-    target = TargetBoost[rpm]              (native pressure: mmHg absolute)
-    err    = target - MAP(0xFFFFABC4)
-    ratio  = clamp(base + Kp*err, 0, MaxRatio)
-    if EBCS_Enable != 1: ratio = 0         (spring-pressure mode)
-    if throttle <= MinThrottle: ratio = 0  (driver-demand gate)
-    if MAP > Overboost: ratio = 0          (actuator fail-safe)
-    -> stock output stage 0xE8C4
+The independent hard MAP fuel-cut wrapper and donor MAP scaling remain.
+Legacy actuator calibration bytes keep their addresses for layout stability
+but are unreferenced and removed from supplied tuning definitions. Master
+replaces donor MAP calibration with the selected Omni sensor transfer.
 
-STATELESS by design — no persistent RAM. The integral term (WRX "Turbo Dynamics") is
-intentionally OMITTED: an audit (patch/verify_regions.py) showed no RAM word can be *proven*
-free on this ROM (the top-of-RAM candidates fall inside the cam-solenoid struct array via
-computed addressing; the large unreferenced gaps are computed-access buffers / jump tables).
-Rather than risk corrupting other subsystems, this controller is P-only. Adding I later requires
-a rigorously-verified RAM scratch (or reclaiming purge RAM by NOP-ing the stock writes).
-
-Hijack: repoint the tail-call pointer @0x3FD8C (evap_purge_duty_compute) to the stub. The
-mechanism is verified against Ghidra. The stub is the SOLE runtime driver of the
-solenoid (0xE8C4 has one caller; 0xFFFFF590 is otherwise written only by init).
-
-Default calibrations are reduced from the 2005 EJ255 Legacy GT MT ROM A2WC510N and rescaled to
-a 5 psi peak target. The matching MAP conversion (-414.0 offset, 514.2 multiplier) is installed
-at 0x72810. Use the matching turbo MAP sensor, validate it against a reference gauge, prove the
-built-in hard fuel cut, and retain a mechanical boost fallback. The electronic actuator and hard
-overboost cut use independent exact-01 switches: the actuator defaults OFF and the hard cut ON.
-
-The canonical stock ROM is always read from the repository root and is never opened for
-writing. The patcher refuses an output path that aliases it.
-
-Usage:  python3 patch_boost.py [out.bin]
+The canonical stock ROM is read-only; only a private copy is patched.
+Usage: python3 patch_boost.py [out.bin]
 """
 import hashlib, struct, sys, os
 from sh2_asm import Asm
@@ -48,8 +28,8 @@ if __name__ == "__main__" and len(sys.argv) > 2:
     raise SystemExit("usage: python3 patch_boost.py [out.bin]")
 
 # --- fixed ROM anchors (verified against Ghidra) ---
-HIJACK_LITERAL = 0x3FD8C
-STOCK_OUTPUT   = 0x0000E8C4     # evap_purge_pwm_output_write (fr4 = ratio)
+HIJACK_LITERAL = 0x3FD8C       # historical name; stock fan pointer is never replaced
+STOCK_OUTPUT   = 0x0000E8C4     # radiator_fan_pwm_output_write; MUST remain stock
 INTERP_2D      = 0x0000209C     # table2d_lookup_dispatch(r4=desc, fr4=in) -> fr0
 RPM_ADDR       = 0xFFFFB544     # engine RPM (float)          [read only]
 MAP_ADDR       = 0xFFFFABC4     # manifold pressure (float)   [read only]
@@ -61,7 +41,10 @@ REVLIM_FNPTR   = 0x00011D3C     # periodic-dispatcher fn-ptr slot -> rev limiter
 FUELCUT_FLAG   = 0xFFFFBF6C     # fuel-cut status byte; bit0x80 feeds the fuel-cut aggregator (0x23FC0)
 
 # --- free-space layout (all 0xFF-verified free; < 0x7FAF7) ---
-BASE_DESC   = 0x7D790   # 1-axis desc: RPM -> base duty ratio (u8 % * 0.01)
+# Actuator descriptors/data are inert legacy reservations, retained only for
+# stable addresses. Only OVERBOOST_ENABLE_ADDR, OVERB_FC_ADDR, and REVWRAP_ADDR
+# below belong to active boost-protection logic.
+BASE_DESC   = 0x7D790   # retired RPM -> base duty descriptor (u8 % * 0.01)
 RPM_AXIS    = 0x7D7A4   # float32[8]  (shared by base + target)
 BASE_DATA   = 0x7D7C4   # u8[8]  duty %
 TARGET_DESC = 0x7D7CC   # 1-axis desc: RPM -> target (float32, type 0)
@@ -69,23 +52,23 @@ TARGET_DATA = 0x7D7E0   # float32[8]  target native mmHg absolute
 KP_ADDR     = 0x7D800   # float32
 MAXR_ADDR   = 0x7D804   # float32
 OVERB_ADDR  = 0x7D808   # float32
-EBCS_ENABLE_ADDR = 0x7D80C # uint8: exact 1=electronic duty; default 0=spring pressure
+EBCS_ENABLE_ADDR = 0x7D80C # retired uint8; no value enables an actuator
 OVERBOOST_ENABLE_ADDR = 0x7D80D # uint8: exact 1=added hard MAP fuel cut; default 1
-STUB_ADDR   = 0x7D810   # controller (4-aligned)
-THROTTLE_GATE_ADDR = 0x7D8BC # float32: minimum throttle opening for boost duty
+STUB_ADDR   = 0x7D810   # retired controller allocation, now RTS/NOP and erased padding
+THROTTLE_GATE_ADDR = 0x7D8BC # retired float32 throttle gate; not executed
 OVERB_FC_ADDR = 0x7D8C0 # float32: overboost FUEL-CUT MAP limit
 REVWRAP_ADDR  = 0x7D8C4 # rev-limiter wrapper (adds overboost fuel cut; 4-aligned)
 FREE_START, FREE_END = 0x7D790, 0x7FAF7
 
-# ---------------- donor-derived defaults / tunables ----------------
+# ---------------- donor provenance and active MAP/hard-cut defaults ----------------
 # Donor: A2WC510N, 2005 USDM Legacy GT MT, EJ255, SH7058, 1 MiB.
 # SHA-256: db8827673a2383ce0ee3182d2c33f81be39fd63c3545e77b3e6bf8476488008d
 # The EZ30 MAP routine was rechecked in Ghidra and named
 # map_sensor_voltage_to_pressure_process @0x7A14. It calculates:
 #   MAP_native = sensor_voltage * MAP_SENSOR_MULTIPLIER + MAP_SENSOR_OFFSET
 # Native pressure is mmHg absolute. 760 mmHg is the sea-level reference used by the 32BITBASE
-# Subaru boost scalings; one psi is 51.71493257 mmHg. This controller does not yet apply the
-# donor's atmospheric-pressure target compensation, so displayed psi is relative to 760 mmHg.
+# Subaru pressure scalings; one psi is 51.71493257 mmHg. The active hard cut
+# uses an absolute MAP threshold, displayed relative to 760 mmHg.
 ATM_PRESSURE_NATIVE = 760.0
 NATIVE_PER_PSI = 51.71493257
 MAP_SENSOR_OFFSET = -414.0
@@ -95,7 +78,7 @@ STOCK_MAP_SENSOR_MULTIPLIER = 250.0
 
 RPM_BREAKS  = [1500.0, 2000.0, 2500.0, 3000.0, 3500.0, 4000.0, 5000.0, 6000.0]
 # Full-demand A2WC510N Initial WGDC curve, reduced by the same 5 psi / 13.536 psi peak ratio.
-# This is only a conservative starting curve: WGDC does not physically scale linearly with boost.
+# Retained only as inert donor-provenance data; there is no WGDC controller.
 BASE_DUTY   = [   0,     0,     21,     19,     18,     17,     15,     14 ]
 # Full-demand A2WC510N Target Boost A/B curve reduced so its peak is exactly 5 psi above 760 mmHg.
 TARGET_BOOST_PSI = [1.482142857, 2.285714286, 5.0, 5.0, 5.0, 4.785714286, 4.357142857, 3.928571429]
@@ -103,10 +86,10 @@ TARGET_MAP = [ATM_PRESSURE_NATIVE + psi * NATIVE_PER_PSI for psi in TARGET_BOOST
 # A2WC510N TD Proportional is locally 0.5 duty percentage point per 10 native units:
 # (0.005 ratio / 10 mmHg) = 0.0005 ratio/mmHg.
 KP          = 0.0005
-MAXRATIO    = 0.33     # conservative scalar cap near the donor's 5 psi-scaled peak max WGDC
+MAXRATIO    = 0.33     # inert legacy scalar derived from the donor max-WGDC curve
 OVERBOOST_PSI = 6.0
 OVERBOOST   = ATM_PRESSURE_NATIVE + OVERBOOST_PSI * NATIVE_PER_PSI
-MIN_THROTTLE = 30.0   # native throttle opening (~35.7% on the donor's x/.84 display scaling)
+MIN_THROTTLE = 30.0   # inert legacy throttle gate
 OVERBOOST_FUELCUT_PSI = 7.0
 OVERBOOST_FUELCUT = ATM_PRESSURE_NATIVE + OVERBOOST_FUELCUT_PSI * NATIVE_PER_PSI
 DUTY_SCALE  = 0.01     # base-map u8 % -> ratio
@@ -125,49 +108,13 @@ def desc_1axis(type_byte, axis_addr, data_addr, scale, offset):
     return d
 
 def build_stub():
-    """Proportional + feed-forward. Entered via tail-call jmp (PR=grandparent).
+    """Retired actuator allocation: return without touching hardware or state.
 
-       With EBCS_ENABLE_ADDR clear, force FR4 to zero before the stock output stage
-       (the safe spring-pressure state for the required plumbing). With it set,
-       replace FR4 with calculated boost duty. Reads only RAM + flash constants —
-       NO RAM writes.
+    The original output was radiator-fan PWM, not CPC. Never reinstall that
+    hook. Preserve the 172-byte reservation so unrelated calibrations do not
+    move, but erase all former controller instructions and output literals.
     """
-    a = Asm(STUB_ADDR)
-    a.movl_pool(1, EBCS_ENABLE_ADDR); a.movb_at(0, 1); a.cmp_eq_imm(0x01)
-    a.bt('enabled')                                                # exact 01 -> boost controller
-    a.fldi0(4)                                                     # disabled: fail closed at zero EBCS duty
-    a.movl_pool(2, STOCK_OUTPUT); a.jmp(2); a.nop()
-    a.label('enabled')
-    a.stsl_pr()                                                    # [stack: PR]
-    a.movl_pool(1, THROTTLE_ADDR); a.fmov_load(2, 1)               # fr2 = throttle opening
-    a.movl_pool(1, THROTTLE_GATE_ADDR); a.fmov_load(3, 1)          # fr3 = minimum throttle
-    a.fcmpgt(3, 2); a.bf('throttle_off')                           # require throttle > minimum
-    a.movl_pool(1, RPM_ADDR); a.fmov_load(4, 1)                    # fr4 = RPM
-    a.movl_pool(4, BASE_DESC); a.movl_pool(2, INTERP_2D); a.jsr(2); a.nop()  # fr0 = base ratio
-    a.fpush(0)                                                     # [stack: PR, base]
-    a.movl_pool(1, RPM_ADDR); a.fmov_load(4, 1)                    # fr4 = RPM
-    a.movl_pool(4, TARGET_DESC); a.movl_pool(2, INTERP_2D); a.jsr(2); a.nop()  # fr0 = target
-    a.movl_pool(1, MAP_ADDR); a.fmov_load(2, 1)                    # fr2 = MAP
-    a.movl_pool(1, OVERB_ADDR); a.fmov_load(3, 1)                  # fr3 = overboost limit
-    a.fcmpgt(3, 2); a.bf('no_ob')                                  # if MAP > limit:
-    a.fldi0(4); a.fpop(0); a.bra('out'); a.nop()                   #   ratio=0, drop base, out
-    a.label('no_ob')
-    a.fsub(2, 0)                                                   # fr0 = target - MAP = error
-    a.movl_pool(1, KP_ADDR); a.fmov_load(5, 1); a.fmul(5, 0)       # fr0 = Kp*error
-    a.fpop(1); a.fadd(1, 0)                                        # fr0 = base + Kp*error
-    a.fldi0(2); a.fcmpgt(0, 2); a.bf('rhi'); a.fldi0(0)            # clamp low: if ratio<0 -> 0
-    a.label('rhi')
-    a.movl_pool(1, MAXR_ADDR); a.fmov_load(2, 1)
-    a.fcmpgt(2, 0); a.bf('rdone'); a.fmov(2, 0)                    # clamp high: if ratio>Max -> Max
-    a.label('rdone')
-    a.fmov(0, 4)                                                   # fr4 = ratio
-    a.bra('out'); a.nop()
-    a.label('throttle_off')
-    a.fldi0(4)                                                     # fail closed: zero solenoid duty
-    a.label('out')
-    a.ldsl_pr()                                                    # restore PR [stack empty]
-    a.movl_pool(2, STOCK_OUTPUT); a.jmp(2); a.nop()                # tail-call output stage
-    return a.assemble()
+    return bytes.fromhex("000b0009") + b"\xff" * (THROTTLE_GATE_ADDR - STUB_ADDR - 4)
 
 def build_fuelcut_wrapper():
     """Rev-limiter wrapper: run the stock rev limiter, then set the fuel-cut flag on overboost.
@@ -232,7 +179,7 @@ def apply_to_rom(rom):
         if any(b != 0xFF for b in rom[addr:addr+len(data)]):
             raise SystemExit("REFUSING: %s @0x%X..0x%X not 0xFF-free" % (name, addr, addr+len(data)-1))
         previous_end = addr + len(data)
-    # two hijacks: output tail-call (boost) + rev-limiter fn-ptr (overboost fuel cut)
+    # Preserve the fan output; only install the independent overboost fuel cut.
     cur = struct.unpack_from(">I", rom, HIJACK_LITERAL)[0]
     if cur != STOCK_OUTPUT:
         raise SystemExit("REFUSING: output hijack @0x%X = 0x%08X (expected 0x%08X)" % (HIJACK_LITERAL, cur, STOCK_OUTPUT))
@@ -243,7 +190,7 @@ def apply_to_rom(rom):
     for name, addr, data in blobs:
         rom[addr:addr+len(data)] = data
     rom[MAP_SCALING_ADDR:MAP_SCALING_ADDR+len(map_scaling)] = map_scaling
-    rom[HIJACK_LITERAL:HIJACK_LITERAL+4] = be32(STUB_ADDR)
+    assert rom[HIJACK_LITERAL:HIJACK_LITERAL+4] == be32(STOCK_OUTPUT)
     rom[REVLIM_FNPTR:REVLIM_FNPTR+4]     = be32(REVWRAP_ADDR)
     return blobs
 
@@ -271,28 +218,25 @@ def main():
         if f.read() != stock_bytes:
             raise RuntimeError("canonical stock ROM changed during patch build")
 
-    print("Boost-control patch written: %s" % OUT)
+    print("Spring-pressure overboost-safety patch written: %s" % OUT)
     print("  stock source     : %s (unchanged, SHA-256 %s)" % (STOCK, stock_hash))
-    print("  output hijack   @0x%05X : 0x%08X -> 0x%08X" % (HIJACK_LITERAL, STOCK_OUTPUT, STUB_ADDR))
+    print("  fan output      @0x%05X : stock 0x%08X PRESERVED" % (HIJACK_LITERAL, STOCK_OUTPUT))
     print("  revlimiter hook @0x%05X : 0x%08X -> 0x%08X" % (REVLIM_FNPTR, REVLIMITER, REVWRAP_ADDR))
     print("  MAP scaling     @0x%05X : {%g, %g} -> {%g, %.7g}"
           % (MAP_SCALING_ADDR, STOCK_MAP_SENSOR_OFFSET, STOCK_MAP_SENSOR_MULTIPLIER,
              MAP_SENSOR_OFFSET, MAP_SENSOR_MULTIPLIER))
     for name, addr, data in blobs:
         print("  %-11s @0x%05X : %d bytes" % (name, addr, len(data)))
-    print("  RPM    : %s" % RPM_BREAKS)
-    print("  base %% : %s" % BASE_DUTY)
-    print("  target : %s (psi relative to 760 mmHg; native=%s)" % (TARGET_BOOST_PSI, TARGET_MAP))
-    print("  Kp=%g ratio/mmHg MaxRatio=%g MinThrottle=%g Overboost(duty)=%gpsi Overboost(fuelcut)=%gpsi"
-          % (KP, MAXRATIO, MIN_THROTTLE, OVERBOOST_PSI, OVERBOOST_FUELCUT_PSI))
-    print("  EBCS switch     @0x%05X : OFF (00); exact 01 permits electronic duty"
+    print("  retired data     : donor RPM/WGDC/target/gain tables remain inert at legacy addresses")
+    print("  hard fuel cut    : %g psi relative to 760 mmHg" % OVERBOOST_FUELCUT_PSI)
+    print("  retired EBCS byte@0x%05X : inert; no electronic actuator code installed"
           % EBCS_ENABLE_ADDR)
     print("  overboost switch@0x%05X : ON (01); exact 01 permits the added hard MAP cut"
           % OVERBOOST_ENABLE_ADDR)
-    print("  switch caveat   : neither switch restores stock MAP scaling at 0x%05X" % MAP_SCALING_ADDR)
+    print("  MAP calibration  : remains donor-scaled regardless of the hard-cut switch")
     print("  fuel cut reuses rev-limiter path: sets 0xFFFFBF6C bit0x80 (via 0x23FC0 aggregator)")
     print("\n*** Fit the A2WC510N-compatible EJ255 MAP sensor and validate 0xFFFFABC4 against a gauge. ***")
-    print("Flash via EcuFlash/RomRaider (recomputes subarudbw checksum on save).")
+    print("This standalone output has no checksum repair; the master builder repairs the Subaru checksum.")
 
 if __name__ == "__main__":
     main()

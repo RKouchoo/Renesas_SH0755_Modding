@@ -1,0 +1,258 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="3600" height="2750" viewBox="0 0 3600 2750">
+  <title>Complete connected Pico K-line adapter circuit</title>
+  <desc>One continuous, spread-out black-line circuit. Each resistor box includes its value and colour bands.</desc>
+  <defs>
+    <style>
+      .bg { fill: white; }
+      .wire { fill: none; stroke: #111; stroke-width: 7; stroke-linecap: round; stroke-linejoin: round; }
+      .bus { fill: none; stroke: #111; stroke-width: 12; stroke-linecap: round; stroke-linejoin: round; }
+      .box { fill: white; stroke: #111; stroke-width: 4; }
+      .part { fill: #f3f3f3; stroke: #111; stroke-width: 4; }
+      .node { fill: #111; }
+      .title { font: 700 48px Arial, sans-serif; fill: #111; }
+      .heading { font: 700 29px Arial, sans-serif; fill: #111; }
+      .label { font: 700 24px Arial, sans-serif; fill: #111; }
+      .text { font: 22px Arial, sans-serif; fill: #111; }
+      .small { font: 19px Arial, sans-serif; fill: #333; }
+      .net { font: 700 23px monospace; fill: #111; }
+      .warning { font: 700 23px Arial, sans-serif; fill: #a21d12; }
+    </style>
+  </defs>
+
+  <rect class="bg" width="3600" height="2750"/>
+  <text class="title" x="55" y="62">Pico K-line adapter — complete connected circuit</text>
+  <text class="text" x="55" y="101">Every solid line is an actual connection. Every ground connection joins the same outer ground wire.</text>
+  <text class="warning" x="55" y="137">OBD PIN 16 GOES THROUGH R4 ONLY. NEVER CONNECT OBD PIN 16 DIRECTLY TO THE PICO.</text>
+
+  <!-- One continuous common-ground bus around the circuit. -->
+  <path class="bus" d="M120 205 H3490 V2600 H120"/>
+  <text class="net" x="130" y="188">COMMON GROUND</text>
+  <text class="net" x="130" y="2645">COMMON GROUND — SAME WIRE AS THE TOP AND RIGHT SIDE</text>
+
+  <!-- ================================================================ -->
+  <!-- TX transistor is above the K-line so its collector can connect  -->
+  <!-- straight down without crossing another signal.                  -->
+  <!-- ================================================================ -->
+  <rect class="part" x="500" y="350" width="540" height="150" rx="8"/>
+  <text class="label" x="535" y="390">Q1 — BF469, body face toward you</text>
+  <text class="small" x="535" y="426">pin 1 emitter</text>
+  <text class="small" x="700" y="460">pin 2 collector / metal tab</text>
+  <text class="small" x="865" y="426">pin 3 base</text>
+
+  <!-- Q1 emitter to top ground bus. -->
+  <path class="wire" d="M600 350 V205"/>
+  <circle class="node" cx="600" cy="205" r="13"/>
+
+  <!-- Q1 base and BASE node. -->
+  <path class="wire" d="M1040 425 H1160"/>
+  <circle class="node" cx="1160" cy="425" r="13"/>
+  <text class="net" x="1105" y="392">BASE</text>
+
+  <!-- R9 base-to-ground pull-down, connected upward to the top bus. -->
+  <path class="wire" d="M1160 425 V335"/>
+  <rect class="part" x="1060" y="235" width="420" height="100" rx="8"/>
+  <text class="label" x="1090" y="274">R9 — 10 kΩ</text>
+  <text class="small" x="1090" y="309">brown · black · black · red · brown</text>
+  <path class="wire" d="M1270 235 V205"/>
+  <circle class="node" cx="1270" cy="205" r="13"/>
+
+  <!-- R8 from BASE to Pico TX. -->
+  <path class="wire" d="M1160 425 H1260"/>
+  <rect class="part" x="1260" y="370" width="460" height="110" rx="8"/>
+  <text class="label" x="1295" y="412">R8 — 470 Ω</text>
+  <text class="small" x="1295" y="448">yellow · violet · black · black · brown</text>
+  <path class="wire" d="M1720 425 H1790"/>
+  <rect class="box" x="1790" y="385" width="330" height="80" rx="8"/>
+  <text class="label" x="1825" y="435">PICO PIN 6 / GP4</text>
+
+  <!-- ================================================================ -->
+  <!-- Main K-line path.                                                -->
+  <!-- ================================================================ -->
+  <rect class="box" x="85" y="660" width="250" height="80" rx="8"/>
+  <text class="label" x="120" y="710">OBD PIN 7</text>
+  <path class="wire" d="M335 700 H405"/>
+
+  <rect class="part" x="405" y="645" width="410" height="110" rx="8"/>
+  <text class="label" x="440" y="687">R1 — 22 Ω, 1 W</text>
+  <text class="small" x="440" y="723">red · red · black · gold</text>
+  <path class="wire" d="M815 700 H925"/>
+  <circle class="node" cx="925" cy="700" r="14"/>
+  <text class="net" x="870" y="662">K_INT</text>
+
+  <!-- K_INT straight up to Q1 collector. -->
+  <path class="wire" d="M925 700 V500"/>
+  <text class="small" x="945" y="545">Q1 pin 2</text>
+
+  <!-- BAT46 from K_INT to BASE, under Q1. -->
+  <path class="wire" d="M925 700 V575 H1060"/>
+  <rect class="part" x="1060" y="535" width="420" height="80" rx="8"/>
+  <text class="label" x="1090" y="585">BAT46 — stripe at K_INT end</text>
+  <path class="wire" d="M1480 575 H1515 V510 H1160 V425"/>
+
+  <!-- R2 K-line receive upper divider resistor. -->
+  <path class="wire" d="M925 700 H1050"/>
+  <rect class="part" x="1050" y="645" width="480" height="110" rx="8"/>
+  <text class="label" x="1085" y="687">R2 — 47 kΩ UPPER</text>
+  <text class="small" x="1085" y="723">yellow · violet · black · red · brown</text>
+  <path class="wire" d="M1530 700 H1660"/>
+  <circle class="node" cx="1660" cy="700" r="14"/>
+  <text class="net" x="1575" y="662">K_SENSE</text>
+
+  <!-- R3 goes upward from K_SENSE to the same top ground bus. -->
+  <path class="wire" d="M1660 700 H2400 V410"/>
+  <rect class="part" x="2180" y="300" width="440" height="110" rx="8"/>
+  <text class="label" x="2215" y="342">R3 — 4.7 kΩ TO GROUND</text>
+  <text class="small" x="2215" y="378">yellow · violet · black · brown · brown</text>
+  <path class="wire" d="M2400 300 V205"/>
+  <circle class="node" cx="2400" cy="205" r="13"/>
+
+  <!-- ================================================================ -->
+  <!-- LM393 shown as one IC. Pins are logically spread around it.      -->
+  <!-- ================================================================ -->
+  <rect class="part" x="2240" y="950" width="570" height="850" rx="12"/>
+  <text class="heading" x="2390" y="1000">U1 — LM393 DIP-8</text>
+  <text class="small" x="2310" y="1035">Use the written pin numbers; box position is only for clarity.</text>
+
+  <!-- K_SENSE to pin 5. -->
+  <path class="wire" d="M1660 700 V1100 H2240"/>
+  <text class="label" x="2265" y="1110">PIN 5  (+IN)</text>
+
+  <!-- R7 from K_SENSE to K_RX, routed above the IC. -->
+  <path class="wire" d="M1660 700 V850 H1780"/>
+  <rect class="part" x="1780" y="795" width="460" height="110" rx="8"/>
+  <text class="label" x="1815" y="837">R7 — 470 kΩ</text>
+  <text class="small" x="1815" y="873">yellow · violet · black · orange · brown</text>
+  <path class="wire" d="M2240 850 H2970 V700"/>
+
+  <!-- Pin 7 output to K_RX and Pico GP5. -->
+  <text class="label" x="2570" y="1110">PIN 7  OUT</text>
+  <path class="wire" d="M2810 1100 H2970 V700"/>
+  <circle class="node" cx="2970" cy="700" r="14"/>
+  <text class="net" x="2905" y="662">K_RX</text>
+  <path class="wire" d="M2970 700 H3050"/>
+  <rect class="box" x="3050" y="660" width="390" height="80" rx="8"/>
+  <text class="label" x="3085" y="710">PICO PIN 7 / GP5</text>
+
+  <!-- R6 between K_RX and Pico 3V3. -->
+  <rect class="box" x="2770" y="235" width="400" height="70" rx="8"/>
+  <text class="label" x="2805" y="280">PICO PIN 36 / 3V3</text>
+  <path class="wire" d="M2970 305 V330"/>
+  <rect class="part" x="2750" y="330" width="440" height="110" rx="8"/>
+  <text class="label" x="2785" y="372">R6 — 4.7 kΩ</text>
+  <text class="small" x="2785" y="408">yellow · violet · black · brown · brown</text>
+  <path class="wire" d="M2970 440 V700"/>
+
+  <!-- ================================================================ -->
+  <!-- OBD pin 16 battery-reference divider and both LM393 VREF pins.   -->
+  <!-- ================================================================ -->
+  <rect class="box" x="85" y="1410" width="270" height="80" rx="8"/>
+  <text class="label" x="120" y="1460">OBD PIN 16</text>
+  <path class="wire" d="M355 1450 H435"/>
+  <rect class="part" x="435" y="1395" width="480" height="110" rx="8"/>
+  <text class="label" x="470" y="1437">R4 — 100 kΩ UPPER</text>
+  <text class="small" x="470" y="1473">brown · black · black · orange · brown</text>
+  <path class="wire" d="M915 1450 H1120"/>
+  <circle class="node" cx="1120" cy="1450" r="14"/>
+  <text class="net" x="1065" y="1412">VREF</text>
+
+  <!-- VREF to LM393 pins 6 and 2. -->
+  <path class="wire" d="M1120 1450 H2050 V1350 H2240"/>
+  <text class="label" x="2265" y="1360">PIN 6  (−IN / VREF)</text>
+  <path class="wire" d="M2050 1450 V1550 H2240"/>
+  <text class="label" x="2265" y="1560">PIN 2  VREF</text>
+
+  <!-- R5 from VREF directly down to common ground. -->
+  <path class="wire" d="M1120 1450 V1650"/>
+  <rect class="part" x="900" y="1650" width="440" height="110" rx="8"/>
+  <text class="label" x="935" y="1692">R5 — 4.7 kΩ TO GROUND</text>
+  <text class="small" x="935" y="1728">yellow · violet · black · brown · brown</text>
+  <path class="wire" d="M1120 1760 V2600"/>
+  <circle class="node" cx="1120" cy="2600" r="13"/>
+  <text class="warning" x="150" y="1550">NO OTHER CONNECTION FROM OBD PIN 16</text>
+
+  <!-- ================================================================ -->
+  <!-- LM393 supply, decoupling and ground pins.                        -->
+  <!-- ================================================================ -->
+  <text class="label" x="2570" y="1360">PIN 8  +5 V</text>
+  <path class="wire" d="M2810 1350 H2940"/>
+  <circle class="node" cx="2940" cy="1350" r="14"/>
+  <path class="wire" d="M2940 1350 H3050"/>
+  <rect class="box" x="3050" y="1310" width="390" height="80" rx="8"/>
+  <text class="label" x="3085" y="1360">PICO PIN 40 / VBUS</text>
+
+  <!-- C1 from the 5 V node to common ground. -->
+  <path class="wire" d="M2940 1350 V1580"/>
+  <line x1="2895" y1="1580" x2="2985" y2="1580" stroke="#111" stroke-width="7"/>
+  <line x1="2895" y1="1610" x2="2985" y2="1610" stroke="#111" stroke-width="7"/>
+  <path class="wire" d="M2940 1610 V2600"/>
+  <circle class="node" cx="2940" cy="2600" r="13"/>
+  <text class="label" x="2980" y="1590">C1 — 100 nF</text>
+  <text class="small" x="2980" y="1623">marked 104</text>
+
+  <!-- LM393 pin 3 and pin 4 to common ground. -->
+  <text class="label" x="2265" y="1710">PIN 3  GND</text>
+  <path class="wire" d="M2240 1700 H2110 V2600"/>
+  <circle class="node" cx="2110" cy="2600" r="13"/>
+  <text class="label" x="2440" y="1840">PIN 4  GND</text>
+  <path class="wire" d="M2525 1800 V2600"/>
+  <circle class="node" cx="2525" cy="2600" r="13"/>
+  <text class="label" x="2555" y="1710">PIN 1  NC</text>
+
+  <!-- Pico and OBD ground connections. -->
+  <rect class="box" x="1370" y="2440" width="330" height="80" rx="8"/>
+  <text class="label" x="1405" y="2490">OBD PIN 5</text>
+  <path class="wire" d="M1535 2520 V2600"/>
+  <circle class="node" cx="1535" cy="2600" r="13"/>
+
+  <rect class="box" x="3040" y="2440" width="400" height="80" rx="8"/>
+  <text class="label" x="3075" y="2490">PICO PIN 8 / GND</text>
+  <path class="wire" d="M3240 2520 V2600"/>
+  <circle class="node" cx="3240" cy="2600" r="13"/>
+
+  <!-- Three external LEDs in separate columns. -->
+  <text class="small" x="85" y="1845">External LEDs are optional. Long leg faces its resistor; short leg goes to ground. Use 1 kΩ normally; 10 kΩ is safe but dim.</text>
+
+  <!-- TX LED: GP27 physical pin 32. -->
+  <rect class="box" x="80" y="1880" width="320" height="75" rx="8"/>
+  <text class="label" x="108" y="1927">GP27 / PIN 32 — TX</text>
+  <path class="wire" d="M240 1955 V1990"/>
+  <rect class="part" x="80" y="1990" width="320" height="100" rx="8"/>
+  <text class="label" x="108" y="2030">R10 — 1 kΩ</text>
+  <text class="small" x="108" y="2065">brown · black · black · brown · brown</text>
+  <path class="wire" d="M240 2090 V2120"/>
+  <circle class="box" cx="240" cy="2160" r="40"/>
+  <text class="label" x="205" y="2168">TX LED</text>
+  <path class="wire" d="M240 2200 V2600"/>
+  <circle class="node" cx="240" cy="2600" r="13"/>
+
+  <!-- RX LED: GP26 physical pin 31. -->
+  <rect class="box" x="460" y="1880" width="320" height="75" rx="8"/>
+  <text class="label" x="488" y="1927">GP26 / PIN 31 — RX</text>
+  <path class="wire" d="M620 1955 V1990"/>
+  <rect class="part" x="460" y="1990" width="320" height="100" rx="8"/>
+  <text class="label" x="488" y="2030">R11 — 1 kΩ</text>
+  <text class="small" x="488" y="2065">brown · black · black · brown · brown</text>
+  <path class="wire" d="M620 2090 V2120"/>
+  <circle class="box" cx="620" cy="2160" r="40"/>
+  <text class="label" x="585" y="2168">RX LED</text>
+  <path class="wire" d="M620 2200 V2600"/>
+  <circle class="node" cx="620" cy="2600" r="13"/>
+
+  <!-- Status/error LED: GP2 physical pin 4, mirrored by onboard LED. -->
+  <rect class="box" x="840" y="1880" width="320" height="75" rx="8"/>
+  <text class="label" x="868" y="1927">GP2 / PIN 4 — STATUS</text>
+  <path class="wire" d="M1000 1955 V1990"/>
+  <rect class="part" x="840" y="1990" width="320" height="100" rx="8"/>
+  <text class="label" x="868" y="2030">R12 — 1 kΩ</text>
+  <text class="small" x="868" y="2065">brown · black · black · brown · brown</text>
+  <path class="wire" d="M1000 2090 V2120"/>
+  <circle class="box" cx="1000" cy="2160" r="40"/>
+  <text class="label" x="958" y="2168">STATUS</text>
+  <path class="wire" d="M1000 2200 V2600"/>
+  <circle class="node" cx="1000" cy="2600" r="13"/>
+  <text class="small" x="800" y="2235">GP2 LED mirrors the onboard LED.</text>
+
+  <text class="small" x="80" y="2690">LM393: notch upward gives pins 1–4 down the left side and 8–5 down the right side. BF469: face view is 1 emitter, 2 collector/tab, 3 base.</text>
+  <text class="small" x="80" y="2720">BAT46 band goes to K_INT/Q1 pin 2. Leave OBD pin 4 disconnected initially. Resistors and C1 are not polarised.</text>
+</svg>

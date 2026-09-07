@@ -1,12 +1,38 @@
 # D2WD610H — EZ30R Denso ECU Reverse Engineering Notes
 
 Working document. Updated as analysis progresses in Ghidra (live MCP session).
+**September 8 corrective build:** the wrongly identified boost hook has been
+removed. The current master preserves stock radiator-fan routing at
+`0x3FD8C → 0xE8C4` and contains no electronic boost actuator. Actual CPC output
+and bank purge-fuel subtraction are now explicitly deleted for the removed/capped
+purge plumbing. The independently enabled hard overboost cut remains for direct
+wastegate-spring operation. Older fan-hook images remain quarantined, including
+EBCS-OFF images. Static verification does not prove this fixes the cold lean-out
+or makes the ROM vehicle-validated; see the latest master Ghidra audit.
+
+Corrected master SHA-256:
+`fbc1a8fad234dbf09934da8dda8a0eda8629965c3d162eb957c06c46a4d9848e`,
+checksum `0x503BE476`. Its 436-byte difference from the preceding `0600d73a...`
+image is confined to fan-hook/actuator retirement, actual purge deletion and
+checksum; VE, injector and timing calibration bytes are unchanged.
+
+Current cold-idle investigation: the second VE increase is an unvalidated
+trial, not a proved repair. The latest run used the first increase, but its
+AFR was still rising. The master idle profile now fits SSM's request limit
+(79 addresses instead of 87). See the 2026-09-07 reassessment in the master
+Ghidra audit for the retained load/fuel trace and next measurement.
+September 8 update: the SD hook now uses the caller's saved RPM and single-read
+MAP/IAT inputs; only its obsolete MAF-fault load fallback is bypassed. The stock
+6% load filter is explicitly defined but unchanged, as are VE/injector/timing
+calibrations. Opcode tests and both binary audits pass; this is not a confirmed
+lean-out cure. See the hook-hardening implementation section in the master audit.
 This file is the canonical state doc. Companion references:
+
 - [ram_map.md](ram_map.md) — consolidated RAM variables
 - [hardware_io_map.md](hardware_io_map.md) — memory map + peripheral registers
-- [solenoid_subsystem.md](solenoid_subsystem.md) — cam-bank vs purge PWM outputs
-- [boost_repurpose_notes.md](boost_repurpose_notes.md) — purge chain + boost-control design
-- [patch_build_guide.md](patch_build_guide.md) — boost-patch build/flash plan
+- [solenoid_subsystem.md](solenoid_subsystem.md) — historical output research; its former purge identification is retracted
+- [boost_repurpose_notes.md](boost_repurpose_notes.md) — corrected fan/purge identities and retracted boost-control history
+- [patch_build_guide.md](patch_build_guide.md) — historical boost-build plan; use the master README for current build instructions
 - [single_front_af_patch.md](single_front_af_patch.md) — retained factory A/F mirror design
 - [../master_patch/README.md](../master_patch/README.md) — current MAFless turbo master image
 - [readme.md](../readme.md) — project overview + goals
@@ -121,6 +147,19 @@ Verified: Base Timing A data 0x78AA0 → slot 0x60114 → desc 0x60108 → consu
   `ign_idle_timing_target_update`, and `ign_base_and_idle_timing_update`. The idle target checks
   vehicle-speed float **0xFFFFB538** against the `Base Timing Idle Vehicle Speed Threshold` at
   **0x77E1C** (stock 4.0 km/h), confirming the RAM signal's meaning.
+- **September 8 idle/VE clarification:** increasing modeled load can move the
+  AVCS target and main A/D timing lookup, but those lookup values are not proof
+  of the actual idle ignition angle. `0x27DE8` produces idle/base blend
+  **0xFFFFC134** without a load input, using the debounced throttle-state flag
+  `0xFFFFB2BC` bit 1, RPM and vehicle speed. Recognized stationary idle drives
+  the blend toward zero. At settled zero, `0x28166` uses the separate idle
+  target **0xFFFFC138**, not the main A/D base result. Its stationary RPM table
+  at `0x7828F` is flat **15.15625 degrees**; the later idle corrections and final
+  per-cylinder corrections still apply. The load-indexed idle correction at
+  `0x782AC` is effectively flat zero (two raw-57 entries, 0.0390625 degrees).
+  The 4-km/h threshold selects idle target tables, not idle versus base mode.
+  No actual retard or cam transition has been demonstrated in the supplied run.
+  The corrective build does not alter these timing tables or add an idle cam hold.
 - `ign_final_timing_per_cylinder_update` adds a common timing sum to six per-cylinder correction
   floats at **0xFFFFCCC8..0xFFFFCCDC**, then applies the stock clamps and publishes six final
   angles at **0xFFFFC0EC..0xFFFFC100**. Periodic task-pointer slot **0x11E30** points to this
@@ -224,13 +263,13 @@ Definition layout:
 
 - `defs/D2WD610H.xml` is the retained base metric EcuFlash definition.
 - `defs/D2WD610H_AVLS.xml` is the AVLS-only custom RomRaider definition.
-- `defs/D2WD610H_AVLS_boost_patch.xml` contains the same D2WD610H + AVLS definition plus the
-  canonical boost-patch tables and independent EBCS/hard-cut enable bytes.
+- `defs/D2WD610H_AVLS_boost_patch.xml` is the D2WD610H + AVLS generator input
+  with independent hard-overboost protection. Retired EBCS controls are removed.
 - `speed_density/D2WD610H_AVLS_speed_density_patch.xml` is the single standalone MAFless
   component input used by the master definition generator. It contains committed-state
   low/high-lift VE and fixed 3200/3000-RPM AVLS hysteresis.
 - `master_patch/D2WD610H_master_patch.xml` is the current focused integration definition. It
-  retains only relevant engine-tuning controls plus AVLS, SD/VE, exact Omni MAP, boost, and AEM
+  retains only relevant engine-tuning controls plus AVLS, SD/VE, exact Omni MAP, hard-overboost protection, and AEM
   input calibration, fueling safeties, and rotational idle; it renames the active timing/KCA paths
   and the AVCS A/B targets by their verified roles, and removes obsolete MAF/O2/DTC, readiness,
   fuel-temperature, and dormant B/E entries. Retired single-front, rotational-only, and old
@@ -238,7 +277,7 @@ Definition layout:
 - `defs/romraider_ecu_defs.xml` is a clean upstream metric RomRaider snapshot and is not modified
   with project tables.
 
-All seven custom RomRaider ROM files are self-contained. The legacy variants embed metric
+The retained custom RomRaider ROM definitions are self-contained. The legacy variants embed metric
 `32BITBASE` pruned to the standard D2WD610H overrides; the master prunes that set further for its
 changed hardware architecture. Load only the custom ROM variant matching the image being edited.
 Stock AVLS values were verified against the ROM image 2026-07-14.
@@ -286,17 +325,22 @@ data registers (datasheet) instead of descending the call tree.
       post-turbo wideband is recorded by an external logger and has no ECU input or ROM code.
       See `single_front_af_patch.md`. The stock CL/OL state flag remains `0xFFFFBE38`; the patch
       does not replace normal CL/OL transition logic.
-- [x] **Boost repurpose of EVAP purge output — purge chain FOUND** (see `boost_repurpose_notes.md`
-      for full chain + patch plan). Purge = temp-scheduled duty PWM in the emissions aux slow task.
-      Duty compute `evap_purge_duty_compute` @0x3FC0A (state m/c 0xFFFFCD77, ECT 0xFFFFB3AC, maps
-      desc 0x609C4/0x609D8) → duty%% RAM 0xFFFFCD54 → output stage `evap_purge_pwm_output_write`
-      @0xE8C4 → **physical PWM register 0xFFFFF590** (ATU-II), period RAM 0xFFFFAB84. Diagnostic
-      `evap_purge_flow_diagnostic` @0x46748. DTCs P0458 0x5BD85 / P0459 0x5BD86. Confidence HIGH.
-      The controller/hijack, DTC handling, checksum, and master AEM/SD prerequisite gate are built;
-      remaining work is harness continuity, datalog/scope proof, PWM-frequency/polarity testing,
-      wastegate plumbing, and physical soft/hard-limit commissioning.
-      NOTE: the crank-synced 6-ch bank (0x96FC/0x268E8, 0xFFFFF602/0xFFFFF652+2n) is AVCS/AVLS cam,
-      NOT purge (earlier mis-ID, corrected).
+- [x] **September 8: restore radiator-fan control and retire electronic boost actuation.**
+      The former `0x3FC0A → CD54 → 0xE8C4 → 0xFFFFF590` purge identification was wrong:
+      SSM fan parameter P92/address `0x2F` reads CD54. The corrected master retains the
+      stock output pointer `0x3FD8C = 0x0000E8C4`. Former 172-byte actuator and 224-byte
+      prerequisite-guard allocations now contain return-only entries plus FF padding.
+      EBCS controls are removed from the focused definition. The independent hard MAP
+      fuel cut remains; no electronic wastegate output is installed.
+- [x] **September 8: delete actual CPC purge and its modeled fuel contribution.**
+      Actual CPC is SSM P38/address `0x32`, reading `0xFFFFB6D4`, with output writer
+      `0xB182`. Master replaces the entry at `0x1BAF0` to clear requested purge duty
+      B6D4, modeled airflow B6D8 and mode B720, then passes zero to the unchanged stock
+      CPC writer. The entry at `0x23054` now publishes zero to either supplied bank
+      destination; its stock callers supply BE60 and BE64, which final fueling
+      subtracts. P0458/P0459 switches `0x5BD85/0x5BD86` are disabled. No free-flash or
+      runtime-RAM allocation was added. A zero request is not proof of physical output
+      polarity or hardware condition. The lean-out cause remains unproved.
 - [ ] AVLS physical OSV port write — **likely resolved**: OSV/OCV solenoids are driven by the
       crank-angle-synced bank above (ATU-II compare 0xFFFFF652+2n, ctrl bit on 0xFFFFF602).
       Confirm which of the 6 channels `avls_cam_mode_state_machine` (0x40168) commands.
@@ -304,10 +348,11 @@ data registers (datasheet) instead of descending the call tree.
       input. This is retained as historical documentation only and is superseded by the current
       `master_patch`, which deliberately uses the former MAF ADC for one external 0--5 V lambda
       controller and publishes explicit lambda/raw/readiness logger parameters.
-- [x] Combined stock-to-ROM builder and definition created. `patch/patch_combined.py` applies both
+- [x] Historical combined stock-to-ROM builder and definition created. `patch/patch_combined.py` applied both
       guarded components to one fresh stock copy; `verify_combined.py` proves the 811 changed bytes
-      are the exact 369 + 442 union with zero overlap. Hardware use remains gated on both standalone
-      commissioning plans.
+      are the exact 369 + 442 union with zero overlap for that historical revision.
+      Its former output-identity/commissioning assumptions are retracted; it is not the current
+      master target and old images containing the fan hook remain quarantined.
 - [x] **Rotational-idle component integrated in the current master.** `patch_rotational_idle.py` wraps the complete
       stock task at 0x279CC through task-pointer slot 0x11E30, defaults OFF, and applies bounded
       retard-only six-cylinder offsets only inside the calibrated warm/stationary idle window.
@@ -326,11 +371,12 @@ data registers (datasheet) instead of descending the call tree.
       component API is integrated by `master_patch`; standalone output is only a local regression.
       See `../speed_density/README.md`.
 - [x] **Current master composition built and audited.** `master_patch` reconstructs only from
-      canonical stock, installs the MAFless model, Omni MAP-SUP-3BR transfer, EVAP-output boost
-      control and gates, one former-MAF external-wideband producer for both fuel banks, complete
+      canonical stock, installs the MAFless model, Omni MAP-SUP-3BR transfer, independent hard
+      overboost protection, actual purge deletion, one former-MAF external-wideband producer for both fuel banks, complete
       traced four-stock-O2 signal/diagnostic removal, STI-pink injector data, dual AVLS-state
       VE/fueling/timing, fixed 3200/3000-RPM AVLS, and the 6800-RPM limiter. The focused definition exposes only active
-      A/D and C/F timing identities plus relevant tune/patch tables. This remains a static
+      A/D and C/F timing identities plus relevant tune/patch tables, without EBCS controls.
+      The fan command remains stock. This remains a static
       development baseline requiring bench/dyno validation, not vehicle proof.
 - [ ] Define 0x25F8/0x2628/0x2654 as functions in Ghidra and rename (interp_2axis_float32/s8/s16)
 - [x] Identify status functions at 0x27088/0x6504C and B/E condition: 0x27088 is a constant-zero
@@ -386,10 +432,13 @@ _(underscore names only — strict naming enforcement is ON)_
 - 0x000268E8 → **solenoid_channel_output_update** (per-channel duty→count + inhibit gate)
 - 0x00026DFC → **solenoid_status_word_read** (returns solenoid inhibit word @0xFFFFB744)
   (Note: this bank is cam/valve-timing solenoids, not purge — scheduler 0x263EE, 30°×24 phase.)
-- 0x0003FC0A → **evap_purge_duty_compute** (purge duty schedule; state m/c 0xFFFFCD77 → duty 0xFFFFCD54)
-- 0x0003F9E4 → **evap_purge_state_update** (purge enable/status byte 0xFFFFCD81)
-- 0x0000E8C4 → **evap_purge_pwm_output_write** (duty ratio → ATU-II reg 0xFFFFF590; period 0xFFFFAB84)
-- 0x00046748 → **evap_purge_flow_diagnostic** (rationality/circuit monitor → P0458/P0459)
+- 0x0003FC0A → **radiator_fan_duty_compute** (September 8 correction: CD54 is the SSM fan request, not purge)
+- 0x0003F9E4 → **radiator_fan_operating_state_update** (former purge label retracted)
+- 0x0000E8C4 → **radiator_fan_pwm_output_write** (duty ratio → ATU-II F590; period AB84)
+- 0x00046748 → **radiator_fan_coolant_response_monitor** (former purge-diagnostic attribution retracted)
+- 0x0001BAF0 → **canister_purge_airflow_and_duty_mode_dispatch** (actual CPC duty B6D4 and modeled airflow B6D8)
+- 0x0000B182 → **canister_purge_pwm_duty_request_write** (actual stock CPC request writer)
+- 0x00023054 → **purge_bank_fuel_subtraction_publish** (stock callers supply bank destinations BE60/BE64)
 - 0x00007A14 → **map_sensor_voltage_to_pressure_process** (sensor voltage × multiplier + offset → native mmHg absolute at RAM 0xFFFFABC4; boost feedback source)
 - 0x00007A56 → **map_sensor_raw_adc_range_classify** (raw MAP ADC 0xFFFFABC8 against
   0x7B284/0x7B286 high/low thresholds)
@@ -428,6 +477,17 @@ _(underscore names only — strict naming enforcement is ON)_
 - 0x0000A9A8 → **injector_control_lookup_sequence_a9a8**
 - 0x0003EB68 → **knock_correction_advance_max_select** (KCA A normal cam / KCA B AVLS high cam)
 - 0x000024B0 → **float_minimum_select** (returns the lower float; confirmed while tracing AVLS)
+- 0x000009F4 → **bus_state_controller_and_ram_emulation_initialize**
+- 0x00000A1E → **bus_and_port_registers_initialize_a1e**
+- 0x00001B4A → **port_registers_initialize_1b4a**
+- 0x0000505E → **hardware_register_byte_initialize_505e**
+- 0x00005076/507A/507E/50C6 → **no_operation_return_5076/507a/507e/50c6**
+- 0x00005082 → **port_registers_initialize_5082** (sets PDDR to 0x287F, including bit 13 used by AUD module-stop selection)
+- 0x000050CA → **port_registers_initialize_50ca**
+- 0x0000529C → **flash_ram_emulation_disable** (writes zero to RAMER at 0xFFFFEC26)
+- 0x000052A4 → **flash_ram_emulation_disable_thunk**
+- 0x000052A8 → **aud_system_control_and_module_standby_initialize** (writes SYSCR=0x01 and protected MSTCR=0x3C04 in the normal PDDR-bit-13 state)
+- 0x000052DA → **aud_enable_and_hudi_module_stop_dispatch**
 - 0x0003FDBC → **avls_control_sequence_update** (request state machine, commit copy, then OSV gate)
 - 0x000405B2 → **avls_mode_commit_copy** (CD87 requested mode → CD86 committed mode)
 - 0x000405CC → **avls_osv_actuation_gate** (retained timing/status gate for lift actuation)
@@ -701,3 +761,11 @@ and 0x1B81E.
   may clear only bit `0x80` near atmospheric pressure; its separate lean wrapper
   composes after the prior rev-limit/overboost wrapper and sets the same verified
   fuel-cut flag only after delayed, confirmed AFR failure.
+- 2026-09-05: direct-attach logging investigation verified the stock AUD power-down setup.
+  The three Ghidra-indexed PDDR writes use 0x3EFF, 0x3CFF and 0x287F, all retaining bit 13, so
+  `aud_system_control_and_module_standby_initialize` selects protected MSTCR word 0x3C04 after
+  writing SYSCR 0x01. The resulting low MSTCR byte leaves AUD running and H-UDI stopped.
+  `flash_ram_emulation_disable` independently clears RAMER. The inspected startup functions were
+  renamed in Ghidra and added to `ApplyMasterNames.java`. The dedicated AUD design note records
+  the eight CPU signals, the required 5 V PVCC2-domain interface, protocol, expected bandwidth,
+  and why safe live map editing needs a RAM-shadow patch rather than stock RAMER.

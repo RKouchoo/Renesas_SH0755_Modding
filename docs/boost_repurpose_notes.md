@@ -1,15 +1,67 @@
-# Repurposing the EVAP purge solenoid output as a boost-control solenoid
+# Boost-output retraction, fan restoration and actual purge deletion
 
-Goal: drive a boost-control (wastegate) solenoid from the ECU output that currently runs the
+> **RETRACTED OUTPUT IDENTIFICATION — 2026-09-08:** the historical identification
+> below is wrong. `0x3FC0A -> 0xE8C4 -> 0xFFFFF590` is radiator-fan control:
+> SSM fan parameter `0x2F` reads its `CD54` request. Actual CPC parameter `0x32`
+> reads `B6D4`, with output request routed through `0xB182`. Old builds containing
+> the misidentified boost hook must not be used on a running vehicle, including
+> with EBCS OFF. The current corrective master removes that hook. See
+> `master_patch/GHIDRA_AUDIT.md` for dispatch, calibration and output evidence.
+> Earlier confidence/ownership claims are retracted, not physical wiring evidence.
+
+## Current implementation — September 8, 2026
+
+The master now uses direct 5 psi wastegate-spring control, with an independent
+hard MAP fuel cut and no electronic boost actuator:
+
+- `0x3FD8C` retains the stock pointer `0x0000E8C4`, restoring the radiator-fan
+  command path. Stock fan computation/output code and calibration remain intact.
+- The former 172-byte boost actuator and 224-byte prerequisite guard contain
+  return-only entries plus FF padding. Their allocations stay reserved; obsolete
+  EBCS tuning controls have been removed from the focused definition. The
+  independently enabled hard overboost fuel-cut wrapper remains installed.
+- Actual CPC purge is deleted separately by
+  `master_patch/purge_delete_component.py`. Its replacement at `0x1BAF0` clears
+  duty `B6D4`, modeled purge airflow `B6D8` and mode `B720`, then passes exactly
+  zero to the unchanged stock CPC writer `0xB182`.
+- The replacement at `0x23054` stores zero at its supplied bank destination.
+  The two retained callers target `BE60` and `BE64`: the purge terms subtracted
+  by final fueling at `0x1DD04`. This disables the fuel-model contribution as
+  well as the output request, for the removed/capped purge plumbing.
+- Only the matching CPC circuit DTC switches P0458/P0459 at
+  `0x5BD85/0x5BD86` are disabled. No new RAM or free-flash allocation is needed.
+  A zero software request does not establish physical driver polarity or valve
+  condition; no new boost-output wiring is authorized by these findings.
+
+Corrected master SHA-256:
+`fbc1a8fad234dbf09934da8dda8a0eda8629965c3d162eb957c06c46a4d9848e`,
+Subaru checksum `0x503BE476`. The 436 changed bytes relative to the preceding
+`0600d73a...` image are confined to the above corrections and checksum. VE,
+injector and timing calibration bytes are unchanged, including the existing
+unvalidated second idle-VE trial. No idle cam hold was added.
+
+The new component checks establish the emitted software behavior, not the
+cause of the observed lean-out or successful operation on the vehicle. Older
+fan-hook images remain quarantined. Use the current master README/build and
+verification workflow, not the historical instructions below.
+
+## Retracted historical analysis and implementation record
+
+Everything below preserves the earlier reasoning and implementation history.
+Its output identities, confidence claims, EBCS controls and commissioning advice
+are superseded by the correction above; they must not be used for wiring or
+rebuilding an electronic actuator.
+
+Historical goal: drive a boost-control (wastegate) solenoid from the ECU output that currently runs the
 EVAP canister purge (CPC) solenoid — hijack its PWM duty with a boost map, neutralize the
 purge enable/schedule, and mask the purge DTCs.
 
 CALID D2WD610H (EZ30R, SH7055). All code addresses are file offsets (flash base = 0).
-Confidence in the purge identification: HIGH (~90%). Final proof = datalog the SSM purge-duty
+Historical confidence in the purge identification (withdrawn): HIGH (~90%). Final proof = datalog the SSM purge-duty
 parameter (or bench-probe the output pin) and watch it move with this chain. See "Identification".
 
 ================================================================================
-## THE PURGE CONTROL CHAIN (reverse-engineered, renamed in Ghidra)
+## RETRACTED PURGE CONTROL CHAIN (actually radiator-fan PWM)
 ================================================================================
 
 Runs from the slow-task dispatcher `FUN_000114B0` (a ~50-entry fn-ptr table @ 0x116E8).

@@ -1,42 +1,45 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
 <profile protocol="SSM">
     <parameters>
-        <parameter id="P2" livedata="selected" />
-        <parameter id="P4" livedata="selected" />
-        <parameter id="P6" livedata="selected" />
-        <parameter id="P8" livedata="selected" dash="selected" />
-        <parameter id="P11" livedata="selected" dash="selected" />
-        <parameter id="P12" livedata="selected" />
-        <parameter id="P13" livedata="selected" />
-        <parameter id="P17" livedata="selected" dash="selected" />
-        <parameter id="P21" livedata="selected" dash="selected" />
-        <parameter id="P24" livedata="selected" />
-        <parameter id="P47" livedata="selected" dash="selected" />
-        <parameter id="P63" livedata="selected" />
-        <parameter id="P64" livedata="selected" />
-        <parameter id="P69" livedata="selected" />
-        <parameter id="P70" livedata="selected" />
-        <parameter id="P151" livedata="selected" />
-        <parameter id="P152" livedata="selected" />
-        <parameter id="E32" livedata="selected" />
-        <parameter id="E33" livedata="selected" dash="selected" />
-        <parameter id="E50" livedata="selected" />
-        <parameter id="E51" livedata="selected" dash="selected" />
-        <parameter id="E60" livedata="selected" />
-        <parameter id="E81" livedata="selected" />
-        <parameter id="E84" livedata="selected" dash="selected" />
-        <parameter id="E105" livedata="selected" />
-        <parameter id="E123" livedata="selected" dash="selected" />
-        <parameter id="E500" livedata="selected" dash="selected" />
-        <parameter id="E501" livedata="selected" dash="selected" />
-        <parameter id="E502" livedata="selected" dash="selected" />
-        <parameter id="E506" livedata="selected" dash="selected" />
-        <parameter id="E507" livedata="selected" dash="selected" />
-        <parameter id="E508" livedata="selected" dash="selected" />
-        <parameter id="E509" livedata="selected" dash="selected" />
-        <parameter id="E510" livedata="selected" dash="selected" />
-        <parameter id="E511" livedata="selected" dash="selected" />
-        <parameter id="E512" livedata="selected" dash="selected" />
-        <parameter id="E513" livedata="selected" dash="selected" />
+        <parameter id="P2" livedata="selected" dash="selected" units="C"/>
+        <parameter id="P3" livedata="selected" dash="selected" units="%"/>
+        <parameter id="P5" livedata="selected" dash="selected" units="%"/>
+        <parameter id="P8" livedata="selected" dash="selected" units="rpm"/>
+        <parameter id="P10" livedata="selected" dash="selected" units="degrees"/>
+        <parameter id="P11" livedata="selected" dash="selected" units="C"/>
+        <parameter id="P12" livedata="selected" dash="selected" units="g/s"/>
+        <parameter id="P13" livedata="selected" dash="selected" units="%"/>
+        <parameter id="P17" livedata="selected" dash="selected" units="V"/>
+        <parameter id="P21" livedata="selected" dash="selected" units="ms"/>
+        <parameter id="P24" livedata="selected" dash="selected" units="mmHg"/>
+        <parameter id="P47" livedata="selected" dash="selected" units="%"/>
+        <parameter id="E32" livedata="selected" dash="selected" units="g/rev"/>
+        <parameter id="E33" livedata="selected" dash="selected" units="status"/>
+        <parameter id="E50" livedata="selected" dash="selected" units="ms"/>
+        <parameter id="E51" livedata="selected" dash="selected" units="kPa absolute"/>
+        <parameter id="E60" livedata="selected" dash="selected" units="ms"/>
+        <!-- Clear redundant four-byte trims; P3/P5 retain both bank corrections.
+             All selected parameters and switches use 79 distinct SSM bytes. -->
+        <parameter id="E81" units="%"/>
+        <parameter id="E84" livedata="selected" dash="selected" units="estimated AFR"/>
+        <parameter id="E105" units="%"/>
+        <parameter id="E123" livedata="selected" dash="selected" units="estimated AFR"/>
+        <parameter id="E500" livedata="selected" dash="selected" units="estimated AFR (14.64 stoich)"/>
+        <parameter id="E501" livedata="selected" dash="selected" units="ADC counts"/>
+        <parameter id="E502" livedata="selected" dash="selected" units="ready metric"/>
+        <parameter id="E503" livedata="selected" dash="selected" units="AVLS mode (1 low, 3 high)"/>
+        <parameter id="E506" livedata="selected" dash="selected" units="raw flags"/>
+        <parameter id="E507" livedata="selected" dash="selected" units="task calls"/>
+        <parameter id="E508" livedata="selected" dash="selected" units="raw additive factor"/>
+        <parameter id="E509" livedata="selected" dash="selected" units="raw additive factor"/>
+        <parameter id="E510" livedata="selected" dash="selected" units="raw additive factor"/>
+        <parameter id="E511" livedata="selected" dash="selected" units="raw additive factor"/>
+        <parameter id="E512" livedata="selected" dash="selected" units="raw additive factor"/>
+        <parameter id="E513" livedata="selected" dash="selected" units="raw additive factor"/>
     </parameters>
+    <switches>
+        <switch id="S4" livedata="selected" dash="selected"/>
+        <switch id="S5" livedata="selected" dash="selected"/>
+        <switch id="S11" livedata="selected" dash="selected"/>
+    </switches>
 </profile>

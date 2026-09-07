@@ -1,9 +1,29 @@
 # Master-patch commissioning order
 
+> **September 8 corrected development image:** SHA-256
+> `fbc1a8fad234dbf09934da8dda8a0eda8629965c3d162eb957c06c46a4d9848e`,
+> checksum `0x503BE476`, restores `0x3FD8C -> 0xE8C4` stock fan control and
+> deletes actual CPC purge duty/modeled flow/fuel subtraction. Electronic boost
+> control is removed. Do not run earlier images with the erroneous fan hook,
+> including the first-VE ROM. Static checks pass; vehicle behavior and a cure
+> for the lean-out have not been demonstrated. See `GHIDRA_AUDIT.md`.
+
 Do not start with a flashed car and a connected turbo control valve. The static
 checks in this repository prove composition and code structure, not the wiring,
 sensors, fuel system, engine, or tune. Use a disposable ROM copy for every edit
 and keep the root stock image unchanged.
+
+The September 8 SD hook hardening and fan/purge correction are code/definition
+work, not a demonstrated lean-out repair. Their tests do not prove timing or
+physical fueling.
+The rebuilt master retains the existing unvalidated second-VE trial; the last
+usable log was from the first-VE ROM. Establish the intended calibration
+baseline before flashing so a code comparison is not mixed with that VE change.
+Any first-VE comparison must be derived from corrected firmware; do not reuse
+the old first-VE BIN. VE, injector, timing and AVLS calibrations were not changed
+by the fan/purge correction, and no new cam-hold policy was selected.
+Leave the newly exposed load-filter response at stock 6% for the initial
+comparison; its presence alone is not justification for setting it to 100%.
 
 ## 1. Confirm parts and harness with power off
 
@@ -19,8 +39,11 @@ and keep the root stock image unchanged.
    pressure, fuel-pump delivery, and manifold-referenced pressure regulation.
 8. Keep the wastegate referenced directly to the compressor/manifold source;
    leave the EBCS out of the pressure path.
-9. In the matching master definition, confirm `Electronic Boost Control
-   Enable` is OFF and `Overboost Fuel Cut Enable` is ON.
+9. In the matching master definition, confirm `Overboost Fuel Cut Enable` is
+   ON and no electronic boost enable/duty/target controls are present.
+10. Confirm the normal fan wiring is intact and the removed purge plumbing is
+    isolated from the manifold. The old fan-output identification must not be
+    used to connect an EBCS.
 
 ## 2. Bench the analog inputs before flashing
 
@@ -40,18 +63,18 @@ Use a fused, current-limited setup and do not backfeed an unpowered ECU.
    with B136-23-to-B136-31 voltage under normal electrical loads to quantify
    ground offset.
 4. Sweep a protected 0-5 V source through the former-MAF input and verify:
-   - below 0.50 V: logger AFR fault sentinel (raw 0.0), ready 0.0, EBCS command zero;
+   - below 0.50 V: logger AFR fault sentinel (raw 0.0), ready 0.0, feedback inhibited;
    - 0.50..4.50 V: gasoline `AFR = 2*V + 10`, ready 50.0;
-   - above 4.50 V: logger AFR fault sentinel (raw 0.0), ready 0.0, EBCS command zero.
+   - above 4.50 V: logger AFR fault sentinel (raw 0.0), ready 0.0, feedback inhibited.
 5. With the actual controller, record display and white-to-black voltage during
    cold warm-up, warmed free air, and a disconnected sensor. An in-window result
    is not proof of controller health and must not be presented as such.
 6. Confirm both patched bank feedback values are identical and both inhibit
    helpers switch together. Do not substitute a 5 V rail directly without
    current limiting and a proven common reference.
-7. With wideband input valid, separately move MAP, RPM, and IAT outside each SD
-   validity window, below the first 1500-RPM boost breakpoint, and force the
-   500 g/s SD fault sentinel. Every case must leave EBCS command at zero.
+7. Separately move MAP, RPM, and IAT outside each SD validity window and check
+   the documented SD fault indication. Confirm wideband/SD validity no longer
+   overrides the stock radiator-fan command. No electronic boost command exists.
 8. Confirm `Rotational Idle Enable` is OFF before first flash.
 
 ## 3. Install logging
@@ -79,11 +102,26 @@ in-memory definition; reselect the exact complete path above and restart.
 
 RomRaider keeps Data, Graph, and Dashboard selections separately. Load
 `D2WD610H_idle_diagnostic_profile.xml` to select the complete cold-idle capture
-in Data and place the lean-out subset of E500--E513 plus the key stock channels
-on Dashboard. It intentionally omits E503--E505 (AVLS and boost-only lean-cut
-state) from this stationary test to preserve K-line sample rate. If an old
-profile leaves the gauges absent, load this profile or delete the stale profile
-and create a new one.
+in both Data and Dashboard. Every entry includes an exact unit conversion so
+older RomRaider builds do not reject or silently ignore it. It includes E503
+to prove which AVLS VE surface is active and omits only boost-only lean-cut
+state E504/E505. P3/P5 are the immediate bank corrections; the prior profile
+incorrectly selected learned trims P4/P6. Neutral, idle, and starter switches
+are also selected for the clutch-stall diagnosis. If an old profile leaves the
+gauges absent, load this profile or delete the stale profile and create a new
+one. The repaired profile uses 79 distinct SSM read addresses, below the
+84-address request limit. E81/E105 remain defined but are explicitly deselected
+because P3/P5 already record both bank corrections. Clear unrelated selections
+in Data, Graph and Dashboard first: hidden selections also consume request
+addresses. Start recording before cranking and check that the actual CSV
+header includes MAP, E60 pulse width, E50 latency, E123 base factor and the
+after-start channels. Dashboard display alone does not record a value.
+
+The previous instruction to capture on the installed first-VE ROM is withdrawn
+because that firmware also hijacked fan control. Use only a corrected-code
+calibration selected for the comparison. The generated second-VE increase is
+still an unvalidated trial based on an AFR endpoint that was changing; do not
+treat it as the resolved tune. See the reassessment in `GHIDRA_AUDIT.md`.
 
 Log at minimum:
 
@@ -99,7 +137,8 @@ Log at minimum:
 - ignition timing, feedback knock, fine-learning knock, KCA, IAM;
 - AVLS requested state, throttle, injector
   duty/pulse width, and battery voltage;
-- purge/repurposed EBCS duty; and
+- actual CPC request (P38, expected zero) and radiator-fan request (P92), in a
+  separate reduced-channel capture if needed to stay within the SSM limit; and
 - independently measured fuel pressure and wideband/controller status with a
   common timestamp.
 
@@ -127,8 +166,19 @@ after diagnosis unless continuous full-speed operation has been validated.
 2. Validate cranking and hot/cold restart pulse widths before extended running.
 3. Compare the controller gauge, ECU lambda, raw ADC voltage, and an independent dyno
    lambda reference. Resolve any offset before changing VE or injector data.
-4. Calibrate idle and vacuum VE cells on a load-controlled dyno. Confirm MAP,
-   IAT, airflow, load, fuel correction, and injector pulse width are plausible.
+4. Revalidate the bounded low-lift idle correction after after-start enrichment
+   has fully decayed. Its example site is 1300 RPM/315 mmHg; MAP was not captured
+   in the latest usable log, so that pressure is an assumption, not a measured
+   idle site. The increase applies through a tapered neighbourhood. Because the
+   unchanged stock
+   after-start enrichment may have concealed a lean base model, the first
+   seconds may now be visibly richer than the prior start. Stop immediately
+   below 11 AFR, if AFR stays below 12 after the first ten seconds, if it
+   remains below 12 after enrichment should have decayed, if the engine fouls
+   or misfires,
+   or AFR still trends lean. Confirm MAP, IAT, airflow, load, fuel correction,
+   and injector pulse width are plausible before expanding calibration into
+   other vacuum cells.
 5. Validate deceleration, tip-in, heat soak, fan operation, and the fixed
    3200-RPM engage / 3000-RPM release AVLS transition. Confirm E503 changes as
    expected and independently verify physical OSV/lift operation; do not assign
@@ -143,20 +193,20 @@ imbalance evidence, or disagreement between ECU and independent instruments.
 ## 5. Prove protections without relying on engine overboost
 
 Bench-simulate MAP and wideband inputs, or use an equivalent controlled test,
-to show that throttle, invalid-wideband, invalid MAP/RPM/IAT, below-minimum-RPM,
-and 500 g/s SD-fault gates command zero duty, 5.5 psi commands zero duty, and
-6.5 psi reaches the stock fuel-cut aggregation path. Separately confirm that
+to show that the 6.5-psi hard MAP limit reaches the stock fuel-cut aggregation
+path. The former electronic-duty gates and 5.5-psi soft-duty cut are retired,
+not active protections. Separately confirm that
 the pressure guard revokes closed-loop permission at baro minus 0.5 psi, then
 exercise the 50-call delay, eight-sample 13.0-AFR trip, latch persistence, and
 -0.5-psi release without relying on live combustion.
 Confirm the 6800/6770 limiter behavior. Do not deliberately overboost the
 engine just to test the hard cut.
 
-Scope the original purge output unloaded to establish frequency and polarity.
-If electronic control is not being commissioned, leave the EBCS electrically
-and pneumatically out of the boost path. If it is added later, first prove that
-ECU zero duty maps to the valve state that gives minimum boost and resolve
-flyback, current, heat, and fail-state behavior before attaching pressure hoses.
+Verify real fan response to the restored stock command and confirm the actual
+CPC request remains zero. Logger P92 reports a command, not proof of fan
+motion or electrical output. Leave an EBCS electrically and pneumatically out
+of the boost path. A future electronic controller requires a separately
+verified hardware/output design; no RomRaider switch can restore it here.
 
 With the engine already stable and all fueling checks complete, rotational idle
 may be commissioned separately. First log the six/factory-visible final timing
@@ -169,7 +219,7 @@ excess exhaust temperature, or timing result outside the documented bounds.
 
 Only after the naturally aspirated/vacuum region is stable:
 
-1. Retain zero feed-forward duty, zero Kp, and zero maximum duty ratio.
+1. Retain direct mechanical wastegate control; no electronic duty is available.
 2. Verify the 45 mm gate really produces approximately 5 psi and cannot creep
    above the hard limit throughout the RPM/load range.
 3. Tune VE, commanded lambda, injector data, and timing in small steady-state
@@ -178,6 +228,6 @@ Only after the naturally aspirated/vacuum region is stable:
    then validate the 3000..3200 hysteresis overlap, transients, restarts, heat
    soak, and altitude.
 
-Do not add electronic duty until spring-only control and every protection have
-passed. Any later RomRaider edit creates a new calibration that no longer has
+Electronic boost control is not implemented in this image. Any later
+RomRaider edit creates a new calibration that no longer has
 the generated baseline hash and requires a fresh checksum and change audit.

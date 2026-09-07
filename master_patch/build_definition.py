@@ -5,7 +5,7 @@ The metric D2WD610H AVLS definition remains the only stock-definition source.
 This generator removes stock MAF/O2/diagnostic material that is no longer part
 of the master architecture, gives the live timing maps their Ghidra-verified
 identities, groups the flat RomRaider menu by tuning workflow, and adds only the
-speed-density, boost, AVLS, external-wideband, pressure-open-loop, and lean-cut
+speed-density, overboost fuel cut, AVLS, external-wideband, pressure-open-loop, and lean-cut
 calibrations installed by build_master_patch.py.
 The generated target also exposes the integrated default-OFF rotational-idle
 switch, gates, limits, and six cylinder offsets.
@@ -29,6 +29,7 @@ SD_NAMES = (
     "Speed Density Global Airflow Multiplier",
     "Speed Density Engine Displacement",
     "Speed Density Maximum Airflow",
+    "Speed Density Load Filter Response",
     "Speed Density MAP Valid Range",
     "Speed Density RPM Valid Range",
     "Speed Density IAT Valid Range",
@@ -38,16 +39,22 @@ SD_NAMES = (
 )
 
 BOOST_NAMES = (
-    "Electronic Boost Control Enable",
     "Overboost Fuel Cut Enable",
+    "Boost Overboost Fuel Cut (hard)",
+)
+
+# The former actuator hook was a radiator-fan output, not a purge output.
+# Its flash allocation remains reserved, but no definition may expose it as
+# an electronic wastegate controller or offer an enable switch for it.
+RETIRED_ACTUATOR_NAMES = {
+    "Electronic Boost Control Enable",
     "Boost Wastegate Duty (RPM)",
     "Boost Target (RPM)",
     "Boost Kp (proportional gain)",
     "Boost Max Duty Ratio",
     "Boost Overboost Cut (Duty, soft)",
     "Boost Minimum Throttle",
-    "Boost Overboost Fuel Cut (hard)",
-)
+}
 
 WIDEBAND_NAMES = (
     "External Wideband Lambda Transfer",
@@ -112,7 +119,6 @@ CAT_IGN_COMP = "04.2 - Ignition - Compensations"
 CAT_IGN_KNOCK = "04.3 - Ignition - Knock Control"
 CAT_CAM_AVLS = "05.1 - Cam Control - AVLS Switching"
 CAT_CAM_AVCS = "05.2 - Cam Control - Intake AVCS Targets"
-CAT_BOOST_CONTROL = "06.1 - Boost - Electronic Control"
 CAT_BOOST_PROTECTION = "06.2 - Boost - Overboost Protection"
 CAT_PROTECTION_FUEL = "07.1 - Protection - Open Loop and Lean Cut"
 CAT_PROTECTION_RPM = "07.2 - Protection - RPM Limit"
@@ -144,7 +150,6 @@ CATEGORY_ORDER = (
     CAT_IGN_KNOCK,
     CAT_CAM_AVLS,
     CAT_CAM_AVCS,
-    CAT_BOOST_CONTROL,
     CAT_BOOST_PROTECTION,
     CAT_PROTECTION_FUEL,
     CAT_PROTECTION_RPM,
@@ -175,7 +180,8 @@ CATEGORY_RENAMES = {
     "Ignition Timing - Knock Control": CAT_IGN_KNOCK,
     "AVLS": CAT_CAM_AVLS,
     "Variable Valve Timing (AVCS)": CAT_CAM_AVCS,
-    "Boost Control (patch)": CAT_BOOST_CONTROL,
+    "Boost Control (patch)": CAT_BOOST_PROTECTION,
+    "Overboost Protection (patch)": CAT_BOOST_PROTECTION,
     "Fueling - Pressure/Lean Safety (patch)": CAT_PROTECTION_FUEL,
     "Miscellaneous - Limits": CAT_PROTECTION_RPM,
     "Drive-by-Wire Throttle (DBW)": CAT_THROTTLE,
@@ -189,6 +195,7 @@ CATEGORY_RENAMES = {
 TABLE_CATEGORY_OVERRIDES = {
     "Intake Temp Sensor Scaling": CAT_AIR_IAT,
     "Speed Density IAT Density Correction": CAT_AIR_IAT,
+    "Speed Density Load Filter Response": CAT_AIR_LOAD,
     "Knock Correction Advance Max - Normal Cam": CAT_IGN_KNOCK,
     "Knock Correction Advance Max - AVLS High Cam": CAT_IGN_KNOCK,
     "Base Timing Idle": CAT_IDLE_IGNITION,
@@ -196,7 +203,6 @@ TABLE_CATEGORY_OVERRIDES = {
     "Base Timing Idle (Above Speed Threshold)": CAT_IDLE_IGNITION,
     "Base Timing Idle Vehicle Speed Threshold": CAT_IDLE_IGNITION,
     "Overboost Fuel Cut Enable": CAT_BOOST_PROTECTION,
-    "Boost Overboost Cut (Duty, soft)": CAT_BOOST_PROTECTION,
     "Boost Overboost Fuel Cut (hard)": CAT_BOOST_PROTECTION,
 }
 
@@ -258,7 +264,7 @@ DROP_NAMES = {
     # Not an engine-tuning control and deliberately excluded from this focus.
     "Fuel Temp Sensor Scaling",
     "Force Pass Readiness Monitors",
-} | HIDDEN_AVLS_NAMES
+} | HIDDEN_AVLS_NAMES | RETIRED_ACTUATOR_NAMES
 
 DROP_CATEGORIES = {"Diagnostic Trouble Codes", "OBD-II"}
 
@@ -354,55 +360,14 @@ PREDICTABLE_AVLS_DESCRIPTIONS = {
 }
 
 BOOST_DESCRIPTIONS = {
-    "Electronic Boost Control Enable": (
-        "Exact 01 permits the EVAP-output EBCS controller to command duty. "
-        "Default 00 forces zero EBCS duty for direct wastegate-spring control "
-        "without disabling the independent hard overboost cut. This does not "
-        "restore the removed MAF/O2 logic or stock MAP scaling. The master "
-        "prerequisite guard still forces "
-        "zero duty unless the external-wideband input is ready, MAP/RPM/IAT "
-        "are inside their speed-density validity windows, RPM is at least the first shared "
-        "boost-axis breakpoint, and modeled airflow is not the 500 g/s fault "
-        "sentinel."
-    ),
     "Overboost Fuel Cut Enable": (
         "Exact 01 independently enables the added hard MAP fuel cut through "
-        "the verified stock rev-limiter flag path. Default is ON even while "
-        "electronic boost control is OFF. Any other value retains the stock "
+        "the verified stock rev-limiter flag path. Default is ON with "
+        "mechanical wastegate-spring boost control. Electronic actuator "
+        "control is retired and the stock radiator-fan output is retained. "
+        "Any other value retains the stock "
         "RPM limiter but bypasses only the added MAP cut. This is a last-resort "
         "software protection and cannot replace correct wastegate plumbing."
-    ),
-    "Boost Wastegate Duty (RPM)": (
-        "Feed-forward EBCS duty versus RPM. The master commissioning image is "
-        "zero at every breakpoint, so the 5 psi mechanical spring alone sets "
-        "boost. Do not add duty until plumbing/polarity, spring boost, lambda, "
-        "and both overboost actions have been physically proven."
-    ),
-    "Boost Target (RPM)": (
-        "Controller target stored in native mmHg absolute and displayed as psi "
-        "relative to 760 mmHg. The commissioning curve rises to 5.0 psi. This "
-        "target alone cannot raise boost while Kp, feed-forward duty, and the "
-        "maximum-duty ratio remain zero. The first shared RPM-axis breakpoint "
-        "also acts as the minimum electronic-control speed."
-    ),
-    "Boost Kp (proportional gain)": (
-        "Proportional EBCS gain. Default is 0.0 for spring-only commissioning. "
-        "There is no integral term. Tune only after the zero-duty system and "
-        "overboost protections have been proven on the installed hardware."
-    ),
-    "Boost Max Duty Ratio": (
-        "Final EBCS duty clamp, where 1.0 is 100 percent. Default is 0.0, which "
-        "independently guarantees spring-only boost even if another duty or "
-        "gain table is edited."
-    ),
-    "Boost Overboost Cut (Duty, soft)": (
-        "Soft MAP limit. Above the default 5.5 psi relative-to-760-mmHg value, "
-        "the controller commands zero EBCS duty. Keep below the hard cut and "
-        "bench/dyno-prove the transition."
-    ),
-    "Boost Minimum Throttle": (
-        "Driver-demand gate. At or below this processed-throttle value the "
-        "controller commands zero EBCS duty. Default native value is 30.0."
     ),
     "Boost Overboost Fuel Cut (hard)": (
         "Last-resort MAP fuel cut through the verified rev-limiter flag path. "
@@ -531,10 +496,10 @@ def add_wideband_templates(parent: ET.Element, target: ET.Element) -> None:
         "Inclusive operating-plausibility window. Default 0.50 to 4.50 V "
         "corresponds to 11.00 to 19.00 gasoline AFR on the supplied P0/P1 "
         "curve. Outside it the ECU publishes a zero logger sentinel, inhibits "
-        "closed-loop feedback, and forces EBCS duty to zero. In-range voltage "
+        "closed-loop feedback. In-range voltage "
         "does not prove controller or sensor health; a warm-up/disconnected "
-        "output may remain in range. MAP/RPM/IAT, minimum-RPM, and SD-result "
-        "prerequisites must also pass.",
+        "output may remain in range. The independent lean fuel cut treats "
+        "invalid or not-ready samples as lean after its pressure and delay gates.",
     )
 
     ET.SubElement(target, "table", {"name": WIDEBAND_NAMES[0], "storageaddress": "0x7E404"})
@@ -919,6 +884,7 @@ def validate(root: ET.Element) -> None:
         "Intake Temp Sensor Scaling": CAT_AIR_IAT,
         "Speed Density Global Airflow Multiplier": CAT_AIR_SD,
         "Speed Density VE - AVLS Low Lift": CAT_AIR_VE,
+        "Speed Density Load Filter Response": CAT_AIR_LOAD,
         "Engine Load Compensation (MP)": CAT_AIR_LOAD,
         "Injector Flow Scaling ": CAT_FUEL_INJECTORS,
         "Primary Open Loop Fueling A ": CAT_FUEL_OL,
@@ -928,7 +894,6 @@ def validate(root: ET.Element) -> None:
         "Knock Correction Advance Max - Normal Cam": CAT_IGN_KNOCK,
         "AVLS High Cam Engage RPM": CAT_CAM_AVLS,
         "Intake AVCS Target - AVLS Low Cam": CAT_CAM_AVCS,
-        "Electronic Boost Control Enable": CAT_BOOST_CONTROL,
         "Overboost Fuel Cut Enable": CAT_BOOST_PROTECTION,
         "Lean Fuel Cut Enable": CAT_PROTECTION_FUEL,
         "Rev Limit A": CAT_PROTECTION_RPM,
@@ -958,7 +923,6 @@ def validate(root: ET.Element) -> None:
         "Intake AVCS Target - AVLS Low Cam": "0x7C5B0",
         "Intake AVCS Target - AVLS High Cam": "0x7C764",
         "Omni Power MAP-SUP-3BR Scaling": "0x72810",
-        "Electronic Boost Control Enable": "0x7D80C",
         "Overboost Fuel Cut Enable": "0x7D80D",
         "External Wideband Lambda Transfer": "0x7E404",
         "External Wideband Valid Voltage Range": "0x7E40C",

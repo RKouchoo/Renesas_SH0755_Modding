@@ -7,7 +7,7 @@ stage and mutates only the declared calibration regions. The 5 psi wastegate
 spring remains the only source of commanded boost: EBCS, base WGDC,
 proportional gain, and the duty clamp are disabled/zero while the independent
 hard MAP cut stays active. Injector data is translated from the hash-pinned
-A4TE002B factory STI-pink ROM, tune axes extend to 4.0 g/rev, and the limiter is
+A4TE002B factory JDM-STI injector ROM, tune axes extend to 4.0 g/rev, and the limiter is
 6800/6770 RPM. The retained IAT conversion table is seeded for a Haltech
 HT-010206 thermistor on an explicitly provisional 1.00-kohm ECU pull-up
 assumption.
@@ -30,12 +30,12 @@ sys.path.insert(0, str(PATCH_DIR))
 import patch_boost as boost  # noqa: E402
 
 
-PINK_INJECTOR_DONOR = (
+A4TE002B_INJECTOR_DONOR = (
     ROOT / "base_roms" / "A4TE002B-2003-JDM-Subaru-Impreza-STi.hex"
 )
 
-PINK_INJECTOR_DONOR_SIZE = 0x30000
-PINK_INJECTOR_DONOR_SHA256 = (
+A4TE002B_INJECTOR_DONOR_SIZE = 0x30000
+A4TE002B_INJECTOR_DONOR_SHA256 = (
     "e3cc868a51476aaa25c1ffb63e8af8ba3e35ca4ace404e842f193bf117754b44"
 )
 
@@ -91,8 +91,9 @@ IAT_SENSOR_TEMPERATURE_ADDR = 0x729D8
 IAT_SENSOR_POINT_COUNT = 30
 REV_LIMIT_A_ADDR = 0x7644C
 
-# Installed Denso/Subaru STI pink-injector calibration.  The source bytes are
-# pinned from the 2003 JDM STI A4TE002B factory ROM.  Its 16-bit RomRaider
+# Installed Subaru 16611AA510 / 2003 JDM STI A4TE002B injector calibration.
+# The source bytes are pinned from the 2003 JDM STI A4TE002B factory ROM. Its
+# 16-bit RomRaider
 # conversion is 2707090/raw and .004 ms/count.  D2WD610H uses a different
 # underlying flow constant and finer latency resolution, so the displayed
 # OEM values are translated rather than copying the raw bytes verbatim.
@@ -102,12 +103,12 @@ INJECTOR_LATENCY_ADDR = 0x7B318
 INJECTOR_LATENCY_SIZE = 10
 INJECTOR_VOLTAGE_AXIS_ADDR = 0x7B304
 EXPECTED_INJECTOR_VOLTAGE_AXIS = (6.5, 9.0, 11.5, 14.0, 16.5)
-PINK_DONOR_FLOW_ADDR = 0x2866B
-PINK_DONOR_FLOW_DISPLAY_CONSTANT = 2707090.0
-PINK_DONOR_LATENCY_ADDR = 0x28673
-PINK_DONOR_EXPECTED_FLOW_RAW = 4900
-PINK_DONOR_EXPECTED_LATENCY_RAW = (697, 372, 245, 171, 95)
-PINK_DONOR_LATENCY_SCALE_MS = 0.004
+A4TE002B_DONOR_FLOW_ADDR = 0x2866B
+A4TE002B_DONOR_FLOW_DISPLAY_CONSTANT = 2707090.0
+A4TE002B_DONOR_LATENCY_ADDR = 0x28673
+A4TE002B_DONOR_EXPECTED_FLOW_RAW = 4900
+A4TE002B_DONOR_EXPECTED_LATENCY_RAW = (697, 372, 245, 171, 95)
+A4TE002B_DONOR_LATENCY_SCALE_MS = 0.004
 D2WD_LATENCY_SCALE_MS = 0.00025
 
 CRANKING_IPW_MAPS = (
@@ -328,38 +329,38 @@ def assert_axis(
     return actual
 
 
-def pink_injector_calibration() -> tuple[float, tuple[int, ...], float]:
-    """Translate the pinned A4TE002B STI-pink calibration into D2WD units.
+def a4te002b_sti_injector_calibration() -> tuple[float, tuple[int, ...], float]:
+    """Translate the pinned A4TE002B JDM-STI calibration into D2WD units.
 
     Returns D2WD's raw float injector scale, five D2WD latency counts, and the
     donor's estimated RomRaider flow display.  Hard-coded source values are
     checked as a second guard in addition to the complete donor-ROM hash.
     """
-    donor = PINK_INJECTOR_DONOR.read_bytes()
-    if len(donor) != PINK_INJECTOR_DONOR_SIZE:
-        raise SystemExit("REFUSING: STI pink-injector donor ROM has the wrong size")
-    if sha256(donor) != PINK_INJECTOR_DONOR_SHA256:
-        raise SystemExit("REFUSING: STI pink-injector donor ROM hash changed")
+    donor = A4TE002B_INJECTOR_DONOR.read_bytes()
+    if len(donor) != A4TE002B_INJECTOR_DONOR_SIZE:
+        raise SystemExit("REFUSING: A4TE002B injector donor ROM has the wrong size")
+    if sha256(donor) != A4TE002B_INJECTOR_DONOR_SHA256:
+        raise SystemExit("REFUSING: A4TE002B injector donor ROM hash changed")
     if donor[0x200:0x208] != b"A4TE002B":
-        raise SystemExit("REFUSING: STI pink-injector donor CALID is not A4TE002B")
+        raise SystemExit("REFUSING: injector donor CALID is not A4TE002B")
 
-    flow_raw = struct.unpack_from(">H", donor, PINK_DONOR_FLOW_ADDR)[0]
-    latency_raw = struct.unpack_from(">5H", donor, PINK_DONOR_LATENCY_ADDR)
-    if flow_raw != PINK_DONOR_EXPECTED_FLOW_RAW:
-        raise SystemExit(f"REFUSING: unexpected STI pink flow raw value {flow_raw}")
-    if latency_raw != PINK_DONOR_EXPECTED_LATENCY_RAW:
-        raise SystemExit(f"REFUSING: unexpected STI pink latency raw values {latency_raw}")
+    flow_raw = struct.unpack_from(">H", donor, A4TE002B_DONOR_FLOW_ADDR)[0]
+    latency_raw = struct.unpack_from(">5H", donor, A4TE002B_DONOR_LATENCY_ADDR)
+    if flow_raw != A4TE002B_DONOR_EXPECTED_FLOW_RAW:
+        raise SystemExit(f"REFUSING: unexpected A4TE002B flow raw value {flow_raw}")
+    if latency_raw != A4TE002B_DONOR_EXPECTED_LATENCY_RAW:
+        raise SystemExit(f"REFUSING: unexpected A4TE002B latency raw values {latency_raw}")
 
-    estimated_flow = PINK_DONOR_FLOW_DISPLAY_CONSTANT / flow_raw
+    estimated_flow = A4TE002B_DONOR_FLOW_DISPLAY_CONSTANT / flow_raw
     d2wd_flow_raw = INJECTOR_FLOW_DISPLAY_CONSTANT / estimated_flow
-    latency_ratio = PINK_DONOR_LATENCY_SCALE_MS / D2WD_LATENCY_SCALE_MS
+    latency_ratio = A4TE002B_DONOR_LATENCY_SCALE_MS / D2WD_LATENCY_SCALE_MS
     d2wd_latency_raw = tuple(round(value * latency_ratio) for value in latency_raw)
     if any(
-        abs(target * D2WD_LATENCY_SCALE_MS - source * PINK_DONOR_LATENCY_SCALE_MS)
+        abs(target * D2WD_LATENCY_SCALE_MS - source * A4TE002B_DONOR_LATENCY_SCALE_MS)
         > 1e-12
         for source, target in zip(latency_raw, d2wd_latency_raw)
     ):
-        raise AssertionError("STI pink latency cannot be represented exactly in D2WD units")
+        raise AssertionError("A4TE002B latency cannot be represented exactly in D2WD units")
     return d2wd_flow_raw, d2wd_latency_raw, estimated_flow
 
 
@@ -780,13 +781,13 @@ def apply_calibration(rom: bytearray, reference: bytes) -> dict[str, tuple[int, 
         f32(REV_LIMIT_CUT_RPM) + f32(REV_LIMIT_RESUME_RPM),
     )
 
-    # Translate the exact factory STI-pink values into this ECU's raw units.
+    # Translate the exact factory A4TE002B JDM-STI values into this ECU's raw units.
     # Absolute cranking/tip-in pulse widths use the injector-scale ratio as the
     # documented universal starting multiplier; first-start logs still decide
     # their final values on this six-cylinder installation.
-    pink_flow_raw, pink_latency_raw, _ = pink_injector_calibration()
+    a4te_flow_raw, a4te_latency_raw, _ = a4te002b_sti_injector_calibration()
     stock_flow_raw = struct.unpack_from(">f", reference, INJECTOR_FLOW_ADDR)[0]
-    injector_ratio = pink_flow_raw / stock_flow_raw
+    injector_ratio = a4te_flow_raw / stock_flow_raw
     if not 0.0 < injector_ratio < 1.0:
         raise SystemExit(f"REFUSING: invalid injector scale ratio {injector_ratio}")
     assert_axis(
@@ -795,11 +796,11 @@ def apply_calibration(rom: bytearray, reference: bytes) -> dict[str, tuple[int, 
         EXPECTED_INJECTOR_VOLTAGE_AXIS,
         "injector latency voltage axis",
     )
-    write("Injector Flow Scaling", INJECTOR_FLOW_ADDR, f32(pink_flow_raw))
+    write("Injector Flow Scaling", INJECTOR_FLOW_ADDR, f32(a4te_flow_raw))
     write(
         "Injector Latency",
         INJECTOR_LATENCY_ADDR,
-        struct.pack(">5H", *pink_latency_raw),
+        struct.pack(">5H", *a4te_latency_raw),
     )
     for label, address, count in CRANKING_IPW_MAPS:
         write(label, address, scale_u16_table(reference, address, count, injector_ratio, label))

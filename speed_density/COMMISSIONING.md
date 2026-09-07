@@ -29,8 +29,16 @@ first operation must be treated as controlled model validation.
 2. Start only with immediate lambda, fuel-pressure, MAP, RPM, IAT, and calculated-airflow logging.
 3. At exact zero RPM the task should publish zero airflow. A running value pinned near 500 g/s
    means the fixed fail-safe is active: shut down and diagnose the input/calibration path.
-4. Validate hot idle, then steady no-load RPM sites. Stop for a discontinuity in lambda, injector
-   pulse width, calculated load, or modeled airflow.
+4. Validate hot idle, then steady no-load RPM sites. The supplied low-lift
+   surface contains a bounded two-run idle correction, but the residual
+   2026-09-07 step is an unvalidated trial derived from a still-rising AFR
+   endpoint. Continue the current investigation on the first-VE ROM with the
+   repaired master logger profile before adopting it. An increase in base
+   fuel can also make the first seconds richer while stock enrichment remains
+   active. Stop immediately below 11 AFR, if AFR stays below 12 after
+   the first ten seconds, if it remains below 12 after enrichment should have
+   decayed, still trends lean, the engine fouls or misfires, or a discontinuity
+   appears in lambda, injector pulse width, calculated load, or modeled airflow.
 5. Validate light-load vacuum cells on a load-controlled dyno. Assign samples
    to low/high VE using committed AVLS state and discard samples while state is
    changing. Correct repeatable model error in VE, not injector scaling.

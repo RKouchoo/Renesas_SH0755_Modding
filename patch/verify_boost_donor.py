@@ -1,5 +1,8 @@
 #!/usr/bin/env python3
-"""Verify the A2WC510N donor extraction and the generated 5 psi patch defaults.
+"""Verify donor provenance, retired actuator data, and active overboost fuel cut.
+
+Donor WGDC/target values remain reserved calibration data only. The real
+radiator-fan route must stay stock and the former controller must be inert.
 
 Usage: python3 patch/verify_boost_donor.py [donor.hex] [patched.bin]
 """
@@ -149,32 +152,38 @@ def main():
         (patch.TARGET_DATA, b"".join(patch.f32(value) for value in patch.TARGET_MAP), "target data"),
         (patch.KP_ADDR, patch.f32(patch.KP) + patch.f32(patch.MAXRATIO) +
                         patch.f32(patch.OVERBOOST), "gain/soft-cut constants"),
-        (patch.EBCS_ENABLE_ADDR, b"\x00", "EBCS enable default"),
+        (patch.EBCS_ENABLE_ADDR, b"\x00", "retired actuator byte"),
         (patch.OVERBOOST_ENABLE_ADDR, b"\x01", "overboost enable default"),
-        (patch.STUB_ADDR, patch.build_stub(), "boost controller"),
+        (patch.STUB_ADDR, patch.build_stub(), "retired actuator allocation"),
         (patch.THROTTLE_GATE_ADDR, patch.f32(patch.MIN_THROTTLE), "throttle gate"),
         (patch.OVERB_FC_ADDR, patch.f32(patch.OVERBOOST_FUELCUT), "hard cut"),
         (patch.REVWRAP_ADDR, patch.build_fuelcut_wrapper(), "fuel-cut wrapper"),
     ]
     for address, data, label in blobs:
         expect(patched, address, data, label)
-    expect(patched, patch.HIJACK_LITERAL, patch.be32(patch.STUB_ADDR), "output hook")
+    expect(stock, 0x3FD8C, bytes.fromhex("0000e8c4"), "stock fan output identity")
+    expect(patched, 0x3FD8C, bytes.fromhex("0000e8c4"), "preserved fan output")
     expect(patched, patch.REVLIM_FNPTR, patch.be32(patch.REVWRAP_ADDR), "rev-limit hook")
-    # Independently pin the critical enable branches rather than relying only on
-    # regeneration from the same builders. Disabled controller path: require exact 01,
-    # load FR4=0.0, and jump to the stock output. Wrapper: independently require
-    # exact 01 and branch over the added MAP cut for every other value.
-    expect(patched, patch.STUB_ADDR,
-           bytes.fromhex("d11e601088018903f48dd21d422b0009"),
-           "zero-duty disabled path")
+    # Independent retirement bytes, not a decode of the obsolete controller:
+    # RTS/NOP cannot read the old enable byte or reach an output writer, and
+    # the remainder of its fixed 172-byte allocation contains no old code.
+    expect(patched, 0x7D810, bytes.fromhex("000b0009") + b"\xff" * 168,
+           "retired actuator return and erased reservation")
+    # The active fuel-cut wrapper still runs the stock limiter and requires
+    # exact 01 before applying the added MAP comparison and fuel-cut flag.
+    expect(patched, 0x7D8C4, bytes.fromhex("4f22d20a420b0009"),
+           "stock rev-limiter call before added pressure cut")
     expect(patched, patch.REVWRAP_ADDR + 8,
            bytes.fromhex("d109601088018b09"),
            "added-fuel-cut disabled branch")
-    decoded = (decode_span(patched, patch.STUB_ADDR, 0x7D88C) +
-               decode_span(patched, patch.REVWRAP_ADDR, 0x7D8F0))
+    expect(patched, 0x7D8DC, bytes.fromhex("f2358b03d1076010cb802100"),
+           "pressure comparison and fuel-cut flag write")
+    expect(patched, 0x7D8F0,
+           bytes.fromhex("00024b240007d80dffffabc40007d8c0ffffbf6c"),
+           "hard-cut stock limiter, enable, MAP, threshold, and flag literals")
+    decoded = decode_span(patched, patch.REVWRAP_ADDR, 0x7D8F0)
 
     allowed = set(range(patch.MAP_SCALING_ADDR, patch.MAP_SCALING_ADDR + 8))
-    allowed.update(range(patch.HIJACK_LITERAL, patch.HIJACK_LITERAL + 4))
     allowed.update(range(patch.REVLIM_FNPTR, patch.REVLIM_FNPTR + 4))
     for address, data, _ in blobs:
         allowed.update(range(address, address + len(data)))
@@ -182,19 +191,21 @@ def main():
     unexpected = [index for index in changed if index not in allowed]
     assert not unexpected, [hex(value) for value in unexpected[:32]]
 
-    print("A2WC510N donor and generated defaults verified")
+    print("A2WC510N donor provenance, actuator retirement, and hard fuel cut verified")
     print("  donor peak : %.6f psi relative to 760 mmHg" % donor_peak_psi)
-    print("  target psi : %s" % [round(value, 3) for value in expected_target_psi])
-    print("  base WGDC  : %s" % expected_base)
+    print("  inert target data: %s psi relative to 760 mmHg" %
+          [round(value, 3) for value in expected_target_psi])
+    print("  inert WGDC data  : %s (not used by executable code)" % expected_base)
     print("  MAP scale  : %s" % floats(patched, 0x72810, 2))
-    print("  EBCS switch: 0x%05X=00; exact 01 permits electronic duty" %
+    print("  retired byte: 0x%05X=00; no value can enable an actuator" %
           patch.EBCS_ENABLE_ADDR)
+    print("  fan output  : 0x3FD8C remains stock 0x0000E8C4")
     print("  cut switch : 0x%05X=01; independent hard MAP cut enabled" %
           patch.OVERBOOST_ENABLE_ADDR)
-    print("  caveat     : neither switch restores patched MAP-sensor scaling")
+    print("  MAP transfer remains donor-scaled independently of the hard-cut switch")
     print("  changed    : %d bytes, all inside guarded hooks/calibration/free-space allocations" %
           len(changed))
-    print("  code       : %d decoded instructions; enable branches independently pinned" %
+    print("  hard-cut code: %d decoded instructions; call, enable, flag, and literals pinned" %
           len(decoded))
 
 

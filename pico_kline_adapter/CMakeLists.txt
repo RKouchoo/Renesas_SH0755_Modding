@@ -37,7 +37,7 @@ pico_enable_stdio_usb(pico_ad310_kline_bridge 0)
 pico_enable_stdio_uart(pico_ad310_kline_bridge 0)
 
 pico_set_program_name(pico_ad310_kline_bridge "Pico AD310 K-Line Bridge")
-pico_set_program_version(pico_ad310_kline_bridge "1.0.0")
+pico_set_program_version(pico_ad310_kline_bridge "1.1.2")
 pico_set_program_description(pico_ad310_kline_bridge
     "Raw USB CDC to inverted AD310 K-line bridge")
 

@@ -1,5 +1,13 @@
 # D2WD610H master turbo patch
 
+> **September 8 static repair built:** the current image restores stock
+> radiator-fan control and deletes actual canister-purge duty and fuel
+> subtraction. Electronic boost control is removed; hard-overboost fuel cut
+> remains. **Do not run earlier pre-fix images, including the first-VE ROM:**
+> EBCS OFF did not restore their hijacked fan command. The corrected image is
+> not vehicle-validated, and these fixes are not a demonstrated lean-out cure. See
+> [the repair audit](GHIDRA_AUDIT.md#2026-09-08--fan-restoration-purge-delete-and-idle-timing-clarification).
+
 This directory contains the single current integration target for the 2005 ADM
 Liberty 3.0R manual ECU (`D2WD610H`). It combines the previously separate
 firmware work into one deterministic stock-to-output build:
@@ -8,8 +16,10 @@ firmware work into one deterministic stock-to-output build:
   tables and a provisional Haltech HT-010206 post-intercooler IAT calibration
   based on an assumed 1.00 kOhm ECU pull-up;
 - Omni Power `MAP-SUP-3BR` 3-bar MAP scaling;
-- EVAP-output boost control with throttle, wideband, speed-density-input/result,
-  soft-overboost, and hard fuel-cut gates;
+- mechanical wastegate-spring boost control with independent hard-overboost
+  fuel cut, and the stock radiator-fan command route restored;
+- permanent actual CPC purge-duty, modeled-airflow and bank fuel-subtraction
+  delete for the removed/capped purge plumbing;
 - the former MAF ADC repurposed for the supplied seller-labelled `AEM 50-4110`
   / 30-4110-style P0/P1 0-5 V lambda signal;
 - both stock front A/F paths and both rear O2 paths removed from feedback and
@@ -18,24 +28,46 @@ firmware work into one deterministic stock-to-output build:
   default OFF;
 - a live-barometric pressure failsafe that requests open loop before boost and
   a delayed, confirmed, pressure-release-latched 13.0-AFR fuel cut;
-- a factory-ROM-derived STI pink injector scalar/deadtime starting point;
+- a factory-ROM-derived 2003 JDM STI `A4TE002B` injector scalar/deadtime
+  profile matching the installed Subaru `16611AA510` injector application;
 - a conservative 5 psi / 98 RON fuel, ignition, AVLS, and 6800 RPM starting
-  calibration with every active engine-load axis extended to 4.0 g/rev; and
+  calibration with every active engine-load axis extended to 4.0 g/rev, plus
+  a bounded low-lift idle/vacuum VE correction from two stationary runs;
+  and
 - focused, self-contained D2WD610H RomRaider ECU and logger definitions.
 
 The generated baseline is `D2WD610H_master_patch.bin`, SHA-256
-`0390ff9d856c66f58e0c44db9c8a4024e26072b905540ef30a116fffca9b9f86`.
+`fbc1a8fad234dbf09934da8dda8a0eda8629965c3d162eb957c06c46a4d9848e`.
 It is 512 KiB, contains CALID `D2WD610H`, and has a valid Subaru additive
-checksum (`0xBEB878AA`). It is a development artifact, not a vehicle-tested tune.
+checksum (`0x503BE476`). It is a development artifact, not a vehicle-tested tune.
+Its second idle-VE increase is an unvalidated trial derived from a still-rising
+AFR endpoint. The old recommendation to continue running the first-VE ROM is
+withdrawn: that image also used the erroneous fan hook. Any future first-VE
+comparison must use the corrected firmware, not the old BIN. See the
+reassessment in [GHIDRA_AUDIT.md](GHIDRA_AUDIT.md).
+The September 8 hook hardening uses saved caller RPM and single-read MAP/IAT,
+and removes only this load task's obsolete MAF-fault fallback. Cranking and
+signal-timeout protections remain. `Speed Density Load Filter Response` is now
+explicit under `01.5 - Air Model - Load Calculation`, still at stock 6% per
+update. The subsequent fan/purge repair changes no VE, injector, timing or AVLS
+calibration either; no new cam-hold policy was selected. The rebuilt master
+still contains the existing second-VE trial and is not a like-for-like
+calibration comparison with the previously logged first-VE ROM.
 The complete generated logger definition has SHA-256
 `e21f5d6633605369faa013027155adeeca8583ef0f1a9486d603dbbca2e68e0b`.
 
-Two independent boost switches remain in RomRaider. `Electronic Boost Control
-Enable` defaults OFF and forces zero actuator duty for direct wastegate-spring
-control. `Overboost Fuel Cut Enable` defaults ON and independently retains the
-6.5 psi hard MAP cut. MAFless airflow and the external-wideband/four-stock-O2
-replacement are intentionally permanent because this architecture has no MAF
-or stock-O2 fallback.
+`Overboost Fuel Cut Enable` remains in RomRaider, defaults ON, and retains the
+6.5 psi hard MAP cut relative to 760 mmHg. Electronic boost enable, target,
+duty, gain and soft-duty-cut controls are no longer exposed. Their former
+controller and guard allocations contain only a return followed by erased
+bytes; changing the old enable byte cannot reactivate them. `0x3FD8C` again
+points directly to the stock fan writer at `0xE8C4`.
+
+The separate purge delete clears actual CPC duty and modeled airflow at
+`0x1BAF0`, sends zero to the unchanged CPC request writer at `0xB182`, and
+zeros both bank fuel-subtraction terms through `0x23054`. Only verified purge
+circuit switches P0458/P0459 are disabled. MAFless airflow, the stock-O2
+replacement, and purge delete are permanent in this architecture.
 
 Two independent fueling-safety switches also default ON. The pressure guard
 calls the original Primary Open Loop target routine and then revokes closed-loop
@@ -116,6 +148,11 @@ patched calibrations stay together in RomRaider: air model, fueling, wideband,
 ignition, cam control, boost, protection, throttle, idle, sensors/cooling, then
 the checksum entry. The numbering controls RomRaider's otherwise alphabetical
 flat category list; it does not affect ROM addresses or calibration data.
+
+The executable hook regression check is
+`python3 speed_density/test_hook_execution.py master_patch/D2WD610H_master_patch.bin`
+from the repository root. It executes wrapper opcodes against descriptor-based
+lookup models; it is not a whole-ECU emulator or CPU-timing measurement.
 `02.8 - Fueling - Fuel Pump Control` exposes the Ghidra-verified stock 33.3 and
 66.7-percent FPCU command literals. Their generated values remain stock; they
 are present so a copied BIN can run the documented stationary full-speed mode
@@ -159,10 +196,12 @@ and verifies provenance and checksum.
 | File | Purpose |
 |---|---|
 | `build_master_patch.py` | Deterministic stock-to-master builder. |
-| `master_calibration.py` | IAT, fuel, timing, KCA, AVCS, STI-pink injector, spring-only boost, rev-limit, and Subaru-checksum implementation. |
+| `master_calibration.py` | IAT, fuel, timing, KCA, AVCS, pinned A4TE002B JDM-STI injector, spring-only boost, rev-limit, and Subaru-checksum implementation. |
 | `verify_master_calibration.py` | Independent IAT, fuel, timing, KCA, AVCS, injector, boost, limiter, and checksum policy checks used by the master verifier. |
 | `../speed_density/patch_speed_density.py` | Single MAFless SD component containing committed-state dual VE and predictable 3200/3000 RPM AVLS calibration. |
 | `wideband_component.py` | Permanent four-stock-O2 delete and former-MAF external-wideband input firmware. |
+| `purge_delete_component.py` | Guarded in-place CPC duty, modeled-flow and bank fuel-subtraction delete; no new RAM or free-flash allocation. |
+| `test_purge_delete.py` | Executable leaf/ABI tests for zero CPC request and both bank subtraction terms, plus ownership and refusal checks. |
 | `../fueling_safety/fueling_safety_component.py` | Pressure-forced-open-loop and latched lean-cut component. |
 | `../patch/patch_rotational_idle.py` | Reusable bounded rotational-idle component, integrated default OFF. |
 | `verify_master_patch.py` | Independent binary, opcode, calibration, XML, logger, and provenance audit. |
@@ -171,7 +210,7 @@ and verifies provenance and checksum.
 | `D2WD610H_master_patch.xml` | Matching self-contained metric RomRaider definition. |
 | `D2WD610H_master_logger.xml` | Complete metric, SSM-only logger definition for ECU ID `3C5A387116`; ready artifact generated from logger v370. |
 | `D2WD610H_master_logger_ecuparams.xml` | Internal fourteen-parameter fragment used to generate the complete logger definition. |
-| `D2WD610H_idle_diagnostic_profile.xml` | Focused cold-idle profile selecting all required high-resolution and after-start channels while omitting AVLS and boost-only state from this stationary test. |
+| `D2WD610H_idle_diagnostic_profile.xml` | 79-address cold-idle profile with explicit units, bank trims, pulse/latency, MAP/load, fueling factors, AVLS state, switches and after-start terms. Redundant E81/E105 trims are explicitly deselected to fit the 84-address SSM limit. |
 | `install_master_logger.py` | Generates a complete D2WD610H-only logger from a normal complete logger XML, retaining its DTD and applicable stock channels. |
 | `ghidra_scripts/ApplyMasterNames.java` | Reproducibly reapplies the names/comments confirmed in live Ghidra. |
 
@@ -194,5 +233,5 @@ and verifies provenance and checksum.
 - A valid checksum and passing static audit do not prove ADC voltage tolerance,
   harness pinout, MAP accuracy, PWM polarity/frequency, wastegate plumbing, fuel
   delivery, or combustion safety.
-- The 5 psi target cannot limit boost caused by wastegate spring error or boost
+- The nominal 5 psi spring cannot limit boost caused by wastegate spring error or boost
   creep. Use an independent mechanical pressure test and a load-controlled dyno.

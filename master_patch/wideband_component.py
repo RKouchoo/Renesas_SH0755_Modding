@@ -20,10 +20,11 @@ warm-up and disconnected-sensor voltages remain physically unverified and may
 fall inside the window.  An out-of-window input publishes 1.0 lambda to the
 front-sensor paths but forces both readiness metrics to zero, which makes the
 Ghidra-verified bank inhibit helpers return the stock inhibited value (2).  The
-logger value at 0xFFFFB098 becomes 0.0 on such a rejection.  A master-only guard
-also forces boost-solenoid duty to zero whenever the wideband voltage, MAP/RPM/
-IAT validity, minimum boost RPM, or speed-density result is not ready for
-electronic control.
+logger value at 0xFFFFB098 becomes 0.0 on such a rejection. The former boost
+actuator guard is retired: its output was misidentified radiator-fan PWM.
+Its reserved allocation contains only a return and erased bytes. Stock fan
+control remains intact; independent overboost and lean fuel cuts are separate
+components, not an electronic wastegate controller.
 """
 
 from __future__ import annotations
@@ -252,58 +253,15 @@ def emit_runtime_range_gate(
 
 
 def build_boost_ready_guard() -> bytes:
-    """Tail-gate boost on wideband and current speed-density prerequisites."""
-    a = Asm(BOOST_READY_GUARD_ADDR)
+    """Retired actuator guard; preserve allocation, no output/state access.
 
-    # Both feedback banks are usable only while voltage passes plausibility.
-    a.movl_pool(1, FRONT_READY_METRIC_BANK1).fmov_load(0, 1)
-    a.movl_pool(1, READY_THRESHOLD_ADDR).fmov_load(1, 1)
-    a.fcmpgt(1, 0).bf("invalid")
-
-    # Never command electronic duty when any live speed-density input is NaN,
-    # infinite, outside its editable validity window, or has malformed bounds.
-    emit_runtime_range_gate(
-        a,
-        speed_density.MAP_ADDR,
-        speed_density.MAP_MIN_ADDR,
-        speed_density.MAP_MAX_ADDR,
+    The former guard targeted radiator-fan PWM. Electronic actuator support
+    is removed, not merely switched off. Wideband decoding/inhibits and the
+    independent pressure/lean fuel-cut safety remain active elsewhere.
+    """
+    return bytes.fromhex("000b0009") + b"\xff" * (
+        COMPONENT_END + 1 - BOOST_READY_GUARD_ADDR - 4
     )
-    emit_runtime_range_gate(
-        a,
-        speed_density.RPM_ADDR,
-        speed_density.RPM_MIN_ADDR,
-        speed_density.RPM_MAX_ADDR,
-    )
-    emit_runtime_range_gate(
-        a,
-        speed_density.IAT_ADDR,
-        speed_density.IAT_MIN_ADDR,
-        speed_density.IAT_MAX_ADDR,
-    )
-
-    # The first shared boost-table breakpoint is also the minimum electronic-
-    # control RPM. This prevents Kp from energizing the valve during key-on or
-    # cranking while keeping the gate aligned with an editable RomRaider axis.
-    a.movl_pool(1, boost.RPM_AXIS).fmov_load(1, 1)
-    a.fcmpeq(1, 1).bf("invalid")
-    a.movl_pool(1, speed_density.RPM_ADDR).fmov_load(0, 1)
-    a.fcmpgt(0, 1).bt("invalid")  # first boost RPM > current RPM
-
-    # The SD helper publishes its fixed 500 g/s sentinel for every other bad
-    # calibration/lookup/arithmetic path. At this 5 psi baseline legitimate
-    # modeled airflow is well below the sentinel; equality therefore fails
-    # closed even if the normal configurable airflow cap is also reached.
-    a.movl_pool(1, speed_density.FINAL_MASS_AIRFLOW_ADDR).fmov_load(0, 1)
-    a.fcmpeq(0, 0).bf("invalid")
-    a.movl_pool(1, speed_density.FAILSAFE_AIRFLOW_ADDR).fmov_load(1, 1)
-    a.fcmpeq(1, 1).bf("invalid")
-    a.fcmpeq(1, 0).bt("invalid")
-
-    a.movl_pool(1, boost.STUB_ADDR).jmp(1).nop()
-    a.label("invalid")
-    a.fldi0(4)
-    a.movl_pool(1, boost.STOCK_OUTPUT).jmp(1).nop()
-    return a.assemble()
 
 
 def build_blobs() -> list[tuple[str, int, bytes]]:
@@ -324,7 +282,7 @@ def build_blobs() -> list[tuple[str, int, bytes]]:
         ("wideband_constants", CONSTANTS_ADDR, constants),
         ("wideband_front_pair_update", WIDEBAND_UPDATE_ADDR, build_wideband_update()),
         ("wideband_bank_inhibit_helper", INHIBIT_HELPER_ADDR, build_inhibit_helper()),
-        ("wideband_boost_ready_guard", BOOST_READY_GUARD_ADDR, build_boost_ready_guard()),
+        ("retired_actuator_guard_reservation", BOOST_READY_GUARD_ADDR, build_boost_ready_guard()),
     ]
 
 
@@ -348,6 +306,11 @@ def apply_to_rom(rom: bytearray) -> list[tuple[str, int, bytes]]:
     """Apply the permanent master O2/wideband component to a stock-derived ROM."""
     if len(rom) != 0x80000:
         raise SystemExit("REFUSING: wideband component requires a 512 KiB ROM")
+
+    # Refuse an upstream fan hijack before making any O2 changes. This is an
+    # identity check, never an output hook owned by this component.
+    if bytes(rom[boost.HIJACK_LITERAL : boost.HIJACK_LITERAL + 4]) != be32(boost.STOCK_OUTPUT):
+        raise SystemExit("REFUSING: stock radiator-fan output literal was changed")
 
     blobs = build_blobs()
     for name, address, data in blobs:
@@ -403,16 +366,6 @@ def apply_to_rom(rom: bytearray) -> list[tuple[str, int, bytes]]:
         checked_write(rom, pointer, be32(stock_target), be32(NOOP_TASK), label)
     for code, address in DISABLED_O2_DTC_SWITCHES.items():
         checked_write(rom, address, b"\x01", b"\x00", "%s O2 DTC switch" % code)
-
-    # boost.apply_to_rom() must run first; retain its full controller and add a
-    # master-only ready gate ahead of it.
-    checked_write(
-        rom,
-        boost.HIJACK_LITERAL,
-        be32(boost.STUB_ADDR),
-        be32(BOOST_READY_GUARD_ADDR),
-        "boost output tail-call literal",
-    )
 
     for _, address, data in blobs:
         rom[address : address + len(data)] = data

@@ -4,6 +4,15 @@ This is the exact generated starting point, not a claim that the engine will
 achieve the commanded values. All pressure figures described as boost are
 relative to the firmware's fixed 760 mmHg reference unless stated otherwise.
 
+The September 8 corrected build has SHA-256
+`fbc1a8fad234dbf09934da8dda8a0eda8629965c3d162eb957c06c46a4d9848e`
+and checksum `0x503BE476`. It restores stock radiator-fan control and deletes
+actual CPC purge duty/modeled flow/fuel subtraction, without changing VE,
+injector, timing or AVLS calibrations. No new cam-hold policy was selected.
+Earlier images, including the first-VE ROM, retain the erroneous fan hook and
+must not be run. The corrected firmware is statically tested, not
+vehicle-validated or a demonstrated lean-out cure.
+
 ## MAP sensor
 
 The selected Omni Power `MAP-SUP-3BR` endpoints are converted into the native
@@ -69,6 +78,19 @@ transfer.
 
 ## Speed density
 
+`Speed Density Load Filter Response` at `0x73968` is exposed under Load
+Calculation as a percentage per update. Default **6%** is the unchanged stock
+alpha 0.06 for the B428 -> B42C filter. Larger values approach new load faster;
+100% passes it through, while 0% can freeze prior load and must not be used.
+Keep the value finite and greater than 0%, at most 100%. The appropriate setting
+depends on measured MAP noise and task cadence; this code hardening does not
+establish that the stock default is wrong and does not change it.
+
+The September 8 hook change uses the retained caller RPM for both SD airflow
+and downstream load normalization, with MAP/IAT captured once per invocation.
+It does not alter the equation or any VE/injector/timing calibration. The
+existing second idle-VE trial remains unvalidated.
+
 The modeled airflow is:
 
 ```text
@@ -93,8 +115,26 @@ the ranges each state can genuinely occupy under the supplied hysteresis:
 The 3000..3200 overlap is real: the selected table depends on committed state,
 not RPM alone. The two supplied surfaces are resampled from the same conservative
 single-map seed and agree in their shared region, so the generated baseline does
-not intentionally add a fueling step. They are not measured EZ30R VE maps and
-must be calibrated separately from logs. Global multiplier defaults to 1.0.
+not intentionally add a fueling step. The low-lift surface then applies a
+bounded correction derived from the 2026-09-03 and 2026-09-07 stationary runs.
+Around 1300 RPM and 315 mmHg absolute MAP it raises VE from about 0.624 to about
+0.985 (with a 1.59 peak factor at the 350--450 mmHg knots). The first 1.27 factor left an 18.39-AFR
+result about 30 seconds after the second start; its residual
+`18.39 / 14.70 = 1.2517` correction is applied on top. The correction tapers
+with RPM and MAP, is unity
+at both 3000/3200-RPM AVLS boundary rows, is unity from 1150 mmHg upward, and
+does not alter the high-lift surface or global multiplier. This is an
+unvalidated trial: AFR was still rising at the chosen endpoint, so the ratio
+does not establish steady-state VE or the cause of the pulse-width decline.
+The earlier recommendation to diagnose on the first-VE ROM is withdrawn because
+that firmware also hijacks radiator-fan control. A future first-VE comparison
+must use corrected firmware, not the old BIN; the repaired 79-address logger
+profile remains applicable. Changing VE also changes calculated load and
+therefore timing/AVCS lookup positions. The example 315-mmHg idle pressure was
+not measured in the latest usable log, which lacks MAP.
+
+The remainder of both surfaces is still an unmeasured EZ30R starting model and
+must be calibrated from controlled data. Global multiplier defaults to 1.0.
 IAT density correction uses `293.15 / (IAT_C + 273.15)` from -50 through 150
 degrees C after the provisional sensor-voltage transfer above has produced IAT.
 
@@ -125,8 +165,9 @@ sets both readiness values at `AE70/AE74` to 50.0. It mirrors lambda to
 
 For an invalid sample it publishes 1.0 only as an internal placeholder, writes
 0.0 to the logger mirrors and readiness values, returns the stock inhibited
-state from both closed-loop bank gates, and forces EBCS duty to zero. The 0.0
-logger value is a fault sentinel, not a physical lambda.
+state from both closed-loop bank gates. Electronic boost control has been
+removed; wideband validity no longer overrides the radiator-fan command. The
+0.0 logger value is a fault sentinel, not a physical lambda.
 
 The controller advertises a legitimate 0-5 V span. The narrower 0.50-4.50 V
 range is an operating plausibility gate corresponding to 11-19 gasoline AFR;
@@ -175,12 +216,31 @@ The injector seed is translated from a SHA-pinned factory 2003 JDM STI
 | 14.0 V | 0.684 ms |
 | 16.5 V | 0.380 ms |
 
-That is the closest pinned factory evidence for the requested STI pink top-feed
-injectors; it is not proof that injectors sold or described as 565 cc/min have
-those exact characteristics. The builder ratio-scales all four cranking-IPW
-maps, both tip-in maps, and the tip-in activation threshold as starting values.
-Confirm part numbers, base differential pressure, condition, flow spread, and
-fuel compatibility before use.
+The installed injector marking has now been identified as Subaru
+`16611AA510`. Catalog application data places that injector on the same early
+JDM STI generation as the A4TE002B donor and cross-references Denso
+`195500-3910`, so the donor-ROM profile remains the best stock calibration
+match. An independent Subaru-ROM-derived reference lists this exact part as a
+550-cc/min top-feed EJ207 injector with a 0.12-ms/V slope and 2.36-ms offset;
+that linear representation evaluates to 0.68 ms at 14 V, effectively matching
+the donor ROM's 0.684-ms point. Confirm that all six carry the same marking. If
+they are aftermarket copies, remanufactured, or modified, the part number still
+does not replace an actual set flow/latency report.
+
+The donor's four per-injector primary-fuel offsets are all neutral (`0.000`)
+and their RPM activation thresholds disable them once the engine is running.
+This only rules out an effect from those identified offsets; it does not prove
+that no other short-pulse or minimum-duration compensation exists. As a separate
+factory sanity check, the pinned 2005 USDM Legacy GT `A2WC510N` ROM displays
+520.59 cc/min and uses 0.675 ms at 14 V; that close but non-identical profile
+confirms both that the A4TE002B numbers are plausible and that injector
+generation matters.
+
+The builder ratio-scales all four cranking-IPW maps, both tip-in maps, and the
+tip-in activation threshold as starting values. Confirm base differential
+pressure, condition, flow spread, and fuel compatibility before use. Do not
+change the whole scalar to correct the remaining VE surface; the scalar and
+latency now remain pinned to the matching factory application.
 
 Both Primary Open Loop maps use load axes extended to 4.0 g/rev and an exact
 `1000, 1500, 2000, 2500, 3000, 3500, 4000, 5000, 6000, 6800` RPM grid. The
@@ -344,29 +404,34 @@ hard ceiling. Therefore neither positive entries nor the minimum-timing floor
 can add advance. This changes ignition timing only: it does not command idle
 airflow, cut fuel, alter AVLS, or disable misfire monitoring.
 
+## Fan restoration and actual purge delete
+
+Stock fan output literal `0x3FD8C` again points directly to `0xE8C4`. Fan
+calibration and the fan state machine remain stock. P92 (`0x2F`) is the fan
+request; it is not CPC duty. The old electronic-controller/guard allocations
+are return-only and contain no fan-output access.
+
+Actual CPC request is P38 (`0x32`), backed by `0xFFFFB6D4`. The permanent
+master purge-delete component clears it, modeled flow `B6D8`, and mode `B720`,
+then sends zero to the unchanged request writer `0xB182`. Both bank purge-fuel
+subtractions at `BE60/BE64` are forced to exact zero through `0x23054`, even if
+old filter state is nonzero or invalid. Only the verified P0458/P0459 circuit
+switches at `0x5BD85/86` are disabled. This matches removed/capped purge plumbing;
+it is not an editable fuel correction or a newly repurposed boost output.
+
 ## Boost and RPM
 
-- electronic boost-control switch: OFF (`0x7D80C = 00`), so the actuator path
-  cannot command duty;
-- independent hard-overboost switch: ON (`0x7D80D = 01`), so disabling the
-  actuator does not disable the last-resort MAP fuel cut;
-- target: reaches 5.0 psi at 2500 RPM and remains there through the table;
-- feed-forward wastegate duty: 0 at every breakpoint;
-- proportional gain: 0;
-- final maximum duty ratio: 0;
-- throttle gate: duty zero at or below processed value 30.0;
-- wideband gate: duty zero unless readiness is greater than 35.0;
-- SD-input gate: duty zero unless MAP, RPM, and IAT are finite and inside their
-  editable speed-density validity windows;
-- minimum control speed: duty zero below the first shared boost-table RPM
-  breakpoint, 1500 RPM in the baseline;
-- SD-result gate: duty zero when modeled airflow is non-finite or equals the
-  fixed 500 g/s invalid-state sentinel;
-- soft MAP limit: 5.5 psi, commands zero EBCS duty;
+- boost control: direct mechanical wastegate reference, nominal 5 psi spring;
+- electronic actuator: removed, not merely switched OFF. The old `0x7D80C`
+  byte remains zero but is inert and omitted from the definitions;
+- independent hard-overboost switch: ON (`0x7D80D = 01`);
 - hard MAP limit: 6.5 psi, sets the verified stock fuel-cut flag path;
 - RPM limit: 6800 RPM cut / 6770 RPM resume.
 
-Thus the generated baseline is mechanically spring-controlled even though the
-boost firmware and independent switches are installed. There is no integral
-term. A target table does not restrain a spring, incorrect hose routing, an
-undersized/mispositioned gate, or boost creep.
+Legacy target/duty/gain/soft-limit data stays at its old addresses for layout
+stability, but no live actuator code uses it and no corresponding tuning
+controls are exposed. In particular, the former 5.5-psi soft-duty cut is not an
+active protection. The pressure/open-loop and delayed lean fuel cuts remain
+independent of this retirement. Mechanical spring pressure and the last-resort
+hard cut do not make incorrect hose routing, an undersized/mispositioned gate,
+or boost creep safe.

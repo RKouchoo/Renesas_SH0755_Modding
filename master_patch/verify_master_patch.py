@@ -29,10 +29,14 @@ import patch_rotational_idle as rotational_idle  # noqa: E402
 import verify_rotational_idle as rotational_idle_verify  # noqa: E402
 import master_calibration as calibration  # noqa: E402
 import verify_master_calibration as calibration_verify  # noqa: E402
+import verify_speed_density as speed_density_verify  # noqa: E402
 import sh2_disasm  # noqa: E402
 import fueling_safety_component as fueling_safety  # noqa: E402
 import verify_fueling_safety as fueling_safety_verify  # noqa: E402
 import install_master_logger as logger_definition  # noqa: E402
+import purge_delete_component as purge_delete  # noqa: E402
+import test_purge_delete as purge_delete_test  # noqa: E402
+import test_actuator_retirement as actuator_retirement_test  # noqa: E402
 
 
 OUTPUT = HERE / "D2WD610H_master_patch.bin"
@@ -40,7 +44,7 @@ DEFINITION = HERE / "D2WD610H_master_patch.xml"
 LOGGER_FRAGMENT = HERE / "D2WD610H_master_logger_ecuparams.xml"
 LOGGER_DEFINITION = HERE / "D2WD610H_master_logger.xml"
 LOGGER_PROFILE = HERE / "D2WD610H_idle_diagnostic_profile.xml"
-EXPECTED_OUTPUT_SHA256 = "0390ff9d856c66f58e0c44db9c8a4024e26072b905540ef30a116fffca9b9f86"
+EXPECTED_OUTPUT_SHA256 = "fbc1a8fad234dbf09934da8dda8a0eda8629965c3d162eb957c06c46a4d9848e"
 EXPECTED_LOGGER_SHA256 = "e21f5d6633605369faa013027155adeeca8583ef0f1a9486d603dbbca2e68e0b"
 
 
@@ -83,6 +87,7 @@ def rebuild_component_stage(stock: bytes) -> tuple[
     blobs["rotational_idle"] = rotational_idle.apply_to_rom(stage)
     blobs["speed_density"] = speed_density.apply_to_rom(stage)
     blobs["wideband"] = wideband.apply_to_rom(stage)
+    blobs["purge_delete"] = purge_delete.apply_to_rom(stage)
     blobs["fueling_safety"] = fueling_safety.apply_to_rom(stage)
     return bytes(stage), blobs
 
@@ -95,6 +100,8 @@ def verify_layout(
 ) -> None:
     free_owned: set[int] = set()
     for component, component_blobs in blobs.items():
+        if component == "purge_delete":
+            continue  # declared below as guarded in-place stock edits
         for name, address, data in component_blobs:
             add_range(free_owned, address, len(data), f"{component}/{name}")
 
@@ -170,9 +177,9 @@ def verify_layout(
     for address, size, label in (
         (boost.MAP_SCALING_ADDR, 8, "Omni MAP scaling"),
         (master.MAP_LOW_CEL_RAW_ADDR, 2, "Omni MAP low diagnostic threshold"),
-        (boost.HIJACK_LITERAL, 4, "composed boost/wideband output hook"),
         (boost.REVLIM_FNPTR, 4, "overboost fuel-cut task hook"),
         (speed_density.FINAL_AIRFLOW_HELPER_PTR, 4, "speed-density airflow hook"),
+        (speed_density.MAF_LOAD_FALLBACK_HELPER_PTR, 4, "local MAF load-fallback bypass"),
         (speed_density.MAF_LIMIT_UPDATE_CALL_ADDR, 2, "MAF-limit bypass"),
         (speed_density.MAF_INPUT_DIAGNOSTIC_TASK_PTR, 4, "MAF diagnostic bypass"),
         (wideband.FRONT_AF_PROCESS_ENTRY, 12, "front A/F process hook"),
@@ -185,6 +192,8 @@ def verify_layout(
         (rotational_idle.FINAL_TIMING_TASK_PTR, 4, "rotational-idle timing task hook"),
     ):
         add_range(hook_owned, address, size, f"hook/{label}")
+    for name, address, data in blobs["purge_delete"]:
+        add_range(hook_owned, address, len(data), f"in-place/{name}")
     for address in speed_density.MAF_CONVERSION_CALL_ADDRS:
         add_range(hook_owned, address, 2, f"hook/MAF conversion bypass @0x{address:05X}")
     for address in speed_density.TEMPERATURE_MAF_CONDITION_TASK_PTRS:
@@ -353,30 +362,6 @@ def wideband_policy(raw_adc: int) -> tuple[float, float] | None:
     return volts, value
 
 
-def boost_guard_policy(
-    ready: float,
-    map_mm_hg: float,
-    rpm: float,
-    iat_c: float,
-    modeled_airflow: float,
-) -> bool:
-    ranges = (
-        (map_mm_hg, speed_density.MAP_MIN_MMHG, speed_density.MAP_MAX_MMHG),
-        (rpm, speed_density.RPM_MIN, speed_density.RPM_MAX),
-        (iat_c, speed_density.IAT_MIN_C, speed_density.IAT_MAX_C),
-    )
-    if not math.isfinite(ready) or ready <= wideband.READY_THRESHOLD:
-        return False
-    for value, minimum, maximum in ranges:
-        if not all(math.isfinite(item) for item in (value, minimum, maximum)):
-            return False
-        if not minimum <= value <= maximum:
-            return False
-    if rpm < boost.RPM_BREAKS[0]:
-        return False
-    if not math.isfinite(modeled_airflow):
-        return False
-    return modeled_airflow != speed_density.FAILSAFE_AIRFLOW_G_S
 
 
 def verify_wideband(image: bytes) -> None:
@@ -414,8 +399,8 @@ def verify_wideband(image: bytes) -> None:
     expect(
         image,
         boost.HIJACK_LITERAL,
-        wideband.be32(wideband.BOOST_READY_GUARD_ADDR),
-        "master sensor/SD-validity boost-duty gate",
+        wideband.be32(boost.STOCK_OUTPUT),
+        "stock radiator-fan output preserved",
     )
 
     constants = (
@@ -478,38 +463,11 @@ def verify_wideband(image: bytes) -> None:
     if "mov #2,r0" not in inhibit_decoded or "mov #0,r0" not in inhibit_decoded:
         fail("wideband inhibit helper does not contain stock inhibited/ready return values")
 
-    guard_decoded = decode_executable(
-        image,
-        wideband.build_boost_ready_guard(),
-        wideband.BOOST_READY_GUARD_ADDR,
-        {
-            wideband.FRONT_READY_METRIC_BANK1,
-            wideband.READY_THRESHOLD_ADDR,
-            speed_density.MAP_ADDR,
-            speed_density.MAP_MIN_ADDR,
-            speed_density.MAP_MAX_ADDR,
-            speed_density.RPM_ADDR,
-            speed_density.RPM_MIN_ADDR,
-            speed_density.RPM_MAX_ADDR,
-            speed_density.IAT_ADDR,
-            speed_density.IAT_MIN_ADDR,
-            speed_density.IAT_MAX_ADDR,
-            boost.RPM_AXIS,
-            speed_density.FINAL_MASS_AIRFLOW_ADDR,
-            speed_density.FAILSAFE_AIRFLOW_ADDR,
-            boost.STOCK_OUTPUT,
-            boost.STUB_ADDR,
-        },
-        "master boost prerequisite guard",
+    expect(
+        image, wideband.BOOST_READY_GUARD_ADDR,
+        bytes.fromhex("000b0009") + b"\xff" * 220,
+        "retired actuator guard: return only, no output access",
     )
-    if guard_decoded.count("fldi0 fr4") != 1:
-        fail("master boost guard does not force the output duty register to zero")
-    if sum(text.startswith("jmp @") for text in guard_decoded) != 2:
-        fail("master boost guard does not have exactly two tail-call outcomes")
-    if sum(text.startswith("fcmp/eq") for text in guard_decoded) < 12:
-        fail("master boost guard lacks the expected NaN/bound/fail-sentinel checks")
-    if sum(text.startswith("fcmp/gt") for text in guard_decoded) < 8:
-        fail("master boost guard lacks the expected readiness/range/RPM comparisons")
 
     # Exercise ADC unsigned conversion and both inclusive validity boundaries.
     if wideband_policy(0) is not None or wideband_policy(0xFFFF) is not None:
@@ -533,43 +491,6 @@ def verify_wideband(image: bytes) -> None:
     if sample is None or not math.isclose(sample[1], expected_lambda, abs_tol=2e-5):
         fail("wideband policy does not reproduce 15.00 AFR at 2.50 V")
 
-    nominal_guard = (50.0, 1019.0, 3500.0, 30.0, 250.0)
-    if not boost_guard_policy(*nominal_guard):
-        fail("master boost guard rejects a nominal valid running state")
-    invalid_guard_cases = (
-        (35.0, 1019.0, 3500.0, 30.0, 250.0),
-        (50.0, speed_density.MAP_MIN_MMHG - 0.01, 3500.0, 30.0, 250.0),
-        (50.0, speed_density.MAP_MAX_MMHG + 0.01, 3500.0, 30.0, 250.0),
-        (50.0, 1019.0, boost.RPM_BREAKS[0] - 0.01, 30.0, 250.0),
-        (50.0, 1019.0, speed_density.RPM_MAX + 0.01, 30.0, 250.0),
-        (50.0, 1019.0, 3500.0, speed_density.IAT_MIN_C - 0.01, 250.0),
-        (50.0, 1019.0, 3500.0, speed_density.IAT_MAX_C + 0.01, 250.0),
-        (50.0, 1019.0, 3500.0, 30.0, speed_density.FAILSAFE_AIRFLOW_G_S),
-        (50.0, math.nan, 3500.0, 30.0, 250.0),
-        (50.0, 1019.0, math.inf, 30.0, 250.0),
-        (50.0, 1019.0, 3500.0, math.nan, 250.0),
-        (50.0, 1019.0, 3500.0, 30.0, math.nan),
-    )
-    if any(boost_guard_policy(*case) for case in invalid_guard_cases):
-        fail("master boost guard accepts an invalid sensor/SD prerequisite")
-    inclusive_guard_cases = (
-        (
-            50.0,
-            speed_density.MAP_MIN_MMHG,
-            boost.RPM_BREAKS[0],
-            speed_density.IAT_MIN_C,
-            100.0,
-        ),
-        (
-            50.0,
-            speed_density.MAP_MAX_MMHG,
-            speed_density.RPM_MAX,
-            speed_density.IAT_MAX_C,
-            499.0,
-        ),
-    )
-    if not all(boost_guard_policy(*case) for case in inclusive_guard_cases):
-        fail("master boost guard does not preserve its inclusive valid boundaries")
 
 
 def verify_rotational_idle(image: bytes) -> None:
@@ -981,18 +902,47 @@ def verify_logger_profile() -> None:
     if profile.tag != "profile" or profile.get("protocol") != "SSM":
         fail("idle diagnostic logger profile is not an SSM profile")
     profile_parameters = profile.findall("./parameters/parameter")
-    selected_ids = {item.get("id") for item in profile_parameters}
-    logger_ids = {
+    profile_parameter_ids = [item.get("id") for item in profile_parameters]
+    if len(profile_parameter_ids) != len(set(profile_parameter_ids)):
+        fail("idle diagnostic profile contains duplicate parameter IDs")
+    selected_ids = {
         item.get("id")
+        for item in profile_parameters
+        if any(item.get(view) == "selected" for view in ("livedata", "dash", "graph"))
+    }
+    logger_parameters = {
+        item.get("id"): item
         for path in (
             "./protocols/protocol/parameters/parameter",
             "./protocols/protocol/ecuparams/ecuparam",
         )
         for item in logger.findall(path)
     }
-    if not selected_ids or not selected_ids <= logger_ids:
+    if not selected_ids or not set(profile_parameter_ids) <= set(logger_parameters):
         fail("idle diagnostic profile refers to absent logger parameters")
-    expected_custom = logger_definition.PARAMETER_IDS - {"E503", "E504", "E505"}
+    expected_standard = {
+        "P2", "P3", "P5", "P8", "P10", "P11", "P12", "P13", "P17",
+        "P21", "P24", "P47", "E32", "E33", "E50", "E51", "E60",
+        "E84", "E123",
+    }
+    expected_custom = logger_definition.PARAMETER_IDS - {"E504", "E505"}
+    if selected_ids != expected_standard | expected_custom:
+        fail("idle diagnostic profile has the wrong focused parameter set")
+    # Explicit unselected entries clear previous selections of the redundant
+    # four-byte trims. P3/P5 still capture both banks at one byte each.
+    if set(profile_parameter_ids) - selected_ids != {"E81", "E105"}:
+        fail("idle diagnostic profile must deselect redundant four-byte trims")
+    for item in profile_parameters:
+        parameter_id = item.get("id")
+        units = item.get("units")
+        available_units = {
+            conversion.get("units")
+            for conversion in logger_parameters[parameter_id].findall("./conversions/conversion")
+        }
+        if not units or units not in available_units:
+            fail(
+                f"idle diagnostic profile parameter {parameter_id} has absent or invalid units"
+            )
     live_custom = {
         item.get("id")
         for item in profile_parameters
@@ -1007,13 +957,71 @@ def verify_logger_profile() -> None:
     }
     if dashboard_custom != expected_custom:
         fail("idle diagnostic profile has the wrong project dashboard channels")
-    expected_stock_diagnostics = logger_definition.ALWAYS_VISIBLE_STOCK_PARAMETER_IDS
+    if any(
+        item.get("livedata") != "selected" or item.get("dash") != "selected"
+        for item in profile_parameters
+        if item.get("id") in selected_ids
+    ):
+        fail("idle diagnostic profile does not select every focused parameter on both tabs")
+    expected_stock_diagnostics = (
+        logger_definition.ALWAYS_VISIBLE_STOCK_PARAMETER_IDS - {"E81", "E105"}
+    )
     selected_stock_diagnostics = selected_ids & expected_stock_diagnostics
     if selected_stock_diagnostics != expected_stock_diagnostics:
         fail("idle diagnostic profile omits a required stock high-resolution channel")
+    profile_switches = profile.findall("./switches/switch")
+    profile_switch_ids = [item.get("id") for item in profile_switches]
+    expected_switches = {"S4", "S5", "S11"}
+    logger_switch_ids = {
+        item.get("id") for item in logger.findall("./protocols/protocol/switches/switch")
+    }
+    if (
+        len(profile_switch_ids) != len(set(profile_switch_ids))
+        or set(profile_switch_ids) != expected_switches
+        or not expected_switches <= logger_switch_ids
+        or any(
+            item.get("livedata") != "selected" or item.get("dash") != "selected"
+            for item in profile_switches
+        )
+    ):
+        fail("idle diagnostic profile has the wrong neutral/idle/start switch set")
+
+    # SSM A8 payload: command byte + mode byte + three bytes per requested
+    # address, bounded by the one-byte payload length. RomRaider deduplicates
+    # complete query address sequences, not partially overlapping float ranges.
+    # Identical queries shared across views or switch bits count only once.
+    requested_queries = set()
+    for parameter_id in selected_ids:
+        parameter = logger_parameters[parameter_id]
+        addresses = parameter.findall("./address")
+        if not addresses:
+            fail(f"cannot budget SSM addresses for {parameter_id}")
+        query = []
+        for address in addresses:
+            start = int(address.text.strip(), 0)
+            length = int(address.get("length", "1"))
+            if length <= 0 or not 0 <= start <= start + length - 1 <= 0xFFFFFF:
+                fail(f"invalid SSM address range for {parameter_id}")
+            query.extend(range(start, start + length))
+        requested_queries.add(tuple(query))
+    logger_switches = {
+        item.get("id"): item
+        for item in logger.findall("./protocols/protocol/switches/switch")
+    }
+    for switch_id in profile_switch_ids:
+        requested_queries.add((int(logger_switches[switch_id].get("byte"), 0),))
+    address_count = sum(len(query) for query in requested_queries)
+    payload_length = 2 + 3 * address_count
+    if payload_length > 0xFF:
+        fail(
+            f"idle diagnostic profile requests {address_count} SSM bytes "
+            f"({payload_length}-byte payload); maximum is 84 addresses"
+        )
 
 
 def verify_component_hooks(image: bytes, component_stage: bytes) -> None:
+    speed_density_verify.verify_hook_contract(image)
+    speed_density_verify.hook_execution.verify_execution(image)
     expect(
         image,
         boost.REVLIM_FNPTR,
@@ -1064,7 +1072,7 @@ def verify_component_hooks(image: bytes, component_stage: bytes) -> None:
     # Calibration edits intentionally alter some boost/free-space table bytes.
     # Every executable blob must remain byte-identical to the component stage.
     for address, size, label in (
-        (boost.STUB_ADDR, len(boost.build_stub()), "boost controller"),
+        (boost.STUB_ADDR, len(boost.build_stub()), "retired actuator reservation"),
         (boost.REVWRAP_ADDR, len(boost.build_fuelcut_wrapper()), "overboost wrapper"),
         (
             rotational_idle.ROT_IDLE_WRAPPER_ADDR,
@@ -1089,7 +1097,7 @@ def verify_component_hooks(image: bytes, component_stage: bytes) -> None:
         (
             wideband.BOOST_READY_GUARD_ADDR,
             len(wideband.build_boost_ready_guard()),
-            "master sensor/SD-validity boost gate",
+            "retired actuator-guard reservation",
         ),
         (
             fueling_safety.PRESSURE_OL_WRAPPER_ADDR,
@@ -1111,39 +1119,13 @@ def verify_component_hooks(image: bytes, component_stage: bytes) -> None:
 
 
 def verify_independent_boost_switches(image: bytes) -> None:
-    """Pin the two exact-01 decisions independently of the blob builders."""
-    expect(image, boost.EBCS_ENABLE_ADDR, b"\x00", "spring-only EBCS default")
+    """Pin actuator retirement and the independent exact-01 hard MAP cut."""
+    expect(image, boost.EBCS_ENABLE_ADDR, b"\x00", "retired EBCS byte")
     expect(image, boost.OVERBOOST_ENABLE_ADDR, b"\x01", "hard-cut enable default")
-
-    controller_blob = boost.build_stub()
-    controller_decoded = decode_executable(
-        image,
-        controller_blob,
-        boost.STUB_ADDR,
-        {
-            boost.EBCS_ENABLE_ADDR,
-            boost.STOCK_OUTPUT,
-            boost.THROTTLE_ADDR,
-            boost.THROTTLE_GATE_ADDR,
-            boost.RPM_ADDR,
-            boost.BASE_DESC,
-            boost.INTERP_2D,
-            boost.TARGET_DESC,
-            boost.MAP_ADDR,
-            boost.OVERB_ADDR,
-            boost.KP_ADDR,
-            boost.MAXR_ADDR,
-        },
-        "boost controller",
-    )
     expect(
-        image,
-        boost.STUB_ADDR,
-        bytes.fromhex("d11e601088018903f48dd21d422b0009"),
-        "exact-01 EBCS disabled path",
+        image, boost.STUB_ADDR, bytes.fromhex("000b0009") + b"\xff" * 168,
+        "retired actuator: return only, no output access",
     )
-    if controller_decoded.count("fldi0 fr4") < 2:
-        fail("boost controller lacks zero-duty disabled/gated outcomes")
 
     cut_blob = boost.build_fuelcut_wrapper()
     cut_decoded = decode_executable(
@@ -1216,6 +1198,9 @@ def main() -> None:
     verify_layout(stock, image, blobs, calibration_writes)
     verify_component_hooks(image, component_stage)
     verify_independent_boost_switches(image)
+    actuator_retirement_test.verify_actual_fan_preserved(image, stock)
+    purge_delete.verify_rom(image)
+    purge_delete_test.verify_execution(image)
     verify_rotational_idle(image)
     verify_omni_map(image)
     verify_avls_dual_ve(image)
@@ -1252,19 +1237,22 @@ def main() -> None:
     print(f"  output SHA-256    : {output_hash}")
     print(f"  checksum          : 0x{stored:08X} (valid={stored == calculated})")
     print("  air model         : always-on MAFless committed-state dual VE speed density")
+    print("  idle VE trial     : 0.624 -> 0.985 near 1300 RPM/315 mmHg; not a verified repair")
     print("  MAP               : Omni MAP-SUP-3BR 30..300 kPa / 0.60..4.75 V")
     print("  IAT               : provisional HT-010206 curve; assumed 1.00-kohm ECU pull-up")
     print("  wideband/O2       : former-MAF 50-4110 P0/P1 input; four stock paths removed")
-    print("  boost             : EBCS OFF; independent hard cut ON; zero-duty spring baseline")
+    print("  boost             : electronic actuator retired; independent hard cut ON")
+    print("  fan / purge       : stock fan command retained; CPC duty/flow/bank subtraction zero")
     print("  load axes         : all eight active axes extend to 4.0 g/rev")
     print("  primary OL        : exact 1000..6800 RPM axes; conservative resample verified")
-    print("  injectors         : pinned A4TE002B STI-pink flow/deadtime translation")
+    print("  injectors         : 16611AA510; pinned A4TE002B JDM-STI flow/deadtime translation")
     print("  timing/AVLS       : dual VE; fixed 3200/3000 lift switch; cam timing endpoints identified")
     print("  rotational idle   : bounded retard-only component installed, default OFF")
     print("  memory layout     : no component, hook, calibration, or RAM collisions")
     print("  definition        : workflow-grouped master XML; dormant timing pair and obsolete defs omitted")
     print("  fueling safety    : pressure-forced OL ON; 13.0-AFR delayed/latched cut ON")
     print("  logger            : complete D2WD610H-only SSM definition and fragment validated")
+    print("  capture profile   : SSM address budget checked, including shared switch/view bytes")
     print("  provenance        : root stock, base copy, and SRF payload remain byte-identical")
 
 

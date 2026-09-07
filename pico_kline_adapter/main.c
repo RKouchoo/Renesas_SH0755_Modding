@@ -11,21 +11,30 @@
 #include <stdint.h>
 
 #include "hardware/gpio.h"
+#include "hardware/regs/io_bank0.h"
 #include "hardware/regs/uart.h"
+#include "hardware/structs/io_bank0.h"
 #include "hardware/uart.h"
 #include "hardware/watchdog.h"
 #include "pico/stdlib.h"
 #include "tusb.h"
 
 #define PIN_TARGET_RESET 1u
+#define PIN_STATUS_LED 2u
 #define PIN_KLINE_TX 4u
 #define PIN_KLINE_RX 5u
-#define PIN_LED PICO_DEFAULT_LED_PIN
+#define PIN_RX_LED 26u
+#define PIN_TX_LED 27u
+#define PIN_ONBOARD_LED PICO_DEFAULT_LED_PIN
 
 #define KLINE_UART uart1
 #define DEFAULT_BAUD 4800u
 #define FIFO_SIZE 4096u
 #define FIFO_MASK (FIFO_SIZE - 1u)
+#define ACTIVITY_PULSE_MS 35u
+#define DIAGNOSTIC_REQUEST 0x40u
+#define DIAGNOSTIC_MAGIC 0x31444c4bu // Little-endian bytes "KLD1".
+#define FIRMWARE_VERSION 0x00010102u // Major, minor, patch: 1.1.2.
 
 _Static_assert((FIFO_SIZE & FIFO_MASK) == 0u,
                "FIFO_SIZE must be a power of two");
@@ -50,6 +59,45 @@ static cdc_line_coding_t pending_coding = {
     .data_bits = 8,
 };
 static uint32_t error_count;
+// Diagnostic counters wrap modulo 2^32 and are never added to the CDC stream.
+static uint32_t actual_baud;
+static uint32_t host_rx_bytes;
+static uint32_t uart_tx_bytes;
+static uint32_t uart_rx_bytes;
+static uint32_t usb_tx_queued_bytes;
+static uint32_t uart_error_bits;
+static bool tx_led_on;
+static bool rx_led_on;
+static absolute_time_t tx_led_deadline;
+static absolute_time_t rx_led_deadline;
+
+static void note_tx_activity(void) {
+    gpio_put(PIN_TX_LED, 1u);
+    tx_led_on = true;
+    tx_led_deadline = make_timeout_time_ms(ACTIVITY_PULSE_MS);
+}
+
+static void note_rx_activity(void) {
+    gpio_put(PIN_RX_LED, 1u);
+    rx_led_on = true;
+    rx_led_deadline = make_timeout_time_ms(ACTIVITY_PULSE_MS);
+}
+
+static void service_activity_leds(void) {
+    if (tx_led_on && time_reached(tx_led_deadline)) {
+        gpio_put(PIN_TX_LED, 0u);
+        tx_led_on = false;
+    }
+    if (rx_led_on && time_reached(rx_led_deadline)) {
+        gpio_put(PIN_RX_LED, 0u);
+        rx_led_on = false;
+    }
+}
+
+static void set_status_leds(bool on) {
+    gpio_put(PIN_STATUS_LED, on ? 1u : 0u);
+    gpio_put(PIN_ONBOARD_LED, on ? 1u : 0u);
+}
 
 static inline uint32_t fifo_count(const byte_fifo_t *fifo) {
     return fifo->head - fifo->tail;
@@ -133,7 +181,7 @@ static void apply_pending_coding(void) {
     }
 
     uart_set_format(KLINE_UART, data_bits, stop_bits, parity);
-    (void)uart_set_baudrate(KLINE_UART, baud);
+    actual_baud = uart_set_baudrate(KLINE_UART, baud);
     coding_pending = false;
 }
 
@@ -144,18 +192,24 @@ static void service_line_rx(void) {
         return;
     }
 
-    if (uart_get_hw(KLINE_UART)->rsr != 0u) {
+    uint32_t errors = uart_get_hw(KLINE_UART)->rsr;
+    if (errors != 0u) {
+        uart_error_bits |= errors;
         error_count++;
         uart_get_hw(KLINE_UART)->rsr = 0u;
     }
 
+    bool received = false;
     while (uart_is_readable(KLINE_UART)) {
         uint8_t value = (uint8_t)uart_getc(KLINE_UART);
+        uart_rx_bytes++;
+        received = true;
         if (usb_mounted && !fifo_push(&line_to_host, value)) {
             error_count++;
             break;
         }
     }
+    if (received) note_rx_activity();
 }
 
 static void service_usb_rx(void) {
@@ -169,6 +223,7 @@ static void service_usb_rx(void) {
         if (amount > fifo_free(&host_to_line)) amount = fifo_free(&host_to_line);
         amount = tud_cdc_read(buffer, amount);
         if (amount == 0u) break;
+        host_rx_bytes += amount;
         for (uint32_t i = 0u; i < amount; ++i) {
             (void)fifo_push(&host_to_line, buffer[i]);
         }
@@ -177,10 +232,14 @@ static void service_usb_rx(void) {
 
 static void service_line_tx(void) {
     if (break_active) return;
+    bool transmitted = false;
     while (!fifo_empty(&host_to_line) && uart_is_writable(KLINE_UART)) {
         uart_putc_raw(KLINE_UART, fifo_peek(&host_to_line));
+        uart_tx_bytes++;
         fifo_drop(&host_to_line, 1u);
+        transmitted = true;
     }
+    if (transmitted) note_tx_activity();
 }
 
 static void service_usb_tx(void) {
@@ -194,6 +253,7 @@ static void service_usb_tx(void) {
         if (amount == 0u) break;
         uint32_t sent = tud_cdc_write(
             &line_to_host.bytes[line_to_host.tail & FIFO_MASK], amount);
+        usb_tx_queued_bytes += sent;
         fifo_drop(&line_to_host, sent);
         wrote = wrote || (sent != 0u);
         if (sent != amount) break;
@@ -204,14 +264,20 @@ static void service_usb_tx(void) {
 static void service_status(void) {
     static absolute_time_t next_toggle;
     static bool state;
+    static bool error_was_active;
 
-    if (break_active) {
-        gpio_put(PIN_LED, 0u);
-    } else if (error_count == 0u) {
-        gpio_put(PIN_LED, usb_mounted ? 1u : 0u);
+    if (error_count == 0u) {
+        error_was_active = false;
+        state = !usb_mounted;
+        set_status_leds(state);
+    } else if (!error_was_active) {
+        state = true;
+        set_status_leds(true);
+        next_toggle = make_timeout_time_ms(125u);
+        error_was_active = true;
     } else if (time_reached(next_toggle)) {
         state = !state;
-        gpio_put(PIN_LED, state ? 1u : 0u);
+        set_status_leds(state);
         next_toggle = make_timeout_time_ms(125u);
     }
 }
@@ -265,31 +331,92 @@ void tud_cdc_send_break_cb(uint8_t instance, uint16_t duration_ms) {
     }
 }
 
+// Read-only device-level USB control request. No GPIO changes, UART reads,
+// counter resets, or diagnostic text on the vehicle's raw CDC data channel.
+// This is serviced by tud_task() on the main core, so counters and queues are
+// stable while this snapshot is assembled. Pin levels are digital samples,
+// not voltage measurements. See DIAGNOSTICS.md for the versioned wire format.
+bool tud_vendor_control_xfer_cb(uint8_t rhport, uint8_t stage,
+                               const tusb_control_request_t *request) {
+    static uint32_t report[16];
+    _Static_assert(sizeof(report) == 64u, "Diagnostic ABI must remain 64 bytes");
+
+    if (request->bmRequestType != 0xc0u ||
+        request->bRequest != DIAGNOSTIC_REQUEST ||
+        request->wValue != 0u || request->wIndex != 0u ||
+        request->wLength != sizeof(report)) {
+        return false;
+    }
+    if (stage != CONTROL_STAGE_SETUP) return true;
+
+    uint32_t flags = (usb_mounted ? 1u : 0u) |
+                     (tud_ready() ? 2u : 0u) |
+                     ((uint32_t)(tud_cdc_get_line_state() & 3u) << 2u) |
+                     (break_active ? 16u : 0u) |
+                     (coding_pending ? 32u : 0u) |
+                     (gpio_get(PIN_KLINE_TX) ? 64u : 0u) |
+                     (gpio_get(PIN_KLINE_RX) ? 128u : 0u);
+    report[0] = DIAGNOSTIC_MAGIC;
+    report[1] = FIRMWARE_VERSION;
+    report[2] = to_ms_since_boot(get_absolute_time());
+    report[3] = flags;
+    report[4] = io_bank0_hw->io[PIN_KLINE_TX].ctrl;
+    report[5] = io_bank0_hw->io[PIN_KLINE_RX].ctrl;
+    report[6] = pending_coding.bit_rate;
+    report[7] = actual_baud;
+    report[8] = host_rx_bytes;
+    report[9] = uart_tx_bytes;
+    report[10] = uart_rx_bytes;
+    report[11] = usb_tx_queued_bytes;
+    report[12] = error_count;
+    report[13] = uart_error_bits;
+    report[14] = fifo_count(&host_to_line);
+    report[15] = fifo_count(&line_to_host);
+    return tud_control_xfer(rhport, request, report, sizeof(report));
+}
+
 static void init_hardware(void) {
     // GP1 holds the original AD310 MCU in reset for the Pico's whole runtime.
     gpio_init(PIN_TARGET_RESET);
     gpio_put(PIN_TARGET_RESET, 0u);
     gpio_set_dir(PIN_TARGET_RESET, GPIO_OUT);
 
-    uart_init(KLINE_UART, DEFAULT_BAUD);
+    actual_baud = uart_init(KLINE_UART, DEFAULT_BAUD);
     uart_set_format(KLINE_UART, 8u, 1u, UART_PARITY_NONE);
     uart_set_hw_flow(KLINE_UART, false, false);
     uart_set_fifo_enabled(KLINE_UART, true);
 
-    // Set inversion while GP4 is still an input, then give it to UART. This
-    // prevents a startup dominant pulse through the inverting Q5 transistor.
+    // Select UART and inverted TX together while GP4 is still an input.
+    // gpio_set_function() clears ALL overrides, so calling it after
+    // gpio_set_outover(INVERT) silently restores normal polarity and holds
+    // K-line low at idle. An atomic CTRL update also avoids a dominant pulse
+    // between selecting UART and enabling inversion (AD310 Q5 / Jaycar Q1).
     gpio_init(PIN_KLINE_TX);
     gpio_pull_down(PIN_KLINE_TX);
-    gpio_set_outover(PIN_KLINE_TX, GPIO_OVERRIDE_INVERT);
-    gpio_set_function(PIN_KLINE_TX, GPIO_FUNC_UART);
+    hw_write_masked(&io_bank0_hw->io[PIN_KLINE_TX].ctrl,
+                    ((uint32_t)GPIO_FUNC_UART << IO_BANK0_GPIO0_CTRL_FUNCSEL_LSB) |
+                    ((uint32_t)GPIO_OVERRIDE_INVERT << IO_BANK0_GPIO0_CTRL_OUTOVER_LSB),
+                    IO_BANK0_GPIO0_CTRL_FUNCSEL_BITS | IO_BANK0_GPIO0_CTRL_OUTOVER_BITS);
 
     gpio_init(PIN_KLINE_RX);
     gpio_disable_pulls(PIN_KLINE_RX);
     gpio_set_function(PIN_KLINE_RX, GPIO_FUNC_UART);
 
-    gpio_init(PIN_LED);
-    gpio_put(PIN_LED, 0u);
-    gpio_set_dir(PIN_LED, GPIO_OUT);
+    gpio_init(PIN_ONBOARD_LED);
+    gpio_put(PIN_ONBOARD_LED, 0u);
+    gpio_set_dir(PIN_ONBOARD_LED, GPIO_OUT);
+
+    gpio_init(PIN_STATUS_LED);
+    gpio_put(PIN_STATUS_LED, 0u);
+    gpio_set_dir(PIN_STATUS_LED, GPIO_OUT);
+
+    gpio_init(PIN_TX_LED);
+    gpio_put(PIN_TX_LED, 0u);
+    gpio_set_dir(PIN_TX_LED, GPIO_OUT);
+
+    gpio_init(PIN_RX_LED);
+    gpio_put(PIN_RX_LED, 0u);
+    gpio_set_dir(PIN_RX_LED, GPIO_OUT);
 }
 
 int main(void) {
@@ -304,6 +431,7 @@ int main(void) {
             set_break(false);
         }
         service_line_rx();
+        service_activity_leds();
         tud_task();
         apply_pending_coding();
         service_usb_rx();

@@ -1,0 +1,469 @@
+diff --git a/config/protocols.cfg b/config/protocols.cfg
+index 50161fd..5334a38 100644
+--- a/config/protocols.cfg
++++ b/config/protocols.cfg
+@@ -1013,6 +1013,24 @@
+             <kernel_addr>0x00000000</kernel_addr>
+             <description>Subaru Impreza, Legacy, SVX 1997-1998 OBD2 SSM</description>
+         </protocol>
++        <protocol name="sub_ecu_denso_sh7055_04_d2wd610h_180" alias="d2wd610h_180">
++            <ecu>Denso SH7055 180nm D2WD610H (experimental)</ecu>
++            <mcu>SH7055</mcu>
++            <mode>OBD2</mode>
++            <checksum>yes</checksum>
++            <read>yes</read>
++            <test_write>yes</test_write>
++            <write>yes</write>
++            <flash_transport>K-Line</flash_transport>
++            <log_transport>K-Line</log_transport>
++            <log_protocol>SSM</log_protocol>
++            <cal_id_ascii>yes</cal_id_ascii>
++            <cal_id_addr>0x2000</cal_id_addr>
++            <cal_id_length>8</cal_id_length>
++            <kernel>ssmk_kline_sh7055_180_d2wd.bin</kernel>
++            <kernel_addr>0xFFFF6004</kernel_addr>
++            <description>EXPERIMENTAL D2WD610H only: SH7055 180nm, isolated RAM layout; test write first</description>
++        </protocol>
+     </protocols>
+ 
+ 
+@@ -1706,5 +1724,16 @@
+             <protocol>sub_ecu_denso_1n83m_1_5m_can</protocol>
+         </car_model>
+ 
++        <car_model>
++            <make>Subaru</make>
++            <model>Legacy/Liberty D2WD610H TEST</model>
++            <version>3.0R EZ30R 180nm</version>
++            <type>MT</type>
++            <kw>180</kw>
++            <hp>245</hp>
++            <fuel>Petrol</fuel>
++            <year>2005</year>
++            <protocol>sub_ecu_denso_sh7055_04_d2wd610h_180</protocol>
++        </car_model>
+     </car_models>
+ </config>
+diff --git a/kernels.qrc b/kernels.qrc
+index 2e3255d..80fb518 100644
+--- a/kernels.qrc
++++ b/kernels.qrc
+@@ -7,6 +7,7 @@
+         <file>kernels/ssmk_can_tp_sh7058d_euro4.bin</file>
+         <file>kernels/ssmk_can_tp_sh7059d_euro5.bin</file>
+         <file>kernels/ssmk_kline_sh7055.bin</file>
++        <file>kernels/ssmk_kline_sh7055_180_d2wd.bin</file>
+         <file>kernels/ssmk_kline_sh7058.bin</file>
+         <file>kernels/ssmk_mc68hc916y5.bin</file>
+         <file>kernels/ssmk_tcu_can_sh7055_35.bin</file>
+diff --git a/modules/ecu/flash_ecu_subaru_denso_sh705x_kline.cpp b/modules/ecu/flash_ecu_subaru_denso_sh705x_kline.cpp
+index 9937d0d..677f849 100644
+--- a/modules/ecu/flash_ecu_subaru_denso_sh705x_kline.cpp
++++ b/modules/ecu/flash_ecu_subaru_denso_sh705x_kline.cpp
+@@ -1,6 +1,119 @@
+ #include "flash_ecu_subaru_denso_sh705x_kline.h"
+ #include "serial_port_actions.h"
+ 
++#include <cstddef>
++#include <cstdint>
++#include <QFileInfo>
++
++namespace {
++// 2026-09-07: Validate complete kernel replies before treating them as ACKs.
++// BEGIN PURE KERNEL FRAME VALIDATOR
++enum class KernelFrameStatus { Valid, Short, Header, Length, Checksum, Negative, Command, Payload };
++
++KernelFrameStatus checkKernelFrame(const uint8_t *data, std::size_t size,
++                                  uint8_t command, std::size_t payloadSize)
++{
++    if (size < 6)
++        return KernelFrameStatus::Short;
++    if (data[0] != 0xbe || data[1] != 0xef)
++        return KernelFrameStatus::Header;
++    const std::size_t declared = (std::size_t(data[2]) << 8) | data[3];
++    if (declared == 0 || size != declared + 5)
++        return KernelFrameStatus::Length;
++    uint8_t checksum = 0;
++    for (std::size_t i = 0; i + 1 < size; ++i)
++        checksum = uint8_t(checksum + data[i]);
++    if (checksum != data[size - 1])
++        return KernelFrameStatus::Checksum;
++    if (data[4] == 0x7f)
++        return KernelFrameStatus::Negative;
++    if (data[4] != uint8_t(command | 0x40))
++        return KernelFrameStatus::Command;
++    if (declared != payloadSize + 1)
++        return KernelFrameStatus::Payload;
++    return KernelFrameStatus::Valid;
++}
++// END PURE KERNEL FRAME VALIDATOR
++
++QString kernelReplyError(const QByteArray &reply, uint8_t command, std::size_t payloadSize)
++{
++    const auto status = checkKernelFrame(
++        reinterpret_cast<const uint8_t *>(reply.constData()),
++        std::size_t(reply.size()), command, payloadSize);
++    if (status == KernelFrameStatus::Valid)
++        return QString();
++    QString reason;
++    switch (status) {
++    case KernelFrameStatus::Short: reason = "missing or truncated reply"; break;
++    case KernelFrameStatus::Header: reason = "invalid BE EF header"; break;
++    case KernelFrameStatus::Length: reason = "declared and received lengths differ"; break;
++    case KernelFrameStatus::Checksum: reason = "reply checksum mismatch"; break;
++    case KernelFrameStatus::Command: reason = "unexpected response command"; break;
++    case KernelFrameStatus::Payload: reason = "unexpected response payload length"; break;
++    case KernelFrameStatus::Negative:
++        reason = "kernel rejected the request";
++        if (reply.size() >= 8) {
++            const uint8_t rejectedCommand = uint8_t(reply.at(5));
++            const uint8_t code = uint8_t(reply.at(6));
++            reason += QString(" (command 0x%1, detail 0x%2)")
++                .arg(rejectedCommand, 2, 16, QLatin1Char('0'))
++                .arg(code, 2, 16, QLatin1Char('0'));
++            if (rejectedCommand == SUB_KERNEL_FLASH_ENABLE || rejectedCommand == SUB_KERNEL_FLASH_DISABLE)
++                reason += "; flash initialization failed: check kernel silicon variant and flash-enable conditions";
++        }
++        break;
++    default: break;
++    }
++    return QString("Kernel command 0x%1: %2. Raw reply: %3")
++        .arg(command, 2, 16, QLatin1Char('0')).arg(reason, QString::fromLatin1(reply.toHex(' ')));
++}
++
++bool isDedicatedD2wdKernel(const QString &path)
++{
++    return QFileInfo(path).fileName() == "ssmk_kline_sh7055_180_d2wd.bin";
++}
++
++QString kernelIdentityError(const QByteArray &reply, const QString &kernelPath)
++{
++    const QString frameError = kernelReplyError(
++        reply, SUB_KERNEL_ID, reply.size() >= 6 ? std::size_t(reply.size() - 6) : 0);
++    if (!frameError.isEmpty())
++        return frameError;
++    const QByteArray identity = reply.mid(5, reply.size() - 6);
++    if (identity.isEmpty())
++        return "Kernel returned an empty identity.";
++    if (isDedicatedD2wdKernel(kernelPath)) {
++        // cmd_request_ecuid sends sizeof(kernel_id_string), including one NUL.
++        static const char expected[] = "FastECU SH7055 180nm D2WD610H K-Line v1.01";
++        if (identity != QByteArray(expected, sizeof(expected)))
++            return "The running kernel is not the reviewed D2WD610H 180nm kernel. "
++                   "Operation cancelled. Only restart to load this kernel if no real erase/write "
++                   "was attempted; do not power off an ECU awaiting flash recovery.";
++    }
++    return QString();
++}
++
++QByteArray prepareKernelUpload(const QByteArray &kernelBytes)
++{
++    QByteArray payload = kernelBytes;
++    payload.append(QByteArray(2, '\0'));
++    while ((payload.size() & 3) != 0)
++        payload.append('\0');
++    uint16_t sum = 0;
++    for (int i = 0; i < payload.size(); i += 4) {
++        const uint32_t word = (uint32_t(uint8_t(payload.at(i))) << 24) |
++                              (uint32_t(uint8_t(payload.at(i + 1))) << 16) |
++                              (uint32_t(uint8_t(payload.at(i + 2))) << 8) |
++                              uint32_t(uint8_t(payload.at(i + 3)));
++        sum = uint16_t(sum + word);
++    }
++    const uint16_t checksum = uint16_t(0x5aa5 - sum);
++    payload[payload.size() - 2] = char(checksum >> 8);
++    payload[payload.size() - 1] = char(checksum & 0xff);
++    return payload;
++}
++} // namespace
++
+ FlashEcuSubaruDensoSH705xKline::FlashEcuSubaruDensoSH705xKline(SerialPortActions *serial, FileActions::EcuCalDefStructure *ecuCalDef, QString cmd_type, QWidget *parent)
+     : QDialog(parent)
+     , ui(new Ui::EcuOperationsWindow)
+@@ -169,12 +282,14 @@ int FlashEcuSubaruDensoSH705xKline::connect_bootloader()
+     emit LOG_I("Requesting kernel ID", true, true);
+     received.clear();
+     received = request_kernel_id();
+-    if (received.length() > 4)
++    if (!received.isEmpty())
+     {
+-        if ((uint8_t)received.at(0) != ((SUB_KERNEL_START_COMM >> 8) & 0xFF) || (uint8_t)received.at(1) != (SUB_KERNEL_START_COMM & 0xFF) || (uint8_t)received.at(4) != (SUB_KERNEL_ID | 0x40))
++        const QString identityError = kernelIdentityError(received, kernel);
++        if (!identityError.isEmpty())
+         {
+-            emit LOG_E("Wrong response from ECU: " + FileActions::parse_nrc_message(received.mid(8, received.length()-1)), true, true);
+-            
++            emit LOG_E(identityError, true, true);
++            if (isDedicatedD2wdKernel(kernel))
++                return STATUS_ERROR;
+         }
+         else
+         {
+@@ -353,7 +468,6 @@ int FlashEcuSubaruDensoSH705xKline::upload_kernel(QString kernel, uint32_t addr)
+     QByteArray received;
+     QByteArray msg;
+     QByteArray pl_encr;
+-    uint32_t pl_len = 0;
+     QByteArray cks_bypass;
+ 
+     QString mcu_name;
+@@ -378,23 +492,13 @@ int FlashEcuSubaruDensoSH705xKline::upload_kernel(QString kernel, uint32_t addr)
+     }
+ 
+     pl_encr = file.readAll();
+-
+-    pl_encr.append((uint8_t)0x00);
+-    pl_encr.append((uint8_t)0x00);
+-
+-    pl_len = pl_encr.length();
+-    pl_len = (pl_len + 3) & ~3;
+-    while((uint32_t)pl_encr.length() < pl_len)
+-        pl_encr.append((uint8_t)0x00);
+-    pl_encr.remove(pl_encr.length()-2, 2);
+-
+-    uint16_t chk_sum = 0;
+-    for (int i = 0; i < pl_encr.length(); i+=4)
+-        chk_sum += (((uint8_t)pl_encr.at(i) << 24) & 0xFF000000) | (((uint8_t)pl_encr.at(i + 1) << 16) & 0xFF0000) | (((uint8_t)pl_encr.at(i + 2) << 8) & 0xFF00) | (((uint8_t)pl_encr.at(i + 3)) & 0xFF);
+-
+-    chk_sum = 0x5aa5 - chk_sum;
+-    pl_encr.append((uint8_t)((chk_sum >> 8) & 0xff));
+-    pl_encr.append((uint8_t)(chk_sum & 0xff));
++    if (pl_encr.isEmpty())
++    {
++        emit LOG_E("Kernel file is empty; upload cancelled.", true, true);
++        return STATUS_ERROR;
++    }
++    // Keep the final word padded while summing; replace its last two bytes.
++    pl_encr = prepareKernelUpload(pl_encr);
+     pl_encr = encrypt_payload(pl_encr, pl_encr.length());
+ 
+     emit LOG_I("Requesting kernel upload", true, true);
+@@ -469,30 +573,17 @@ int FlashEcuSubaruDensoSH705xKline::upload_kernel(QString kernel, uint32_t addr)
+     emit LOG_I("Requesting kernel ID", true, true);
+     received.clear();
+     received = request_kernel_id();
+-    if (received.length() > 4)
++    const QString identityError = kernelIdentityError(received, kernel);
++    if (!identityError.isEmpty())
+     {
+-        if ((uint8_t)received.at(0) != ((SUB_KERNEL_START_COMM >> 8) & 0xFF) || (uint8_t)received.at(1) != (SUB_KERNEL_START_COMM & 0xFF) || (uint8_t)received.at(4) != (SUB_KERNEL_ID | 0x40))
+-        {
+-            emit LOG_E("Wrong response from ECU: " + FileActions::parse_nrc_message(received.mid(8, received.length()-1)), true, true);
+-            
+-            return STATUS_ERROR;
+-        }
+-        else
+-        {
+-            received.remove(0, 5);
+-            received.remove(received.length() - 1, 1);
+-            emit LOG_I("Kernel ID: " + received, true, true);
+-            
+-            kernel_alive = true;
+-            return STATUS_SUCCESS;
+-        }
+-    }
+-    else
+-    {
+-        emit LOG_E("No valid response from ECU", true, true);
+-        
++        emit LOG_E(identityError, true, true);
+         return STATUS_ERROR;
+     }
++    received.remove(0, 5);
++    received.remove(received.length() - 1, 1);
++    emit LOG_I("Kernel ID: " + received, true, true);
++    kernel_alive = true;
++    return STATUS_SUCCESS;
+ }
+ 
+ /*
+@@ -631,6 +722,20 @@ int FlashEcuSubaruDensoSH705xKline::write_mem(bool test_write)
+ 
+     filedata = ecuCalDef->FullRomData;
+ 
++    if (filedata.size() != flashdevices[mcu_type_index].romsize ||
++        flashdevices[mcu_type_index].numblocks > 16)
++    {
++        emit LOG_E("ROM size or flash block layout does not match the selected MCU; write cancelled.", true, true);
++        return STATUS_ERROR;
++    }
++    if (isDedicatedD2wdKernel(kernel) &&
++        (mcu_type_string != "SH7055" || filedata.size() != 0x80000 ||
++         filedata.mid(0x2000, 8) != QByteArray("D2WD610H")))
++    {
++        emit LOG_E("The dedicated 180nm kernel requires a 512KB SH7055 D2WD610H image; write cancelled.", true, true);
++        return STATUS_ERROR;
++    }
++
+     QScopedArrayPointer<uint8_t> data_array(new uint8_t[filedata.length()]);
+ 
+     int block_modified[16] = {0};
+@@ -721,10 +826,11 @@ int FlashEcuSubaruDensoSH705xKline::write_mem(bool test_write)
+             {
+                 emit LOG_E("*** ERROR IN FLASH PROCESS ***", true, true);
+                 emit LOG_E("Don't power off your ECU, kernel is still running and you can try flashing again!", true, true);
++                return STATUS_ERROR;
+             }
+         }
+         else
+-            emit LOG_I("*** Test write PASS, it's ok to perform actual write! ***", true, true);
++            emit LOG_I("*** Test write passed RAM-buffer transfer and CRC validation. Flash erase/program operations were disabled; actual writing is not yet verified. ***", true, true);
+     }
+     else
+     {
+@@ -804,6 +910,13 @@ int FlashEcuSubaruDensoSH705xKline::check_romcrc(const uint8_t *src, uint32_t ad
+     
+     received.clear();
+     received = serial->read_serial_data(serial_read_extra_long_timeout);
++
++    const QString responseError = kernelReplyError(received, SUB_KERNEL_CRC, 4);
++    if (!responseError.isEmpty())
++    {
++        emit LOG_E(responseError, true, true);
++        return STATUS_ERROR;
++    }
+     
+     if (received.length() > 5)
+     {
+@@ -909,7 +1022,14 @@ int FlashEcuSubaruDensoSH705xKline::init_flash_write()
+     received = serial->write_serial_data_echo_check(output);
+     
+     received = serial->read_serial_data(serial_read_medium_timeout);
+-    
++
++    QString responseError = kernelReplyError(received, SUB_KERNEL_GET_MAX_MSG_SIZE, 4);
++    if (!responseError.isEmpty())
++    {
++        emit LOG_E(responseError, true, true);
++        return STATUS_ERROR;
++    }
++
+     if (received.length() > 9)
+     {
+         if ((uint8_t)received.at(0) == ((SUB_KERNEL_START_COMM >> 8) & 0xFF) && (uint8_t)received.at(1) == (SUB_KERNEL_START_COMM & 0xFF) && (uint8_t)received.at(4) == (SUB_KERNEL_GET_MAX_MSG_SIZE | 0x40))
+@@ -948,7 +1068,14 @@ int FlashEcuSubaruDensoSH705xKline::init_flash_write()
+     received = serial->write_serial_data_echo_check(output);
+     
+     received = serial->read_serial_data(serial_read_medium_timeout);
+-    
++
++    responseError = kernelReplyError(received, SUB_KERNEL_GET_MAX_BLK_SIZE, 4);
++    if (!responseError.isEmpty())
++    {
++        emit LOG_E(responseError, true, true);
++        return STATUS_ERROR;
++    }
++
+     if (received.length() > 9)
+     {
+         if ((uint8_t)received.at(0) == ((SUB_KERNEL_START_COMM >> 8) & 0xFF) && (uint8_t)received.at(1) == (SUB_KERNEL_START_COMM & 0xFF) && (uint8_t)received.at(4) == (SUB_KERNEL_GET_MAX_BLK_SIZE | 0x40))
+@@ -974,6 +1101,14 @@ int FlashEcuSubaruDensoSH705xKline::init_flash_write()
+         return STATUS_ERROR;
+     }
+ 
++    // This writer sends fixed 512-byte messages and validates 4096-byte buffers.
++    // Reject another kernel's geometry rather than silently ignoring its limits.
++    if (flashmessagesize != 0x200 || flashblocksize != 0x1000)
++    {
++        emit LOG_E("Kernel flash geometry is incompatible: expected 512-byte messages and 4096-byte buffers.", true, true);
++        return STATUS_ERROR;
++    }
++
+     uint8_t SUB_KERNEL_CMD = 0;
+     if (test_write)
+     {
+@@ -998,7 +1133,14 @@ int FlashEcuSubaruDensoSH705xKline::init_flash_write()
+     received = serial->write_serial_data_echo_check(output);
+     
+     received = serial->read_serial_data(serial_read_medium_timeout);
+-    
++
++    responseError = kernelReplyError(received, SUB_KERNEL_CMD, 0);
++    if (!responseError.isEmpty())
++    {
++        emit LOG_E(responseError, true, true);
++        return STATUS_ERROR;
++    }
++
+     if (received.length() > 5)
+     {
+         if ((uint8_t)received.at(0) == ((SUB_KERNEL_START_COMM >> 8) & 0xFF) && (uint8_t)received.at(1) == (SUB_KERNEL_START_COMM & 0xFF) && (uint8_t)received.at(4) == (SUB_KERNEL_CMD | 0x40))
+@@ -1058,7 +1200,7 @@ int FlashEcuSubaruDensoSH705xKline::reflash_block(const uint8_t *newdata, const
+     msg = QString("Flash block addr: 0x" + start_addr + " len: 0x" + length).toUtf8();
+     emit LOG_I(msg, true, true);
+ 
+-    emit LOG_I("Check flash voltage", true, false);
++    emit LOG_I("Query kernel voltage field (not a verified voltage measurement)", true, false);
+     datalen = 0;
+     output.clear();
+     output.append((uint8_t)((SUB_KERNEL_START_COMM >> 8) & 0xFF));
+@@ -1071,13 +1213,22 @@ int FlashEcuSubaruDensoSH705xKline::reflash_block(const uint8_t *newdata, const
+     received = serial->write_serial_data_echo_check(output);
+     
+     received = serial->read_serial_data(serial_read_medium_timeout);
+-    
++
++    const QString responseError = kernelReplyError(received, SUB_KERNEL_PROG_VOLT, 4);
++    if (!responseError.isEmpty())
++    {
++        emit LOG_E(responseError, true, true);
++        return STATUS_ERROR;
++    }
++
+     if (received.length() > 9)
+     {
+         if ((uint8_t)received.at(0) == ((SUB_KERNEL_START_COMM >> 8) & 0xFF) && (uint8_t)received.at(1) == (SUB_KERNEL_START_COMM & 0xFF) && (uint8_t)received.at(4) == (SUB_KERNEL_PROG_VOLT | 0x40))
+         {
+             float prog_voltage = (((uint8_t)received.at(5) << 8) + (uint8_t)received.at(6)) / 50.0;
+-            emit LOG_I(": " + QString::number(prog_voltage) + "V", false, true);
++            emit LOG_I(": " + QString::number(prog_voltage) + "V (unverified)", false, true);
++            if (mcu_type_string == "SH7055")
++                emit LOG_W("The reviewed FastECU SH7055 kernel returns a fixed 11.2V placeholder. This field does not measure battery voltage or establish adequate flashing voltage.", true, true);
+         }
+         else
+         {
+@@ -1155,7 +1306,14 @@ int FlashEcuSubaruDensoSH705xKline::flash_block(const uint8_t *src, uint32_t sta
+     
+     //delay(500);
+     received = serial->read_serial_data(serial_read_extra_long_timeout);
+-    
++
++    QString responseError = kernelReplyError(received, SUB_KERNEL_BLANK_PAGE, 0);
++    if (!responseError.isEmpty())
++    {
++        emit LOG_E(responseError, true, true);
++        return STATUS_ERROR;
++    }
++
+     if (received.length() > 4)
+     {
+         if ((uint8_t)received.at(0) != ((SUB_KERNEL_START_COMM >> 8) & 0xFF) || (uint8_t)received.at(1) != (SUB_KERNEL_START_COMM & 0xFF) || (uint8_t)received.at(4) != (SUB_KERNEL_BLANK_PAGE | 0x40))
+@@ -1205,6 +1363,12 @@ int FlashEcuSubaruDensoSH705xKline::flash_block(const uint8_t *src, uint32_t sta
+         //
+         //delay(50);
+         received = serial->read_serial_data(serial_read_extra_long_timeout);
++        responseError = kernelReplyError(received, SUB_KERNEL_WRITE_FLASH_BUFFER, 0);
++        if (!responseError.isEmpty())
++        {
++            emit LOG_E(responseError, true, true);
++            return STATUS_ERROR;
++        }
+         if (received.length() > 5)
+         {
+             if ((uint8_t)received.at(0) == ((SUB_KERNEL_START_COMM >> 8) & 0xFF) && (uint8_t)received.at(1) == (SUB_KERNEL_START_COMM & 0xFF) && (uint8_t)received.at(4) == (SUB_KERNEL_WRITE_FLASH_BUFFER | 0x40))
+@@ -1299,7 +1463,14 @@ int FlashEcuSubaruDensoSH705xKline::flash_block(const uint8_t *src, uint32_t sta
+             
+             //delay(200);
+             received = serial->read_serial_data(serial_read_extra_long_timeout);
+-            
++
++            responseError = kernelReplyError(received, SUB_KERNEL_CMD, 0);
++            if (!responseError.isEmpty())
++            {
++                emit LOG_E(responseError, true, true);
++                return STATUS_ERROR;
++            }
++
+             if (received.length() > 5)
+             {
+                 if ((uint8_t)received.at(0) == ((SUB_KERNEL_START_COMM >> 8) & 0xFF) && (uint8_t)received.at(1) == (SUB_KERNEL_START_COMM & 0xFF) && (uint8_t)received.at(4) == (SUB_KERNEL_CMD + 0x40))

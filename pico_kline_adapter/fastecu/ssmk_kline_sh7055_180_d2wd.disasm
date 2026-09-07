@@ -1,0 +1,2465 @@
+
+/private/tmp/d2wd-kernel-build/ssmk_kline_sh7055_180_d2wd.elf:     file format elf32-sh
+
+
+Disassembly of section .text:
+
+ffff6004 <RAMjump_entry>:
+ffff6004:	00 09       	nop	
+ffff6006:	00 09       	nop	
+
+ffff6008 <zero_bss>:
+ffff6008:	d1 08       	mov.l	ffff602c <ebss>,r1	! ffffb140 <_bsslen>
+ffff600a:	d0 07       	mov.l	ffff6028 <bss>,r0	! ffff9000 <_cmd_loop_counter>
+ffff600c:	e2 00       	mov	#0,r2
+
+ffff600e <zero_top>:
+ffff600e:	31 00       	cmp/eq	r0,r1
+ffff6010:	89 01       	bt	ffff6016 <zero_end>
+ffff6012:	af fc       	bra	ffff600e <zero_top>
+ffff6014:	21 24       	mov.b	r2,@-r1
+
+ffff6016 <zero_end>:
+ffff6016:	d1 03       	mov.l	ffff6024 <main>,r1	! ffff6c14 <_main>
+ffff6018:	df 01       	mov.l	ffff6020 <stack>,r15	! ffffcffc <_stackinit>
+ffff601a:	41 0b       	jsr	@r1
+ffff601c:	00 09       	nop	
+	...
+
+ffff6020 <stack>:
+ffff6020:	ff ff       	.word 0xffff
+ffff6022:	cf fc       	or.b	#252,@(r0,gbr)
+
+ffff6024 <main>:
+ffff6024:	ff ff       	.word 0xffff
+ffff6026:	6c 14       	mov.b	@r1+,r12
+
+ffff6028 <bss>:
+ffff6028:	ff ff       	.word 0xffff
+ffff602a:	90 00       	mov.w	ffff602e <ebss+0x2>,r0	! b140
+
+ffff602c <ebss>:
+ffff602c:	ff ff       	.word 0xffff
+ffff602e:	b1 40       	bsr	ffff62b2 <_EEPROM_init+0x46>
+
+ffff6030 <_kline_send_message.part.0>:
+ffff6030:	2f 86       	mov.l	r8,@-r15
+ffff6032:	66 53       	mov	r5,r6
+ffff6034:	2f 96       	mov.l	r9,@-r15
+ffff6036:	68 53       	mov	r5,r8
+ffff6038:	2f a6       	mov.l	r10,@-r15
+ffff603a:	69 53       	mov	r5,r9
+ffff603c:	91 38       	mov.w	ffff60b0 <_kline_send_message.part.0+0x80>,r1	! f010
+ffff603e:	79 05       	add	#5,r9
+ffff6040:	4f 22       	sts.l	pr,@-r15
+ffff6042:	84 12       	mov.b	@(2,r1),r0
+ffff6044:	da 1b       	mov.l	ffff60b4 <_kline_send_message.part.0+0x84>,r10	! ffff9010 <_sendbuffer>
+ffff6046:	c9 ef       	and	#239,r0
+ffff6048:	80 12       	mov.b	r0,@(2,r1)
+ffff604a:	60 53       	mov	r5,r0
+ffff604c:	91 31       	mov.w	ffff60b2 <_kline_send_message.part.0+0x82>,r1	! beef
+ffff604e:	65 43       	mov	r4,r5
+ffff6050:	81 a1       	mov.w	r0,@(2,r10)
+ffff6052:	64 a3       	mov	r10,r4
+ffff6054:	d0 18       	mov.l	ffff60b8 <_kline_send_message.part.0+0x88>,r0	! ffff7250 <_memcpy>
+ffff6056:	74 04       	add	#4,r4
+ffff6058:	40 0b       	jsr	@r0
+ffff605a:	2a 11       	mov.w	r1,@r10
+ffff605c:	62 83       	mov	r8,r2
+ffff605e:	72 04       	add	#4,r2
+ffff6060:	60 23       	mov	r2,r0
+ffff6062:	e1 00       	mov	#0,r1
+ffff6064:	68 93       	mov	r9,r8
+ffff6066:	48 10       	dt	r8
+ffff6068:	8f 14       	bf.s	ffff6094 <_kline_send_message.part.0+0x64>
+ffff606a:	70 ff       	add	#-1,r0
+ffff606c:	60 23       	mov	r2,r0
+ffff606e:	d3 11       	mov.l	ffff60b4 <_kline_send_message.part.0+0x84>,r3	! ffff9010 <_sendbuffer>
+ffff6070:	92 1e       	mov.w	ffff60b0 <_kline_send_message.part.0+0x80>,r2	! f010
+ffff6072:	0a 14       	mov.b	r1,@(r0,r10)
+ffff6074:	61 93       	mov	r9,r1
+ffff6076:	71 01       	add	#1,r1
+ffff6078:	41 10       	dt	r1
+ffff607a:	8b 0f       	bf	ffff609c <_kline_send_message.part.0+0x6c>
+ffff607c:	91 18       	mov.w	ffff60b0 <_kline_send_message.part.0+0x80>,r1	! f010
+ffff607e:	84 14       	mov.b	@(4,r1),r0
+ffff6080:	c8 04       	tst	#4,r0
+ffff6082:	89 fc       	bt	ffff607e <_kline_send_message.part.0+0x4e>
+ffff6084:	84 12       	mov.b	@(2,r1),r0
+ffff6086:	cb 10       	or	#16,r0
+ffff6088:	80 12       	mov.b	r0,@(2,r1)
+ffff608a:	4f 26       	lds.l	@r15+,pr
+ffff608c:	6a f6       	mov.l	@r15+,r10
+ffff608e:	69 f6       	mov.l	@r15+,r9
+ffff6090:	00 0b       	rts	
+ffff6092:	68 f6       	mov.l	@r15+,r8
+ffff6094:	03 ac       	mov.b	@(r0,r10),r3
+ffff6096:	31 3c       	add	r3,r1
+ffff6098:	af e5       	bra	ffff6066 <_kline_send_message.part.0+0x36>
+ffff609a:	61 1c       	extu.b	r1,r1
+ffff609c:	84 24       	mov.b	@(4,r2),r0
+ffff609e:	40 11       	cmp/pz	r0
+ffff60a0:	89 fc       	bt	ffff609c <_kline_send_message.part.0+0x6c>
+ffff60a2:	60 34       	mov.b	@r3+,r0
+ffff60a4:	80 23       	mov.b	r0,@(3,r2)
+ffff60a6:	84 24       	mov.b	@(4,r2),r0
+ffff60a8:	c9 7f       	and	#127,r0
+ffff60aa:	80 24       	mov.b	r0,@(4,r2)
+ffff60ac:	af e5       	bra	ffff607a <_kline_send_message.part.0+0x4a>
+ffff60ae:	41 10       	dt	r1
+ffff60b0:	f0 10       	.word 0xf010
+ffff60b2:	be ef       	bsr	ffff5e94 <RAMjump_entry-0x170>
+ffff60b4:	ff ff       	.word 0xffff
+ffff60b6:	90 10       	mov.w	ffff60da <_cmd_flash_init.constprop.0+0x1e>,r0	! 6483
+ffff60b8:	ff ff       	.word 0xffff
+ffff60ba:	72 50       	add	#80,r2
+
+ffff60bc <_cmd_flash_init.constprop.0>:
+ffff60bc:	2f 86       	mov.l	r8,@-r15
+ffff60be:	2f 96       	mov.l	r9,@-r15
+ffff60c0:	d8 23       	mov.l	ffff6150 <_cmd_flash_init.constprop.0+0x94>,r8	! ffff9420 <_databuffer>
+ffff60c2:	4f 22       	sts.l	pr,@-r15
+ffff60c4:	85 81       	mov.w	@(2,r8),r0
+ffff60c6:	88 01       	cmp/eq	#1,r0
+ffff60c8:	d9 22       	mov.l	ffff6154 <_cmd_flash_init.constprop.0+0x98>,r9	! ffff6030 <_kline_send_message.part.0>
+ffff60ca:	8d 0e       	bt.s	ffff60ea <_cmd_flash_init.constprop.0+0x2e>
+ffff60cc:	7f fc       	add	#-4,r15
+ffff60ce:	84 84       	mov.b	@(4,r8),r0
+ffff60d0:	e1 7f       	mov	#127,r1
+ffff60d2:	80 81       	mov.b	r0,@(1,r8)
+ffff60d4:	e0 30       	mov	#48,r0
+ffff60d6:	80 82       	mov.b	r0,@(2,r8)
+ffff60d8:	e5 03       	mov	#3,r5
+ffff60da:	64 83       	mov	r8,r4
+ffff60dc:	60 93       	mov	r9,r0
+ffff60de:	28 10       	mov.b	r1,@r8
+ffff60e0:	7f 04       	add	#4,r15
+ffff60e2:	4f 26       	lds.l	@r15+,pr
+ffff60e4:	69 f6       	mov.l	@r15+,r9
+ffff60e6:	40 2b       	jmp	@r0
+ffff60e8:	68 f6       	mov.l	@r15+,r8
+ffff60ea:	92 2e       	mov.w	ffff614a <_cmd_flash_init.constprop.0+0x8e>,r2	! f740
+ffff60ec:	64 f3       	mov	r15,r4
+ffff60ee:	91 2d       	mov.w	ffff614c <_cmd_flash_init.constprop.0+0x90>,r1	! 100
+ffff60f0:	74 03       	add	#3,r4
+ffff60f2:	63 21       	mov.w	@r2,r3
+ffff60f4:	d0 18       	mov.l	ffff6158 <_cmd_flash_init.constprop.0+0x9c>,r0	! ffff6fac <_platf_flash_init>
+ffff60f6:	21 3b       	or	r3,r1
+ffff60f8:	22 11       	mov.w	r1,@r2
+ffff60fa:	40 0b       	jsr	@r0
+ffff60fc:	00 09       	nop	
+ffff60fe:	62 03       	mov	r0,r2
+ffff6100:	84 84       	mov.b	@(4,r8),r0
+ffff6102:	22 28       	tst	r2,r2
+ffff6104:	8f 10       	bf.s	ffff6128 <_cmd_flash_init.constprop.0+0x6c>
+ffff6106:	61 0c       	extu.b	r0,r1
+ffff6108:	80 81       	mov.b	r0,@(1,r8)
+ffff610a:	60 f3       	mov	r15,r0
+ffff610c:	70 f4       	add	#-12,r0
+ffff610e:	84 0f       	mov.b	@(15,r0),r0
+ffff6110:	e1 7f       	mov	#127,r1
+ffff6112:	28 10       	mov.b	r1,@r8
+ffff6114:	e5 03       	mov	#3,r5
+ffff6116:	80 82       	mov.b	r0,@(2,r8)
+ffff6118:	64 83       	mov	r8,r4
+ffff611a:	49 0b       	jsr	@r9
+ffff611c:	00 09       	nop	
+ffff611e:	7f 04       	add	#4,r15
+ffff6120:	4f 26       	lds.l	@r15+,pr
+ffff6122:	69 f6       	mov.l	@r15+,r9
+ffff6124:	00 0b       	rts	
+ffff6126:	68 f6       	mov.l	@r15+,r8
+ffff6128:	60 13       	mov	r1,r0
+ffff612a:	88 21       	cmp/eq	#33,r0
+ffff612c:	8f 09       	bf.s	ffff6142 <_cmd_flash_init.constprop.0+0x86>
+ffff612e:	88 20       	cmp/eq	#32,r0
+ffff6130:	d1 0a       	mov.l	ffff615c <_cmd_flash_init.constprop.0+0xa0>,r1	! ffff710c <_platf_flash_protect>
+ffff6132:	41 0b       	jsr	@r1
+ffff6134:	00 09       	nop	
+ffff6136:	84 84       	mov.b	@(4,r8),r0
+ffff6138:	e5 01       	mov	#1,r5
+ffff613a:	cb 40       	or	#64,r0
+ffff613c:	d4 04       	mov.l	ffff6150 <_cmd_flash_init.constprop.0+0x94>,r4	! ffff9420 <_databuffer>
+ffff613e:	af ec       	bra	ffff611a <_cmd_flash_init.constprop.0+0x5e>
+ffff6140:	28 00       	mov.b	r0,@r8
+ffff6142:	8b f8       	bf	ffff6136 <_cmd_flash_init.constprop.0+0x7a>
+ffff6144:	d1 06       	mov.l	ffff6160 <_cmd_flash_init.constprop.0+0xa4>,r1	! ffff7118 <_platf_flash_unprotect>
+ffff6146:	af f4       	bra	ffff6132 <_cmd_flash_init.constprop.0+0x76>
+ffff6148:	00 09       	nop	
+ffff614a:	f7 40       	.word 0xf740
+ffff614c:	01 00       	.word 0x0100
+ffff614e:	00 09       	nop	
+ffff6150:	ff ff       	.word 0xffff
+ffff6152:	94 20       	mov.w	ffff6196 <_set_sci3_cs+0x1e>,r4	! cb08
+ffff6154:	ff ff       	.word 0xffff
+ffff6156:	60 30       	mov.b	@r3,r0
+ffff6158:	ff ff       	.word 0xffff
+ffff615a:	6f ac       	extu.b	r10,r15
+ffff615c:	ff ff       	.word 0xffff
+ffff615e:	71 0c       	add	#12,r1
+ffff6160:	ff ff       	.word 0xffff
+ffff6162:	71 18       	add	#24,r1
+
+ffff6164 <_delay>:
+ffff6164:	e5 00       	mov	#0,r5
+ffff6166:	44 08       	shll2	r4
+ffff6168:	44 00       	shll	r4
+ffff616a:	35 42       	cmp/hs	r4,r5
+ffff616c:	89 02       	bt	ffff6174 <_delay+0x10>
+ffff616e:	75 01       	add	#1,r5
+ffff6170:	35 42       	cmp/hs	r4,r5
+ffff6172:	8b fc       	bf	ffff616e <_delay+0xa>
+ffff6174:	00 0b       	rts	
+ffff6176:	00 09       	nop	
+
+ffff6178 <_set_sci3_cs>:
+ffff6178:	d1 08       	mov.l	ffff619c <_set_sci3_cs+0x24>,r1	! ffff9830 <_EEPROM_SCI>
+ffff617a:	60 12       	mov.l	@r1,r0
+ffff617c:	88 02       	cmp/eq	#2,r0
+ffff617e:	8f 06       	bf.s	ffff618e <_set_sci3_cs+0x16>
+ffff6180:	88 03       	cmp/eq	#3,r0
+ffff6182:	91 09       	mov.w	ffff6198 <_set_sci3_cs+0x20>,r1	! f76c
+ffff6184:	60 11       	mov.w	@r1,r0
+ffff6186:	cb 04       	or	#4,r0
+ffff6188:	21 01       	mov.w	r0,@r1
+ffff618a:	00 0b       	rts	
+ffff618c:	00 09       	nop	
+ffff618e:	8b fc       	bf	ffff618a <_set_sci3_cs+0x12>
+ffff6190:	91 02       	mov.w	ffff6198 <_set_sci3_cs+0x20>,r1	! f76c
+ffff6192:	60 11       	mov.w	@r1,r0
+ffff6194:	af f8       	bra	ffff6188 <_set_sci3_cs+0x10>
+ffff6196:	cb 08       	or	#8,r0
+ffff6198:	f7 6c       	.word 0xf76c
+ffff619a:	00 09       	nop	
+ffff619c:	ff ff       	.word 0xffff
+ffff619e:	98 30       	mov.w	ffff6202 <_EEPROM_check+0x6>,r8	! 6012
+
+ffff61a0 <_clear_sci3_cs>:
+ffff61a0:	d1 09       	mov.l	ffff61c8 <_clear_sci3_cs+0x28>,r1	! ffff9830 <_EEPROM_SCI>
+ffff61a2:	60 12       	mov.l	@r1,r0
+ffff61a4:	88 02       	cmp/eq	#2,r0
+ffff61a6:	8f 07       	bf.s	ffff61b8 <_clear_sci3_cs+0x18>
+ffff61a8:	88 03       	cmp/eq	#3,r0
+ffff61aa:	92 0b       	mov.w	ffff61c4 <_clear_sci3_cs+0x24>,r2	! f76c
+ffff61ac:	d1 07       	mov.l	ffff61cc <_clear_sci3_cs+0x2c>,r1	! fffb
+ffff61ae:	63 21       	mov.w	@r2,r3
+ffff61b0:	21 39       	and	r3,r1
+ffff61b2:	22 11       	mov.w	r1,@r2
+ffff61b4:	00 0b       	rts	
+ffff61b6:	00 09       	nop	
+ffff61b8:	8b fc       	bf	ffff61b4 <_clear_sci3_cs+0x14>
+ffff61ba:	92 03       	mov.w	ffff61c4 <_clear_sci3_cs+0x24>,r2	! f76c
+ffff61bc:	d1 04       	mov.l	ffff61d0 <_clear_sci3_cs+0x30>,r1	! fff7
+ffff61be:	63 21       	mov.w	@r2,r3
+ffff61c0:	af f7       	bra	ffff61b2 <_clear_sci3_cs+0x12>
+ffff61c2:	21 39       	and	r3,r1
+ffff61c4:	f7 6c       	.word 0xf76c
+ffff61c6:	00 09       	nop	
+ffff61c8:	ff ff       	.word 0xffff
+ffff61ca:	98 30       	mov.w	ffff622e <_EEPROM_check+0x32>,r8	! 70fe
+ffff61cc:	00 00       	.word 0x0000
+ffff61ce:	ff fb       	.word 0xfffb
+ffff61d0:	00 00       	.word 0x0000
+ffff61d2:	ff f7       	.word 0xfff7
+
+ffff61d4 <_set_sci4_cs>:
+ffff61d4:	92 05       	mov.w	ffff61e2 <_set_sci4_cs+0xe>,r2	! f74e
+ffff61d6:	91 05       	mov.w	ffff61e4 <_set_sci4_cs+0x10>,r1	! 400
+ffff61d8:	63 21       	mov.w	@r2,r3
+ffff61da:	21 3b       	or	r3,r1
+ffff61dc:	22 11       	mov.w	r1,@r2
+ffff61de:	00 0b       	rts	
+ffff61e0:	00 09       	nop	
+ffff61e2:	f7 4e       	.word 0xf74e
+ffff61e4:	04 00       	.word 0x0400
+	...
+
+ffff61e8 <_clear_sci4_cs>:
+ffff61e8:	92 05       	mov.w	ffff61f6 <_clear_sci4_cs+0xe>,r2	! f74e
+ffff61ea:	d1 03       	mov.l	ffff61f8 <_clear_sci4_cs+0x10>,r1	! fbff
+ffff61ec:	63 21       	mov.w	@r2,r3
+ffff61ee:	21 39       	and	r3,r1
+ffff61f0:	22 11       	mov.w	r1,@r2
+ffff61f2:	00 0b       	rts	
+ffff61f4:	00 09       	nop	
+ffff61f6:	f7 4e       	.word 0xf74e
+ffff61f8:	00 00       	.word 0x0000
+ffff61fa:	fb ff       	.word 0xfbff
+
+ffff61fc <_EEPROM_check>:
+ffff61fc:	2f 86       	mov.l	r8,@-r15
+ffff61fe:	d1 15       	mov.l	ffff6254 <_EEPROM_check+0x58>,r1	! ffff9830 <_EEPROM_SCI>
+ffff6200:	4f 22       	sts.l	pr,@-r15
+ffff6202:	60 12       	mov.l	@r1,r0
+ffff6204:	88 04       	cmp/eq	#4,r0
+ffff6206:	8f 12       	bf.s	ffff622e <_EEPROM_check+0x32>
+ffff6208:	e1 01       	mov	#1,r1
+ffff620a:	d1 13       	mov.l	ffff6258 <_EEPROM_check+0x5c>,r1	! ffff61d4 <_set_sci4_cs>
+ffff620c:	41 0b       	jsr	@r1
+ffff620e:	00 09       	nop	
+ffff6210:	d1 12       	mov.l	ffff625c <_EEPROM_check+0x60>,r1	! ffff6164 <_delay>
+ffff6212:	41 0b       	jsr	@r1
+ffff6214:	e4 02       	mov	#2,r4
+ffff6216:	91 1b       	mov.w	ffff6250 <_EEPROM_check+0x54>,r1	! f738
+ffff6218:	60 11       	mov.w	@r1,r0
+ffff621a:	d1 11       	mov.l	ffff6260 <_EEPROM_check+0x64>,r1	! ffff61e8 <_clear_sci4_cs>
+ffff621c:	60 08       	swap.b	r0,r0
+ffff621e:	c8 08       	tst	#8,r0
+ffff6220:	08 29       	movt	r8
+ffff6222:	41 0b       	jsr	@r1
+ffff6224:	00 09       	nop	
+ffff6226:	60 83       	mov	r8,r0
+ffff6228:	4f 26       	lds.l	@r15+,pr
+ffff622a:	00 0b       	rts	
+ffff622c:	68 f6       	mov.l	@r15+,r8
+ffff622e:	70 fe       	add	#-2,r0
+ffff6230:	30 16       	cmp/hi	r1,r0
+ffff6232:	8d f8       	bt.s	ffff6226 <_EEPROM_check+0x2a>
+ffff6234:	e8 00       	mov	#0,r8
+ffff6236:	d1 0b       	mov.l	ffff6264 <_EEPROM_check+0x68>,r1	! ffff6178 <_set_sci3_cs>
+ffff6238:	41 0b       	jsr	@r1
+ffff623a:	00 09       	nop	
+ffff623c:	d1 07       	mov.l	ffff625c <_EEPROM_check+0x60>,r1	! ffff6164 <_delay>
+ffff623e:	41 0b       	jsr	@r1
+ffff6240:	e4 02       	mov	#2,r4
+ffff6242:	91 05       	mov.w	ffff6250 <_EEPROM_check+0x54>,r1	! f738
+ffff6244:	60 11       	mov.w	@r1,r0
+ffff6246:	60 08       	swap.b	r0,r0
+ffff6248:	c8 02       	tst	#2,r0
+ffff624a:	d1 07       	mov.l	ffff6268 <_EEPROM_check+0x6c>,r1	! ffff61a0 <_clear_sci3_cs>
+ffff624c:	af e9       	bra	ffff6222 <_EEPROM_check+0x26>
+ffff624e:	08 29       	movt	r8
+ffff6250:	f7 38       	.word 0xf738
+ffff6252:	00 09       	nop	
+ffff6254:	ff ff       	.word 0xffff
+ffff6256:	98 30       	mov.w	ffff62ba <_EEPROM_init+0x4e>,r8	! 9816
+ffff6258:	ff ff       	.word 0xffff
+ffff625a:	61 d4       	mov.b	@r13+,r1
+ffff625c:	ff ff       	.word 0xffff
+ffff625e:	61 64       	mov.b	@r6+,r1
+ffff6260:	ff ff       	.word 0xffff
+ffff6262:	61 e8       	swap.b	r14,r1
+ffff6264:	ff ff       	.word 0xffff
+ffff6266:	61 78       	swap.b	r7,r1
+ffff6268:	ff ff       	.word 0xffff
+ffff626a:	61 a0       	mov.b	@r10,r1
+
+ffff626c <_EEPROM_init>:
+ffff626c:	2f 86       	mov.l	r8,@-r15
+ffff626e:	2f 96       	mov.l	r9,@-r15
+ffff6270:	d1 1f       	mov.l	ffff62f0 <_EEPROM_init+0x84>,r1	! ffff9830 <_EEPROM_SCI>
+ffff6272:	4f 22       	sts.l	pr,@-r15
+ffff6274:	60 12       	mov.l	@r1,r0
+ffff6276:	88 04       	cmp/eq	#4,r0
+ffff6278:	8f 19       	bf.s	ffff62ae <_EEPROM_init+0x42>
+ffff627a:	88 02       	cmp/eq	#2,r0
+ffff627c:	92 34       	mov.w	ffff62e8 <_EEPROM_init+0x7c>,r2	! f740
+ffff627e:	e9 cf       	mov	#-49,r9
+ffff6280:	d1 1c       	mov.l	ffff62f4 <_EEPROM_init+0x88>,r1	! fdff
+ffff6282:	85 2e       	mov.w	@(28,r2),r0
+ffff6284:	98 31       	mov.w	ffff62ea <_EEPROM_init+0x7e>,r8	! f720
+ffff6286:	20 19       	and	r1,r0
+ffff6288:	81 2e       	mov.w	r0,@(28,r2)
+ffff628a:	72 f8       	add	#-8,r2
+ffff628c:	85 89       	mov.w	@(18,r8),r0
+ffff628e:	20 99       	and	r9,r0
+ffff6290:	81 89       	mov.w	r0,@(18,r8)
+ffff6292:	d1 19       	mov.l	ffff62f8 <_EEPROM_init+0x8c>,r1	! fbff
+ffff6294:	63 21       	mov.w	@r2,r3
+ffff6296:	21 39       	and	r3,r1
+ffff6298:	22 11       	mov.w	r1,@r2
+ffff629a:	d1 18       	mov.l	ffff62fc <_EEPROM_init+0x90>,r1	! ffff61d4 <_set_sci4_cs>
+ffff629c:	41 0b       	jsr	@r1
+ffff629e:	00 09       	nop	
+ffff62a0:	85 89       	mov.w	@(18,r8),r0
+ffff62a2:	60 0d       	extu.w	r0,r0
+ffff62a4:	20 99       	and	r9,r0
+ffff62a6:	cb 10       	or	#16,r0
+ffff62a8:	81 89       	mov.w	r0,@(18,r8)
+ffff62aa:	a0 19       	bra	ffff62e0 <_EEPROM_init+0x74>
+ffff62ac:	00 09       	nop	
+ffff62ae:	8f 16       	bf.s	ffff62de <_EEPROM_init+0x72>
+ffff62b0:	88 03       	cmp/eq	#3,r0
+ffff62b2:	92 19       	mov.w	ffff62e8 <_EEPROM_init+0x7c>,r2	! f740
+ffff62b4:	e9 fc       	mov	#-4,r9
+ffff62b6:	91 19       	mov.w	ffff62ec <_EEPROM_init+0x80>,r1	! feff
+ffff62b8:	85 2e       	mov.w	@(28,r2),r0
+ffff62ba:	98 16       	mov.w	ffff62ea <_EEPROM_init+0x7e>,r8	! f720
+ffff62bc:	20 19       	and	r1,r0
+ffff62be:	81 2e       	mov.w	r0,@(28,r2)
+ffff62c0:	72 f8       	add	#-8,r2
+ffff62c2:	85 89       	mov.w	@(18,r8),r0
+ffff62c4:	20 99       	and	r9,r0
+ffff62c6:	81 89       	mov.w	r0,@(18,r8)
+ffff62c8:	63 21       	mov.w	@r2,r3
+ffff62ca:	21 39       	and	r3,r1
+ffff62cc:	22 11       	mov.w	r1,@r2
+ffff62ce:	d1 0c       	mov.l	ffff6300 <_EEPROM_init+0x94>,r1	! ffff6178 <_set_sci3_cs>
+ffff62d0:	41 0b       	jsr	@r1
+ffff62d2:	00 09       	nop	
+ffff62d4:	85 89       	mov.w	@(18,r8),r0
+ffff62d6:	60 0d       	extu.w	r0,r0
+ffff62d8:	20 99       	and	r9,r0
+ffff62da:	af e5       	bra	ffff62a8 <_EEPROM_init+0x3c>
+ffff62dc:	cb 01       	or	#1,r0
+ffff62de:	89 e8       	bt	ffff62b2 <_EEPROM_init+0x46>
+ffff62e0:	4f 26       	lds.l	@r15+,pr
+ffff62e2:	69 f6       	mov.l	@r15+,r9
+ffff62e4:	00 0b       	rts	
+ffff62e6:	68 f6       	mov.l	@r15+,r8
+ffff62e8:	f7 40       	.word 0xf740
+ffff62ea:	f7 20       	.word 0xf720
+ffff62ec:	fe ff       	.word 0xfeff
+ffff62ee:	00 09       	nop	
+ffff62f0:	ff ff       	.word 0xffff
+ffff62f2:	98 30       	mov.w	ffff6356 <_EEPROM_send_cmd+0x52>,r8	! 89ea
+ffff62f4:	00 00       	.word 0x0000
+ffff62f6:	fd ff       	.word 0xfdff
+ffff62f8:	00 00       	.word 0x0000
+ffff62fa:	fb ff       	.word 0xfbff
+ffff62fc:	ff ff       	.word 0xffff
+ffff62fe:	61 d4       	mov.b	@r13+,r1
+ffff6300:	ff ff       	.word 0xffff
+ffff6302:	61 78       	swap.b	r7,r1
+
+ffff6304 <_EEPROM_send_cmd>:
+ffff6304:	d1 24       	mov.l	ffff6398 <_EEPROM_send_cmd+0x94>,r1	! ffff9830 <_EEPROM_SCI>
+ffff6306:	7f f8       	add	#-8,r15
+ffff6308:	1f 41       	mov.l	r4,@(4,r15)
+ffff630a:	60 12       	mov.l	@r1,r0
+ffff630c:	88 04       	cmp/eq	#4,r0
+ffff630e:	8f 20       	bf.s	ffff6352 <_EEPROM_send_cmd+0x4e>
+ffff6310:	70 fe       	add	#-2,r0
+ffff6312:	91 3e       	mov.w	ffff6392 <_EEPROM_send_cmd+0x8e>,r1	! f020
+ffff6314:	e2 00       	mov	#0,r2
+ffff6316:	84 12       	mov.b	@(2,r1),r0
+ffff6318:	c9 0b       	and	#11,r0
+ffff631a:	cb 20       	or	#32,r0
+ffff631c:	80 12       	mov.b	r0,@(2,r1)
+ffff631e:	32 52       	cmp/hs	r5,r2
+ffff6320:	8b 07       	bf	ffff6332 <_EEPROM_send_cmd+0x2e>
+ffff6322:	84 14       	mov.b	@(4,r1),r0
+ffff6324:	c8 04       	tst	#4,r0
+ffff6326:	89 fc       	bt	ffff6322 <_EEPROM_send_cmd+0x1e>
+ffff6328:	84 12       	mov.b	@(2,r1),r0
+ffff632a:	c9 0b       	and	#11,r0
+ffff632c:	80 12       	mov.b	r0,@(2,r1)
+ffff632e:	00 0b       	rts	
+ffff6330:	7f 08       	add	#8,r15
+ffff6332:	84 14       	mov.b	@(4,r1),r0
+ffff6334:	40 11       	cmp/pz	r0
+ffff6336:	8d fc       	bt.s	ffff6332 <_EEPROM_send_cmd+0x2e>
+ffff6338:	e3 04       	mov	#4,r3
+ffff633a:	60 23       	mov	r2,r0
+ffff633c:	33 fc       	add	r15,r3
+ffff633e:	00 3c       	mov.b	@(r0,r3),r0
+ffff6340:	72 01       	add	#1,r2
+ffff6342:	80 13       	mov.b	r0,@(3,r1)
+ffff6344:	62 2c       	extu.b	r2,r2
+ffff6346:	84 14       	mov.b	@(4,r1),r0
+ffff6348:	c9 07       	and	#7,r0
+ffff634a:	cb 78       	or	#120,r0
+ffff634c:	80 14       	mov.b	r0,@(4,r1)
+ffff634e:	af e7       	bra	ffff6320 <_EEPROM_send_cmd+0x1c>
+ffff6350:	32 52       	cmp/hs	r5,r2
+ffff6352:	e1 01       	mov	#1,r1
+ffff6354:	30 16       	cmp/hi	r1,r0
+ffff6356:	89 ea       	bt	ffff632e <_EEPROM_send_cmd+0x2a>
+ffff6358:	91 1c       	mov.w	ffff6394 <_EEPROM_send_cmd+0x90>,r1	! f018
+ffff635a:	e2 00       	mov	#0,r2
+ffff635c:	84 12       	mov.b	@(2,r1),r0
+ffff635e:	c9 0b       	and	#11,r0
+ffff6360:	cb 20       	or	#32,r0
+ffff6362:	80 12       	mov.b	r0,@(2,r1)
+ffff6364:	32 52       	cmp/hs	r5,r2
+ffff6366:	8b 04       	bf	ffff6372 <_EEPROM_send_cmd+0x6e>
+ffff6368:	84 14       	mov.b	@(4,r1),r0
+ffff636a:	c8 04       	tst	#4,r0
+ffff636c:	89 fc       	bt	ffff6368 <_EEPROM_send_cmd+0x64>
+ffff636e:	af db       	bra	ffff6328 <_EEPROM_send_cmd+0x24>
+ffff6370:	00 09       	nop	
+ffff6372:	84 14       	mov.b	@(4,r1),r0
+ffff6374:	40 11       	cmp/pz	r0
+ffff6376:	8d fc       	bt.s	ffff6372 <_EEPROM_send_cmd+0x6e>
+ffff6378:	e3 04       	mov	#4,r3
+ffff637a:	60 23       	mov	r2,r0
+ffff637c:	33 fc       	add	r15,r3
+ffff637e:	00 3c       	mov.b	@(r0,r3),r0
+ffff6380:	72 01       	add	#1,r2
+ffff6382:	80 13       	mov.b	r0,@(3,r1)
+ffff6384:	62 2c       	extu.b	r2,r2
+ffff6386:	84 14       	mov.b	@(4,r1),r0
+ffff6388:	c9 07       	and	#7,r0
+ffff638a:	cb 78       	or	#120,r0
+ffff638c:	80 14       	mov.b	r0,@(4,r1)
+ffff638e:	af ea       	bra	ffff6366 <_EEPROM_send_cmd+0x62>
+ffff6390:	32 52       	cmp/hs	r5,r2
+ffff6392:	f0 20       	.word 0xf020
+ffff6394:	f0 18       	.word 0xf018
+ffff6396:	00 09       	nop	
+ffff6398:	ff ff       	.word 0xffff
+ffff639a:	98 30       	mov.w	ffff63fe <_EEPROM_get_rsp+0x62>,r8	! b
+
+ffff639c <_EEPROM_get_rsp>:
+ffff639c:	d1 32       	mov.l	ffff6468 <_EEPROM_get_rsp+0xcc>,r1	! ffff9830 <_EEPROM_SCI>
+ffff639e:	60 12       	mov.l	@r1,r0
+ffff63a0:	88 04       	cmp/eq	#4,r0
+ffff63a2:	8f 2e       	bf.s	ffff6402 <_EEPROM_get_rsp+0x66>
+ffff63a4:	7f fc       	add	#-4,r15
+ffff63a6:	92 59       	mov.w	ffff645c <_EEPROM_get_rsp+0xc0>,r2	! f740
+ffff63a8:	63 f3       	mov	r15,r3
+ffff63aa:	91 58       	mov.w	ffff645e <_EEPROM_get_rsp+0xc2>,r1	! 200
+ffff63ac:	73 02       	add	#2,r3
+ffff63ae:	85 2e       	mov.w	@(28,r2),r0
+ffff63b0:	e7 00       	mov	#0,r7
+ffff63b2:	20 1b       	or	r1,r0
+ffff63b4:	91 54       	mov.w	ffff6460 <_EEPROM_get_rsp+0xc4>,r1	! f020
+ffff63b6:	81 2e       	mov.w	r0,@(28,r2)
+ffff63b8:	62 f3       	mov	r15,r2
+ffff63ba:	84 12       	mov.b	@(2,r1),r0
+ffff63bc:	c9 0b       	and	#11,r0
+ffff63be:	cb 30       	or	#48,r0
+ffff63c0:	80 12       	mov.b	r0,@(2,r1)
+ffff63c2:	60 73       	mov	r7,r0
+ffff63c4:	80 13       	mov.b	r0,@(3,r1)
+ffff63c6:	84 14       	mov.b	@(4,r1),r0
+ffff63c8:	c9 07       	and	#7,r0
+ffff63ca:	cb 78       	or	#120,r0
+ffff63cc:	80 14       	mov.b	r0,@(4,r1)
+ffff63ce:	84 14       	mov.b	@(4,r1),r0
+ffff63d0:	c8 40       	tst	#64,r0
+ffff63d2:	89 fc       	bt	ffff63ce <_EEPROM_get_rsp+0x32>
+ffff63d4:	84 15       	mov.b	@(5,r1),r0
+ffff63d6:	22 00       	mov.b	r0,@r2
+ffff63d8:	72 01       	add	#1,r2
+ffff63da:	84 14       	mov.b	@(4,r1),r0
+ffff63dc:	33 20       	cmp/eq	r2,r3
+ffff63de:	c9 07       	and	#7,r0
+ffff63e0:	cb b8       	or	#184,r0
+ffff63e2:	80 14       	mov.b	r0,@(4,r1)
+ffff63e4:	8b ed       	bf	ffff63c2 <_EEPROM_get_rsp+0x26>
+ffff63e6:	84 12       	mov.b	@(2,r1),r0
+ffff63e8:	92 38       	mov.w	ffff645c <_EEPROM_get_rsp+0xc0>,r2	! f740
+ffff63ea:	c9 0b       	and	#11,r0
+ffff63ec:	80 12       	mov.b	r0,@(2,r1)
+ffff63ee:	d1 1f       	mov.l	ffff646c <_EEPROM_get_rsp+0xd0>,r1	! fdff
+ffff63f0:	85 2e       	mov.w	@(28,r2),r0
+ffff63f2:	20 19       	and	r1,r0
+ffff63f4:	81 2e       	mov.w	r0,@(28,r2)
+ffff63f6:	60 f3       	mov	r15,r0
+ffff63f8:	70 e4       	add	#-28,r0
+ffff63fa:	85 0e       	mov.w	@(28,r0),r0
+ffff63fc:	60 0d       	extu.w	r0,r0
+ffff63fe:	00 0b       	rts	
+ffff6400:	7f 04       	add	#4,r15
+ffff6402:	70 fe       	add	#-2,r0
+ffff6404:	e1 01       	mov	#1,r1
+ffff6406:	30 16       	cmp/hi	r1,r0
+ffff6408:	8d f6       	bt.s	ffff63f8 <_EEPROM_get_rsp+0x5c>
+ffff640a:	60 f3       	mov	r15,r0
+ffff640c:	92 26       	mov.w	ffff645c <_EEPROM_get_rsp+0xc0>,r2	! f740
+ffff640e:	63 f3       	mov	r15,r3
+ffff6410:	91 27       	mov.w	ffff6462 <_EEPROM_get_rsp+0xc6>,r1	! 100
+ffff6412:	73 02       	add	#2,r3
+ffff6414:	85 2e       	mov.w	@(28,r2),r0
+ffff6416:	e7 00       	mov	#0,r7
+ffff6418:	20 1b       	or	r1,r0
+ffff641a:	91 23       	mov.w	ffff6464 <_EEPROM_get_rsp+0xc8>,r1	! f018
+ffff641c:	81 2e       	mov.w	r0,@(28,r2)
+ffff641e:	62 f3       	mov	r15,r2
+ffff6420:	84 12       	mov.b	@(2,r1),r0
+ffff6422:	c9 0b       	and	#11,r0
+ffff6424:	cb 30       	or	#48,r0
+ffff6426:	80 12       	mov.b	r0,@(2,r1)
+ffff6428:	60 73       	mov	r7,r0
+ffff642a:	80 13       	mov.b	r0,@(3,r1)
+ffff642c:	84 14       	mov.b	@(4,r1),r0
+ffff642e:	c9 07       	and	#7,r0
+ffff6430:	cb 78       	or	#120,r0
+ffff6432:	80 14       	mov.b	r0,@(4,r1)
+ffff6434:	84 14       	mov.b	@(4,r1),r0
+ffff6436:	c8 40       	tst	#64,r0
+ffff6438:	89 fc       	bt	ffff6434 <_EEPROM_get_rsp+0x98>
+ffff643a:	84 15       	mov.b	@(5,r1),r0
+ffff643c:	22 00       	mov.b	r0,@r2
+ffff643e:	72 01       	add	#1,r2
+ffff6440:	84 14       	mov.b	@(4,r1),r0
+ffff6442:	33 20       	cmp/eq	r2,r3
+ffff6444:	c9 07       	and	#7,r0
+ffff6446:	cb b8       	or	#184,r0
+ffff6448:	80 14       	mov.b	r0,@(4,r1)
+ffff644a:	8b ed       	bf	ffff6428 <_EEPROM_get_rsp+0x8c>
+ffff644c:	84 12       	mov.b	@(2,r1),r0
+ffff644e:	92 05       	mov.w	ffff645c <_EEPROM_get_rsp+0xc0>,r2	! f740
+ffff6450:	c9 0b       	and	#11,r0
+ffff6452:	80 12       	mov.b	r0,@(2,r1)
+ffff6454:	d1 06       	mov.l	ffff6470 <_EEPROM_get_rsp+0xd4>,r1	! feff
+ffff6456:	85 2e       	mov.w	@(28,r2),r0
+ffff6458:	af cc       	bra	ffff63f4 <_EEPROM_get_rsp+0x58>
+ffff645a:	20 19       	and	r1,r0
+ffff645c:	f7 40       	.word 0xf740
+ffff645e:	02 00       	.word 0x0200
+ffff6460:	f0 20       	.word 0xf020
+ffff6462:	01 00       	.word 0x0100
+ffff6464:	f0 18       	.word 0xf018
+ffff6466:	00 09       	nop	
+ffff6468:	ff ff       	.word 0xffff
+ffff646a:	98 30       	mov.w	ffff64ce <_eep_read16_sub+0x6>,r8	! 6843
+ffff646c:	00 00       	.word 0x0000
+ffff646e:	fd ff       	.word 0xfdff
+ffff6470:	00 00       	.word 0x0000
+ffff6472:	fe ff       	.word 0xfeff
+
+ffff6474 <_EEPROM_TX_2bytes_RX_2bytes>:
+ffff6474:	d1 0e       	mov.l	ffff64b0 <_EEPROM_TX_2bytes_RX_2bytes+0x3c>,r1	! ffff626c <_EEPROM_init>
+ffff6476:	2f 86       	mov.l	r8,@-r15
+ffff6478:	4f 22       	sts.l	pr,@-r15
+ffff647a:	41 0b       	jsr	@r1
+ffff647c:	68 43       	mov	r4,r8
+ffff647e:	d1 0d       	mov.l	ffff64b4 <_EEPROM_TX_2bytes_RX_2bytes+0x40>,r1	! ffff6304 <_EEPROM_send_cmd>
+ffff6480:	64 83       	mov	r8,r4
+ffff6482:	41 0b       	jsr	@r1
+ffff6484:	e5 02       	mov	#2,r5
+ffff6486:	d0 0c       	mov.l	ffff64b8 <_EEPROM_TX_2bytes_RX_2bytes+0x44>,r0	! ffff639c <_EEPROM_get_rsp>
+ffff6488:	40 0b       	jsr	@r0
+ffff648a:	00 09       	nop	
+ffff648c:	d1 0b       	mov.l	ffff64bc <_EEPROM_TX_2bytes_RX_2bytes+0x48>,r1	! ffff9830 <_EEPROM_SCI>
+ffff648e:	68 03       	mov	r0,r8
+ffff6490:	60 12       	mov.l	@r1,r0
+ffff6492:	d1 0b       	mov.l	ffff64c0 <_EEPROM_TX_2bytes_RX_2bytes+0x4c>,r1	! ffff61e8 <_clear_sci4_cs>
+ffff6494:	88 04       	cmp/eq	#4,r0
+ffff6496:	89 04       	bt	ffff64a2 <_EEPROM_TX_2bytes_RX_2bytes+0x2e>
+ffff6498:	70 fe       	add	#-2,r0
+ffff649a:	e1 01       	mov	#1,r1
+ffff649c:	30 16       	cmp/hi	r1,r0
+ffff649e:	89 02       	bt	ffff64a6 <_EEPROM_TX_2bytes_RX_2bytes+0x32>
+ffff64a0:	d1 08       	mov.l	ffff64c4 <_EEPROM_TX_2bytes_RX_2bytes+0x50>,r1	! ffff61a0 <_clear_sci3_cs>
+ffff64a2:	41 0b       	jsr	@r1
+ffff64a4:	00 09       	nop	
+ffff64a6:	60 83       	mov	r8,r0
+ffff64a8:	4f 26       	lds.l	@r15+,pr
+ffff64aa:	00 0b       	rts	
+ffff64ac:	68 f6       	mov.l	@r15+,r8
+ffff64ae:	00 09       	nop	
+ffff64b0:	ff ff       	.word 0xffff
+ffff64b2:	62 6c       	extu.b	r6,r2
+ffff64b4:	ff ff       	.word 0xffff
+ffff64b6:	63 04       	mov.b	@r0+,r3
+ffff64b8:	ff ff       	.word 0xffff
+ffff64ba:	63 9c       	extu.b	r9,r3
+ffff64bc:	ff ff       	.word 0xffff
+ffff64be:	98 30       	mov.w	ffff6522 <_eep_read16_sub+0x5a>,r8	! fe
+ffff64c0:	ff ff       	.word 0xffff
+ffff64c2:	61 e8       	swap.b	r14,r1
+ffff64c4:	ff ff       	.word 0xffff
+ffff64c6:	61 a0       	mov.b	@r10,r1
+
+ffff64c8 <_eep_read16_sub>:
+ffff64c8:	2f 86       	mov.l	r8,@-r15
+ffff64ca:	e1 ff       	mov	#-1,r1
+ffff64cc:	2f 96       	mov.l	r9,@-r15
+ffff64ce:	68 43       	mov	r4,r8
+ffff64d0:	2f a6       	mov.l	r10,@-r15
+ffff64d2:	6a 53       	mov	r5,r10
+ffff64d4:	2f b6       	mov.l	r11,@-r15
+ffff64d6:	99 24       	mov.w	ffff6522 <_eep_read16_sub+0x5a>,r9	! fe
+ffff64d8:	4f 22       	sts.l	pr,@-r15
+ffff64da:	db 13       	mov.l	ffff6528 <_eep_read16_sub+0x60>,r11	! ffff61fc <_EEPROM_check>
+ffff64dc:	25 11       	mov.w	r1,@r5
+ffff64de:	4b 0b       	jsr	@r11
+ffff64e0:	00 09       	nop	
+ffff64e2:	20 08       	tst	r0,r0
+ffff64e4:	8d 11       	bt.s	ffff650a <_eep_read16_sub+0x42>
+ffff64e6:	64 83       	mov	r8,r4
+ffff64e8:	79 ff       	add	#-1,r9
+ffff64ea:	69 9c       	extu.b	r9,r9
+ffff64ec:	29 98       	tst	r9,r9
+ffff64ee:	8f f6       	bf.s	ffff64de <_eep_read16_sub+0x16>
+ffff64f0:	e0 10       	mov	#16,r0
+ffff64f2:	d4 0e       	mov.l	ffff652c <_eep_read16_sub+0x64>,r4	! ffff9834 <_txbuf>
+ffff64f4:	91 16       	mov.w	ffff6524 <_eep_read16_sub+0x5c>,r1	! 7f07
+ffff64f6:	e5 03       	mov	#3,r5
+ffff64f8:	80 42       	mov.b	r0,@(2,r4)
+ffff64fa:	24 11       	mov.w	r1,@r4
+ffff64fc:	d1 0c       	mov.l	ffff6530 <_eep_read16_sub+0x68>,r1	! ffff6030 <_kline_send_message.part.0>
+ffff64fe:	4f 26       	lds.l	@r15+,pr
+ffff6500:	6b f6       	mov.l	@r15+,r11
+ffff6502:	6a f6       	mov.l	@r15+,r10
+ffff6504:	69 f6       	mov.l	@r15+,r9
+ffff6506:	41 2b       	jmp	@r1
+ffff6508:	68 f6       	mov.l	@r15+,r8
+ffff650a:	d1 0a       	mov.l	ffff6534 <_eep_read16_sub+0x6c>,r1	! 6000000
+ffff650c:	d0 0a       	mov.l	ffff6538 <_eep_read16_sub+0x70>,r0	! ffff6474 <_EEPROM_TX_2bytes_RX_2bytes>
+ffff650e:	44 28       	shll16	r4
+ffff6510:	40 0b       	jsr	@r0
+ffff6512:	24 1b       	or	r1,r4
+ffff6514:	2a 01       	mov.w	r0,@r10
+ffff6516:	4f 26       	lds.l	@r15+,pr
+ffff6518:	6b f6       	mov.l	@r15+,r11
+ffff651a:	6a f6       	mov.l	@r15+,r10
+ffff651c:	69 f6       	mov.l	@r15+,r9
+ffff651e:	00 0b       	rts	
+ffff6520:	68 f6       	mov.l	@r15+,r8
+ffff6522:	00 fe       	mov.l	@(r0,r15),r0
+ffff6524:	7f 07       	add	#7,r15
+ffff6526:	00 09       	nop	
+ffff6528:	ff ff       	.word 0xffff
+ffff652a:	61 fc       	extu.b	r15,r1
+ffff652c:	ff ff       	.word 0xffff
+ffff652e:	98 34       	mov.w	ffff659a <_kline_get_message+0x4a>,r8	! aff3
+ffff6530:	ff ff       	.word 0xffff
+ffff6532:	60 30       	mov.b	@r3,r0
+ffff6534:	06 00       	.word 0x0600
+ffff6536:	00 00       	.word 0x0000
+ffff6538:	ff ff       	.word 0xffff
+ffff653a:	64 74       	mov.b	@r7+,r4
+
+ffff653c <_kline_send_message>:
+ffff653c:	25 58       	tst	r5,r5
+ffff653e:	89 02       	bt	ffff6546 <_kline_send_message+0xa>
+ffff6540:	d1 02       	mov.l	ffff654c <_kline_send_message+0x10>,r1	! ffff6030 <_kline_send_message.part.0>
+ffff6542:	41 2b       	jmp	@r1
+ffff6544:	00 09       	nop	
+ffff6546:	00 0b       	rts	
+ffff6548:	00 09       	nop	
+ffff654a:	00 09       	nop	
+ffff654c:	ff ff       	.word 0xffff
+ffff654e:	60 30       	mov.b	@r3,r0
+
+ffff6550 <_kline_get_message>:
+ffff6550:	d7 2b       	mov.l	ffff6600 <_kline_get_message+0xb0>,r7	! ffff9008 <_bufferindex>
+ffff6552:	e1 04       	mov	#4,r1
+ffff6554:	2f 86       	mov.l	r8,@-r15
+ffff6556:	62 71       	mov.w	@r7,r2
+ffff6558:	62 2d       	extu.w	r2,r2
+ffff655a:	32 16       	cmp/hi	r1,r2
+ffff655c:	8d 09       	bt.s	ffff6572 <_kline_get_message+0x22>
+ffff655e:	65 5c       	extu.b	r5,r5
+ffff6560:	63 23       	mov	r2,r3
+ffff6562:	c7 02       	mova	ffff656c <_kline_get_message+0x1c>,r0
+ffff6564:	01 3c       	mov.b	@(r0,r3),r1
+ffff6566:	01 23       	braf	r1
+ffff6568:	00 09       	nop	
+ffff656a:	00 09       	nop	
+ffff656c:	22 34       	mov.b	r3,@-r2
+ffff656e:	40 46       	.word 0x4046
+ffff6570:	5c 00       	mov.l	@(0,r0),r12
+ffff6572:	d0 24       	mov.l	ffff6604 <_kline_get_message+0xb4>,r0	! ffff9006 <_msgindex>
+ffff6574:	d8 24       	mov.l	ffff6608 <_kline_get_message+0xb8>,r8	! ffff9004 <_msglength>
+ffff6576:	61 01       	mov.w	@r0,r1
+ffff6578:	66 81       	mov.w	@r8,r6
+ffff657a:	61 1d       	extu.w	r1,r1
+ffff657c:	66 6d       	extu.w	r6,r6
+ffff657e:	31 66       	cmp/hi	r6,r1
+ffff6580:	8f 24       	bf.s	ffff65cc <_kline_get_message+0x7c>
+ffff6582:	63 43       	mov	r4,r3
+ffff6584:	72 01       	add	#1,r2
+ffff6586:	27 21       	mov.w	r2,@r7
+ffff6588:	a0 05       	bra	ffff6596 <_kline_get_message+0x46>
+ffff658a:	e0 01       	mov	#1,r0
+ffff658c:	91 36       	mov.w	ffff65fc <_kline_get_message+0xac>,r1	! be
+ffff658e:	35 10       	cmp/eq	r1,r5
+ffff6590:	8d 03       	bt.s	ffff659a <_kline_get_message+0x4a>
+ffff6592:	e1 be       	mov	#-66,r1
+ffff6594:	e0 00       	mov	#0,r0
+ffff6596:	00 0b       	rts	
+ffff6598:	68 f6       	mov.l	@r15+,r8
+ffff659a:	af f3       	bra	ffff6584 <_kline_get_message+0x34>
+ffff659c:	24 10       	mov.b	r1,@r4
+ffff659e:	91 2e       	mov.w	ffff65fe <_kline_get_message+0xae>,r1	! ef
+ffff65a0:	35 10       	cmp/eq	r1,r5
+ffff65a2:	8b f7       	bf	ffff6594 <_kline_get_message+0x44>
+ffff65a4:	e0 ef       	mov	#-17,r0
+ffff65a6:	af ed       	bra	ffff6584 <_kline_get_message+0x34>
+ffff65a8:	80 41       	mov.b	r0,@(1,r4)
+ffff65aa:	60 53       	mov	r5,r0
+ffff65ac:	af ea       	bra	ffff6584 <_kline_get_message+0x34>
+ffff65ae:	80 42       	mov.b	r0,@(2,r4)
+ffff65b0:	60 53       	mov	r5,r0
+ffff65b2:	80 43       	mov.b	r0,@(3,r4)
+ffff65b4:	e3 00       	mov	#0,r3
+ffff65b6:	84 42       	mov.b	@(2,r4),r0
+ffff65b8:	d1 13       	mov.l	ffff6608 <_kline_get_message+0xb8>,r1	! ffff9004 <_msglength>
+ffff65ba:	40 18       	shll8	r0
+ffff65bc:	20 5b       	or	r5,r0
+ffff65be:	21 01       	mov.w	r0,@r1
+ffff65c0:	d1 10       	mov.l	ffff6604 <_kline_get_message+0xb4>,r1	! ffff9006 <_msgindex>
+ffff65c2:	af df       	bra	ffff6584 <_kline_get_message+0x34>
+ffff65c4:	21 31       	mov.w	r3,@r1
+ffff65c6:	60 53       	mov	r5,r0
+ffff65c8:	af dc       	bra	ffff6584 <_kline_get_message+0x34>
+ffff65ca:	80 44       	mov.b	r0,@(4,r4)
+ffff65cc:	71 01       	add	#1,r1
+ffff65ce:	61 1d       	extu.w	r1,r1
+ffff65d0:	33 2c       	add	r2,r3
+ffff65d2:	20 11       	mov.w	r1,@r0
+ffff65d4:	36 16       	cmp/hi	r1,r6
+ffff65d6:	8d d5       	bt.s	ffff6584 <_kline_get_message+0x34>
+ffff65d8:	23 50       	mov.b	r5,@r3
+ffff65da:	61 33       	mov	r3,r1
+ffff65dc:	e2 00       	mov	#0,r2
+ffff65de:	33 48       	sub	r4,r3
+ffff65e0:	71 ff       	add	#-1,r1
+ffff65e2:	66 10       	mov.b	@r1,r6
+ffff65e4:	43 10       	dt	r3
+ffff65e6:	32 6c       	add	r6,r2
+ffff65e8:	8f fa       	bf.s	ffff65e0 <_kline_get_message+0x90>
+ffff65ea:	62 2c       	extu.b	r2,r2
+ffff65ec:	35 20       	cmp/eq	r2,r5
+ffff65ee:	8f d1       	bf.s	ffff6594 <_kline_get_message+0x44>
+ffff65f0:	e1 00       	mov	#0,r1
+ffff65f2:	20 11       	mov.w	r1,@r0
+ffff65f4:	e0 02       	mov	#2,r0
+ffff65f6:	27 11       	mov.w	r1,@r7
+ffff65f8:	af cd       	bra	ffff6596 <_kline_get_message+0x46>
+ffff65fa:	28 11       	mov.w	r1,@r8
+ffff65fc:	00 be       	mov.l	@(r0,r11),r0
+ffff65fe:	00 ef       	mac.l	@r14+,@r0+
+ffff6600:	ff ff       	.word 0xffff
+ffff6602:	90 08       	mov.w	ffff6616 <_cmd_loop+0xa>,r0	! 2fb6
+ffff6604:	ff ff       	.word 0xffff
+ffff6606:	90 06       	mov.w	ffff6616 <_cmd_loop+0xa>,r0	! 2fb6
+ffff6608:	ff ff       	.word 0xffff
+ffff660a:	90 04       	mov.w	ffff6616 <_cmd_loop+0xa>,r0	! 2fb6
+
+ffff660c <_cmd_loop>:
+ffff660c:	2f 86       	mov.l	r8,@-r15
+ffff660e:	e1 00       	mov	#0,r1
+ffff6610:	2f 96       	mov.l	r9,@-r15
+ffff6612:	e5 00       	mov	#0,r5
+ffff6614:	2f a6       	mov.l	r10,@-r15
+ffff6616:	2f b6       	mov.l	r11,@-r15
+ffff6618:	2f c6       	mov.l	r12,@-r15
+ffff661a:	2f d6       	mov.l	r13,@-r15
+ffff661c:	2f e6       	mov.l	r14,@-r15
+ffff661e:	da 6e       	mov.l	ffff67d8 <_cmd_loop+0x1cc>,r10	! ffff7266 <_memset>
+ffff6620:	4f 22       	sts.l	pr,@-r15
+ffff6622:	db 6e       	mov.l	ffff67dc <_cmd_loop+0x1d0>,r11	! ffff900c <_flashbufferindex>
+ffff6624:	7f f0       	add	#-16,r15
+ffff6626:	9c cf       	mov.w	ffff67c8 <_cmd_loop+0x1bc>,r12	! f010
+ffff6628:	6e f3       	mov	r15,r14
+ffff662a:	96 ce       	mov.w	ffff67ca <_cmd_loop+0x1be>,r6	! 410
+ffff662c:	d4 6c       	mov.l	ffff67e0 <_cmd_loop+0x1d4>,r4	! ffff9420 <_databuffer>
+ffff662e:	4a 0b       	jsr	@r10
+ffff6630:	2b 12       	mov.l	r1,@r11
+ffff6632:	96 cb       	mov.w	ffff67cc <_cmd_loop+0x1c0>,r6	! 100
+ffff6634:	d4 6b       	mov.l	ffff67e4 <_cmd_loop+0x1d8>,r4	! ffff9834 <_txbuf>
+ffff6636:	4a 0b       	jsr	@r10
+ffff6638:	e5 00       	mov	#0,r5
+ffff663a:	84 c4       	mov.b	@(4,r12),r0
+ffff663c:	e3 38       	mov	#56,r3
+ffff663e:	c8 38       	tst	#56,r0
+ffff6640:	d1 69       	mov.l	ffff67e8 <_cmd_loop+0x1dc>,r1	! ffff9000 <_cmd_loop_counter>
+ffff6642:	8f 05       	bf.s	ffff6650 <_cmd_loop+0x44>
+ffff6644:	23 09       	and	r0,r3
+ffff6646:	62 12       	mov.l	@r1,r2
+ffff6648:	d7 68       	mov.l	ffff67ec <_cmd_loop+0x1e0>,r7	! a00000
+ffff664a:	32 76       	cmp/hi	r7,r2
+ffff664c:	8f 0c       	bf.s	ffff6668 <_cmd_loop+0x5c>
+ffff664e:	72 01       	add	#1,r2
+ffff6650:	e2 00       	mov	#0,r2
+ffff6652:	21 22       	mov.l	r2,@r1
+ffff6654:	96 b9       	mov.w	ffff67ca <_cmd_loop+0x1be>,r6	! 410
+ffff6656:	d4 62       	mov.l	ffff67e0 <_cmd_loop+0x1d4>,r4	! ffff9420 <_databuffer>
+ffff6658:	4a 0b       	jsr	@r10
+ffff665a:	e5 00       	mov	#0,r5
+ffff665c:	96 b6       	mov.w	ffff67cc <_cmd_loop+0x1c0>,r6	! 100
+ffff665e:	d4 61       	mov.l	ffff67e4 <_cmd_loop+0x1d8>,r4	! ffff9834 <_txbuf>
+ffff6660:	4a 0b       	jsr	@r10
+ffff6662:	e5 00       	mov	#0,r5
+ffff6664:	af e9       	bra	ffff663a <_cmd_loop+0x2e>
+ffff6666:	00 09       	nop	
+ffff6668:	21 22       	mov.l	r2,@r1
+ffff666a:	84 c4       	mov.b	@(4,r12),r0
+ffff666c:	c8 40       	tst	#64,r0
+ffff666e:	89 e4       	bt	ffff663a <_cmd_loop+0x2e>
+ffff6670:	21 32       	mov.l	r3,@r1
+ffff6672:	84 c5       	mov.b	@(5,r12),r0
+ffff6674:	65 03       	mov	r0,r5
+ffff6676:	84 c4       	mov.b	@(4,r12),r0
+ffff6678:	65 5c       	extu.b	r5,r5
+ffff667a:	c9 bf       	and	#191,r0
+ffff667c:	80 c4       	mov.b	r0,@(4,r12)
+ffff667e:	dd 58       	mov.l	ffff67e0 <_cmd_loop+0x1d4>,r13	! ffff9420 <_databuffer>
+ffff6680:	d0 5b       	mov.l	ffff67f0 <_cmd_loop+0x1e4>,r0	! ffff6550 <_kline_get_message>
+ffff6682:	40 0b       	jsr	@r0
+ffff6684:	64 d3       	mov	r13,r4
+ffff6686:	88 01       	cmp/eq	#1,r0
+ffff6688:	8d d7       	bt.s	ffff663a <_cmd_loop+0x2e>
+ffff668a:	88 02       	cmp/eq	#2,r0
+ffff668c:	8b e2       	bf	ffff6654 <_cmd_loop+0x48>
+ffff668e:	d2 59       	mov.l	ffff67f4 <_cmd_loop+0x1e8>,r2	! ffff6164 <_delay>
+ffff6690:	94 9d       	mov.w	ffff67ce <_cmd_loop+0x1c2>,r4	! 1f4
+ffff6692:	42 0b       	jsr	@r2
+ffff6694:	00 09       	nop	
+ffff6696:	d6 58       	mov.l	ffff67f8 <_cmd_loop+0x1ec>,r6	! beef
+ffff6698:	63 d1       	mov.w	@r13,r3
+ffff669a:	84 d4       	mov.b	@(4,r13),r0
+ffff669c:	63 3d       	extu.w	r3,r3
+ffff669e:	33 60       	cmp/eq	r6,r3
+ffff66a0:	67 03       	mov	r0,r7
+ffff66a2:	8d 02       	bt.s	ffff66aa <_cmd_loop+0x9e>
+ffff66a4:	62 0c       	extu.b	r0,r2
+ffff66a6:	a2 7f       	bra	ffff6ba8 <_cmd_loop+0x59c>
+ffff66a8:	00 09       	nop	
+ffff66aa:	72 ff       	add	#-1,r2
+ffff66ac:	e3 24       	mov	#36,r3
+ffff66ae:	32 36       	cmp/hi	r3,r2
+ffff66b0:	8b 01       	bf	ffff66b6 <_cmd_loop+0xaa>
+ffff66b2:	a2 74       	bra	ffff6b9e <_cmd_loop+0x592>
+ffff66b4:	60 73       	mov	r7,r0
+ffff66b6:	c7 02       	mova	ffff66c0 <_cmd_loop+0xb4>,r0
+ffff66b8:	32 2c       	add	r2,r2
+ffff66ba:	02 2d       	mov.w	@(r0,r2),r2
+ffff66bc:	02 23       	braf	r2
+ffff66be:	00 09       	nop	
+ffff66c0:	00 4a       	.word 0x004a
+ffff66c2:	00 78       	.word 0x0078
+ffff66c4:	00 f2       	.word 0x00f2
+ffff66c6:	01 9a       	.word 0x019a
+ffff66c8:	01 c0       	.word 0x01c0
+ffff66ca:	01 d6       	mov.l	r13,@(r0,r1)
+ffff66cc:	01 ea       	.word 0x01ea
+ffff66ce:	04 dc       	mov.b	@(r0,r13),r4
+ffff66d0:	04 dc       	mov.b	@(r0,r13),r4
+ffff66d2:	04 dc       	mov.b	@(r0,r13),r4
+ffff66d4:	04 dc       	mov.b	@(r0,r13),r4
+ffff66d6:	04 dc       	mov.b	@(r0,r13),r4
+ffff66d8:	04 dc       	mov.b	@(r0,r13),r4
+ffff66da:	04 dc       	mov.b	@(r0,r13),r4
+ffff66dc:	04 dc       	mov.b	@(r0,r13),r4
+ffff66de:	04 dc       	mov.b	@(r0,r13),r4
+ffff66e0:	04 dc       	mov.b	@(r0,r13),r4
+ffff66e2:	04 dc       	mov.b	@(r0,r13),r4
+ffff66e4:	04 dc       	mov.b	@(r0,r13),r4
+ffff66e6:	04 dc       	mov.b	@(r0,r13),r4
+ffff66e8:	04 dc       	mov.b	@(r0,r13),r4
+ffff66ea:	04 dc       	mov.b	@(r0,r13),r4
+ffff66ec:	04 dc       	mov.b	@(r0,r13),r4
+ffff66ee:	04 dc       	mov.b	@(r0,r13),r4
+ffff66f0:	04 dc       	mov.b	@(r0,r13),r4
+ffff66f2:	04 dc       	mov.b	@(r0,r13),r4
+ffff66f4:	04 dc       	mov.b	@(r0,r13),r4
+ffff66f6:	04 dc       	mov.b	@(r0,r13),r4
+ffff66f8:	04 dc       	mov.b	@(r0,r13),r4
+ffff66fa:	04 dc       	mov.b	@(r0,r13),r4
+ffff66fc:	04 dc       	mov.b	@(r0,r13),r4
+ffff66fe:	02 90       	.word 0x0290
+ffff6700:	02 90       	.word 0x0290
+ffff6702:	02 9a       	.word 0x029a
+ffff6704:	02 d6       	mov.l	r13,@(r0,r2)
+ffff6706:	03 ac       	mov.b	@(r0,r10),r3
+ffff6708:	04 82       	.word 0x0482
+ffff670a:	85 d1       	mov.w	@(2,r13),r0
+ffff670c:	88 01       	cmp/eq	#1,r0
+ffff670e:	d8 3b       	mov.l	ffff67fc <_cmd_loop+0x1f0>,r8	! ffff6030 <_kline_send_message.part.0>
+ffff6710:	8d 06       	bt.s	ffff6720 <_cmd_loop+0x114>
+ffff6712:	e2 41       	mov	#65,r2
+ffff6714:	92 5c       	mov.w	ffff67d0 <_cmd_loop+0x1c4>,r2	! 7f01
+ffff6716:	e0 30       	mov	#48,r0
+ffff6718:	2d 21       	mov.w	r2,@r13
+ffff671a:	e5 03       	mov	#3,r5
+ffff671c:	a0 07       	bra	ffff672e <_cmd_loop+0x122>
+ffff671e:	80 d2       	mov.b	r0,@(2,r13)
+ffff6720:	d0 37       	mov.l	ffff6800 <_cmd_loop+0x1f4>,r0	! ffff7250 <_memcpy>
+ffff6722:	d5 38       	mov.l	ffff6804 <_cmd_loop+0x1f8>,r5	! ffff7298 <_etext>
+ffff6724:	e6 2b       	mov	#43,r6
+ffff6726:	d4 38       	mov.l	ffff6808 <_cmd_loop+0x1fc>,r4	! ffff9421
+ffff6728:	40 0b       	jsr	@r0
+ffff672a:	2d 20       	mov.b	r2,@r13
+ffff672c:	e5 2c       	mov	#44,r5
+ffff672e:	d4 2c       	mov.l	ffff67e0 <_cmd_loop+0x1d4>,r4	! ffff9420 <_databuffer>
+ffff6730:	48 0b       	jsr	@r8
+ffff6732:	00 09       	nop	
+ffff6734:	af 8e       	bra	ffff6654 <_cmd_loop+0x48>
+ffff6736:	00 09       	nop	
+ffff6738:	85 d1       	mov.w	@(2,r13),r0
+ffff673a:	88 09       	cmp/eq	#9,r0
+ffff673c:	d9 2f       	mov.l	ffff67fc <_cmd_loop+0x1f0>,r9	! ffff6030 <_kline_send_message.part.0>
+ffff673e:	8d 03       	bt.s	ffff6748 <_cmd_loop+0x13c>
+ffff6740:	e0 30       	mov	#48,r0
+ffff6742:	92 46       	mov.w	ffff67d2 <_cmd_loop+0x1c6>,r2	! 7f02
+ffff6744:	a1 2e       	bra	ffff69a4 <_cmd_loop+0x398>
+ffff6746:	2d 21       	mov.w	r2,@r13
+ffff6748:	d8 2f       	mov.l	ffff6808 <_cmd_loop+0x1fc>,r8	! ffff9421
+ffff674a:	84 88       	mov.b	@(8,r8),r0
+ffff674c:	63 03       	mov	r0,r3
+ffff674e:	84 89       	mov.b	@(9,r8),r0
+ffff6750:	43 28       	shll16	r3
+ffff6752:	62 0c       	extu.b	r0,r2
+ffff6754:	84 8a       	mov.b	@(10,r8),r0
+ffff6756:	43 18       	shll8	r3
+ffff6758:	65 0c       	extu.b	r0,r5
+ffff675a:	84 8b       	mov.b	@(11,r8),r0
+ffff675c:	42 28       	shll16	r2
+ffff675e:	67 0c       	extu.b	r0,r7
+ffff6760:	84 84       	mov.b	@(4,r8),r0
+ffff6762:	22 3b       	or	r3,r2
+ffff6764:	65 58       	swap.b	r5,r5
+ffff6766:	25 2b       	or	r2,r5
+ffff6768:	62 03       	mov	r0,r2
+ffff676a:	84 85       	mov.b	@(5,r8),r0
+ffff676c:	42 28       	shll16	r2
+ffff676e:	63 0c       	extu.b	r0,r3
+ffff6770:	84 86       	mov.b	@(6,r8),r0
+ffff6772:	42 18       	shll8	r2
+ffff6774:	43 28       	shll16	r3
+ffff6776:	23 2b       	or	r2,r3
+ffff6778:	62 0c       	extu.b	r0,r2
+ffff677a:	84 87       	mov.b	@(7,r8),r0
+ffff677c:	62 28       	swap.b	r2,r2
+ffff677e:	64 0c       	extu.b	r0,r4
+ffff6780:	d0 22       	mov.l	ffff680c <_cmd_loop+0x200>,r0	! ffff6c60 <_crc32>
+ffff6782:	22 3b       	or	r3,r2
+ffff6784:	25 7b       	or	r7,r5
+ffff6786:	40 0b       	jsr	@r0
+ffff6788:	24 2b       	or	r2,r4
+ffff678a:	62 03       	mov	r0,r2
+ffff678c:	84 d4       	mov.b	@(4,r13),r0
+ffff678e:	e5 05       	mov	#5,r5
+ffff6790:	cb 40       	or	#64,r0
+ffff6792:	2d 00       	mov.b	r0,@r13
+ffff6794:	60 23       	mov	r2,r0
+ffff6796:	40 29       	shlr16	r0
+ffff6798:	40 19       	shlr8	r0
+ffff679a:	80 d1       	mov.b	r0,@(1,r13)
+ffff679c:	60 23       	mov	r2,r0
+ffff679e:	40 29       	shlr16	r0
+ffff67a0:	80 d2       	mov.b	r0,@(2,r13)
+ffff67a2:	60 23       	mov	r2,r0
+ffff67a4:	40 19       	shlr8	r0
+ffff67a6:	80 d3       	mov.b	r0,@(3,r13)
+ffff67a8:	60 23       	mov	r2,r0
+ffff67aa:	80 d4       	mov.b	r0,@(4,r13)
+ffff67ac:	64 83       	mov	r8,r4
+ffff67ae:	a1 24       	bra	ffff69fa <_cmd_loop+0x3ee>
+ffff67b0:	74 ff       	add	#-1,r4
+ffff67b2:	85 d1       	mov.w	@(2,r13),r0
+ffff67b4:	88 07       	cmp/eq	#7,r0
+ffff67b6:	8d 2b       	bt.s	ffff6810 <_cmd_loop+0x204>
+ffff67b8:	e0 30       	mov	#48,r0
+ffff67ba:	92 0b       	mov.w	ffff67d4 <_cmd_loop+0x1c8>,r2	! 7f03
+ffff67bc:	2d 21       	mov.w	r2,@r13
+ffff67be:	e5 03       	mov	#3,r5
+ffff67c0:	d4 07       	mov.l	ffff67e0 <_cmd_loop+0x1d4>,r4	! ffff9420 <_databuffer>
+ffff67c2:	d1 0e       	mov.l	ffff67fc <_cmd_loop+0x1f0>,r1	! ffff6030 <_kline_send_message.part.0>
+ffff67c4:	a0 45       	bra	ffff6852 <_cmd_loop+0x246>
+ffff67c6:	80 d2       	mov.b	r0,@(2,r13)
+ffff67c8:	f0 10       	.word 0xf010
+ffff67ca:	04 10       	.word 0x0410
+ffff67cc:	01 00       	.word 0x0100
+ffff67ce:	01 f4       	mov.b	r15,@(r0,r1)
+ffff67d0:	7f 01       	add	#1,r15
+ffff67d2:	7f 02       	add	#2,r15
+ffff67d4:	7f 03       	add	#3,r15
+ffff67d6:	00 09       	nop	
+ffff67d8:	ff ff       	.word 0xffff
+ffff67da:	72 66       	add	#102,r2
+ffff67dc:	ff ff       	.word 0xffff
+ffff67de:	90 0c       	mov.w	ffff67fa <_cmd_loop+0x1ee>,r0	! beef
+ffff67e0:	ff ff       	.word 0xffff
+ffff67e2:	94 20       	mov.w	ffff6826 <_cmd_loop+0x21a>,r4	! 4228
+ffff67e4:	ff ff       	.word 0xffff
+ffff67e6:	98 34       	mov.w	ffff6852 <_cmd_loop+0x246>,r8	! 410b
+ffff67e8:	ff ff       	.word 0xffff
+ffff67ea:	90 00       	mov.w	ffff67ee <_cmd_loop+0x1e2>,r0	! 0
+ffff67ec:	00 a0       	.word 0x00a0
+ffff67ee:	00 00       	.word 0x0000
+ffff67f0:	ff ff       	.word 0xffff
+ffff67f2:	65 50       	mov.b	@r5,r5
+ffff67f4:	ff ff       	.word 0xffff
+ffff67f6:	61 64       	mov.b	@r6+,r1
+ffff67f8:	00 00       	.word 0x0000
+ffff67fa:	be ef       	bsr	ffff65dc <_kline_get_message+0x8c>
+ffff67fc:	ff ff       	.word 0xffff
+ffff67fe:	60 30       	mov.b	@r3,r0
+ffff6800:	ff ff       	.word 0xffff
+ffff6802:	72 50       	add	#80,r2
+ffff6804:	ff ff       	.word 0xffff
+ffff6806:	72 98       	add	#-104,r2
+ffff6808:	ff ff       	.word 0xffff
+ffff680a:	94 21       	mov.w	ffff6850 <_cmd_loop+0x244>,r4	! 74ff
+ffff680c:	ff ff       	.word 0xffff
+ffff680e:	6c 60       	mov.b	@r6,r12
+ffff6810:	d9 80       	mov.l	ffff6a14 <_cmd_loop+0x408>,r9	! ffff9421
+ffff6812:	84 94       	mov.b	@(4,r9),r0
+ffff6814:	64 93       	mov	r9,r4
+ffff6816:	63 03       	mov	r0,r3
+ffff6818:	84 95       	mov.b	@(5,r9),r0
+ffff681a:	43 28       	shll16	r3
+ffff681c:	62 0c       	extu.b	r0,r2
+ffff681e:	84 96       	mov.b	@(6,r9),r0
+ffff6820:	43 18       	shll8	r3
+ffff6822:	65 0c       	extu.b	r0,r5
+ffff6824:	84 97       	mov.b	@(7,r9),r0
+ffff6826:	42 28       	shll16	r2
+ffff6828:	22 3b       	or	r3,r2
+ffff682a:	63 0c       	extu.b	r0,r3
+ffff682c:	84 99       	mov.b	@(9,r9),r0
+ffff682e:	65 58       	swap.b	r5,r5
+ffff6830:	67 0c       	extu.b	r0,r7
+ffff6832:	84 98       	mov.b	@(8,r9),r0
+ffff6834:	25 2b       	or	r2,r5
+ffff6836:	62 0c       	extu.b	r0,r2
+ffff6838:	d0 77       	mov.l	ffff6a18 <_cmd_loop+0x40c>,r0	! ffff7250 <_memcpy>
+ffff683a:	68 28       	swap.b	r2,r8
+ffff683c:	28 7b       	or	r7,r8
+ffff683e:	e2 43       	mov	#67,r2
+ffff6840:	25 3b       	or	r3,r5
+ffff6842:	2d 20       	mov.b	r2,@r13
+ffff6844:	40 0b       	jsr	@r0
+ffff6846:	66 83       	mov	r8,r6
+ffff6848:	d1 74       	mov.l	ffff6a1c <_cmd_loop+0x410>,r1	! ffff653c <_kline_send_message>
+ffff684a:	65 83       	mov	r8,r5
+ffff684c:	64 93       	mov	r9,r4
+ffff684e:	75 01       	add	#1,r5
+ffff6850:	74 ff       	add	#-1,r4
+ffff6852:	41 0b       	jsr	@r1
+ffff6854:	00 09       	nop	
+ffff6856:	ae fd       	bra	ffff6654 <_cmd_loop+0x48>
+ffff6858:	00 09       	nop	
+ffff685a:	85 d1       	mov.w	@(2,r13),r0
+ffff685c:	88 01       	cmp/eq	#1,r0
+ffff685e:	d2 70       	mov.l	ffff6a20 <_cmd_loop+0x414>,r2	! ffff6030 <_kline_send_message.part.0>
+ffff6860:	8d 09       	bt.s	ffff6876 <_cmd_loop+0x26a>
+ffff6862:	e0 30       	mov	#48,r0
+ffff6864:	93 cd       	mov.w	ffff6a02 <_cmd_loop+0x3f6>,r3	! 7f04
+ffff6866:	2d 31       	mov.w	r3,@r13
+ffff6868:	e5 03       	mov	#3,r5
+ffff686a:	80 d2       	mov.b	r0,@(2,r13)
+ffff686c:	d4 6d       	mov.l	ffff6a24 <_cmd_loop+0x418>,r4	! ffff9420 <_databuffer>
+ffff686e:	42 0b       	jsr	@r2
+ffff6870:	00 09       	nop	
+ffff6872:	ae ef       	bra	ffff6654 <_cmd_loop+0x48>
+ffff6874:	00 09       	nop	
+ffff6876:	d3 6c       	mov.l	ffff6a28 <_cmd_loop+0x41c>,r3	! 44023002
+ffff6878:	2d 32       	mov.l	r3,@r13
+ffff687a:	e5 05       	mov	#5,r5
+ffff687c:	af f6       	bra	ffff686c <_cmd_loop+0x260>
+ffff687e:	80 d4       	mov.b	r0,@(4,r13)
+ffff6880:	85 d1       	mov.w	@(2,r13),r0
+ffff6882:	88 01       	cmp/eq	#1,r0
+ffff6884:	d2 66       	mov.l	ffff6a20 <_cmd_loop+0x414>,r2	! ffff6030 <_kline_send_message.part.0>
+ffff6886:	89 02       	bt	ffff688e <_cmd_loop+0x282>
+ffff6888:	93 bc       	mov.w	ffff6a04 <_cmd_loop+0x3f8>,r3	! 7f05
+ffff688a:	af ec       	bra	ffff6866 <_cmd_loop+0x25a>
+ffff688c:	e0 30       	mov	#48,r0
+ffff688e:	d3 67       	mov.l	ffff6a2c <_cmd_loop+0x420>,r3	! 45000002
+ffff6890:	e0 00       	mov	#0,r0
+ffff6892:	af f2       	bra	ffff687a <_cmd_loop+0x26e>
+ffff6894:	2d 32       	mov.l	r3,@r13
+ffff6896:	85 d1       	mov.w	@(2,r13),r0
+ffff6898:	88 01       	cmp/eq	#1,r0
+ffff689a:	d2 61       	mov.l	ffff6a20 <_cmd_loop+0x414>,r2	! ffff6030 <_kline_send_message.part.0>
+ffff689c:	89 02       	bt	ffff68a4 <_cmd_loop+0x298>
+ffff689e:	93 b2       	mov.w	ffff6a06 <_cmd_loop+0x3fa>,r3	! 7f06
+ffff68a0:	af e1       	bra	ffff6866 <_cmd_loop+0x25a>
+ffff68a2:	e0 30       	mov	#48,r0
+ffff68a4:	d3 62       	mov.l	ffff6a30 <_cmd_loop+0x424>,r3	! 46000010
+ffff68a6:	af f4       	bra	ffff6892 <_cmd_loop+0x286>
+ffff68a8:	e0 00       	mov	#0,r0
+ffff68aa:	85 d1       	mov.w	@(2,r13),r0
+ffff68ac:	88 07       	cmp/eq	#7,r0
+ffff68ae:	d3 5c       	mov.l	ffff6a20 <_cmd_loop+0x414>,r3	! ffff6030 <_kline_send_message.part.0>
+ffff68b0:	8d 09       	bt.s	ffff68c6 <_cmd_loop+0x2ba>
+ffff68b2:	1e f3       	mov.l	r15,@(12,r14)
+ffff68b4:	92 a8       	mov.w	ffff6a08 <_cmd_loop+0x3fc>,r2	! 7f07
+ffff68b6:	e0 30       	mov	#48,r0
+ffff68b8:	d4 5a       	mov.l	ffff6a24 <_cmd_loop+0x418>,r4	! ffff9420 <_databuffer>
+ffff68ba:	e5 03       	mov	#3,r5
+ffff68bc:	2d 21       	mov.w	r2,@r13
+ffff68be:	43 0b       	jsr	@r3
+ffff68c0:	80 d2       	mov.b	r0,@(2,r13)
+ffff68c2:	ae c7       	bra	ffff6654 <_cmd_loop+0x48>
+ffff68c4:	5f e3       	mov.l	@(12,r14),r15
+ffff68c6:	84 d6       	mov.b	@(6,r13),r0
+ffff68c8:	e5 01       	mov	#1,r5
+ffff68ca:	67 0c       	extu.b	r0,r7
+ffff68cc:	84 d7       	mov.b	@(7,r13),r0
+ffff68ce:	47 28       	shll16	r7
+ffff68d0:	60 0c       	extu.b	r0,r0
+ffff68d2:	d4 50       	mov.l	ffff6a14 <_cmd_loop+0x408>,r4	! ffff9421
+ffff68d4:	62 08       	swap.b	r0,r2
+ffff68d6:	84 d8       	mov.b	@(8,r13),r0
+ffff68d8:	22 7b       	or	r7,r2
+ffff68da:	60 0c       	extu.b	r0,r0
+ffff68dc:	22 0b       	or	r0,r2
+ffff68de:	84 49       	mov.b	@(9,r4),r0
+ffff68e0:	74 ff       	add	#-1,r4
+ffff68e2:	69 0c       	extu.b	r0,r9
+ffff68e4:	84 49       	mov.b	@(9,r4),r0
+ffff68e6:	e8 fe       	mov	#-2,r8
+ffff68e8:	d6 52       	mov.l	ffff6a34 <_cmd_loop+0x428>,r6	! ffff9830 <_EEPROM_SCI>
+ffff68ea:	67 0c       	extu.b	r0,r7
+ffff68ec:	84 d5       	mov.b	@(5,r13),r0
+ffff68ee:	67 78       	swap.b	r7,r7
+ffff68f0:	60 0c       	extu.b	r0,r0
+ffff68f2:	26 02       	mov.l	r0,@r6
+ffff68f4:	e6 47       	mov	#71,r6
+ffff68f6:	2d 60       	mov.b	r6,@r13
+ffff68f8:	29 7b       	or	r7,r9
+ffff68fa:	43 0b       	jsr	@r3
+ffff68fc:	2e 22       	mov.l	r2,@r14
+ffff68fe:	62 e2       	mov.l	@r14,r2
+ffff6900:	28 99       	and	r9,r8
+ffff6902:	67 93       	mov	r9,r7
+ffff6904:	42 01       	shlr	r2
+ffff6906:	61 83       	mov	r8,r1
+ffff6908:	47 01       	shlr	r7
+ffff690a:	31 1c       	add	r1,r1
+ffff690c:	37 7c       	add	r7,r7
+ffff690e:	d6 4a       	mov.l	ffff6a38 <_cmd_loop+0x42c>,r6	! ffff64c8 <_eep_read16_sub>
+ffff6910:	3f 18       	sub	r1,r15
+ffff6912:	69 73       	mov	r7,r9
+ffff6914:	61 2c       	extu.b	r2,r1
+ffff6916:	6d f3       	mov	r15,r13
+ffff6918:	62 f3       	mov	r15,r2
+ffff691a:	39 fc       	add	r15,r9
+ffff691c:	32 90       	cmp/eq	r9,r2
+ffff691e:	8f 0b       	bf.s	ffff6938 <_cmd_loop+0x32c>
+ffff6920:	64 13       	mov	r1,r4
+ffff6922:	d0 3d       	mov.l	ffff6a18 <_cmd_loop+0x40c>,r0	! ffff7250 <_memcpy>
+ffff6924:	65 d3       	mov	r13,r5
+ffff6926:	d4 3f       	mov.l	ffff6a24 <_cmd_loop+0x418>,r4	! ffff9420 <_databuffer>
+ffff6928:	40 0b       	jsr	@r0
+ffff692a:	66 83       	mov	r8,r6
+ffff692c:	d1 3b       	mov.l	ffff6a1c <_cmd_loop+0x410>,r1	! ffff653c <_kline_send_message>
+ffff692e:	d4 3d       	mov.l	ffff6a24 <_cmd_loop+0x418>,r4	! ffff9420 <_databuffer>
+ffff6930:	41 0b       	jsr	@r1
+ffff6932:	65 83       	mov	r8,r5
+ffff6934:	af c5       	bra	ffff68c2 <_cmd_loop+0x2b6>
+ffff6936:	00 09       	nop	
+ffff6938:	1e 12       	mov.l	r1,@(8,r14)
+ffff693a:	65 23       	mov	r2,r5
+ffff693c:	2e 22       	mov.l	r2,@r14
+ffff693e:	46 0b       	jsr	@r6
+ffff6940:	1e 61       	mov.l	r6,@(4,r14)
+ffff6942:	51 e2       	mov.l	@(8,r14),r1
+ffff6944:	62 e2       	mov.l	@r14,r2
+ffff6946:	71 01       	add	#1,r1
+ffff6948:	56 e1       	mov.l	@(4,r14),r6
+ffff694a:	61 1c       	extu.b	r1,r1
+ffff694c:	af e6       	bra	ffff691c <_cmd_loop+0x310>
+ffff694e:	72 02       	add	#2,r2
+ffff6950:	d1 3a       	mov.l	ffff6a3c <_cmd_loop+0x430>,r1	! ffff60bc <_cmd_flash_init.constprop.0>
+ffff6952:	41 0b       	jsr	@r1
+ffff6954:	00 09       	nop	
+ffff6956:	ae 7d       	bra	ffff6654 <_cmd_loop+0x48>
+ffff6958:	00 09       	nop	
+ffff695a:	92 56       	mov.w	ffff6a0a <_cmd_loop+0x3fe>,r2	! 205
+ffff695c:	85 d1       	mov.w	@(2,r13),r0
+ffff695e:	60 0d       	extu.w	r0,r0
+ffff6960:	30 20       	cmp/eq	r2,r0
+ffff6962:	d8 2f       	mov.l	ffff6a20 <_cmd_loop+0x414>,r8	! ffff6030 <_kline_send_message.part.0>
+ffff6964:	8d 03       	bt.s	ffff696e <_cmd_loop+0x362>
+ffff6966:	e0 30       	mov	#48,r0
+ffff6968:	92 50       	mov.w	ffff6a0c <_cmd_loop+0x400>,r2	! 7f22
+ffff696a:	ae d6       	bra	ffff671a <_cmd_loop+0x10e>
+ffff696c:	2d 21       	mov.w	r2,@r13
+ffff696e:	62 b2       	mov.l	@r11,r2
+ffff6970:	d4 33       	mov.l	ffff6a40 <_cmd_loop+0x434>,r4	! ffff9934 <_flashbuffer>
+ffff6972:	d0 29       	mov.l	ffff6a18 <_cmd_loop+0x40c>,r0	! ffff7250 <_memcpy>
+ffff6974:	96 4b       	mov.w	ffff6a0e <_cmd_loop+0x402>,r6	! 200
+ffff6976:	d5 33       	mov.l	ffff6a44 <_cmd_loop+0x438>,r5	! ffff9429
+ffff6978:	40 0b       	jsr	@r0
+ffff697a:	34 2c       	add	r2,r4
+ffff697c:	62 b2       	mov.l	@r11,r2
+ffff697e:	91 46       	mov.w	ffff6a0e <_cmd_loop+0x402>,r1	! 200
+ffff6980:	93 46       	mov.w	ffff6a10 <_cmd_loop+0x404>,r3	! fff
+ffff6982:	32 1c       	add	r1,r2
+ffff6984:	32 36       	cmp/hi	r3,r2
+ffff6986:	8b 00       	bf	ffff698a <_cmd_loop+0x37e>
+ffff6988:	e2 00       	mov	#0,r2
+ffff698a:	84 d4       	mov.b	@(4,r13),r0
+ffff698c:	e5 01       	mov	#1,r5
+ffff698e:	cb 40       	or	#64,r0
+ffff6990:	2b 22       	mov.l	r2,@r11
+ffff6992:	ae cc       	bra	ffff672e <_cmd_loop+0x122>
+ffff6994:	2d 00       	mov.b	r0,@r13
+ffff6996:	85 d1       	mov.w	@(2,r13),r0
+ffff6998:	88 0b       	cmp/eq	#11,r0
+ffff699a:	d9 21       	mov.l	ffff6a20 <_cmd_loop+0x414>,r9	! ffff6030 <_kline_send_message.part.0>
+ffff699c:	8d 06       	bt.s	ffff69ac <_cmd_loop+0x3a0>
+ffff699e:	e0 31       	mov	#49,r0
+ffff69a0:	92 37       	mov.w	ffff6a12 <_cmd_loop+0x406>,r2	! 7f23
+ffff69a2:	2d 21       	mov.w	r2,@r13
+ffff69a4:	e5 03       	mov	#3,r5
+ffff69a6:	d4 1f       	mov.l	ffff6a24 <_cmd_loop+0x418>,r4	! ffff9420 <_databuffer>
+ffff69a8:	a0 27       	bra	ffff69fa <_cmd_loop+0x3ee>
+ffff69aa:	80 d2       	mov.b	r0,@(2,r13)
+ffff69ac:	d8 26       	mov.l	ffff6a48 <_cmd_loop+0x43c>,r8	! ffff9423
+ffff69ae:	d4 24       	mov.l	ffff6a40 <_cmd_loop+0x434>,r4	! ffff9934 <_flashbuffer>
+ffff69b0:	84 88       	mov.b	@(8,r8),r0
+ffff69b2:	62 03       	mov	r0,r2
+ffff69b4:	84 89       	mov.b	@(9,r8),r0
+ffff69b6:	42 28       	shll16	r2
+ffff69b8:	63 0c       	extu.b	r0,r3
+ffff69ba:	84 8a       	mov.b	@(10,r8),r0
+ffff69bc:	42 18       	shll8	r2
+ffff69be:	60 0c       	extu.b	r0,r0
+ffff69c0:	43 28       	shll16	r3
+ffff69c2:	23 2b       	or	r2,r3
+ffff69c4:	62 08       	swap.b	r0,r2
+ffff69c6:	84 8b       	mov.b	@(11,r8),r0
+ffff69c8:	22 3b       	or	r3,r2
+ffff69ca:	63 0c       	extu.b	r0,r3
+ffff69cc:	84 86       	mov.b	@(6,r8),r0
+ffff69ce:	23 2b       	or	r2,r3
+ffff69d0:	62 03       	mov	r0,r2
+ffff69d2:	84 87       	mov.b	@(7,r8),r0
+ffff69d4:	62 2c       	extu.b	r2,r2
+ffff69d6:	65 0c       	extu.b	r0,r5
+ffff69d8:	d0 1c       	mov.l	ffff6a4c <_cmd_loop+0x440>,r0	! ffff6ce0 <_buffer_crc32>
+ffff69da:	62 28       	swap.b	r2,r2
+ffff69dc:	1e 32       	mov.l	r3,@(8,r14)
+ffff69de:	40 0b       	jsr	@r0
+ffff69e0:	25 2b       	or	r2,r5
+ffff69e2:	53 e2       	mov.l	@(8,r14),r3
+ffff69e4:	62 03       	mov	r0,r2
+ffff69e6:	84 d4       	mov.b	@(4,r13),r0
+ffff69e8:	32 30       	cmp/eq	r3,r2
+ffff69ea:	8f 31       	bf.s	ffff6a50 <_cmd_loop+0x444>
+ffff69ec:	67 0c       	extu.b	r0,r7
+ffff69ee:	e0 40       	mov	#64,r0
+ffff69f0:	20 7b       	or	r7,r0
+ffff69f2:	2d 00       	mov.b	r0,@r13
+ffff69f4:	e5 01       	mov	#1,r5
+ffff69f6:	64 83       	mov	r8,r4
+ffff69f8:	74 fd       	add	#-3,r4
+ffff69fa:	49 0b       	jsr	@r9
+ffff69fc:	00 09       	nop	
+ffff69fe:	ae 29       	bra	ffff6654 <_cmd_loop+0x48>
+ffff6a00:	00 09       	nop	
+ffff6a02:	7f 04       	add	#4,r15
+ffff6a04:	7f 05       	add	#5,r15
+ffff6a06:	7f 06       	add	#6,r15
+ffff6a08:	7f 07       	add	#7,r15
+ffff6a0a:	02 05       	mov.w	r0,@(r0,r2)
+ffff6a0c:	7f 22       	add	#34,r15
+ffff6a0e:	02 00       	.word 0x0200
+ffff6a10:	0f ff       	mac.l	@r15+,@r15+
+ffff6a12:	7f 23       	add	#35,r15
+ffff6a14:	ff ff       	.word 0xffff
+ffff6a16:	94 21       	mov.w	ffff6a5c <_cmd_loop+0x450>,r4	! 4029
+ffff6a18:	ff ff       	.word 0xffff
+ffff6a1a:	72 50       	add	#80,r2
+ffff6a1c:	ff ff       	.word 0xffff
+ffff6a1e:	65 3c       	extu.b	r3,r5
+ffff6a20:	ff ff       	.word 0xffff
+ffff6a22:	60 30       	mov.b	@r3,r0
+ffff6a24:	ff ff       	.word 0xffff
+ffff6a26:	94 20       	mov.w	ffff6a6a <_cmd_loop+0x45e>,r4	! 81d2
+ffff6a28:	44 02       	sts.l	mach,@-r4
+ffff6a2a:	30 02       	cmp/hs	r0,r0
+ffff6a2c:	45 00       	shll	r5
+ffff6a2e:	00 02       	stc	sr,r0
+ffff6a30:	46 00       	shll	r6
+ffff6a32:	00 10       	.word 0x0010
+ffff6a34:	ff ff       	.word 0xffff
+ffff6a36:	98 30       	mov.w	ffff6a9a <_cmd_loop+0x48e>,r8	! 4328
+ffff6a38:	ff ff       	.word 0xffff
+ffff6a3a:	64 c8       	swap.b	r12,r4
+ffff6a3c:	ff ff       	.word 0xffff
+ffff6a3e:	60 bc       	extu.b	r11,r0
+ffff6a40:	ff ff       	.word 0xffff
+ffff6a42:	99 34       	mov.w	ffff6aae <_cmd_loop+0x4a2>,r9	! 6433
+ffff6a44:	ff ff       	.word 0xffff
+ffff6a46:	94 29       	mov.w	ffff6a9c <_cmd_loop+0x490>,r4	! 236b
+ffff6a48:	ff ff       	.word 0xffff
+ffff6a4a:	94 23       	mov.w	ffff6a94 <_cmd_loop+0x488>,r4	! 8426
+ffff6a4c:	ff ff       	.word 0xffff
+ffff6a4e:	6c e0       	mov.b	@r14,r12
+ffff6a50:	80 d1       	mov.b	r0,@(1,r13)
+ffff6a52:	60 23       	mov	r2,r0
+ffff6a54:	40 29       	shlr16	r0
+ffff6a56:	40 19       	shlr8	r0
+ffff6a58:	80 d2       	mov.b	r0,@(2,r13)
+ffff6a5a:	60 23       	mov	r2,r0
+ffff6a5c:	40 29       	shlr16	r0
+ffff6a5e:	80 d3       	mov.b	r0,@(3,r13)
+ffff6a60:	e3 7f       	mov	#127,r3
+ffff6a62:	60 23       	mov	r2,r0
+ffff6a64:	2d 30       	mov.b	r3,@r13
+ffff6a66:	e5 06       	mov	#6,r5
+ffff6a68:	af c5       	bra	ffff69f6 <_cmd_loop+0x3ea>
+ffff6a6a:	81 d2       	mov.w	r0,@(4,r13)
+ffff6a6c:	85 d1       	mov.w	@(2,r13),r0
+ffff6a6e:	88 0b       	cmp/eq	#11,r0
+ffff6a70:	d7 5d       	mov.l	ffff6be8 <_cmd_loop+0x5dc>,r7	! ffff6030 <_kline_send_message.part.0>
+ffff6a72:	8d 09       	bt.s	ffff6a88 <_cmd_loop+0x47c>
+ffff6a74:	e0 31       	mov	#49,r0
+ffff6a76:	92 b1       	mov.w	ffff6bdc <_cmd_loop+0x5d0>,r2	! 7f24
+ffff6a78:	d4 5c       	mov.l	ffff6bec <_cmd_loop+0x5e0>,r4	! ffff9420 <_databuffer>
+ffff6a7a:	e5 03       	mov	#3,r5
+ffff6a7c:	2d 21       	mov.w	r2,@r13
+ffff6a7e:	80 d2       	mov.b	r0,@(2,r13)
+ffff6a80:	47 0b       	jsr	@r7
+ffff6a82:	00 09       	nop	
+ffff6a84:	ad e6       	bra	ffff6654 <_cmd_loop+0x48>
+ffff6a86:	00 09       	nop	
+ffff6a88:	d2 59       	mov.l	ffff6bf0 <_cmd_loop+0x5e4>,r2	! ffff9421
+ffff6a8a:	84 24       	mov.b	@(4,r2),r0
+ffff6a8c:	66 03       	mov	r0,r6
+ffff6a8e:	84 25       	mov.b	@(5,r2),r0
+ffff6a90:	46 28       	shll16	r6
+ffff6a92:	63 0c       	extu.b	r0,r3
+ffff6a94:	84 26       	mov.b	@(6,r2),r0
+ffff6a96:	46 18       	shll8	r6
+ffff6a98:	60 0c       	extu.b	r0,r0
+ffff6a9a:	43 28       	shll16	r3
+ffff6a9c:	23 6b       	or	r6,r3
+ffff6a9e:	66 08       	swap.b	r0,r6
+ffff6aa0:	84 27       	mov.b	@(7,r2),r0
+ffff6aa2:	26 3b       	or	r3,r6
+ffff6aa4:	63 0c       	extu.b	r0,r3
+ffff6aa6:	84 29       	mov.b	@(9,r2),r0
+ffff6aa8:	23 6b       	or	r6,r3
+ffff6aaa:	66 0c       	extu.b	r0,r6
+ffff6aac:	84 28       	mov.b	@(8,r2),r0
+ffff6aae:	64 33       	mov	r3,r4
+ffff6ab0:	69 0c       	extu.b	r0,r9
+ffff6ab2:	84 2a       	mov.b	@(10,r2),r0
+ffff6ab4:	69 98       	swap.b	r9,r9
+ffff6ab6:	29 6b       	or	r6,r9
+ffff6ab8:	66 03       	mov	r0,r6
+ffff6aba:	84 2b       	mov.b	@(11,r2),r0
+ffff6abc:	46 28       	shll16	r6
+ffff6abe:	65 0c       	extu.b	r0,r5
+ffff6ac0:	84 2c       	mov.b	@(12,r2),r0
+ffff6ac2:	46 18       	shll8	r6
+ffff6ac4:	45 28       	shll16	r5
+ffff6ac6:	25 6b       	or	r6,r5
+ffff6ac8:	66 0c       	extu.b	r0,r6
+ffff6aca:	84 2d       	mov.b	@(13,r2),r0
+ffff6acc:	66 68       	swap.b	r6,r6
+ffff6ace:	68 0c       	extu.b	r0,r8
+ffff6ad0:	d0 48       	mov.l	ffff6bf4 <_cmd_loop+0x5e8>,r0	! ffff718c <_platf_flash_wb>
+ffff6ad2:	26 5b       	or	r5,r6
+ffff6ad4:	2e 22       	mov.l	r2,@r14
+ffff6ad6:	28 6b       	or	r6,r8
+ffff6ad8:	1e 32       	mov.l	r3,@(8,r14)
+ffff6ada:	96 80       	mov.w	ffff6bde <_cmd_loop+0x5d2>,r6	! 1000
+ffff6adc:	d5 46       	mov.l	ffff6bf8 <_cmd_loop+0x5ec>,r5	! ffff9934 <_flashbuffer>
+ffff6ade:	40 0b       	jsr	@r0
+ffff6ae0:	1e 71       	mov.l	r7,@(4,r14)
+ffff6ae2:	20 08       	tst	r0,r0
+ffff6ae4:	62 e2       	mov.l	@r14,r2
+ffff6ae6:	66 03       	mov	r0,r6
+ffff6ae8:	53 e2       	mov.l	@(8,r14),r3
+ffff6aea:	8d 0a       	bt.s	ffff6b02 <_cmd_loop+0x4f6>
+ffff6aec:	57 e1       	mov.l	@(4,r14),r7
+ffff6aee:	84 d4       	mov.b	@(4,r13),r0
+ffff6af0:	e3 7f       	mov	#127,r3
+ffff6af2:	80 d1       	mov.b	r0,@(1,r13)
+ffff6af4:	60 63       	mov	r6,r0
+ffff6af6:	2d 30       	mov.b	r3,@r13
+ffff6af8:	e5 03       	mov	#3,r5
+ffff6afa:	80 d2       	mov.b	r0,@(2,r13)
+ffff6afc:	64 23       	mov	r2,r4
+ffff6afe:	af bf       	bra	ffff6a80 <_cmd_loop+0x474>
+ffff6b00:	74 ff       	add	#-1,r4
+ffff6b02:	d0 3e       	mov.l	ffff6bfc <_cmd_loop+0x5f0>,r0	! ffff6c60 <_crc32>
+ffff6b04:	64 33       	mov	r3,r4
+ffff6b06:	2e 22       	mov.l	r2,@r14
+ffff6b08:	65 93       	mov	r9,r5
+ffff6b0a:	40 0b       	jsr	@r0
+ffff6b0c:	1e 71       	mov.l	r7,@(4,r14)
+ffff6b0e:	63 03       	mov	r0,r3
+ffff6b10:	84 d4       	mov.b	@(4,r13),r0
+ffff6b12:	38 30       	cmp/eq	r3,r8
+ffff6b14:	62 e2       	mov.l	@r14,r2
+ffff6b16:	66 0c       	extu.b	r0,r6
+ffff6b18:	8f 05       	bf.s	ffff6b26 <_cmd_loop+0x51a>
+ffff6b1a:	57 e1       	mov.l	@(4,r14),r7
+ffff6b1c:	e0 40       	mov	#64,r0
+ffff6b1e:	20 6b       	or	r6,r0
+ffff6b20:	2d 00       	mov.b	r0,@r13
+ffff6b22:	af eb       	bra	ffff6afc <_cmd_loop+0x4f0>
+ffff6b24:	e5 01       	mov	#1,r5
+ffff6b26:	80 d1       	mov.b	r0,@(1,r13)
+ffff6b28:	60 33       	mov	r3,r0
+ffff6b2a:	40 29       	shlr16	r0
+ffff6b2c:	40 19       	shlr8	r0
+ffff6b2e:	80 d2       	mov.b	r0,@(2,r13)
+ffff6b30:	60 33       	mov	r3,r0
+ffff6b32:	40 29       	shlr16	r0
+ffff6b34:	80 d3       	mov.b	r0,@(3,r13)
+ffff6b36:	e6 7f       	mov	#127,r6
+ffff6b38:	60 33       	mov	r3,r0
+ffff6b3a:	2d 60       	mov.b	r6,@r13
+ffff6b3c:	e5 06       	mov	#6,r5
+ffff6b3e:	af dd       	bra	ffff6afc <_cmd_loop+0x4f0>
+ffff6b40:	81 d2       	mov.w	r0,@(4,r13)
+ffff6b42:	85 d1       	mov.w	@(2,r13),r0
+ffff6b44:	e2 00       	mov	#0,r2
+ffff6b46:	88 05       	cmp/eq	#5,r0
+ffff6b48:	d9 27       	mov.l	ffff6be8 <_cmd_loop+0x5dc>,r9	! ffff6030 <_kline_send_message.part.0>
+ffff6b4a:	8d 03       	bt.s	ffff6b54 <_cmd_loop+0x548>
+ffff6b4c:	2b 22       	mov.l	r2,@r11
+ffff6b4e:	92 47       	mov.w	ffff6be0 <_cmd_loop+0x5d4>,r2	! 7f25
+ffff6b50:	ad f8       	bra	ffff6744 <_cmd_loop+0x138>
+ffff6b52:	e0 30       	mov	#48,r0
+ffff6b54:	d8 26       	mov.l	ffff6bf0 <_cmd_loop+0x5e4>,r8	! ffff9421
+ffff6b56:	84 84       	mov.b	@(4,r8),r0
+ffff6b58:	63 03       	mov	r0,r3
+ffff6b5a:	84 85       	mov.b	@(5,r8),r0
+ffff6b5c:	43 28       	shll16	r3
+ffff6b5e:	62 0c       	extu.b	r0,r2
+ffff6b60:	84 86       	mov.b	@(6,r8),r0
+ffff6b62:	43 18       	shll8	r3
+ffff6b64:	60 0c       	extu.b	r0,r0
+ffff6b66:	64 08       	swap.b	r0,r4
+ffff6b68:	42 28       	shll16	r2
+ffff6b6a:	84 87       	mov.b	@(7,r8),r0
+ffff6b6c:	22 3b       	or	r3,r2
+ffff6b6e:	24 2b       	or	r2,r4
+ffff6b70:	60 0c       	extu.b	r0,r0
+ffff6b72:	24 0b       	or	r0,r4
+ffff6b74:	d0 22       	mov.l	ffff6c00 <_cmd_loop+0x5f4>,r0	! ffff7124 <_platf_flash_eb>
+ffff6b76:	40 0b       	jsr	@r0
+ffff6b78:	00 09       	nop	
+ffff6b7a:	62 03       	mov	r0,r2
+ffff6b7c:	84 d4       	mov.b	@(4,r13),r0
+ffff6b7e:	22 28       	tst	r2,r2
+ffff6b80:	8d 07       	bt.s	ffff6b92 <_cmd_loop+0x586>
+ffff6b82:	63 0c       	extu.b	r0,r3
+ffff6b84:	80 d1       	mov.b	r0,@(1,r13)
+ffff6b86:	e3 7f       	mov	#127,r3
+ffff6b88:	60 23       	mov	r2,r0
+ffff6b8a:	2d 30       	mov.b	r3,@r13
+ffff6b8c:	e5 03       	mov	#3,r5
+ffff6b8e:	ae 0d       	bra	ffff67ac <_cmd_loop+0x1a0>
+ffff6b90:	80 d2       	mov.b	r0,@(2,r13)
+ffff6b92:	e0 40       	mov	#64,r0
+ffff6b94:	20 3b       	or	r3,r0
+ffff6b96:	2d 00       	mov.b	r0,@r13
+ffff6b98:	ae 08       	bra	ffff67ac <_cmd_loop+0x1a0>
+ffff6b9a:	e5 01       	mov	#1,r5
+ffff6b9c:	60 73       	mov	r7,r0
+ffff6b9e:	e2 7f       	mov	#127,r2
+ffff6ba0:	80 d1       	mov.b	r0,@(1,r13)
+ffff6ba2:	e0 34       	mov	#52,r0
+ffff6ba4:	ae 0b       	bra	ffff67be <_cmd_loop+0x1b2>
+ffff6ba6:	2d 20       	mov.b	r2,@r13
+ffff6ba8:	93 1b       	mov.w	ffff6be2 <_cmd_loop+0x5d6>,r3	! ff
+ffff6baa:	d8 0f       	mov.l	ffff6be8 <_cmd_loop+0x5dc>,r8	! ffff6030 <_kline_send_message.part.0>
+ffff6bac:	32 30       	cmp/eq	r3,r2
+ffff6bae:	d9 15       	mov.l	ffff6c04 <_cmd_loop+0x5f8>,r9	! ffff9834 <_txbuf>
+ffff6bb0:	8b 0a       	bf	ffff6bc8 <_cmd_loop+0x5bc>
+ffff6bb2:	84 d5       	mov.b	@(5,r13),r0
+ffff6bb4:	88 c8       	cmp/eq	#-56,r0
+ffff6bb6:	8f 07       	bf.s	ffff6bc8 <_cmd_loop+0x5bc>
+ffff6bb8:	e1 c8       	mov	#-56,r1
+ffff6bba:	29 11       	mov.w	r1,@r9
+ffff6bbc:	e5 02       	mov	#2,r5
+ffff6bbe:	48 0b       	jsr	@r8
+ffff6bc0:	64 93       	mov	r9,r4
+ffff6bc2:	d1 11       	mov.l	ffff6c08 <_cmd_loop+0x5fc>,r1	! ffff6f90 <_die>
+ffff6bc4:	41 0b       	jsr	@r1
+ffff6bc6:	00 09       	nop	
+ffff6bc8:	91 0c       	mov.w	ffff6be4 <_cmd_loop+0x5d8>,r1	! 7f35
+ffff6bca:	e6 10       	mov	#16,r6
+ffff6bcc:	d0 0f       	mov.l	ffff6c0c <_cmd_loop+0x600>,r0	! ffff7250 <_memcpy>
+ffff6bce:	d5 07       	mov.l	ffff6bec <_cmd_loop+0x5e0>,r5	! ffff9420 <_databuffer>
+ffff6bd0:	d4 0f       	mov.l	ffff6c10 <_cmd_loop+0x604>,r4	! ffff9836
+ffff6bd2:	40 0b       	jsr	@r0
+ffff6bd4:	29 11       	mov.w	r1,@r9
+ffff6bd6:	d4 0b       	mov.l	ffff6c04 <_cmd_loop+0x5f8>,r4	! ffff9834 <_txbuf>
+ffff6bd8:	ad aa       	bra	ffff6730 <_cmd_loop+0x124>
+ffff6bda:	e5 12       	mov	#18,r5
+ffff6bdc:	7f 24       	add	#36,r15
+ffff6bde:	10 00       	mov.l	r0,@(0,r0)
+ffff6be0:	7f 25       	add	#37,r15
+ffff6be2:	00 ff       	mac.l	@r15+,@r0+
+ffff6be4:	7f 35       	add	#53,r15
+ffff6be6:	00 09       	nop	
+ffff6be8:	ff ff       	.word 0xffff
+ffff6bea:	60 30       	mov.b	@r3,r0
+ffff6bec:	ff ff       	.word 0xffff
+ffff6bee:	94 20       	mov.w	ffff6c32 <_main+0x1e>,r4	! cbf0
+ffff6bf0:	ff ff       	.word 0xffff
+ffff6bf2:	94 21       	mov.w	ffff6c38 <_main+0x24>,r4	! 400e
+ffff6bf4:	ff ff       	.word 0xffff
+ffff6bf6:	71 8c       	add	#-116,r1
+ffff6bf8:	ff ff       	.word 0xffff
+ffff6bfa:	99 34       	mov.w	ffff6c66 <_crc32+0x6>,r9	! 2fa6
+ffff6bfc:	ff ff       	.word 0xffff
+ffff6bfe:	6c 60       	mov.b	@r6,r12
+ffff6c00:	ff ff       	.word 0xffff
+ffff6c02:	71 24       	add	#36,r1
+ffff6c04:	ff ff       	.word 0xffff
+ffff6c06:	98 34       	mov.w	ffff6c72 <_crc32+0x12>,r8	! e700
+ffff6c08:	ff ff       	.word 0xffff
+ffff6c0a:	6f 90       	mov.b	@r9,r15
+ffff6c0c:	ff ff       	.word 0xffff
+ffff6c0e:	72 50       	add	#80,r2
+ffff6c10:	ff ff       	.word 0xffff
+ffff6c12:	98 36       	mov.w	ffff6c82 <_crc32+0x22>,r8	! 4101
+
+ffff6c14 <_main>:
+ffff6c14:	4f 22       	sts.l	pr,@-r15
+ffff6c16:	91 1a       	mov.w	ffff6c4e <_main+0x3a>,r1	! f0
+ffff6c18:	00 02       	stc	sr,r0
+ffff6c1a:	cb f0       	or	#240,r0
+ffff6c1c:	ca f0       	xor	#240,r0
+ffff6c1e:	20 1b       	or	r1,r0
+ffff6c20:	40 0e       	ldc	r0,sr
+ffff6c22:	d1 0b       	mov.l	ffff6c50 <_main+0x3c>,r1	! ffff6cec <_init_mfg>
+ffff6c24:	41 0b       	jsr	@r1
+ffff6c26:	00 09       	nop	
+ffff6c28:	d1 0a       	mov.l	ffff6c54 <_main+0x40>,r1	! ffff6e8c <_init_platf>
+ffff6c2a:	41 0b       	jsr	@r1
+ffff6c2c:	00 09       	nop	
+ffff6c2e:	e1 70       	mov	#112,r1
+ffff6c30:	00 02       	stc	sr,r0
+ffff6c32:	cb f0       	or	#240,r0
+ffff6c34:	ca f0       	xor	#240,r0
+ffff6c36:	20 1b       	or	r1,r0
+ffff6c38:	40 0e       	ldc	r0,sr
+ffff6c3a:	d1 07       	mov.l	ffff6c58 <_main+0x44>,r1	! ffff660c <_cmd_loop>
+ffff6c3c:	41 0b       	jsr	@r1
+ffff6c3e:	00 09       	nop	
+ffff6c40:	d1 06       	mov.l	ffff6c5c <_main+0x48>,r1	! ffff6f90 <_die>
+ffff6c42:	41 0b       	jsr	@r1
+ffff6c44:	00 09       	nop	
+ffff6c46:	e0 00       	mov	#0,r0
+ffff6c48:	4f 26       	lds.l	@r15+,pr
+ffff6c4a:	00 0b       	rts	
+ffff6c4c:	00 09       	nop	
+ffff6c4e:	00 f0       	.word 0x00f0
+ffff6c50:	ff ff       	.word 0xffff
+ffff6c52:	6c ec       	extu.b	r14,r12
+ffff6c54:	ff ff       	.word 0xffff
+ffff6c56:	6e 8c       	extu.b	r8,r14
+ffff6c58:	ff ff       	.word 0xffff
+ffff6c5a:	66 0c       	extu.b	r0,r6
+ffff6c5c:	ff ff       	.word 0xffff
+ffff6c5e:	6f 90       	mov.b	@r9,r15
+
+ffff6c60 <_crc32>:
+ffff6c60:	2f 86       	mov.l	r8,@-r15
+ffff6c62:	2f 96       	mov.l	r9,@-r15
+ffff6c64:	d9 1b       	mov.l	ffff6cd4 <_crc32+0x74>,r9	! ffffad34 <_crc_tab32_init>
+ffff6c66:	2f a6       	mov.l	r10,@-r15
+ffff6c68:	61 90       	mov.b	@r9,r1
+ffff6c6a:	21 18       	tst	r1,r1
+ffff6c6c:	8f 19       	bf.s	ffff6ca2 <_crc32+0x42>
+ffff6c6e:	25 58       	tst	r5,r5
+ffff6c70:	d6 19       	mov.l	ffff6cd8 <_crc32+0x78>,r6	! ffffa934 <_crc_tab32>
+ffff6c72:	e7 00       	mov	#0,r7
+ffff6c74:	da 19       	mov.l	ffff6cdc <_crc32+0x7c>,r10	! 5aa5a55a
+ffff6c76:	98 2b       	mov.w	ffff6cd0 <_crc32+0x70>,r8	! 100
+ffff6c78:	63 73       	mov	r7,r3
+ffff6c7a:	e1 00       	mov	#0,r1
+ffff6c7c:	e2 08       	mov	#8,r2
+ffff6c7e:	60 13       	mov	r1,r0
+ffff6c80:	20 3a       	xor	r3,r0
+ffff6c82:	41 01       	shlr	r1
+ffff6c84:	c9 01       	and	#1,r0
+ffff6c86:	60 0b       	neg	r0,r0
+ffff6c88:	43 01       	shlr	r3
+ffff6c8a:	20 a9       	and	r10,r0
+ffff6c8c:	42 10       	dt	r2
+ffff6c8e:	8f f6       	bf.s	ffff6c7e <_crc32+0x1e>
+ffff6c90:	21 0a       	xor	r0,r1
+ffff6c92:	26 12       	mov.l	r1,@r6
+ffff6c94:	48 10       	dt	r8
+ffff6c96:	76 04       	add	#4,r6
+ffff6c98:	8f ee       	bf.s	ffff6c78 <_crc32+0x18>
+ffff6c9a:	77 01       	add	#1,r7
+ffff6c9c:	e1 01       	mov	#1,r1
+ffff6c9e:	29 10       	mov.b	r1,@r9
+ffff6ca0:	25 58       	tst	r5,r5
+ffff6ca2:	8d 05       	bt.s	ffff6cb0 <_crc32+0x50>
+ffff6ca4:	e1 ff       	mov	#-1,r1
+ffff6ca6:	d2 0c       	mov.l	ffff6cd8 <_crc32+0x78>,r2	! ffffa934 <_crc_tab32>
+ffff6ca8:	75 01       	add	#1,r5
+ffff6caa:	45 10       	dt	r5
+ffff6cac:	8b 05       	bf	ffff6cba <_crc32+0x5a>
+ffff6cae:	65 17       	not	r1,r5
+ffff6cb0:	6a f6       	mov.l	@r15+,r10
+ffff6cb2:	60 53       	mov	r5,r0
+ffff6cb4:	69 f6       	mov.l	@r15+,r9
+ffff6cb6:	00 0b       	rts	
+ffff6cb8:	68 f6       	mov.l	@r15+,r8
+ffff6cba:	74 01       	add	#1,r4
+ffff6cbc:	60 43       	mov	r4,r0
+ffff6cbe:	70 f0       	add	#-16,r0
+ffff6cc0:	84 0f       	mov.b	@(15,r0),r0
+ffff6cc2:	20 1a       	xor	r1,r0
+ffff6cc4:	60 0c       	extu.b	r0,r0
+ffff6cc6:	40 08       	shll2	r0
+ffff6cc8:	03 2e       	mov.l	@(r0,r2),r3
+ffff6cca:	41 19       	shlr8	r1
+ffff6ccc:	af ed       	bra	ffff6caa <_crc32+0x4a>
+ffff6cce:	21 3a       	xor	r3,r1
+ffff6cd0:	01 00       	.word 0x0100
+ffff6cd2:	00 09       	nop	
+ffff6cd4:	ff ff       	.word 0xffff
+ffff6cd6:	ad 34       	bra	ffff6742 <_cmd_loop+0x136>
+ffff6cd8:	ff ff       	.word 0xffff
+ffff6cda:	a9 34       	bra	ffff5f46 <RAMjump_entry-0xbe>
+ffff6cdc:	5a a5       	mov.l	@(20,r10),r10
+ffff6cde:	a5 5a       	bra	ffff7796 <_edata+0x48e>
+
+ffff6ce0 <_buffer_crc32>:
+ffff6ce0:	d0 01       	mov.l	ffff6ce8 <_buffer_crc32+0x8>,r0	! ffff6c60 <_crc32>
+ffff6ce2:	40 2b       	jmp	@r0
+ffff6ce4:	00 09       	nop	
+ffff6ce6:	00 09       	nop	
+ffff6ce8:	ff ff       	.word 0xffff
+ffff6cea:	6c 60       	mov.b	@r6,r12
+
+ffff6cec <_init_mfg>:
+ffff6cec:	91 62       	mov.w	ffff6db4 <_init_mfg+0xc8>,r1	! f720
+ffff6cee:	e7 f7       	mov	#-9,r7
+ffff6cf0:	93 61       	mov.w	ffff6db6 <_init_mfg+0xca>,r3	! 200
+ffff6cf2:	62 13       	mov	r1,r2
+ffff6cf4:	72 20       	add	#32,r2
+ffff6cf6:	84 20       	mov.b	@(0,r2),r0
+ffff6cf8:	e6 ef       	mov	#-17,r6
+ffff6cfa:	cb 01       	or	#1,r0
+ffff6cfc:	80 20       	mov.b	r0,@(0,r2)
+ffff6cfe:	85 2c       	mov.w	@(24,r2),r0
+ffff6d00:	20 79       	and	r7,r0
+ffff6d02:	81 2c       	mov.w	r0,@(24,r2)
+ffff6d04:	85 2c       	mov.w	@(24,r2),r0
+ffff6d06:	cb 04       	or	#4,r0
+ffff6d08:	81 2c       	mov.w	r0,@(24,r2)
+ffff6d0a:	85 2b       	mov.w	@(22,r2),r0
+ffff6d0c:	20 3b       	or	r3,r0
+ffff6d0e:	81 2b       	mov.w	r0,@(22,r2)
+ffff6d10:	85 25       	mov.w	@(10,r2),r0
+ffff6d12:	20 69       	and	r6,r0
+ffff6d14:	81 25       	mov.w	r0,@(10,r2)
+ffff6d16:	93 4f       	mov.w	ffff6db8 <_init_mfg+0xcc>,r3	! 400
+ffff6d18:	85 24       	mov.w	@(8,r2),r0
+ffff6d1a:	20 3b       	or	r3,r0
+ffff6d1c:	81 24       	mov.w	r0,@(8,r2)
+ffff6d1e:	d5 29       	mov.l	ffff6dc4 <_init_mfg+0xd8>,r5	! ff7f
+ffff6d20:	85 19       	mov.w	@(18,r1),r0
+ffff6d22:	20 59       	and	r5,r0
+ffff6d24:	81 19       	mov.w	r0,@(18,r1)
+ffff6d26:	85 19       	mov.w	@(18,r1),r0
+ffff6d28:	cb 40       	or	#64,r0
+ffff6d2a:	81 19       	mov.w	r0,@(18,r1)
+ffff6d2c:	d5 26       	mov.l	ffff6dc8 <_init_mfg+0xdc>,r5	! f7ff
+ffff6d2e:	85 18       	mov.w	@(16,r1),r0
+ffff6d30:	20 59       	and	r5,r0
+ffff6d32:	81 18       	mov.w	r0,@(16,r1)
+ffff6d34:	d5 25       	mov.l	ffff6dcc <_init_mfg+0xe0>,r5	! ffdf
+ffff6d36:	85 19       	mov.w	@(18,r1),r0
+ffff6d38:	20 59       	and	r5,r0
+ffff6d3a:	81 19       	mov.w	r0,@(18,r1)
+ffff6d3c:	85 19       	mov.w	@(18,r1),r0
+ffff6d3e:	cb 10       	or	#16,r0
+ffff6d40:	81 19       	mov.w	r0,@(18,r1)
+ffff6d42:	85 18       	mov.w	@(16,r1),r0
+ffff6d44:	20 3b       	or	r3,r0
+ffff6d46:	81 18       	mov.w	r0,@(16,r1)
+ffff6d48:	85 2c       	mov.w	@(24,r2),r0
+ffff6d4a:	cb 01       	or	#1,r0
+ffff6d4c:	81 2c       	mov.w	r0,@(24,r2)
+ffff6d4e:	93 34       	mov.w	ffff6dba <_init_mfg+0xce>,r3	! 100
+ffff6d50:	85 2b       	mov.w	@(22,r2),r0
+ffff6d52:	20 3b       	or	r3,r0
+ffff6d54:	81 2b       	mov.w	r0,@(22,r2)
+ffff6d56:	62 13       	mov	r1,r2
+ffff6d58:	72 40       	add	#64,r2
+ffff6d5a:	85 25       	mov.w	@(10,r2),r0
+ffff6d5c:	20 69       	and	r6,r0
+ffff6d5e:	81 25       	mov.w	r0,@(10,r2)
+ffff6d60:	85 23       	mov.w	@(6,r2),r0
+ffff6d62:	cb 04       	or	#4,r0
+ffff6d64:	81 23       	mov.w	r0,@(6,r2)
+ffff6d66:	d6 1a       	mov.l	ffff6dd0 <_init_mfg+0xe4>,r6	! ffbf
+ffff6d68:	85 25       	mov.w	@(10,r2),r0
+ffff6d6a:	20 69       	and	r6,r0
+ffff6d6c:	81 25       	mov.w	r0,@(10,r2)
+ffff6d6e:	85 23       	mov.w	@(6,r2),r0
+ffff6d70:	cb 08       	or	#8,r0
+ffff6d72:	81 23       	mov.w	r0,@(6,r2)
+ffff6d74:	85 19       	mov.w	@(18,r1),r0
+ffff6d76:	20 79       	and	r7,r0
+ffff6d78:	81 19       	mov.w	r0,@(18,r1)
+ffff6d7a:	85 19       	mov.w	@(18,r1),r0
+ffff6d7c:	cb 04       	or	#4,r0
+ffff6d7e:	81 19       	mov.w	r0,@(18,r1)
+ffff6d80:	d2 14       	mov.l	ffff6dd4 <_init_mfg+0xe8>,r2	! fdff
+ffff6d82:	85 18       	mov.w	@(16,r1),r0
+ffff6d84:	20 29       	and	r2,r0
+ffff6d86:	81 18       	mov.w	r0,@(16,r1)
+ffff6d88:	d2 13       	mov.l	ffff6dd8 <_init_mfg+0xec>,r2	! fffd
+ffff6d8a:	85 19       	mov.w	@(18,r1),r0
+ffff6d8c:	20 29       	and	r2,r0
+ffff6d8e:	81 19       	mov.w	r0,@(18,r1)
+ffff6d90:	85 19       	mov.w	@(18,r1),r0
+ffff6d92:	cb 01       	or	#1,r0
+ffff6d94:	81 19       	mov.w	r0,@(18,r1)
+ffff6d96:	85 18       	mov.w	@(16,r1),r0
+ffff6d98:	20 3b       	or	r3,r0
+ffff6d9a:	81 18       	mov.w	r0,@(16,r1)
+ffff6d9c:	92 0e       	mov.w	ffff6dbc <_init_mfg+0xd0>,r2	! f738
+ffff6d9e:	d1 0f       	mov.l	ffff6ddc <_init_mfg+0xf0>,r1	! ffffad38 <_wdt_dr>
+ffff6da0:	21 22       	mov.l	r2,@r1
+ffff6da2:	d1 0f       	mov.l	ffff6de0 <_init_mfg+0xf4>,r1	! ffffad36 <_wdt_pin>
+ffff6da4:	92 0b       	mov.w	ffff6dbe <_init_mfg+0xd2>,r2	! 8000
+ffff6da6:	21 21       	mov.w	r2,@r1
+ffff6da8:	91 0a       	mov.w	ffff6dc0 <_init_mfg+0xd4>,r1	! f746
+ffff6daa:	62 11       	mov.w	@r1,r2
+ffff6dac:	23 2b       	or	r2,r3
+ffff6dae:	21 31       	mov.w	r3,@r1
+ffff6db0:	00 0b       	rts	
+ffff6db2:	00 09       	nop	
+ffff6db4:	f7 20       	.word 0xf720
+ffff6db6:	02 00       	.word 0x0200
+ffff6db8:	04 00       	.word 0x0400
+ffff6dba:	01 00       	.word 0x0100
+ffff6dbc:	f7 38       	.word 0xf738
+ffff6dbe:	80 00       	mov.b	r0,@(0,r0)
+ffff6dc0:	f7 46       	.word 0xf746
+ffff6dc2:	00 09       	nop	
+ffff6dc4:	00 00       	.word 0x0000
+ffff6dc6:	ff 7f       	.word 0xff7f
+ffff6dc8:	00 00       	.word 0x0000
+ffff6dca:	f7 ff       	.word 0xf7ff
+ffff6dcc:	00 00       	.word 0x0000
+ffff6dce:	ff df       	.word 0xffdf
+ffff6dd0:	00 00       	.word 0x0000
+ffff6dd2:	ff bf       	.word 0xffbf
+ffff6dd4:	00 00       	.word 0x0000
+ffff6dd6:	fd ff       	.word 0xfdff
+ffff6dd8:	00 00       	.word 0x0000
+ffff6dda:	ff fd       	.word 0xfffd
+ffff6ddc:	ff ff       	.word 0xffff
+ffff6dde:	ad 38       	bra	ffff6852 <_cmd_loop+0x246>
+ffff6de0:	ff ff       	.word 0xffff
+ffff6de2:	ad 36       	bra	ffff6852 <_cmd_loop+0x246>
+
+ffff6de4 <_wdt_tog>:
+ffff6de4:	d1 04       	mov.l	ffff6df8 <_wdt_tog+0x14>,r1	! ffffad38 <_wdt_dr>
+ffff6de6:	62 12       	mov.l	@r1,r2
+ffff6de8:	d1 04       	mov.l	ffff6dfc <_wdt_tog+0x18>,r1	! ffffad36 <_wdt_pin>
+ffff6dea:	63 21       	mov.w	@r2,r3
+ffff6dec:	61 11       	mov.w	@r1,r1
+ffff6dee:	21 3a       	xor	r3,r1
+ffff6df0:	22 11       	mov.w	r1,@r2
+ffff6df2:	00 0b       	rts	
+ffff6df4:	00 09       	nop	
+ffff6df6:	00 09       	nop	
+ffff6df8:	ff ff       	.word 0xffff
+ffff6dfa:	ad 38       	bra	ffff686e <_cmd_loop+0x262>
+ffff6dfc:	ff ff       	.word 0xffff
+ffff6dfe:	ad 36       	bra	ffff686e <_cmd_loop+0x262>
+
+ffff6e00 <_INT_ATU11_IMI1A>:
+ffff6e00:	4f 02       	sts.l	mach,@-r15
+ffff6e02:	4f 12       	sts.l	macl,@-r15
+ffff6e04:	2f 06       	mov.l	r0,@-r15
+ffff6e06:	2f 16       	mov.l	r1,@-r15
+ffff6e08:	2f 26       	mov.l	r2,@-r15
+ffff6e0a:	2f 36       	mov.l	r3,@-r15
+ffff6e0c:	2f 46       	mov.l	r4,@-r15
+ffff6e0e:	2f 56       	mov.l	r5,@-r15
+ffff6e10:	2f 66       	mov.l	r6,@-r15
+ffff6e12:	d1 0d       	mov.l	ffff6e48 <_INT_ATU11_IMI1A+0x48>,r1	! ffff6de4 <_wdt_tog>
+ffff6e14:	2f 76       	mov.l	r7,@-r15
+ffff6e16:	4f 22       	sts.l	pr,@-r15
+ffff6e18:	41 0b       	jsr	@r1
+ffff6e1a:	00 09       	nop	
+ffff6e1c:	91 13       	mov.w	ffff6e46 <_INT_ATU11_IMI1A+0x46>,r1	! f440
+ffff6e1e:	e0 00       	mov	#0,r0
+ffff6e20:	e3 fe       	mov	#-2,r3
+ffff6e22:	81 11       	mov.w	r0,@(2,r1)
+ffff6e24:	71 20       	add	#32,r1
+ffff6e26:	62 11       	mov.w	@r1,r2
+ffff6e28:	22 39       	and	r3,r2
+ffff6e2a:	21 21       	mov.w	r2,@r1
+ffff6e2c:	4f 26       	lds.l	@r15+,pr
+ffff6e2e:	67 f6       	mov.l	@r15+,r7
+ffff6e30:	66 f6       	mov.l	@r15+,r6
+ffff6e32:	65 f6       	mov.l	@r15+,r5
+ffff6e34:	64 f6       	mov.l	@r15+,r4
+ffff6e36:	63 f6       	mov.l	@r15+,r3
+ffff6e38:	62 f6       	mov.l	@r15+,r2
+ffff6e3a:	61 f6       	mov.l	@r15+,r1
+ffff6e3c:	60 f6       	mov.l	@r15+,r0
+ffff6e3e:	4f 16       	lds.l	@r15+,macl
+ffff6e40:	4f 06       	lds.l	@r15+,mach
+ffff6e42:	00 2b       	rte	
+ffff6e44:	00 09       	nop	
+ffff6e46:	f4 40       	.word 0xf440
+ffff6e48:	ff ff       	.word 0xffff
+ffff6e4a:	6d e4       	mov.b	@r14+,r13
+
+ffff6e4c <_die_trace>:
+ffff6e4c:	2f 06       	mov.l	r0,@-r15
+ffff6e4e:	00 02       	stc	sr,r0
+ffff6e50:	cb f0       	or	#240,r0
+ffff6e52:	40 0e       	ldc	r0,sr
+ffff6e54:	90 18       	mov.w	ffff6e88 <_die_trace+0x3c>,r0	! e000
+ffff6e56:	2f 16       	mov.l	r1,@-r15
+ffff6e58:	61 f3       	mov	r15,r1
+ffff6e5a:	71 08       	add	#8,r1
+ffff6e5c:	61 12       	mov.l	@r1,r1
+ffff6e5e:	20 16       	mov.l	r1,@-r0
+ffff6e60:	20 f6       	mov.l	r15,@-r0
+ffff6e62:	20 e6       	mov.l	r14,@-r0
+ffff6e64:	20 d6       	mov.l	r13,@-r0
+ffff6e66:	20 c6       	mov.l	r12,@-r0
+ffff6e68:	20 b6       	mov.l	r11,@-r0
+ffff6e6a:	20 a6       	mov.l	r10,@-r0
+ffff6e6c:	20 96       	mov.l	r9,@-r0
+ffff6e6e:	20 86       	mov.l	r8,@-r0
+ffff6e70:	20 76       	mov.l	r7,@-r0
+ffff6e72:	20 66       	mov.l	r6,@-r0
+ffff6e74:	20 56       	mov.l	r5,@-r0
+ffff6e76:	20 46       	mov.l	r4,@-r0
+ffff6e78:	6b f6       	mov.l	@r15+,r11
+ffff6e7a:	20 36       	mov.l	r3,@-r0
+ffff6e7c:	6a f6       	mov.l	@r15+,r10
+ffff6e7e:	20 26       	mov.l	r2,@-r0
+ffff6e80:	20 b6       	mov.l	r11,@-r0
+ffff6e82:	20 a6       	mov.l	r10,@-r0
+ffff6e84:	af fe       	bra	ffff6e84 <_die_trace+0x38>
+ffff6e86:	00 09       	nop	
+ffff6e88:	e0 00       	mov	#0,r0
+	...
+
+ffff6e8c <_init_platf>:
+ffff6e8c:	d1 3b       	mov.l	ffff6f7c <_init_platf+0xf0>,r1	! ffffad3c <_ivt>
+ffff6e8e:	d3 3c       	mov.l	ffff6f80 <_init_platf+0xf4>,r3	! ffff6e4c <_die_trace>
+ffff6e90:	66 13       	mov	r1,r6
+ffff6e92:	92 69       	mov.w	ffff6f68 <_init_platf+0xdc>,r2	! 100
+ffff6e94:	42 10       	dt	r2
+ffff6e96:	21 32       	mov.l	r3,@r1
+ffff6e98:	8f fc       	bf.s	ffff6e94 <_init_platf+0x8>
+ffff6e9a:	71 04       	add	#4,r1
+ffff6e9c:	d1 39       	mov.l	ffff6f84 <_init_platf+0xf8>,r1	! ffffcffc <_stackinit>
+ffff6e9e:	e7 00       	mov	#0,r7
+ffff6ea0:	d2 39       	mov.l	ffff6f88 <_init_platf+0xfc>,r2	! ffff6e00 <_INT_ATU11_IMI1A>
+ffff6ea2:	16 11       	mov.l	r1,@(4,r6)
+ffff6ea4:	16 13       	mov.l	r1,@(12,r6)
+ffff6ea6:	d1 39       	mov.l	ffff6f8c <_init_platf+0x100>,r1	! ffffaeb8
+ffff6ea8:	93 5f       	mov.w	ffff6f6a <_init_platf+0xde>,r3	! ed00
+ffff6eaa:	11 21       	mov.l	r2,@(4,r1)
+ffff6eac:	e1 00       	mov	#0,r1
+ffff6eae:	23 11       	mov.w	r1,@r3
+ffff6eb0:	60 13       	mov	r1,r0
+ffff6eb2:	81 31       	mov.w	r0,@(2,r3)
+ffff6eb4:	81 32       	mov.w	r0,@(4,r3)
+ffff6eb6:	81 33       	mov.w	r0,@(6,r3)
+ffff6eb8:	81 34       	mov.w	r0,@(8,r3)
+ffff6eba:	81 35       	mov.w	r0,@(10,r3)
+ffff6ebc:	81 36       	mov.w	r0,@(12,r3)
+ffff6ebe:	81 37       	mov.w	r0,@(14,r3)
+ffff6ec0:	81 38       	mov.w	r0,@(16,r3)
+ffff6ec2:	81 39       	mov.w	r0,@(18,r3)
+ffff6ec4:	81 3a       	mov.w	r0,@(20,r3)
+ffff6ec6:	92 51       	mov.w	ffff6f6c <_init_platf+0xe0>,r2	! ec00
+ffff6ec8:	81 3b       	mov.w	r0,@(22,r3)
+ffff6eca:	84 2b       	mov.b	@(11,r2),r0
+ffff6ecc:	cb 01       	or	#1,r0
+ffff6ece:	80 2b       	mov.b	r0,@(11,r2)
+ffff6ed0:	62 63       	mov	r6,r2
+ffff6ed2:	42 2e       	ldc	r2,vbr
+ffff6ed4:	92 4b       	mov.w	ffff6f6e <_init_platf+0xe2>,r2	! f400
+ffff6ed6:	60 73       	mov	r7,r0
+ffff6ed8:	96 4a       	mov.w	ffff6f70 <_init_platf+0xe4>,r6	! f420
+ffff6eda:	80 21       	mov.b	r0,@(1,r2)
+ffff6edc:	22 70       	mov.b	r7,@r2
+ffff6ede:	80 22       	mov.b	r0,@(2,r2)
+ffff6ee0:	84 21       	mov.b	@(1,r2),r0
+ffff6ee2:	c9 fe       	and	#254,r0
+ffff6ee4:	80 21       	mov.b	r0,@(1,r2)
+ffff6ee6:	60 73       	mov	r7,r0
+ffff6ee8:	80 6a       	mov.b	r0,@(10,r6)
+ffff6eea:	60 13       	mov	r1,r0
+ffff6eec:	81 67       	mov.w	r0,@(14,r6)
+ffff6eee:	60 73       	mov	r7,r0
+ffff6ef0:	80 64       	mov.b	r0,@(4,r6)
+ffff6ef2:	80 66       	mov.b	r0,@(6,r6)
+ffff6ef4:	80 68       	mov.b	r0,@(8,r6)
+ffff6ef6:	16 14       	mov.l	r1,@(16,r6)
+ffff6ef8:	84 21       	mov.b	@(1,r2),r0
+ffff6efa:	96 3a       	mov.w	ffff6f72 <_init_platf+0xe6>,r6	! f010
+ffff6efc:	cb 01       	or	#1,r0
+ffff6efe:	80 21       	mov.b	r0,@(1,r2)
+ffff6f00:	84 62       	mov.b	@(2,r6),r0
+ffff6f02:	c9 2f       	and	#47,r0
+ffff6f04:	80 62       	mov.b	r0,@(2,r6)
+ffff6f06:	84 62       	mov.b	@(2,r6),r0
+ffff6f08:	cb 20       	or	#32,r0
+ffff6f0a:	80 62       	mov.b	r0,@(2,r6)
+ffff6f0c:	84 62       	mov.b	@(2,r6),r0
+ffff6f0e:	c9 cf       	and	#207,r0
+ffff6f10:	80 62       	mov.b	r0,@(2,r6)
+ffff6f12:	e0 09       	mov	#9,r0
+ffff6f14:	80 61       	mov.b	r0,@(1,r6)
+ffff6f16:	84 64       	mov.b	@(4,r6),r0
+ffff6f18:	c9 87       	and	#135,r0
+ffff6f1a:	80 64       	mov.b	r0,@(4,r6)
+ffff6f1c:	84 62       	mov.b	@(2,r6),r0
+ffff6f1e:	cb 30       	or	#48,r0
+ffff6f20:	80 62       	mov.b	r0,@(2,r6)
+ffff6f22:	84 21       	mov.b	@(1,r2),r0
+ffff6f24:	96 26       	mov.w	ffff6f74 <_init_platf+0xe8>,r6	! f450
+ffff6f26:	c9 f7       	and	#247,r0
+ffff6f28:	80 21       	mov.b	r0,@(1,r2)
+ffff6f2a:	60 73       	mov	r7,r0
+ffff6f2c:	80 69       	mov.b	r0,@(9,r6)
+ffff6f2e:	80 68       	mov.b	r0,@(8,r6)
+ffff6f30:	80 6b       	mov.b	r0,@(11,r6)
+ffff6f32:	95 20       	mov.w	ffff6f76 <_init_platf+0xea>,r5	! f460
+ffff6f34:	80 6a       	mov.b	r0,@(10,r6)
+ffff6f36:	94 1f       	mov.w	ffff6f78 <_init_platf+0xec>,r4	! f440
+ffff6f38:	90 1f       	mov.w	ffff6f7a <_init_platf+0xee>,r0	! 80c
+ffff6f3a:	25 11       	mov.w	r1,@r5
+ffff6f3c:	81 4a       	mov.w	r0,@(20,r4)
+ffff6f3e:	60 13       	mov	r1,r0
+ffff6f40:	81 41       	mov.w	r0,@(2,r4)
+ffff6f42:	e4 80       	mov	#-128,r4
+ffff6f44:	84 37       	mov.b	@(7,r3),r0
+ffff6f46:	c9 0f       	and	#15,r0
+ffff6f48:	20 4b       	or	r4,r0
+ffff6f4a:	80 37       	mov.b	r0,@(7,r3)
+ffff6f4c:	60 13       	mov	r1,r0
+ffff6f4e:	81 51       	mov.w	r0,@(2,r5)
+ffff6f50:	85 52       	mov.w	@(4,r5),r0
+ffff6f52:	cb 01       	or	#1,r0
+ffff6f54:	81 52       	mov.w	r0,@(4,r5)
+ffff6f56:	e0 1f       	mov	#31,r0
+ffff6f58:	80 24       	mov.b	r0,@(4,r2)
+ffff6f5a:	60 73       	mov	r7,r0
+ffff6f5c:	80 6c       	mov.b	r0,@(12,r6)
+ffff6f5e:	84 21       	mov.b	@(1,r2),r0
+ffff6f60:	cb 08       	or	#8,r0
+ffff6f62:	80 21       	mov.b	r0,@(1,r2)
+ffff6f64:	00 0b       	rts	
+ffff6f66:	00 09       	nop	
+ffff6f68:	01 00       	.word 0x0100
+ffff6f6a:	ed 00       	mov	#0,r13
+ffff6f6c:	ec 00       	mov	#0,r12
+ffff6f6e:	f4 00       	.word 0xf400
+ffff6f70:	f4 20       	.word 0xf420
+ffff6f72:	f0 10       	.word 0xf010
+ffff6f74:	f4 50       	.word 0xf450
+ffff6f76:	f4 60       	.word 0xf460
+ffff6f78:	f4 40       	.word 0xf440
+ffff6f7a:	08 0c       	mov.b	@(r0,r0),r8
+ffff6f7c:	ff ff       	.word 0xffff
+ffff6f7e:	ad 3c       	bra	ffff69fa <_cmd_loop+0x3ee>
+ffff6f80:	ff ff       	.word 0xffff
+ffff6f82:	6e 4c       	extu.b	r4,r14
+ffff6f84:	ff ff       	.word 0xffff
+ffff6f86:	cf fc       	or.b	#252,@(r0,gbr)
+ffff6f88:	ff ff       	.word 0xffff
+ffff6f8a:	6e 00       	mov.b	@r0,r14
+ffff6f8c:	ff ff       	.word 0xffff
+ffff6f8e:	ae b8       	bra	ffff6d02 <_init_mfg+0x16>
+
+ffff6f90 <_die>:
+ffff6f90:	91 0a       	mov.w	ffff6fa8 <_die+0x18>,r1	! f0
+ffff6f92:	00 02       	stc	sr,r0
+ffff6f94:	cb f0       	or	#240,r0
+ffff6f96:	ca f0       	xor	#240,r0
+ffff6f98:	20 1b       	or	r1,r0
+ffff6f9a:	40 0e       	ldc	r0,sr
+ffff6f9c:	e1 00       	mov	#0,r1
+ffff6f9e:	62 13       	mov	r1,r2
+ffff6fa0:	42 2e       	ldc	r2,vbr
+ffff6fa2:	c3 3f       	trapa	#63
+ffff6fa4:	af fe       	bra	ffff6fa4 <_die+0x14>
+ffff6fa6:	00 09       	nop	
+ffff6fa8:	00 f0       	.word 0x00f0
+	...
+
+ffff6fac <_platf_flash_init>:
+ffff6fac:	2f 86       	mov.l	r8,@-r15
+ffff6fae:	e2 00       	mov	#0,r2
+ffff6fb0:	2f 96       	mov.l	r9,@-r15
+ffff6fb2:	e0 33       	mov	#51,r0
+ffff6fb4:	2f a6       	mov.l	r10,@-r15
+ffff6fb6:	68 43       	mov	r4,r8
+ffff6fb8:	d1 53       	mov.l	ffff7108 <_platf_flash_init+0x15c>,r1	! ffffb13c <_reflash_enabled>
+ffff6fba:	4f 22       	sts.l	pr,@-r15
+ffff6fbc:	7f fc       	add	#-4,r15
+ffff6fbe:	21 20       	mov.b	r2,@r1
+ffff6fc0:	91 9a       	mov.w	ffff70f8 <_platf_flash_init+0x14c>,r1	! e800
+ffff6fc2:	80 14       	mov.b	r0,@(4,r1)
+ffff6fc4:	84 14       	mov.b	@(4,r1),r0
+ffff6fc6:	88 33       	cmp/eq	#51,r0
+ffff6fc8:	03 29       	movt	r3
+ffff6fca:	43 08       	shll2	r3
+ffff6fcc:	e0 04       	mov	#4,r0
+ffff6fce:	63 3c       	extu.b	r3,r3
+ffff6fd0:	23 0a       	xor	r0,r3
+ffff6fd2:	60 10       	mov.b	@r1,r0
+ffff6fd4:	88 80       	cmp/eq	#-128,r0
+ffff6fd6:	8d 02       	bt.s	ffff6fde <_platf_flash_init+0x32>
+ffff6fd8:	e2 08       	mov	#8,r2
+ffff6fda:	23 2b       	or	r2,r3
+ffff6fdc:	63 3c       	extu.b	r3,r3
+ffff6fde:	90 8c       	mov.w	ffff70fa <_platf_flash_init+0x14e>,r0	! ec1e
+ffff6fe0:	85 04       	mov.w	@(8,r0),r0
+ffff6fe2:	20 08       	tst	r0,r0
+ffff6fe4:	8d 0d       	bt.s	ffff7002 <_platf_flash_init+0x56>
+ffff6fe6:	23 38       	tst	r3,r3
+ffff6fe8:	e0 10       	mov	#16,r0
+ffff6fea:	23 0b       	or	r0,r3
+ffff6fec:	91 84       	mov.w	ffff70f8 <_platf_flash_init+0x14c>,r1	! e800
+ffff6fee:	e0 00       	mov	#0,r0
+ffff6ff0:	28 30       	mov.b	r3,@r8
+ffff6ff2:	80 14       	mov.b	r0,@(4,r1)
+ffff6ff4:	e0 00       	mov	#0,r0
+ffff6ff6:	7f 04       	add	#4,r15
+ffff6ff8:	4f 26       	lds.l	@r15+,pr
+ffff6ffa:	6a f6       	mov.l	@r15+,r10
+ffff6ffc:	69 f6       	mov.l	@r15+,r9
+ffff6ffe:	00 0b       	rts	
+ffff7000:	68 f6       	mov.l	@r15+,r8
+ffff7002:	8b f3       	bf	ffff6fec <_platf_flash_init+0x40>
+ffff7004:	95 7a       	mov.w	ffff70fc <_platf_flash_init+0x150>,r5	! 8000
+ffff7006:	e9 ff       	mov	#-1,r9
+ffff7008:	28 30       	mov.b	r3,@r8
+ffff700a:	60 33       	mov	r3,r0
+ffff700c:	25 90       	mov.b	r9,@r5
+ffff700e:	e4 01       	mov	#1,r4
+ffff7010:	80 11       	mov.b	r0,@(1,r1)
+ffff7012:	60 43       	mov	r4,r0
+ffff7014:	80 12       	mov.b	r0,@(2,r1)
+ffff7016:	e0 04       	mov	#4,r0
+ffff7018:	80 16       	mov.b	r0,@(6,r1)
+ffff701a:	00 02       	stc	sr,r0
+ffff701c:	67 03       	mov	r0,r7
+ffff701e:	cb f0       	or	#240,r0
+ffff7020:	40 0e       	ldc	r0,sr
+ffff7022:	60 73       	mov	r7,r0
+ffff7024:	c9 f0       	and	#240,r0
+ffff7026:	67 03       	mov	r0,r7
+ffff7028:	02 22       	stc	vbr,r2
+ffff702a:	2f 22       	mov.l	r2,@r15
+ffff702c:	66 f2       	mov.l	@r15,r6
+ffff702e:	62 33       	mov	r3,r2
+ffff7030:	42 2e       	ldc	r2,vbr
+ffff7032:	ea a5       	mov	#-91,r10
+ffff7034:	60 a3       	mov	r10,r0
+ffff7036:	80 14       	mov.b	r0,@(4,r1)
+ffff7038:	60 10       	mov.b	@r1,r0
+ffff703a:	cb 01       	or	#1,r0
+ffff703c:	21 00       	mov.b	r0,@r1
+ffff703e:	00 09       	nop	
+ffff7040:	00 09       	nop	
+ffff7042:	00 09       	nop	
+ffff7044:	00 09       	nop	
+ffff7046:	00 09       	nop	
+ffff7048:	00 09       	nop	
+ffff704a:	00 09       	nop	
+ffff704c:	00 09       	nop	
+ffff704e:	92 56       	mov.w	ffff70fe <_platf_flash_init+0x152>,r2	! ff
+ffff7050:	60 50       	mov.b	@r5,r0
+ffff7052:	60 0c       	extu.b	r0,r0
+ffff7054:	30 20       	cmp/eq	r2,r0
+ffff7056:	8f 07       	bf.s	ffff7068 <_platf_flash_init+0xbc>
+ffff7058:	20 08       	tst	r0,r0
+ffff705a:	84 16       	mov.b	@(6,r1),r0
+ffff705c:	40 11       	cmp/pz	r0
+ffff705e:	8d 01       	bt.s	ffff7064 <_platf_flash_init+0xb8>
+ffff7060:	e1 aa       	mov	#-86,r1
+ffff7062:	e1 ae       	mov	#-82,r1
+ffff7064:	a0 27       	bra	ffff70b6 <_platf_flash_init+0x10a>
+ffff7066:	28 10       	mov.b	r1,@r8
+ffff7068:	8d 03       	bt.s	ffff7072 <_platf_flash_init+0xc6>
+ffff706a:	c9 06       	and	#6,r0
+ffff706c:	e1 b0       	mov	#-80,r1
+ffff706e:	af f9       	bra	ffff7064 <_platf_flash_init+0xb8>
+ffff7070:	21 0b       	or	r0,r1
+ffff7072:	95 45       	mov.w	ffff7100 <_platf_flash_init+0x154>,r5	! 8800
+ffff7074:	60 33       	mov	r3,r0
+ffff7076:	25 90       	mov.b	r9,@r5
+ffff7078:	80 12       	mov.b	r0,@(2,r1)
+ffff707a:	60 43       	mov	r4,r0
+ffff707c:	80 11       	mov.b	r0,@(1,r1)
+ffff707e:	e0 05       	mov	#5,r0
+ffff7080:	80 16       	mov.b	r0,@(6,r1)
+ffff7082:	60 a3       	mov	r10,r0
+ffff7084:	80 14       	mov.b	r0,@(4,r1)
+ffff7086:	60 10       	mov.b	@r1,r0
+ffff7088:	cb 01       	or	#1,r0
+ffff708a:	21 00       	mov.b	r0,@r1
+ffff708c:	00 09       	nop	
+ffff708e:	00 09       	nop	
+ffff7090:	00 09       	nop	
+ffff7092:	00 09       	nop	
+ffff7094:	00 09       	nop	
+ffff7096:	00 09       	nop	
+ffff7098:	00 09       	nop	
+ffff709a:	00 09       	nop	
+ffff709c:	60 50       	mov.b	@r5,r0
+ffff709e:	60 0c       	extu.b	r0,r0
+ffff70a0:	30 20       	cmp/eq	r2,r0
+ffff70a2:	8f 06       	bf.s	ffff70b2 <_platf_flash_init+0x106>
+ffff70a4:	20 08       	tst	r0,r0
+ffff70a6:	84 16       	mov.b	@(6,r1),r0
+ffff70a8:	40 11       	cmp/pz	r0
+ffff70aa:	8d db       	bt.s	ffff7064 <_platf_flash_init+0xb8>
+ffff70ac:	e1 ab       	mov	#-85,r1
+ffff70ae:	af d9       	bra	ffff7064 <_platf_flash_init+0xb8>
+ffff70b0:	e1 ae       	mov	#-82,r1
+ffff70b2:	8f db       	bf.s	ffff706c <_platf_flash_init+0xc0>
+ffff70b4:	c9 06       	and	#6,r0
+ffff70b6:	91 1f       	mov.w	ffff70f8 <_platf_flash_init+0x14c>,r1	! e800
+ffff70b8:	e0 00       	mov	#0,r0
+ffff70ba:	80 14       	mov.b	r0,@(4,r1)
+ffff70bc:	62 63       	mov	r6,r2
+ffff70be:	42 2e       	ldc	r2,vbr
+ffff70c0:	00 02       	stc	sr,r0
+ffff70c2:	cb f0       	or	#240,r0
+ffff70c4:	ca f0       	xor	#240,r0
+ffff70c6:	20 7b       	or	r7,r0
+ffff70c8:	40 0e       	ldc	r0,sr
+ffff70ca:	61 80       	mov.b	@r8,r1
+ffff70cc:	21 18       	tst	r1,r1
+ffff70ce:	8f 92       	bf.s	ffff6ff6 <_platf_flash_init+0x4a>
+ffff70d0:	e0 00       	mov	#0,r0
+ffff70d2:	90 16       	mov.w	ffff7102 <_platf_flash_init+0x156>,r0	! 8020
+ffff70d4:	94 16       	mov.w	ffff7104 <_platf_flash_init+0x158>,r4	! fa0
+ffff70d6:	40 0b       	jsr	@r0
+ffff70d8:	e5 00       	mov	#0,r5
+ffff70da:	20 08       	tst	r0,r0
+ffff70dc:	8f 0a       	bf.s	ffff70f4 <_platf_flash_init+0x148>
+ffff70de:	e1 ac       	mov	#-84,r1
+ffff70e0:	90 11       	mov.w	ffff7106 <_platf_flash_init+0x15a>,r0	! 8820
+ffff70e2:	94 0f       	mov.w	ffff7104 <_platf_flash_init+0x158>,r4	! fa0
+ffff70e4:	40 0b       	jsr	@r0
+ffff70e6:	e5 00       	mov	#0,r5
+ffff70e8:	20 08       	tst	r0,r0
+ffff70ea:	8f 02       	bf.s	ffff70f2 <_platf_flash_init+0x146>
+ffff70ec:	e0 01       	mov	#1,r0
+ffff70ee:	af 82       	bra	ffff6ff6 <_platf_flash_init+0x4a>
+ffff70f0:	00 09       	nop	
+ffff70f2:	e1 ad       	mov	#-83,r1
+ffff70f4:	af 7e       	bra	ffff6ff4 <_platf_flash_init+0x48>
+ffff70f6:	28 10       	mov.b	r1,@r8
+ffff70f8:	e8 00       	mov	#0,r8
+ffff70fa:	ec 1e       	mov	#30,r12
+ffff70fc:	80 00       	mov.b	r0,@(0,r0)
+ffff70fe:	00 ff       	mac.l	@r15+,@r0+
+ffff7100:	88 00       	cmp/eq	#0,r0
+ffff7102:	80 20       	mov.b	r0,@(0,r2)
+ffff7104:	0f a0       	.word 0x0fa0
+ffff7106:	88 20       	cmp/eq	#32,r0
+ffff7108:	ff ff       	.word 0xffff
+ffff710a:	b1 3c       	bsr	ffff7386 <_edata+0x7e>
+
+ffff710c <_platf_flash_protect>:
+ffff710c:	d1 01       	mov.l	ffff7114 <_platf_flash_protect+0x8>,r1	! ffffb13c <_reflash_enabled>
+ffff710e:	e2 00       	mov	#0,r2
+ffff7110:	00 0b       	rts	
+ffff7112:	21 20       	mov.b	r2,@r1
+ffff7114:	ff ff       	.word 0xffff
+ffff7116:	b1 3c       	bsr	ffff7392 <_edata+0x8a>
+
+ffff7118 <_platf_flash_unprotect>:
+ffff7118:	d1 01       	mov.l	ffff7120 <_platf_flash_unprotect+0x8>,r1	! ffffb13c <_reflash_enabled>
+ffff711a:	e2 01       	mov	#1,r2
+ffff711c:	00 0b       	rts	
+ffff711e:	21 20       	mov.b	r2,@r1
+ffff7120:	ff ff       	.word 0xffff
+ffff7122:	b1 3c       	bsr	ffff739e <_edata+0x96>
+
+ffff7124 <_platf_flash_eb>:
+ffff7124:	2f 86       	mov.l	r8,@-r15
+ffff7126:	63 43       	mov	r4,r3
+ffff7128:	d7 16       	mov.l	ffff7184 <_platf_flash_eb+0x60>,r7	! ffff72c4 <_fblocks>
+ffff712a:	e2 00       	mov	#0,r2
+ffff712c:	4f 22       	sts.l	pr,@-r15
+ffff712e:	e4 10       	mov	#16,r4
+ffff7130:	e1 10       	mov	#16,r1
+ffff7132:	66 76       	mov.l	@r7+,r6
+ffff7134:	36 30       	cmp/eq	r3,r6
+ffff7136:	8b 00       	bf	ffff713a <_platf_flash_eb+0x16>
+ffff7138:	64 23       	mov	r2,r4
+ffff713a:	41 10       	dt	r1
+ffff713c:	8f f9       	bf.s	ffff7132 <_platf_flash_eb+0xe>
+ffff713e:	72 01       	add	#1,r2
+ffff7140:	60 43       	mov	r4,r0
+ffff7142:	88 10       	cmp/eq	#16,r0
+ffff7144:	89 18       	bt	ffff7178 <_platf_flash_eb+0x54>
+ffff7146:	d1 10       	mov.l	ffff7188 <_platf_flash_eb+0x64>,r1	! ffffb13c <_reflash_enabled>
+ffff7148:	61 10       	mov.b	@r1,r1
+ffff714a:	21 18       	tst	r1,r1
+ffff714c:	8d 0e       	bt.s	ffff716c <_platf_flash_eb+0x48>
+ffff714e:	e0 00       	mov	#0,r0
+ffff7150:	98 15       	mov.w	ffff717e <_platf_flash_eb+0x5a>,r8	! e800
+ffff7152:	e0 5a       	mov	#90,r0
+ffff7154:	80 84       	mov.b	r0,@(4,r8)
+ffff7156:	90 13       	mov.w	ffff7180 <_platf_flash_eb+0x5c>,r0	! 8010
+ffff7158:	40 0b       	jsr	@r0
+ffff715a:	00 09       	nop	
+ffff715c:	20 08       	tst	r0,r0
+ffff715e:	8d 08       	bt.s	ffff7172 <_platf_flash_eb+0x4e>
+ffff7160:	61 03       	mov	r0,r1
+ffff7162:	e0 00       	mov	#0,r0
+ffff7164:	80 84       	mov.b	r0,@(4,r8)
+ffff7166:	60 13       	mov	r1,r0
+ffff7168:	c9 06       	and	#6,r0
+ffff716a:	cb 80       	or	#128,r0
+ffff716c:	4f 26       	lds.l	@r15+,pr
+ffff716e:	00 0b       	rts	
+ffff7170:	68 f6       	mov.l	@r15+,r8
+ffff7172:	80 84       	mov.b	r0,@(4,r8)
+ffff7174:	af fa       	bra	ffff716c <_platf_flash_eb+0x48>
+ffff7176:	e0 00       	mov	#0,r0
+ffff7178:	90 03       	mov.w	ffff7182 <_platf_flash_eb+0x5e>,r0	! 8c
+ffff717a:	af f7       	bra	ffff716c <_platf_flash_eb+0x48>
+ffff717c:	00 09       	nop	
+ffff717e:	e8 00       	mov	#0,r8
+ffff7180:	80 10       	mov.b	r0,@(0,r1)
+ffff7182:	00 8c       	mov.b	@(r0,r8),r0
+ffff7184:	ff ff       	.word 0xffff
+ffff7186:	72 c4       	add	#-60,r2
+ffff7188:	ff ff       	.word 0xffff
+ffff718a:	b1 3c       	bsr	ffff7406 <_edata+0xfe>
+
+ffff718c <_platf_flash_wb>:
+ffff718c:	2f 86       	mov.l	r8,@-r15
+ffff718e:	68 43       	mov	r4,r8
+ffff7190:	2f 96       	mov.l	r9,@-r15
+ffff7192:	2f a6       	mov.l	r10,@-r15
+ffff7194:	6a 63       	mov	r6,r10
+ffff7196:	2f b6       	mov.l	r11,@-r15
+ffff7198:	6b 53       	mov	r5,r11
+ffff719a:	2f c6       	mov.l	r12,@-r15
+ffff719c:	2f d6       	mov.l	r13,@-r15
+ffff719e:	d1 29       	mov.l	ffff7244 <_platf_flash_wb+0xb8>,r1	! 7ffff
+ffff71a0:	2f e6       	mov.l	r14,@-r15
+ffff71a2:	34 16       	cmp/hi	r1,r4
+ffff71a4:	8d 3b       	bt.s	ffff721e <_platf_flash_wb+0x92>
+ffff71a6:	4f 22       	sts.l	pr,@-r15
+ffff71a8:	71 01       	add	#1,r1
+ffff71aa:	31 48       	sub	r4,r1
+ffff71ac:	31 62       	cmp/hs	r6,r1
+ffff71ae:	8b 36       	bf	ffff721e <_platf_flash_wb+0x92>
+ffff71b0:	60 43       	mov	r4,r0
+ffff71b2:	c8 7f       	tst	#127,r0
+ffff71b4:	8b 36       	bf	ffff7224 <_platf_flash_wb+0x98>
+ffff71b6:	60 63       	mov	r6,r0
+ffff71b8:	e9 7f       	mov	#127,r9
+ffff71ba:	c8 7f       	tst	#127,r0
+ffff71bc:	8f 35       	bf.s	ffff722a <_platf_flash_wb+0x9e>
+ffff71be:	29 69       	and	r6,r9
+ffff71c0:	d1 21       	mov.l	ffff7248 <_platf_flash_wb+0xbc>,r1	! ffffb13c <_reflash_enabled>
+ffff71c2:	61 10       	mov.b	@r1,r1
+ffff71c4:	21 18       	tst	r1,r1
+ffff71c6:	8d 16       	bt.s	ffff71f6 <_platf_flash_wb+0x6a>
+ffff71c8:	6e 53       	mov	r5,r14
+ffff71ca:	9c 34       	mov.w	ffff7236 <_platf_flash_wb+0xaa>,r12	! e800
+ffff71cc:	9d 34       	mov.w	ffff7238 <_platf_flash_wb+0xac>,r13	! 8810
+ffff71ce:	61 a3       	mov	r10,r1
+ffff71d0:	31 bc       	add	r11,r1
+ffff71d2:	3e 10       	cmp/eq	r1,r14
+ffff71d4:	8d 10       	bt.s	ffff71f8 <_platf_flash_wb+0x6c>
+ffff71d6:	60 93       	mov	r9,r0
+ffff71d8:	e0 5a       	mov	#90,r0
+ffff71da:	80 c4       	mov.b	r0,@(4,r12)
+ffff71dc:	65 83       	mov	r8,r5
+ffff71de:	4d 0b       	jsr	@r13
+ffff71e0:	64 e3       	mov	r14,r4
+ffff71e2:	61 03       	mov	r0,r1
+ffff71e4:	e0 00       	mov	#0,r0
+ffff71e6:	80 c4       	mov.b	r0,@(4,r12)
+ffff71e8:	21 18       	tst	r1,r1
+ffff71ea:	8d 0e       	bt.s	ffff720a <_platf_flash_wb+0x7e>
+ffff71ec:	65 e3       	mov	r14,r5
+ffff71ee:	99 24       	mov.w	ffff723a <_platf_flash_wb+0xae>,r9	! 80
+ffff71f0:	60 13       	mov	r1,r0
+ffff71f2:	c9 06       	and	#6,r0
+ffff71f4:	29 0b       	or	r0,r9
+ffff71f6:	60 93       	mov	r9,r0
+ffff71f8:	4f 26       	lds.l	@r15+,pr
+ffff71fa:	6e f6       	mov.l	@r15+,r14
+ffff71fc:	6d f6       	mov.l	@r15+,r13
+ffff71fe:	6c f6       	mov.l	@r15+,r12
+ffff7200:	6b f6       	mov.l	@r15+,r11
+ffff7202:	6a f6       	mov.l	@r15+,r10
+ffff7204:	69 f6       	mov.l	@r15+,r9
+ffff7206:	00 0b       	rts	
+ffff7208:	68 f6       	mov.l	@r15+,r8
+ffff720a:	d0 10       	mov.l	ffff724c <_platf_flash_wb+0xc0>,r0	! ffff727a <_memcmp>
+ffff720c:	96 15       	mov.w	ffff723a <_platf_flash_wb+0xae>,r6	! 80
+ffff720e:	40 0b       	jsr	@r0
+ffff7210:	64 83       	mov	r8,r4
+ffff7212:	20 08       	tst	r0,r0
+ffff7214:	8b 0c       	bf	ffff7230 <_platf_flash_wb+0xa4>
+ffff7216:	91 10       	mov.w	ffff723a <_platf_flash_wb+0xae>,r1	! 80
+ffff7218:	38 1c       	add	r1,r8
+ffff721a:	af d8       	bra	ffff71ce <_platf_flash_wb+0x42>
+ffff721c:	3e 1c       	add	r1,r14
+ffff721e:	99 0d       	mov.w	ffff723c <_platf_flash_wb+0xb0>,r9	! 88
+ffff7220:	af ea       	bra	ffff71f8 <_platf_flash_wb+0x6c>
+ffff7222:	60 93       	mov	r9,r0
+ffff7224:	99 0b       	mov.w	ffff723e <_platf_flash_wb+0xb2>,r9	! 89
+ffff7226:	af e7       	bra	ffff71f8 <_platf_flash_wb+0x6c>
+ffff7228:	60 93       	mov	r9,r0
+ffff722a:	99 09       	mov.w	ffff7240 <_platf_flash_wb+0xb4>,r9	! 8a
+ffff722c:	af e4       	bra	ffff71f8 <_platf_flash_wb+0x6c>
+ffff722e:	60 93       	mov	r9,r0
+ffff7230:	99 07       	mov.w	ffff7242 <_platf_flash_wb+0xb6>,r9	! 8b
+ffff7232:	af e1       	bra	ffff71f8 <_platf_flash_wb+0x6c>
+ffff7234:	60 93       	mov	r9,r0
+ffff7236:	e8 00       	mov	#0,r8
+ffff7238:	88 10       	cmp/eq	#16,r0
+ffff723a:	00 80       	.word 0x0080
+ffff723c:	00 88       	.word 0x0088
+ffff723e:	00 89       	.word 0x0089
+ffff7240:	00 8a       	.word 0x008a
+ffff7242:	00 8b       	.word 0x008b
+ffff7244:	00 07       	mul.l	r0,r0
+ffff7246:	ff ff       	.word 0xffff
+ffff7248:	ff ff       	.word 0xffff
+ffff724a:	b1 3c       	bsr	ffff74c6 <_edata+0x1be>
+ffff724c:	ff ff       	.word 0xffff
+ffff724e:	72 7a       	add	#122,r2
+
+ffff7250 <_memcpy>:
+ffff7250:	60 43       	mov	r4,r0
+ffff7252:	61 43       	mov	r4,r1
+ffff7254:	76 01       	add	#1,r6
+ffff7256:	46 10       	dt	r6
+ffff7258:	8b 01       	bf	ffff725e <_memcpy+0xe>
+ffff725a:	00 0b       	rts	
+ffff725c:	00 09       	nop	
+ffff725e:	62 54       	mov.b	@r5+,r2
+ffff7260:	21 20       	mov.b	r2,@r1
+ffff7262:	af f8       	bra	ffff7256 <_memcpy+0x6>
+ffff7264:	71 01       	add	#1,r1
+
+ffff7266 <_memset>:
+ffff7266:	60 43       	mov	r4,r0
+ffff7268:	61 43       	mov	r4,r1
+ffff726a:	76 01       	add	#1,r6
+ffff726c:	46 10       	dt	r6
+ffff726e:	8b 01       	bf	ffff7274 <_memset+0xe>
+ffff7270:	00 0b       	rts	
+ffff7272:	00 09       	nop	
+ffff7274:	21 50       	mov.b	r5,@r1
+ffff7276:	af f9       	bra	ffff726c <_memset+0x6>
+ffff7278:	71 01       	add	#1,r1
+
+ffff727a <_memcmp>:
+ffff727a:	76 01       	add	#1,r6
+ffff727c:	46 10       	dt	r6
+ffff727e:	8f 02       	bf.s	ffff7286 <_memcmp+0xc>
+ffff7280:	e0 00       	mov	#0,r0
+ffff7282:	00 0b       	rts	
+ffff7284:	00 09       	nop	
+ffff7286:	60 44       	mov.b	@r4+,r0
+ffff7288:	61 54       	mov.b	@r5+,r1
+ffff728a:	60 0c       	extu.b	r0,r0
+ffff728c:	61 1c       	extu.b	r1,r1
+ffff728e:	30 10       	cmp/eq	r1,r0
+ffff7290:	8d f4       	bt.s	ffff727c <_memcmp+0x2>
+ffff7292:	30 18       	sub	r1,r0
+ffff7294:	00 0b       	rts	
+ffff7296:	00 09       	nop	

@@ -239,16 +239,16 @@ def verify_avcs(reference: bytes, image: bytes) -> None:
 
 
 def verify_injectors(reference: bytes, image: bytes) -> None:
-    target_flow_raw, target_latency_raw, estimated_flow = base.pink_injector_calibration()
+    target_flow_raw, target_latency_raw, estimated_flow = base.a4te002b_sti_injector_calibration()
     if image[base.INJECTOR_FLOW_ADDR:base.INJECTOR_FLOW_ADDR + 4] != base.f32(target_flow_raw):
-        fail("injector flow bytes do not match the translated A4TE002B STI-pink value")
+        fail("injector flow bytes do not match the translated A4TE002B JDM-STI value")
     actual_flow_raw = read_float(image, base.INJECTOR_FLOW_ADDR)
     actual_display = base.INJECTOR_FLOW_DISPLAY_CONSTANT / actual_flow_raw
     if abs(actual_display - estimated_flow) > 1e-5:
         fail(f"translated injector flow displays {actual_display}, expected {estimated_flow}")
     expected_latency = struct.pack(">5H", *target_latency_raw)
     if image[base.INJECTOR_LATENCY_ADDR:base.INJECTOR_LATENCY_ADDR + 10] != expected_latency:
-        fail("injector latency bytes do not match the translated A4TE002B STI-pink curve")
+        fail("injector latency bytes do not match the translated A4TE002B JDM-STI curve")
     if base.read_floats(
         image, base.INJECTOR_VOLTAGE_AXIS_ADDR, len(base.EXPECTED_INJECTOR_VOLTAGE_AXIS)
     ) != base.EXPECTED_INJECTOR_VOLTAGE_AXIS:

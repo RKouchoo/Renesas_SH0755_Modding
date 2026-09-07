@@ -48,6 +48,11 @@ TEMPLATE_INSERT = """  <table type="2D" name="Speed Density Global Airflow Multi
    <table type="Static Y Axis" name="Safety cap" sizey="1"><data>Maximum</data></table>
    <description>Maximum normal speed-density airflow. A non-positive or non-finite value invokes the fixed 500 g/s rich/high-load fail-safe.</description>
   </table>
+  <table type="2D" name="Speed Density Load Filter Response" category="Speed Density (patch)" storagetype="float" endian="little" sizey="1" userlevel="3">
+   <scaling units="% per update" expression="x*100" to_byte="x/100" format="0.0" fineincrement=".5" coarseincrement="1" />
+   <table type="Static Y Axis" name="Load smoothing" sizey="1"><data>Response</data></table>
+   <description>Retained first-order load-filter response from raw load 0xFFFFB428 to filtered load 0xFFFFB42C, upstream of normal conditioned load. The stock default is 6% toward the new load per update. Larger values respond faster; 100% passes the new load through. 0% normally freezes the previous load except for initialization/snap conditions: do not use it. Keep a finite value above 0% and no greater than 100%. Update cadence is not established, so this is not a time in milliseconds. Leave the stock default until MAP noise and transient response are measured; changing it is not a verified lean-out repair.</description>
+  </table>
   <table type="2D" name="Speed Density MAP Valid Range" category="Speed Density (patch)" storagetype="float" endian="little" sizey="2" userlevel="4">
    <scaling units="mmHg absolute" expression="x" to_byte="x" format="0.0" fineincrement="1" coarseincrement="10" />
    <table type="Static Y Axis" name="Gate" sizey="2"><data>Minimum</data><data>Maximum</data></table>
@@ -71,7 +76,7 @@ TEMPLATE_INSERT = """  <table type="2D" name="Speed Density Global Airflow Multi
    <table type="Y Axis" name="Engine Speed" storagetype="float" endian="little" logparam="P8">
     <scaling units="RPM" expression="x" to_byte="x" format="#" fineincrement="50" coarseincrement="100" />
    </table>
-   <description>VE fraction used while committed AVLS mode 0xFFFFCD86 is not 3. The RPM axis stops at the 3200 RPM high-lift engage threshold. The 3000-3200 overlap is selected by committed state.</description>
+   <description>VE fraction used while committed AVLS mode 0xFFFFCD86 is not 3. The RPM axis stops at the 3200 RPM high-lift engage threshold. The 3000-3200 overlap is selected by committed state. The generated baseline contains an unvalidated second idle-VE trial near 1300 RPM/315 mmHg, raising VE from about 0.624 to 0.985. The added correction tapers to zero by 2500 RPM and 1150 mmHg. The latest log used the first trial and its AFR was still rising, so the second increase is not a verified repair. Validate with measured MAP and fuel data after after-start enrichment fully decays.</description>
   </table>
   <table type="3D" name="Speed Density VE - AVLS High Lift" category="Speed Density - AVLS VE (patch)" storagetype="float" endian="little" sizex="13" sizey="11" userlevel="2">
    <scaling units="VE fraction" expression="x" to_byte="x" format="0.000" fineincrement=".005" coarseincrement=".02" />
@@ -95,6 +100,7 @@ TEMPLATE_INSERT = """  <table type="2D" name="Speed Density Global Airflow Multi
 TARGET_INSERT = """  <table name="Speed Density Global Airflow Multiplier" storageaddress="0x7DD04" />
   <table name="Speed Density Engine Displacement" storageaddress="0x7DD08" />
   <table name="Speed Density Maximum Airflow" storageaddress="0x7DD0C" />
+  <table name="Speed Density Load Filter Response" storageaddress="0x73968" />
   <table name="Speed Density MAP Valid Range" storageaddress="0x7DD10" />
   <table name="Speed Density RPM Valid Range" storageaddress="0x7DD18" />
   <table name="Speed Density IAT Valid Range" storageaddress="0x7DD20" />

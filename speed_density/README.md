@@ -18,6 +18,12 @@ final airflow to `0xFFFFB420`. The component redirects that one helper pointer t
 `speed_density_airflow_calculate` at `0x7E18C`. The returned SD value is therefore stored before
 the retained load/state calculations run.
 
+The hardened helper uses the caller's saved FR15 RPM, which the retained load
+division also uses. MAP/IAT are each captured once into saved FR12/FR13, then
+validated and reused through both lookups and the product. All exits restore
+the caller's registers and stack. This gives stable per-call inputs, not
+simultaneous sensor acquisition; no interrupt masking or new static RAM is used.
+
 The retained stock normalization is Ghidra-verified: `0xFFFFB428 = 0xFFFFB420 [g/s] * 60 /
 0xFFFFB544 [RPM]`, followed by the stock conditioning path to `0xFFFFB438` in g/rev. AVCS,
 ignition, fueling, and knock maps continue to consume that conditioned g/rev value. The same
@@ -31,7 +37,10 @@ It also:
   stub at `0x66C2`;
 - redirects both scheduled calls to the MAF-dependent temperature-plausibility condition
   (`0x1062C` and `0x1185C`) to that same no-op stub;
-- clears D2WD610H diagnostic switches P0102 and P0103 at `0x5BD57..0x5BD58`; and
+- clears D2WD610H diagnostic switches P0102 and P0103 at `0x5BD57..0x5BD58`;
+- redirects only the airflow task's MAF-fault status literal `0x173FC` from
+  `0x65168` to the stock constant-zero helper `0x27088`, preventing the old
+  P0101/P0102/P0103 MAP-linear load substitution in this task; and
 - removes the MAF limit, scaling, compensation, P0102, and P0103 entries from this component's
   generated RomRaider definition.
 
@@ -54,6 +63,12 @@ airflow. Any other invalid input, calibration, table result, or arithmetic state
 500 g/s value, selecting rich/high-load behavior rather than retaining stale or missing MAF data.
 That is an emergency indication, not a drivable limp mode.
 
+Stock cranking/ECT and engine-signal timeout initialization remain. The load
+filter is not removed: `Speed Density Load Filter Response` at `0x73968`
+explicitly exposes its unchanged 6%-per-update response. A correct SD output
+still passes through retained load/fuel processing; it does not directly command
+injector pulse width.
+
 ## Build and verify
 
 From the repository root:
@@ -62,11 +77,15 @@ From the repository root:
 python3 master_patch/build_master_patch.py
 python3 master_patch/build_definition.py
 python3 master_patch/verify_master_patch.py
+python3 speed_density/test_hook_execution.py master_patch/D2WD610H_master_patch.bin
 ```
 
 `D2WD610H_AVLS_speed_density_patch.xml` is retained as an internal definition-generator input.
 Standalone component BINs are reproducible local test outputs and are no longer committed. This
 exact component is included directly by `master_patch`; there is no separate AVLS-VE patch layer.
+The opcode test covers the wrapper with adversarial, descriptor-based lookup
+models. It does not emulate the whole ECU, interrupt timing or hardware FP
+exceptions, and passing it does not establish the lean-out cause.
 
 ## Calibration model
 
@@ -99,11 +118,25 @@ At VE 1.0, 20 °C, and 2.999 L, this is approximately 1.81 g/rev at 760 mmHg abs
 2.42 g/rev at about 5 psi gauge. This confirms the scaling and dimensional path; it does not
 validate the supplied VE values for the real engine.
 
-Both supplied VE surfaces are resampled from the same conservative mathematical
-starting point, so the baseline does not deliberately introduce a switch step.
-They are not measured EZ30R data and must be calibrated separately using
-committed AVLS state plus synchronized lambda, MAP, RPM, IAT, fuel-pressure, and
-load data on a load-controlled dyno.
+Both supplied VE surfaces begin from the same conservative mathematical
+starting point, so the baseline does not deliberately introduce an AVLS switch
+step. The low-lift surface includes a bounded correction derived from the
+2026-09-03 and 2026-09-07 stationary D2WD610H runs: near 1300 RPM and 315 mmHg
+absolute MAP it raises VE from approximately 0.624 to 0.985. The first 1.27
+factor left a measured 18.39-AFR result about 30 seconds after the second start;
+the residual `18.39 / 14.70 = 1.2517` correction makes the final total factor
+1.59. The correction tapers to zero by
+the 3000-RPM low-lift row and by 1150 mmHg absolute MAP. The high-lift surface
+and every row from 2500 RPM upward are unchanged; the peak-row correction is
+already down to 5.9 percent at 1050 mmHg. The rest remains unmeasured EZ30R
+starting data and must be calibrated separately using committed AVLS state plus
+synchronized lambda, MAP, RPM, IAT, fuel-pressure, and load data.
+
+Reassessment: the endpoint used above was still trending lean, not settled
+AFR. The second increase is an unvalidated trial and not recommended as a
+verified repair. Retain the first-VE ROM for the focused fuel-command capture
+described in `../master_patch/GHIDRA_AUDIT.md`; increasing VE also moves the
+retained stock load-indexed lookups.
 
 ## Required hardware
 

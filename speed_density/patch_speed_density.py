@@ -9,6 +9,8 @@ conversion calls in the sensor-processing tasks are disabled.  The scheduled
 raw-MAF limit/filter update, MAF-input diagnostic task, and both scheduled calls
 to a mixed temperature/MAF diagnostic condition are bypassed, and the two
 D2WD610H MAF input DTC switches are cleared.
+Only this task's obsolete MAF-fault load fallback is bypassed; stock cranking
+and engine-signal timeout initialization remain intact.
 
 When every input/calibration passes its validity gate, the replacement writes
 the final stock mass-airflow value at 0xFFFFB420 as:
@@ -30,6 +32,13 @@ g/rev table consumers.  Exact zero RPM writes zero airflow.  Any other invalid
 sensor, calibration, lookup, or arithmetic state writes a fixed 500 g/s
 rich/high-load fail-safe; it never falls back to MAF or a stale MAF-derived
 value.
+
+The hook uses the caller's saved FR15 RPM, also used by the retained load
+division. MAP and IAT are captured once into saved FR12/FR13, then checked and
+reused throughout the calculation. This prevents within-call rereads from
+mixing values; it does not make separate sensor acquisitions simultaneous.
+No interrupt masking or new static RAM is required. Stock load smoothing
+(alpha 0.06) remains and is explicitly exposed in the definition.
 
 Committed AVLS mode 3 selects the high-lift VE surface; every other value uses
 the low-lift surface.  The same patch fixes AVLS to a predictable 3200 RPM
@@ -69,6 +78,14 @@ FINAL_AIRFLOW_CALL_SEQUENCE_STOCK = bytes.fromhex(
 )  # jsr @r2; fmov fr2,fr4; load B420; fmov.s fr0,@r3
 FINAL_AIRFLOW_HELPER_PTR = 0x0001743C
 STOCK_FINAL_AIRFLOW_HELPER = 0x000024B0
+MAF_LOAD_FALLBACK_HELPER_PTR = 0x000173FC
+STOCK_MAF_LOAD_FALLBACK_HELPER = 0x00065168
+CONSTANT_ZERO_RETURN = 0x00027088
+CONSTANT_ZERO_RETURN_STOCK = bytes.fromhex("000be000")  # rts; mov #0,r0
+CALLER_RPM_CAPTURE_ADDR = 0x000172CE
+CALLER_RPM_CAPTURE_STOCK = bytes.fromhex("ff18")  # fmov.s @r1,fr15 (B544)
+LOAD_FILTER_ALPHA_ADDR = 0x00073968
+LOAD_FILTER_ALPHA_STOCK = bytes.fromhex("3d75c28f")  # 0.06 per update, retained
 STOCK_ENGINE_LOAD_CALC_ADDR = 0x0001753C
 STOCK_ENGINE_LOAD_CALC_SEQUENCE = bytes.fromhex(
     "9b5eff358f0d0009c735f2089359f138f122f41cf4f3f44cc732d333430bf508fb0a"
@@ -189,6 +206,30 @@ LOW_RPM_AXIS = (0.0, 500.0, 800.0, 1200.0, 1600.0, 2000.0, 2500.0, 3000.0, 3200.
 HIGH_RPM_AXIS = (3000.0, 3200.0, 3500.0, 4000.0, 4500.0, 5000.0,
                  5500.0, 6000.0, 6500.0, 7000.0, 7500.0)
 
+# UNVALIDATED TRIAL: these AFR endpoints were still rising. The ratio below
+# does not establish settled VE or prove the cause of the pulse-width fall.
+# Keep the first-VE ROM for the repaired diagnostic-profile capture before
+# adopting this second increase. No calibration value changed in reassessment.
+# D2WD610H stationary idle correction derived from the 2026-09-03 and
+# 2026-09-07 runs.  The first 1.27 total factor did not sustain commanded fuel:
+# the second run still reached 18.39 AFR about 30 seconds after start while the
+# user observed injector pulse width fall with the stock after-start decay.
+# 18.39 / 14.70 = 1.2517, so applying that measured residual correction to the
+# existing 1.27 factor gives 1.5897.  The rounded 1.59 total factor raises the
+# original approximately 0.624 VE at 1,300 RPM/315 mmHg to approximately 0.985
+# after interpolation through the MAP taper (the full 1.59 applies at the peak
+# 350--450 mmHg knots).
+# It remains confined to the low-lift vacuum/idle neighbourhood and tapers to
+# unity before the 3,000-RPM AVLS transition and by 1,150 mmHg absolute MAP.
+# It deliberately does not alter the high-lift surface, injector data, stock
+# after-start logic, or global multiplier.
+IDLE_VE_CORRECTION_GAIN = 0.59
+IDLE_VE_RPM_WEIGHTS = (0.0, 0.0, 0.25, 1.0, 1.0, 0.25, 0.0, 0.0, 0.0)
+IDLE_VE_MAP_WEIGHTS = (
+    0.50, 0.95, 1.00, 1.00, 0.90, 0.75, 0.55,
+    0.35, 0.20, 0.10, 0.00, 0.00, 0.00,
+)
+
 
 def interpolate(values_x: tuple[float, ...], values_y: tuple[float, ...], x: float) -> float:
     if x <= values_x[0]:
@@ -216,7 +257,31 @@ def seed_ve_table(rpm_axis: tuple[float, ...]) -> tuple[float, ...]:
     return tuple(result)
 
 
-LOW_VE_TABLE = seed_ve_table(LOW_RPM_AXIS)
+def apply_idle_ve_correction(table: tuple[float, ...]) -> tuple[float, ...]:
+    """Apply the bounded, low-lift idle correction to a row-major VE table."""
+    if len(table) != len(LOW_RPM_AXIS) * len(MAP_AXIS):
+        raise ValueError("idle VE correction received the wrong table dimensions")
+    if len(IDLE_VE_RPM_WEIGHTS) != len(LOW_RPM_AXIS):
+        raise AssertionError("idle VE RPM weights do not match the low-lift axis")
+    if len(IDLE_VE_MAP_WEIGHTS) != len(MAP_AXIS):
+        raise AssertionError("idle VE MAP weights do not match the MAP axis")
+    return tuple(
+        value
+        * (
+            1.0
+            + IDLE_VE_CORRECTION_GAIN
+            * IDLE_VE_RPM_WEIGHTS[row]
+            * IDLE_VE_MAP_WEIGHTS[column]
+        )
+        for row in range(len(LOW_RPM_AXIS))
+        for column, value in enumerate(
+            table[row * len(MAP_AXIS):(row + 1) * len(MAP_AXIS)]
+        )
+    )
+
+
+UNCORRECTED_LOW_VE_TABLE = seed_ve_table(LOW_RPM_AXIS)
+LOW_VE_TABLE = apply_idle_ve_correction(UNCORRECTED_LOW_VE_TABLE)
 HIGH_VE_TABLE = seed_ve_table(HIGH_RPM_AXIS)
 
 IAT_AXIS = (-50.0, -30.0, -10.0, 10.0, 20.0, 40.0, 60.0, 80.0, 110.0, 150.0)
@@ -297,10 +362,23 @@ def emit_float_range_gate(
     value_fr: int,
     exit_label: str,
 ) -> None:
+    assembler.movl_pool(1, value_addr).fmov_load(value_fr, 1)
+    emit_float_register_range_gate(
+        assembler, minimum_addr, maximum_addr, value_fr, exit_label
+    )
+
+
+def emit_float_register_range_gate(
+    assembler: Asm,
+    minimum_addr: int,
+    maximum_addr: int,
+    value_fr: int,
+    exit_label: str,
+) -> None:
+    """Check the supplied snapshot without reading the live input again."""
     # A finite value inside finite bounds is required.  Rejecting -infinity on
     # the minimum and +infinity on the maximum is sufficient because the
     # ordinary range comparisons reject the opposite infinities.
-    assembler.movl_pool(1, value_addr).fmov_load(value_fr, 1)
     assembler.fcmpeq(value_fr, value_fr).bf(exit_label)
     assembler.movl_pool(1, minimum_addr).fmov_load(3, 1)
     assembler.fcmpeq(3, 3).bf(exit_label)
@@ -337,22 +415,29 @@ def emit_positive_calibration_gate(
 
 
 def build_wrapper() -> bytes:
-    """Calculate airflow from the committed-state-selected VE surface."""
+    """Calculate airflow using stable inputs and the caller's load-divisor RPM."""
     a = Asm(WRAPPER_ADDR)
-    a.stsl_pr()
+    a.fpush(12).fpush(13).stsl_pr()
 
-    a.movl_pool(1, RPM_ADDR).fmov_load(5, 1)
+    # FR15 was captured from B544 by the stock caller at172CE. Its retained
+    # load division at17550 uses that same register. Do not reload live RPM.
+    a.fmov(15, 5)
     a.fcmpeq(5, 5).bf("early_invalid_rpm")
     a.fldi0(3).fcmpeq(3, 5).bf("rpm_precheck_done")
     a.bra("store_zero").nop()
     a.label("early_invalid_rpm")
     a.bra("failsafe").nop()
-    a.bra("failsafe").nop()
     a.label("rpm_precheck_done")
 
-    emit_float_range_gate(a, MAP_ADDR, MAP_MIN_ADDR, MAP_MAX_ADDR, 4, "invalid_inputs")
-    emit_float_range_gate(a, RPM_ADDR, RPM_MIN_ADDR, RPM_MAX_ADDR, 5, "invalid_inputs")
-    emit_float_range_gate(a, IAT_ADDR, IAT_MIN_ADDR, IAT_MAX_ADDR, 4, "invalid_inputs")
+    # Callee-saved FP registers survive both stock lookup calls. Restore the
+    # original caller values on every exit, including invalid/zero inputs.
+    a.movl_pool(1, MAP_ADDR).fmov_load(12, 1)
+    a.movl_pool(1, IAT_ADDR).fmov_load(13, 1)
+    a.fmov(12, 4)
+    emit_float_register_range_gate(a, MAP_MIN_ADDR, MAP_MAX_ADDR, 4, "invalid_inputs")
+    emit_float_register_range_gate(a, RPM_MIN_ADDR, RPM_MAX_ADDR, 5, "invalid_inputs")
+    a.fmov(13, 4)
+    emit_float_register_range_gate(a, IAT_MIN_ADDR, IAT_MAX_ADDR, 4, "invalid_inputs")
     emit_positive_calibration_gate(a, GLOBAL_MULTIPLIER_ADDR, 2, "invalid_inputs")
     emit_positive_calibration_gate(a, DISPLACEMENT_ADDR, 2, "invalid_inputs")
     emit_positive_calibration_gate(a, MAX_AIRFLOW_ADDR, 2, "invalid_inputs")
@@ -371,8 +456,7 @@ def build_wrapper() -> bytes:
     a.movl_pool(4, HIGH_VE_DESC_ADDR)
     a.label("descriptor_selected")
 
-    a.movl_pool(1, MAP_ADDR).fmov_load(4, 1)
-    a.movl_pool(1, RPM_ADDR).fmov_load(5, 1)
+    a.fmov(12, 4).fmov(15, 5)
     a.movl_pool(2, TABLE_3D_LOOKUP).jsr(2).nop()
     emit_positive_finite_value_gate(a, 0, "invalid_ve")
     a.bra("ve_valid").nop()
@@ -380,14 +464,13 @@ def build_wrapper() -> bytes:
     a.bra("failsafe").nop()
     a.label("ve_valid")
 
-    a.movl_pool(1, MAP_ADDR).fmov_load(2, 1).fmul(2, 0)
-    a.movl_pool(1, RPM_ADDR).fmov_load(2, 1).fmul(2, 0)
+    a.fmul(12, 0).fmul(15, 0)
     a.movl_pool(1, DISPLACEMENT_ADDR).fmov_load(2, 1).fmul(2, 0)
     a.movl_pool(1, AIRFLOW_CONSTANT_ADDR).fmov_load(2, 1).fmul(2, 0)
     a.movl_pool(1, GLOBAL_MULTIPLIER_ADDR).fmov_load(2, 1).fmul(2, 0)
 
     a.fpush(0)
-    a.movl_pool(1, IAT_ADDR).fmov_load(4, 1)
+    a.fmov(13, 4)
     a.movl_pool(4, IAT_DESC_ADDR)
     a.movl_pool(2, TABLE_2D_LOOKUP).jsr(2).nop()
     emit_positive_finite_value_gate(a, 0, "drop_and_failsafe")
@@ -423,7 +506,7 @@ def build_wrapper() -> bytes:
         SYNTHETIC_FILTER_B_ADDR,
     ):
         a.movl_pool(1, address).fmov_store(0, 1)
-    a.ldsl_pr().rts().nop()
+    a.ldsl_pr().fpop(13).fpop(12).rts().nop()
     return a.assemble()
 
 
@@ -575,6 +658,28 @@ def apply_to_rom(rom: bytearray) -> list[tuple[str, int, bytes]]:
         be32(STOCK_FINAL_AIRFLOW_HELPER),
         be32(WRAPPER_ADDR),
         "stock final-airflow helper pointer",
+    )
+    # A local call-site replacement, not a global diagnostic-helper patch.
+    # Other fault consumers and stopped/cranking load paths are untouched.
+    checked_write(
+        rom, CONSTANT_ZERO_RETURN, CONSTANT_ZERO_RETURN_STOCK,
+        CONSTANT_ZERO_RETURN_STOCK, "stock constant-zero return helper",
+    )
+    checked_write(
+        rom, CALLER_RPM_CAPTURE_ADDR, CALLER_RPM_CAPTURE_STOCK,
+        CALLER_RPM_CAPTURE_STOCK, "caller RPM capture into FR15",
+    )
+    checked_write(
+        rom, STOCK_ENGINE_LOAD_CALC_ADDR, STOCK_ENGINE_LOAD_CALC_SEQUENCE,
+        STOCK_ENGINE_LOAD_CALC_SEQUENCE, "retained load calculation and FR15 divisor",
+    )
+    checked_write(
+        rom, LOAD_FILTER_ALPHA_ADDR, LOAD_FILTER_ALPHA_STOCK,
+        LOAD_FILTER_ALPHA_STOCK, "retained stock load smoothing alpha",
+    )
+    checked_write(
+        rom, MAF_LOAD_FALLBACK_HELPER_PTR, be32(STOCK_MAF_LOAD_FALLBACK_HELPER),
+        be32(CONSTANT_ZERO_RETURN), "local obsolete MAF load-fallback bypass",
     )
     for address in MAF_CONVERSION_CALL_ADDRS:
         checked_write(

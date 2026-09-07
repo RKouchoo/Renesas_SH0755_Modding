@@ -4,13 +4,14 @@
 Order is deliberate and deterministic:
 
 1. verify the root stock BIN, base_roms copy, and original SRF payload;
-2. install the existing Ghidra-verified boost-control component;
+2. install hard-overboost safety while retaining stock radiator-fan control;
 3. replace its donor MAP transfer with the exact Omni Power MAP-SUP-3BR data;
 4. install the bounded, default-off rotational-idle timing post-processor;
 5. install always-on mafless speed density with committed-state dual VE;
 6. install the permanent four-stock-O2 delete / former-MAF wideband component;
-7. install barometrically referenced forced-open-loop and latched lean-cut safety;
-8. apply the conservative 5 psi / 98 RON / STI-pink / 6800-RPM calibration;
+7. delete actual CPC duty/modeled flow/fuel subtraction, then install
+   barometrically referenced forced-open-loop and latched lean-cut safety;
+8. apply the conservative 5 psi / 98 RON / A4TE002B-STI-injector / 6800-RPM calibration;
 9. apply the speed-density component's predictable 3200/3000-RPM AVLS policy
    and write/verify the Subaru checksum.
 
@@ -42,6 +43,7 @@ import patch_rotational_idle as rotational_idle  # noqa: E402
 import master_calibration as calibration  # noqa: E402
 import wideband_component as wideband  # noqa: E402
 import fueling_safety_component as fueling_safety  # noqa: E402
+import purge_delete_component as purge_delete  # noqa: E402
 
 
 STOCK = (ROOT / "2005 BLE MT.bin").resolve()
@@ -159,7 +161,7 @@ def refuse_output_alias(output: Path) -> None:
         STOCK,
         BASE_STOCK,
         SOURCE_SRF,
-        calibration.PINK_INJECTOR_DONOR.resolve(),
+        calibration.A4TE002B_INJECTOR_DONOR.resolve(),
     )
     output_real = Path(os.path.realpath(output))
     for source in protected:
@@ -185,6 +187,7 @@ def build_image() -> tuple[
     component_blobs["rotational_idle"] = rotational_idle.apply_to_rom(rom)
     component_blobs["speed_density"] = speed_density.apply_to_rom(rom)
     component_blobs["wideband_O2_delete"] = wideband.apply_to_rom(rom)
+    component_blobs["purge_delete"] = purge_delete.apply_to_rom(rom)
     component_blobs["fueling_safety"] = fueling_safety.apply_to_rom(rom)
 
     # Pin the exact firmware-component stage before applying any tune tables.
@@ -213,7 +216,7 @@ def build_image() -> tuple[
         raise RuntimeError("protected stock ROM changed during master build")
     if extract_srf.extract_memd(SOURCE_SRF)[0] != stock:
         raise RuntimeError("protected SRF payload changed during master build")
-    calibration.pink_injector_calibration()  # repeat donor hash/CALID/value checks
+    calibration.a4te002b_sti_injector_calibration()  # repeat donor hash/CALID/value checks
     return stock, output, component_blobs, calibration_writes
 
 
@@ -237,7 +240,7 @@ def main(argv: list[str] | None = None) -> None:
         if before != after
     }
     stored, calculated, _ = calibration.checksum_value(output)
-    pink_raw, _, pink_display = calibration.pink_injector_calibration()
+    pink_raw, _, pink_display = calibration.a4te002b_sti_injector_calibration()
 
     print("D2WD610H master patch written: %s" % output_path)
     print("  stock source      : %s (UNCHANGED, SHA-256 %s)" % (STOCK, sha256(stock)))
@@ -255,22 +258,24 @@ def main(argv: list[str] | None = None) -> None:
     print("  AVLS VE ranges    : low 0..3200 RPM; high 3000..7500 RPM")
     print("  AVLS switch       : fixed 3200 engage / 3000 release RPM")
     print("  primary OL RPM    : 1000..6800 RPM, conservative stock-surface resample")
-    print("  boost             : EVAP PWM + throttle/SD-input/wideband/soft/hard gates")
-    print("  boost switches    : EBCS OFF; independent hard overboost cut ON")
-    print("  default boost cmd : spring-only (WGDC/Kp/max duty all zero), 5 psi targets")
+    print("  boost             : spring-only; hard MAP cut retained; electronic actuator retired")
+    print("  fan / purge       : stock fan PWM retained; actual CPC + fuel subtraction deleted")
+    print("  boost switch      : independent hard overboost cut ON; EBCS not available")
+    print("  default boost     : mechanical 5 psi spring; no electronic target command")
     print("  oxygen sensors    : four stock paths removed; former MAF ADC -> 50-4110 P0/P1")
     print("  rotational idle   : installed, bounded retard-only, default OFF")
     print("  pressure OL guard : ON; baro-referenced, 0.5 psi pre-boost margin")
     print("  lean fuel cut     : ON; 13.0 AFR, delayed/confirmed, boost-release latched")
     print(
-        "  injectors         : pinned STI-pink factory donor, %.2f cc/min estimate "
+        "  injectors         : pinned A4TE002B JDM-STI factory donor, %.2f cc/min estimate "
         "(D2WD raw %.6f)" % (pink_display, pink_raw)
     )
     print("  rev limit         : 6800 cut / 6770 resume RPM")
     print("  calibration writes: %d tables/regions" % len(calibration_writes))
     print("  checksum          : 0x%08X (valid=%s)" % (stored, stored == calculated))
     for component, blobs in component_blobs.items():
-        print("  %-18s: %d free-space blobs" % (component, len(blobs)))
+        location = "in-place stock ranges" if component == "purge_delete" else "reserved flash blobs"
+        print("  %-18s: %d %s" % (component, len(blobs), location))
     print("\n*** DEVELOPMENT IMAGE: bench, continuity, pressure, and load-dyno validation required. ***")
 
 

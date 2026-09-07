@@ -25,3 +25,24 @@ The wrapper, dual descriptors/axes/data, MAF removal, fail-safe behavior, AVLS
 calibration, checksum, definitions, and stock provenance are checked together
 by `verify_speed_density.py`. Static verification does not prove physical lift
 actuation, VE accuracy, or engine safety.
+
+## September 8 hook hardening
+
+The wrapper keeps the proven final-airflow hook but now uses caller FR15 RPM
+through validation, VE lookup and multiplication, matching the retained load
+divisor. MAP/IAT are each captured once in saved FR12/FR13. This prevents
+within-call rereads, not unequal physical sensor acquisition times. Every
+exit restores the saved registers; no interrupt masking/static RAM is added.
+
+Only local literal `0x173FC` is redirected from diagnostic getter `0x65168`
+to verified `constant_zero_return @ 0x27088`, removing this task's obsolete
+MAF-fault load substitution. Other diagnostic users and cranking/timeout
+initialization remain. The 6% load filter remains and is explicitly defined.
+
+Both binary verifiers run the new eight-group wrapper-opcode regression test;
+the stock lookup callees are descriptor-based models, not instruction-emulated.
+The rebuilt wrapper is 536 bytes at `0x7E18C..0x7E3A3`; no memory collision is
+introduced. The complete stock-address trace, changed-byte audit, hashes and
+remaining limitations are in the implementation section of
+[the master audit](../master_patch/GHIDRA_AUDIT.md). This is not a confirmed
+lean-out repair, and no VE/injector/timing calibration changed in this work.

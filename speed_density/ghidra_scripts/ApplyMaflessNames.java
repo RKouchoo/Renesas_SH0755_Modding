@@ -40,7 +40,9 @@ public class ApplyMaflessNames extends GhidraScript {
         createOrRename("000107ee", "periodic_airflow_sensor_task_dispatcher");
         createOrRename("000172a4", "maf_airflow_temperature_compensation_update");
         createOrRename("000024b0", "float_minimum_select");
-        createOrRename("0001b800", "engine_load_from_mass_airflow_calculate");
+        createOrRename("00027088", "constant_zero_return");
+        createOrRename("00065168", "airflow_load_fallback_status_get");
+        createOrRename("0001b800", "purge_airflow_limit_and_correction_update");
         createOrRename("0002ffa8", "filtered_mass_airflow_consumer_2ffa8");
         createOrRename("0004f1fa", "filtered_mass_airflow_logger_convert");
         createOrRename("000673c6", "filtered_mass_airflow_consumer_673c6");
@@ -63,7 +65,7 @@ public class ApplyMaflessNames extends GhidraScript {
         createOrRename("000405b2", "avls_mode_commit_copy");
         createOrRename("000405cc", "avls_osv_actuation_gate");
         createOrRename("0003e20e", "engine_load_dependent_update_3e20e");
-        createOrRename("00029024", "engine_load_dependent_update_29024");
+        createOrRename("00029024", "ignition_retard_c1c8_update");
         createOrRename("00022454", "primary_open_loop_fueling_target_update");
         createOrRename("0002046c", "engine_load_dependent_update_2046c");
         createOrRename("0001e0c8", "injector_flow_scaling_factor_update");
@@ -95,6 +97,17 @@ public class ApplyMaflessNames extends GhidraScript {
         setEOLComment(
             toAddr("000107f8"),
             "MAFless speed-density component replaces the MAF limit/filter jsr with nop."
+        );
+        setEOLComment(
+            toAddr("000173fc"),
+            "Hardened SD redirects only this task's MAF-fault fallback status " +
+            "literal65168 to27088 constantzero. Global status and other users remain."
+        );
+        setEOLComment(
+            toAddr("00017398"),
+            "Hardened SD uses caller FR15 RPM and captured MAP/IAT in saved " +
+            "FR12/13; restores them and returns airflow FR0. Retained load " +
+            "division17550 uses the same FR15; stock alpha73968=0.06 remains."
         );
         setPlateComment(
             toAddr("0003fdbc"),

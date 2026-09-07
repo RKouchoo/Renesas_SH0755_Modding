@@ -1,0 +1,447 @@
+
+Discarded input sections
+
+ .text          0x00000000        0x0 /private/tmp/d2wd-kernel-build/start_ssm.o
+ .data          0x00000000        0x0 /private/tmp/d2wd-kernel-build/start_ssm.o
+ .bss           0x00000000        0x0 /private/tmp/d2wd-kernel-build/start_ssm.o
+ .text          0x00000000        0x0 /private/tmp/d2wd-kernel-build/cmd_parser.o
+ .data          0x00000000        0x0 /private/tmp/d2wd-kernel-build/cmd_parser.o
+ .bss           0x00000000        0x0 /private/tmp/d2wd-kernel-build/cmd_parser.o
+ .text.EEPROM_TX_bytes
+                0x00000000       0x50 /private/tmp/d2wd-kernel-build/cmd_parser.o
+ .text.send_message
+                0x00000000        0xc /private/tmp/d2wd-kernel-build/cmd_parser.o
+ .bss.EEPROM_CS
+                0x00000000        0x4 /private/tmp/d2wd-kernel-build/cmd_parser.o
+ .comment       0x00000000       0x13 /private/tmp/d2wd-kernel-build/cmd_parser.o
+ .text          0x00000000        0x0 /private/tmp/d2wd-kernel-build/eep_funcs.o
+ .data          0x00000000        0x0 /private/tmp/d2wd-kernel-build/eep_funcs.o
+ .bss           0x00000000        0x0 /private/tmp/d2wd-kernel-build/eep_funcs.o
+ .text.eep_read16
+                0x00000000       0x18 /private/tmp/d2wd-kernel-build/eep_funcs.o
+ .text.eep_setptr
+                0x00000000        0xc /private/tmp/d2wd-kernel-build/eep_funcs.o
+ .bss.builtin_eep_read16
+                0x00000000        0x4 /private/tmp/d2wd-kernel-build/eep_funcs.o
+ .debug_info    0x00000000      0x131 /private/tmp/d2wd-kernel-build/eep_funcs.o
+ .debug_abbrev  0x00000000       0xd0 /private/tmp/d2wd-kernel-build/eep_funcs.o
+ .debug_loclists
+                0x00000000       0x43 /private/tmp/d2wd-kernel-build/eep_funcs.o
+ .debug_aranges
+                0x00000000       0x28 /private/tmp/d2wd-kernel-build/eep_funcs.o
+ .debug_rnglists
+                0x00000000       0x19 /private/tmp/d2wd-kernel-build/eep_funcs.o
+ .debug_line    0x00000000       0xe6 /private/tmp/d2wd-kernel-build/eep_funcs.o
+ .debug_str     0x00000000      0x1b1 /private/tmp/d2wd-kernel-build/eep_funcs.o
+ .comment       0x00000000       0x13 /private/tmp/d2wd-kernel-build/eep_funcs.o
+ .debug_frame   0x00000000       0x30 /private/tmp/d2wd-kernel-build/eep_funcs.o
+ .text          0x00000000        0x0 /private/tmp/d2wd-kernel-build/main.o
+ .data          0x00000000        0x0 /private/tmp/d2wd-kernel-build/main.o
+ .bss           0x00000000        0x0 /private/tmp/d2wd-kernel-build/main.o
+ .comment       0x00000000       0x13 /private/tmp/d2wd-kernel-build/main.o
+ .text          0x00000000        0x0 /private/tmp/d2wd-kernel-build/crc.o
+ .data          0x00000000        0x0 /private/tmp/d2wd-kernel-build/crc.o
+ .bss           0x00000000        0x0 /private/tmp/d2wd-kernel-build/crc.o
+ .text.crc16    0x00000000       0x7c /private/tmp/d2wd-kernel-build/crc.o
+ .bss.crc_tab16
+                0x00000000      0x400 /private/tmp/d2wd-kernel-build/crc.o
+ .bss.crc_tab16_init
+                0x00000000        0x1 /private/tmp/d2wd-kernel-build/crc.o
+ .comment       0x00000000       0x13 /private/tmp/d2wd-kernel-build/crc.o
+ .text          0x00000000        0x0 /private/tmp/d2wd-kernel-build/mfg_ssm.o
+ .data          0x00000000        0x0 /private/tmp/d2wd-kernel-build/mfg_ssm.o
+ .bss           0x00000000        0x0 /private/tmp/d2wd-kernel-build/mfg_ssm.o
+ .comment       0x00000000       0x13 /private/tmp/d2wd-kernel-build/mfg_ssm.o
+ .text          0x00000000        0x0 /private/tmp/d2wd-kernel-build/wdt.o
+ .data          0x00000000        0x0 /private/tmp/d2wd-kernel-build/wdt.o
+ .bss           0x00000000        0x0 /private/tmp/d2wd-kernel-build/wdt.o
+ .comment       0x00000000       0x13 /private/tmp/d2wd-kernel-build/wdt.o
+ .text          0x00000000        0x0 /private/tmp/d2wd-kernel-build/platf_7055.o
+ .data          0x00000000        0x0 /private/tmp/d2wd-kernel-build/platf_7055.o
+ .bss           0x00000000        0x0 /private/tmp/d2wd-kernel-build/platf_7055.o
+ .comment       0x00000000       0x13 /private/tmp/d2wd-kernel-build/platf_7055.o
+ .text          0x00000000        0x0 /private/tmp/d2wd-kernel-build/pl_flash_705x_180nm.o
+ .data          0x00000000        0x0 /private/tmp/d2wd-kernel-build/pl_flash_705x_180nm.o
+ .bss           0x00000000        0x0 /private/tmp/d2wd-kernel-build/pl_flash_705x_180nm.o
+ .comment       0x00000000       0x13 /private/tmp/d2wd-kernel-build/pl_flash_705x_180nm.o
+ .text          0x00000000        0x0 /private/tmp/d2wd-kernel-build/memory.o
+ .data          0x00000000        0x0 /private/tmp/d2wd-kernel-build/memory.o
+ .bss           0x00000000        0x0 /private/tmp/d2wd-kernel-build/memory.o
+ .comment       0x00000000       0x13 /private/tmp/d2wd-kernel-build/memory.o
+
+Memory Configuration
+
+Name             Origin             Length             Attributes
+CODE             0xffff6004         0x00001ffc         xr
+MICRO            0xffff8000         0x00001000         rw
+DATA             0xffff9000         0x00003000         rw
+STACK            0xffffc000         0x00001000         rw
+*default*        0x00000000         0xffffffff
+
+Linker script and memory map
+
+LOAD /private/tmp/d2wd-kernel-build/start_ssm.o
+LOAD /private/tmp/d2wd-kernel-build/cmd_parser.o
+LOAD /private/tmp/d2wd-kernel-build/eep_funcs.o
+LOAD /private/tmp/d2wd-kernel-build/main.o
+LOAD /private/tmp/d2wd-kernel-build/crc.o
+LOAD /private/tmp/d2wd-kernel-build/mfg_ssm.o
+LOAD /private/tmp/d2wd-kernel-build/wdt.o
+LOAD /private/tmp/d2wd-kernel-build/platf_7055.o
+LOAD /private/tmp/d2wd-kernel-build/pl_flash_705x_180nm.o
+LOAD /private/tmp/d2wd-kernel-build/memory.o
+LOAD /private/tmp/sh-elf-14.2.0-Darwin-arm64/bin/../lib/gcc/sh-elf/14.2.0/m2/libgcc.a
+                0xffffcffc                        _stackinit = ((ORIGIN (STACK) + LENGTH (STACK)) - 0x4)
+
+.text           0xffff6004     0x1294
+                0xffff6004                        . = ALIGN (0x4)
+ *(.rja)
+ .rja           0xffff6004       0x2c /private/tmp/d2wd-kernel-build/start_ssm.o
+                0xffff6004                RAMjump_entry
+ *(.text .text.*)
+ .text.kline_send_message.part.0
+                0xffff6030       0x8c /private/tmp/d2wd-kernel-build/cmd_parser.o
+ .text.cmd_flash_init.constprop.0
+                0xffff60bc       0xa8 /private/tmp/d2wd-kernel-build/cmd_parser.o
+ .text.delay    0xffff6164       0x14 /private/tmp/d2wd-kernel-build/cmd_parser.o
+                0xffff6164                _delay
+ .text.set_sci3_cs
+                0xffff6178       0x28 /private/tmp/d2wd-kernel-build/cmd_parser.o
+                0xffff6178                _set_sci3_cs
+ .text.clear_sci3_cs
+                0xffff61a0       0x34 /private/tmp/d2wd-kernel-build/cmd_parser.o
+                0xffff61a0                _clear_sci3_cs
+ .text.set_sci4_cs
+                0xffff61d4       0x12 /private/tmp/d2wd-kernel-build/cmd_parser.o
+                0xffff61d4                _set_sci4_cs
+ *fill*         0xffff61e6        0x2 
+ .text.clear_sci4_cs
+                0xffff61e8       0x14 /private/tmp/d2wd-kernel-build/cmd_parser.o
+                0xffff61e8                _clear_sci4_cs
+ .text.EEPROM_check
+                0xffff61fc       0x70 /private/tmp/d2wd-kernel-build/cmd_parser.o
+                0xffff61fc                _EEPROM_check
+ .text.EEPROM_init
+                0xffff626c       0x98 /private/tmp/d2wd-kernel-build/cmd_parser.o
+                0xffff626c                _EEPROM_init
+ .text.EEPROM_send_cmd
+                0xffff6304       0x98 /private/tmp/d2wd-kernel-build/cmd_parser.o
+                0xffff6304                _EEPROM_send_cmd
+ .text.EEPROM_get_rsp
+                0xffff639c       0xd8 /private/tmp/d2wd-kernel-build/cmd_parser.o
+                0xffff639c                _EEPROM_get_rsp
+ .text.EEPROM_TX_2bytes_RX_2bytes
+                0xffff6474       0x54 /private/tmp/d2wd-kernel-build/cmd_parser.o
+                0xffff6474                _EEPROM_TX_2bytes_RX_2bytes
+ .text.eep_read16_sub
+                0xffff64c8       0x74 /private/tmp/d2wd-kernel-build/cmd_parser.o
+ .text.kline_send_message
+                0xffff653c       0x14 /private/tmp/d2wd-kernel-build/cmd_parser.o
+                0xffff653c                _kline_send_message
+ .text.kline_get_message
+                0xffff6550       0xbc /private/tmp/d2wd-kernel-build/cmd_parser.o
+                0xffff6550                _kline_get_message
+ .text.cmd_loop
+                0xffff660c      0x608 /private/tmp/d2wd-kernel-build/cmd_parser.o
+                0xffff660c                _cmd_loop
+ .text.startup.main
+                0xffff6c14       0x4c /private/tmp/d2wd-kernel-build/main.o
+                0xffff6c14                _main
+ .text.crc32    0xffff6c60       0x80 /private/tmp/d2wd-kernel-build/crc.o
+                0xffff6c60                _crc32
+ .text.buffer_crc32
+                0xffff6ce0        0xc /private/tmp/d2wd-kernel-build/crc.o
+                0xffff6ce0                _buffer_crc32
+ .text.init_mfg
+                0xffff6cec       0xf8 /private/tmp/d2wd-kernel-build/mfg_ssm.o
+                0xffff6cec                _init_mfg
+ .text.wdt_tog  0xffff6de4       0x1c /private/tmp/d2wd-kernel-build/wdt.o
+                0xffff6de4                _wdt_tog
+ .text.INT_ATU11_IMI1A
+                0xffff6e00       0x4c /private/tmp/d2wd-kernel-build/platf_7055.o
+                0xffff6e00                _INT_ATU11_IMI1A
+ .text.die_trace
+                0xffff6e4c       0x3e /private/tmp/d2wd-kernel-build/platf_7055.o
+                0xffff6e4c                _die_trace
+ *fill*         0xffff6e8a        0x2 
+ .text.init_platf
+                0xffff6e8c      0x104 /private/tmp/d2wd-kernel-build/platf_7055.o
+                0xffff6e8c                _init_platf
+ .text.die      0xffff6f90       0x1a /private/tmp/d2wd-kernel-build/platf_7055.o
+                0xffff6f90                _die
+ *fill*         0xffff6faa        0x2 
+ .text.platf_flash_init
+                0xffff6fac      0x160 /private/tmp/d2wd-kernel-build/pl_flash_705x_180nm.o
+                0xffff6fac                _platf_flash_init
+ .text.platf_flash_protect
+                0xffff710c        0xc /private/tmp/d2wd-kernel-build/pl_flash_705x_180nm.o
+                0xffff710c                _platf_flash_protect
+ .text.platf_flash_unprotect
+                0xffff7118        0xc /private/tmp/d2wd-kernel-build/pl_flash_705x_180nm.o
+                0xffff7118                _platf_flash_unprotect
+ .text.platf_flash_eb
+                0xffff7124       0x68 /private/tmp/d2wd-kernel-build/pl_flash_705x_180nm.o
+                0xffff7124                _platf_flash_eb
+ .text.platf_flash_wb
+                0xffff718c       0xc4 /private/tmp/d2wd-kernel-build/pl_flash_705x_180nm.o
+                0xffff718c                _platf_flash_wb
+ .text.memcpy   0xffff7250       0x16 /private/tmp/d2wd-kernel-build/memory.o
+                0xffff7250                _memcpy
+ .text.memset   0xffff7266       0x14 /private/tmp/d2wd-kernel-build/memory.o
+                0xffff7266                _memset
+ .text.memcmp   0xffff727a       0x1e /private/tmp/d2wd-kernel-build/memory.o
+                0xffff727a                _memcmp
+                0xffff7298                        . = ALIGN (0x4)
+                0xffff7298                        _etext = .
+
+.rodata         0xffff7298       0x70
+                0xffff7298                        . = ALIGN (0x4)
+ *(.rodata .rodata.*)
+ .rodata.kernel_id_string
+                0xffff7298       0x2b /private/tmp/d2wd-kernel-build/cmd_parser.o
+ *fill*         0xffff72c3        0x1 
+ .rodata.fblocks
+                0xffff72c4       0x44 /private/tmp/d2wd-kernel-build/pl_flash_705x_180nm.o
+                0xffff72c4                _fblocks
+                0xffff7308                        . = ALIGN (0x4)
+
+.rela.dyn       0xffff7308        0x0
+ .rela.text.init_platf
+                0xffff7308        0x0 /private/tmp/d2wd-kernel-build/platf_7055.o
+
+.data           0xffff7308        0x0
+                0xffff7308                        . = ALIGN (0x4)
+                0xffff7308                        _sdata = .
+ *(.data .data.* .sdata .sdata.*)
+                0xffff7308                        . = ALIGN (0x4)
+                0xffff7308                        _edata = .
+                0xffff7308                        _idatalen = (. - _sdata)
+                0xffff7308                        _endpayload = .
+
+.bss            0xffff9000     0x2140
+                0xffff9000                        . = ALIGN (0x4)
+                0xffff9000                        _sbss = .
+ *(.bss .bss.* .sbss .sbss.*)
+ .bss.cmd_loop_counter
+                0xffff9000        0x4 /private/tmp/d2wd-kernel-build/cmd_parser.o
+ .bss.msglength
+                0xffff9004        0x2 /private/tmp/d2wd-kernel-build/cmd_parser.o
+ .bss.msgindex  0xffff9006        0x2 /private/tmp/d2wd-kernel-build/cmd_parser.o
+ .bss.bufferindex
+                0xffff9008        0x2 /private/tmp/d2wd-kernel-build/cmd_parser.o
+ *fill*         0xffff900a        0x2 
+ .bss.flashbufferindex
+                0xffff900c        0x4 /private/tmp/d2wd-kernel-build/cmd_parser.o
+ .bss.sendbuffer
+                0xffff9010      0x410 /private/tmp/d2wd-kernel-build/cmd_parser.o
+ .bss.databuffer
+                0xffff9420      0x410 /private/tmp/d2wd-kernel-build/cmd_parser.o
+ .bss.EEPROM_SCI
+                0xffff9830        0x4 /private/tmp/d2wd-kernel-build/cmd_parser.o
+                0xffff9830                _EEPROM_SCI
+ .bss.txbuf     0xffff9834      0x100 /private/tmp/d2wd-kernel-build/cmd_parser.o
+ .bss.flashbuffer
+                0xffff9934     0x1000 /private/tmp/d2wd-kernel-build/main.o
+                0xffff9934                _flashbuffer
+ .bss.crc_tab32
+                0xffffa934      0x400 /private/tmp/d2wd-kernel-build/crc.o
+ .bss.crc_tab32_init
+                0xffffad34        0x1 /private/tmp/d2wd-kernel-build/crc.o
+ *fill*         0xffffad35        0x1 
+ .bss.wdt_pin   0xffffad36        0x2 /private/tmp/d2wd-kernel-build/wdt.o
+                0xffffad36                _wdt_pin
+ .bss.wdt_dr    0xffffad38        0x4 /private/tmp/d2wd-kernel-build/wdt.o
+                0xffffad38                _wdt_dr
+ .bss.ivt       0xffffad3c      0x400 /private/tmp/d2wd-kernel-build/platf_7055.o
+                0xffffad3c                _ivt
+ .bss.reflash_enabled
+                0xffffb13c        0x1 /private/tmp/d2wd-kernel-build/pl_flash_705x_180nm.o
+ *(COMMON)
+                0xffffb140                        . = ALIGN (0x4)
+ *fill*         0xffffb13d        0x3 
+                0xffffb140                        _ebss = .
+                0xffffb140                        _bsslen = (. - _sbss)
+                0x00000001                        ASSERT ((RAMjump_entry == 0xffff6004), sti04 kernel entry must remain FFFF6004)
+                0x00000001                        ASSERT ((_sdata == _edata), unhandled initialized data)
+                0x00000001                        ASSERT ((_endpayload <= ORIGIN (MICRO)), kernel code overlaps flash microcode)
+                0x00000001                        ASSERT ((_sbss >= (ORIGIN (MICRO) + LENGTH (MICRO))), BSS overlaps flash microcode)
+                0x00000001                        ASSERT ((_ebss <= ORIGIN (STACK)), BSS consumes reserved 4 KiB stack region)
+                0x00000001                        ASSERT ((_stackinit == 0xffffcffc), unexpected SH7055 stack placement)
+
+/DISCARD/
+ *(.comment)
+OUTPUT(/private/tmp/d2wd-kernel-build/ssmk_kline_sh7055_180_d2wd.elf elf32-sh)
+
+.debug_info     0x00000000     0x8ac6
+ .debug_info    0x00000000     0x407f /private/tmp/d2wd-kernel-build/cmd_parser.o
+ .debug_info    0x0000407f      0x164 /private/tmp/d2wd-kernel-build/main.o
+ .debug_info    0x000041e3      0x2c7 /private/tmp/d2wd-kernel-build/crc.o
+ .debug_info    0x000044aa     0x22aa /private/tmp/d2wd-kernel-build/mfg_ssm.o
+ .debug_info    0x00006754       0xc6 /private/tmp/d2wd-kernel-build/wdt.o
+ .debug_info    0x0000681a     0x1915 /private/tmp/d2wd-kernel-build/platf_7055.o
+ .debug_info    0x0000812f      0x7d0 /private/tmp/d2wd-kernel-build/pl_flash_705x_180nm.o
+ .debug_info    0x000088ff      0x1c7 /private/tmp/d2wd-kernel-build/memory.o
+
+.debug_abbrev   0x00000000     0x1109
+ .debug_abbrev  0x00000000      0x581 /private/tmp/d2wd-kernel-build/cmd_parser.o
+ .debug_abbrev  0x00000581      0x118 /private/tmp/d2wd-kernel-build/main.o
+ .debug_abbrev  0x00000699      0x161 /private/tmp/d2wd-kernel-build/crc.o
+ .debug_abbrev  0x000007fa      0x12c /private/tmp/d2wd-kernel-build/mfg_ssm.o
+ .debug_abbrev  0x00000926       0x86 /private/tmp/d2wd-kernel-build/wdt.o
+ .debug_abbrev  0x000009ac      0x296 /private/tmp/d2wd-kernel-build/platf_7055.o
+ .debug_abbrev  0x00000c42      0x3f5 /private/tmp/d2wd-kernel-build/pl_flash_705x_180nm.o
+ .debug_abbrev  0x00001037       0xd2 /private/tmp/d2wd-kernel-build/memory.o
+
+.debug_loclists
+                0x00000000     0x13a6
+ .debug_loclists
+                0x00000000      0xe5e /private/tmp/d2wd-kernel-build/cmd_parser.o
+ .debug_loclists
+                0x00000e5e       0x22 /private/tmp/d2wd-kernel-build/main.o
+ .debug_loclists
+                0x00000e80      0x154 /private/tmp/d2wd-kernel-build/crc.o
+ .debug_loclists
+                0x00000fd4       0x47 /private/tmp/d2wd-kernel-build/platf_7055.o
+ .debug_loclists
+                0x0000101b      0x206 /private/tmp/d2wd-kernel-build/pl_flash_705x_180nm.o
+ .debug_loclists
+                0x00001221      0x185 /private/tmp/d2wd-kernel-build/memory.o
+
+.debug_aranges  0x00000000      0x1e0
+ .debug_aranges
+                0x00000000       0xa8 /private/tmp/d2wd-kernel-build/cmd_parser.o
+ .debug_aranges
+                0x000000a8       0x20 /private/tmp/d2wd-kernel-build/main.o
+ .debug_aranges
+                0x000000c8       0x30 /private/tmp/d2wd-kernel-build/crc.o
+ .debug_aranges
+                0x000000f8       0x20 /private/tmp/d2wd-kernel-build/mfg_ssm.o
+ .debug_aranges
+                0x00000118       0x20 /private/tmp/d2wd-kernel-build/wdt.o
+ .debug_aranges
+                0x00000138       0x38 /private/tmp/d2wd-kernel-build/platf_7055.o
+ .debug_aranges
+                0x00000170       0x40 /private/tmp/d2wd-kernel-build/pl_flash_705x_180nm.o
+ .debug_aranges
+                0x000001b0       0x30 /private/tmp/d2wd-kernel-build/memory.o
+
+.debug_rnglists
+                0x00000000      0x466
+ .debug_rnglists
+                0x00000000      0x307 /private/tmp/d2wd-kernel-build/cmd_parser.o
+ .debug_rnglists
+                0x00000307       0x1f /private/tmp/d2wd-kernel-build/main.o
+ .debug_rnglists
+                0x00000326       0x2c /private/tmp/d2wd-kernel-build/crc.o
+ .debug_rnglists
+                0x00000352       0x14 /private/tmp/d2wd-kernel-build/mfg_ssm.o
+ .debug_rnglists
+                0x00000366       0x13 /private/tmp/d2wd-kernel-build/wdt.o
+ .debug_rnglists
+                0x00000379       0x5f /private/tmp/d2wd-kernel-build/platf_7055.o
+ .debug_rnglists
+                0x000003d8       0x48 /private/tmp/d2wd-kernel-build/pl_flash_705x_180nm.o
+ .debug_rnglists
+                0x00000420       0x46 /private/tmp/d2wd-kernel-build/memory.o
+
+.debug_line     0x00000000     0x235a
+ .debug_line    0x00000000     0x1147 /private/tmp/d2wd-kernel-build/cmd_parser.o
+ .debug_line    0x00001147      0x12d /private/tmp/d2wd-kernel-build/main.o
+ .debug_line    0x00001274      0x26e /private/tmp/d2wd-kernel-build/crc.o
+ .debug_line    0x000014e2      0x24a /private/tmp/d2wd-kernel-build/mfg_ssm.o
+ .debug_line    0x0000172c       0xce /private/tmp/d2wd-kernel-build/wdt.o
+ .debug_line    0x000017fa      0x3bb /private/tmp/d2wd-kernel-build/platf_7055.o
+ .debug_line    0x00001bb5      0x624 /private/tmp/d2wd-kernel-build/pl_flash_705x_180nm.o
+ .debug_line    0x000021d9      0x181 /private/tmp/d2wd-kernel-build/memory.o
+
+.debug_str      0x00000000     0x12cd
+ .debug_str     0x00000000     0x12cd /private/tmp/d2wd-kernel-build/cmd_parser.o
+                                0xa47 (size before relaxing)
+ .debug_str     0x000012cd      0x1a1 /private/tmp/d2wd-kernel-build/main.o
+ .debug_str     0x000012cd      0x1f8 /private/tmp/d2wd-kernel-build/crc.o
+ .debug_str     0x000012cd      0x611 /private/tmp/d2wd-kernel-build/mfg_ssm.o
+ .debug_str     0x000012cd      0x176 /private/tmp/d2wd-kernel-build/wdt.o
+ .debug_str     0x000012cd      0x746 /private/tmp/d2wd-kernel-build/platf_7055.o
+ .debug_str     0x000012cd      0x360 /private/tmp/d2wd-kernel-build/pl_flash_705x_180nm.o
+ .debug_str     0x000012cd      0x185 /private/tmp/d2wd-kernel-build/memory.o
+
+.debug_frame    0x00000000      0x558
+ .debug_frame   0x00000000      0x28c /private/tmp/d2wd-kernel-build/cmd_parser.o
+ .debug_frame   0x0000028c       0x2c /private/tmp/d2wd-kernel-build/main.o
+ .debug_frame   0x000002b8       0x80 /private/tmp/d2wd-kernel-build/crc.o
+ .debug_frame   0x00000338       0x20 /private/tmp/d2wd-kernel-build/mfg_ssm.o
+ .debug_frame   0x00000358       0x20 /private/tmp/d2wd-kernel-build/wdt.o
+ .debug_frame   0x00000378       0xb4 /private/tmp/d2wd-kernel-build/platf_7055.o
+ .debug_frame   0x0000042c       0xec /private/tmp/d2wd-kernel-build/pl_flash_705x_180nm.o
+ .debug_frame   0x00000518       0x40 /private/tmp/d2wd-kernel-build/memory.o
+
+Cross Reference Table
+
+Symbol                                            File
+RAMjump_entry                                     /private/tmp/d2wd-kernel-build/start_ssm.o
+_EEPROM_CS                                        /private/tmp/d2wd-kernel-build/cmd_parser.o
+_EEPROM_SCI                                       /private/tmp/d2wd-kernel-build/cmd_parser.o
+_EEPROM_TX_2bytes_RX_2bytes                       /private/tmp/d2wd-kernel-build/cmd_parser.o
+_EEPROM_TX_bytes                                  /private/tmp/d2wd-kernel-build/cmd_parser.o
+_EEPROM_check                                     /private/tmp/d2wd-kernel-build/cmd_parser.o
+_EEPROM_get_rsp                                   /private/tmp/d2wd-kernel-build/cmd_parser.o
+_EEPROM_init                                      /private/tmp/d2wd-kernel-build/cmd_parser.o
+_EEPROM_send_cmd                                  /private/tmp/d2wd-kernel-build/cmd_parser.o
+_INT_ATU11_IMI1A                                  /private/tmp/d2wd-kernel-build/platf_7055.o
+_buffer_crc32                                     /private/tmp/d2wd-kernel-build/crc.o
+                                                  /private/tmp/d2wd-kernel-build/cmd_parser.o
+_clear_sci3_cs                                    /private/tmp/d2wd-kernel-build/cmd_parser.o
+_clear_sci4_cs                                    /private/tmp/d2wd-kernel-build/cmd_parser.o
+_cmd_loop                                         /private/tmp/d2wd-kernel-build/cmd_parser.o
+                                                  /private/tmp/d2wd-kernel-build/main.o
+_crc16                                            /private/tmp/d2wd-kernel-build/crc.o
+_crc32                                            /private/tmp/d2wd-kernel-build/crc.o
+                                                  /private/tmp/d2wd-kernel-build/cmd_parser.o
+_delay                                            /private/tmp/d2wd-kernel-build/cmd_parser.o
+_die                                              /private/tmp/d2wd-kernel-build/platf_7055.o
+                                                  /private/tmp/d2wd-kernel-build/main.o
+                                                  /private/tmp/d2wd-kernel-build/cmd_parser.o
+_die_trace                                        /private/tmp/d2wd-kernel-build/platf_7055.o
+_ebss                                             /private/tmp/d2wd-kernel-build/start_ssm.o
+_eep_read16                                       /private/tmp/d2wd-kernel-build/eep_funcs.o
+_eep_setptr                                       /private/tmp/d2wd-kernel-build/eep_funcs.o
+_fblocks                                          /private/tmp/d2wd-kernel-build/pl_flash_705x_180nm.o
+_flashbuffer                                      /private/tmp/d2wd-kernel-build/main.o
+                                                  /private/tmp/d2wd-kernel-build/cmd_parser.o
+_init_mfg                                         /private/tmp/d2wd-kernel-build/mfg_ssm.o
+                                                  /private/tmp/d2wd-kernel-build/main.o
+_init_platf                                       /private/tmp/d2wd-kernel-build/platf_7055.o
+                                                  /private/tmp/d2wd-kernel-build/main.o
+_ivt                                              /private/tmp/d2wd-kernel-build/platf_7055.o
+_kline_get_message                                /private/tmp/d2wd-kernel-build/cmd_parser.o
+_kline_send_message                               /private/tmp/d2wd-kernel-build/cmd_parser.o
+_main                                             /private/tmp/d2wd-kernel-build/main.o
+                                                  /private/tmp/d2wd-kernel-build/start_ssm.o
+_memcmp                                           /private/tmp/d2wd-kernel-build/memory.o
+                                                  /private/tmp/d2wd-kernel-build/pl_flash_705x_180nm.o
+_memcpy                                           /private/tmp/d2wd-kernel-build/memory.o
+                                                  /private/tmp/d2wd-kernel-build/cmd_parser.o
+_memset                                           /private/tmp/d2wd-kernel-build/memory.o
+                                                  /private/tmp/d2wd-kernel-build/cmd_parser.o
+_platf_flash_eb                                   /private/tmp/d2wd-kernel-build/pl_flash_705x_180nm.o
+                                                  /private/tmp/d2wd-kernel-build/cmd_parser.o
+_platf_flash_init                                 /private/tmp/d2wd-kernel-build/pl_flash_705x_180nm.o
+                                                  /private/tmp/d2wd-kernel-build/cmd_parser.o
+_platf_flash_protect                              /private/tmp/d2wd-kernel-build/pl_flash_705x_180nm.o
+                                                  /private/tmp/d2wd-kernel-build/cmd_parser.o
+_platf_flash_unprotect                            /private/tmp/d2wd-kernel-build/pl_flash_705x_180nm.o
+                                                  /private/tmp/d2wd-kernel-build/cmd_parser.o
+_platf_flash_wb                                   /private/tmp/d2wd-kernel-build/pl_flash_705x_180nm.o
+                                                  /private/tmp/d2wd-kernel-build/cmd_parser.o
+_sbss                                             /private/tmp/d2wd-kernel-build/start_ssm.o
+_send_message                                     /private/tmp/d2wd-kernel-build/cmd_parser.o
+_set_sci3_cs                                      /private/tmp/d2wd-kernel-build/cmd_parser.o
+_set_sci4_cs                                      /private/tmp/d2wd-kernel-build/cmd_parser.o
+_stackinit                                        /private/tmp/d2wd-kernel-build/platf_7055.o
+                                                  /private/tmp/d2wd-kernel-build/start_ssm.o
+_wdt_dr                                           /private/tmp/d2wd-kernel-build/wdt.o
+                                                  /private/tmp/d2wd-kernel-build/mfg_ssm.o
+_wdt_pin                                          /private/tmp/d2wd-kernel-build/wdt.o
+                                                  /private/tmp/d2wd-kernel-build/mfg_ssm.o
+_wdt_tog                                          /private/tmp/d2wd-kernel-build/wdt.o
+                                                  /private/tmp/d2wd-kernel-build/platf_7055.o

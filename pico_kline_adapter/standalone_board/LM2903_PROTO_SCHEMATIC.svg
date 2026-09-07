@@ -1,0 +1,238 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="1700" height="1100" viewBox="0 0 1700 1100">
+  <title>LM2903 and Q5 Subaru K-line prototype schematic</title>
+  <desc>Detailed schematic for a Raspberry Pi Pico K-line interface using a salvaged LM2903 comparator and NPN transistor.</desc>
+  <defs>
+    <style>
+      .bg { fill: #fbfbf8; }
+      .wire { fill: none; stroke: #171717; stroke-width: 4; stroke-linecap: round; stroke-linejoin: round; }
+      .power { fill: none; stroke: #b31b1b; stroke-width: 4; stroke-linecap: round; stroke-linejoin: round; }
+      .signal { fill: none; stroke: #1769aa; stroke-width: 4; stroke-linecap: round; stroke-linejoin: round; }
+      .kline { fill: none; stroke: #bd7800; stroke-width: 5; stroke-linecap: round; stroke-linejoin: round; }
+      .ground { fill: none; stroke: #222; stroke-width: 4; }
+      .component { fill: #fff; stroke: #171717; stroke-width: 3; }
+      .dnp { fill: #fff7e6; stroke: #a65f00; stroke-width: 3; stroke-dasharray: 8 6; }
+      .node { fill: #171717; }
+      .tp { fill: #fff; stroke: #4d4d4d; stroke-width: 3; }
+      .title { font-family: Arial, sans-serif; font-size: 30px; font-weight: 700; fill: #151515; }
+      .subtitle { font-family: Arial, sans-serif; font-size: 18px; fill: #3c3c3c; }
+      .label { font-family: Arial, sans-serif; font-size: 18px; font-weight: 700; fill: #171717; }
+      .text { font-family: Arial, sans-serif; font-size: 16px; fill: #171717; }
+      .small { font-family: Arial, sans-serif; font-size: 14px; fill: #333; }
+      .pin { font-family: monospace; font-size: 15px; font-weight: 700; fill: #4b176d; }
+      .net { font-family: monospace; font-size: 16px; font-weight: 700; fill: #1769aa; }
+      .warn { font-family: Arial, sans-serif; font-size: 15px; font-weight: 700; fill: #8c2b12; }
+    </style>
+    <marker id="arrow" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto" markerUnits="strokeWidth">
+      <path d="M0,0 L8,4 L0,8 z" fill="#171717"/>
+    </marker>
+  </defs>
+
+  <rect class="bg" width="1700" height="1100"/>
+  <text class="title" x="50" y="52">Salvaged LM2903 + Q5 Subaru K-line prototype</text>
+  <text class="subtitle" x="50" y="82">Electrical authority for the proto board — normal K-line RX, inverted physical Q5 TX</text>
+
+  <!-- OBD connector -->
+  <rect class="component" x="45" y="180" width="185" height="350" rx="12"/>
+  <text class="label" x="75" y="218">J1  OBD-II</text>
+  <text class="text" x="65" y="277">Pin 7  K</text>
+  <text class="text" x="65" y="407">Pin 5  SGND</text>
+  <text class="text" x="65" y="467">Pin 4  CGND</text>
+  <text class="text" x="65" y="517">Pin 16 VBAT</text>
+  <circle class="node" cx="230" cy="270" r="6"/>
+  <circle class="node" cx="230" cy="400" r="6"/>
+  <circle class="node" cx="230" cy="460" r="6"/>
+  <line class="wire" x1="200" y1="500" x2="224" y2="524"/>
+  <line class="wire" x1="224" y1="500" x2="200" y2="524"/>
+  <text class="small" x="66" y="548">Pin 16: not used</text>
+
+  <!-- K line and protection -->
+  <path class="kline" d="M230 270 H310"/>
+  <circle class="tp" cx="280" cy="270" r="10"/>
+  <text class="net" x="255" y="246">TP1 K</text>
+
+  <!-- TVS -->
+  <path class="kline" d="M310 270 H360"/>
+  <path class="wire" d="M335 270 V320"/>
+  <path class="wire" d="M317 329 H353 M322 338 H348"/>
+  <path class="wire" d="M317 347 L353 329"/>
+  <path class="wire" d="M335 347 V965"/>
+  <text class="label" x="360" y="325">D1</text>
+  <text class="small" x="360" y="347">ESDLIN1524BJ</text>
+  <text class="small" x="360" y="367">automotive TVS</text>
+
+  <!-- Series K resistor -->
+  <path class="kline" d="M360 270 H400"/>
+  <rect class="component" x="400" y="252" width="110" height="36" rx="3"/>
+  <text class="label" x="435" y="244">R9</text>
+  <text class="text" x="432" y="277">22 Ω</text>
+  <path class="kline" d="M510 270 H760"/>
+  <circle class="node" cx="575" cy="270" r="7"/>
+  <text class="net" x="525" y="305">K_INT</text>
+
+  <!-- K sense divider -->
+  <rect class="component" x="760" y="252" width="120" height="36" rx="3"/>
+  <text class="label" x="797" y="244">R3</text>
+  <text class="text" x="790" y="277">100 kΩ</text>
+  <path class="wire" d="M880 270 H950"/>
+  <circle class="node" cx="920" cy="270" r="7"/>
+  <text class="net" x="884" y="239">K_SENSE</text>
+  <path class="wire" d="M920 270 V335"/>
+  <rect class="component" x="902" y="335" width="36" height="105" rx="3"/>
+  <text class="label" x="948" y="376">R4</text>
+  <text class="text" x="948" y="400">10 kΩ</text>
+  <path class="wire" d="M920 440 V965"/>
+
+  <!-- Comparator U1B -->
+  <path class="component" d="M1030 210 L1030 410 L1210 310 Z"/>
+  <text class="label" x="1070" y="297">U1B</text>
+  <text class="text" x="1068" y="323">LM2903</text>
+  <text class="pin" x="1003" y="263">5</text>
+  <text class="label" x="1043" y="267">+</text>
+  <text class="pin" x="1003" y="363">6</text>
+  <text class="label" x="1043" y="367">−</text>
+  <text class="pin" x="1175" y="298">7</text>
+  <path class="wire" d="M950 270 H1030"/>
+
+  <!-- VREF divider -->
+  <path class="power" d="M780 120 V145"/>
+  <rect class="component" x="762" y="145" width="36" height="105" rx="3"/>
+  <text class="label" x="688" y="184">R5</text>
+  <text class="text" x="675" y="208">100 kΩ</text>
+  <path class="wire" d="M780 250 V360 H1030"/>
+  <circle class="node" cx="780" cy="360" r="7"/>
+  <text class="net" x="700" y="350">VREF ≈ 0.455 V</text>
+  <path class="wire" d="M780 360 V405"/>
+  <rect class="component" x="762" y="405" width="36" height="105" rx="3"/>
+  <text class="label" x="807" y="444">R6</text>
+  <text class="text" x="807" y="468">10 kΩ</text>
+  <path class="wire" d="M780 510 V965"/>
+
+  <!-- RX output and pullup -->
+  <path class="signal" d="M1210 310 H1465"/>
+  <circle class="node" cx="1270" cy="310" r="7"/>
+  <circle class="tp" cx="1320" cy="310" r="10"/>
+  <text class="net" x="1284" y="286">TP3 RX</text>
+  <path class="power" d="M1270 95 V155"/>
+  <rect class="component" x="1252" y="155" width="36" height="95" rx="3"/>
+  <text class="label" x="1297" y="187">R7</text>
+  <text class="text" x="1297" y="211">10 kΩ</text>
+  <path class="wire" d="M1270 250 V310"/>
+
+  <!-- hysteresis -->
+  <path class="wire" d="M1270 310 V510 H1170"/>
+  <rect class="dnp" x="1040" y="492" width="130" height="36" rx="3"/>
+  <path class="wire" d="M1040 510 H960 V270 H920"/>
+  <text class="label" x="1078" y="484">R8</text>
+  <text class="text" x="1060" y="517">1 MΩ (fit)</text>
+  <text class="small" x="1015" y="552">≈4.72 V falling / 5.05 V rising</text>
+
+  <!-- comparator power and bypass -->
+  <path class="power" d="M1020 120 V155"/>
+  <text class="pin" x="1028" y="150">U1 pin 8</text>
+  <path class="wire" d="M1020 155 V180"/>
+  <path class="wire" d="M1000 180 H1040 M1000 194 H1040"/>
+  <path class="wire" d="M1020 194 V965"/>
+  <text class="label" x="835" y="178">C1 100 nF X7R</text>
+  <path class="wire" d="M1110 155 V180"/>
+  <path class="component" d="M1090 180 H1130 V230 H1090 Z"/>
+  <text class="label" x="1140" y="196">C2 4.7 µF</text>
+  <text class="small" x="1140" y="216">≥10 V</text>
+  <path class="wire" d="M1110 230 V965"/>
+  <text class="pin" x="1028" y="930">U1 pin 4 → GND</text>
+
+  <!-- TX transistor section -->
+  <path class="kline" d="M575 270 V655 H850"/>
+  <text class="pin" x="790" y="645">collector pin 3</text>
+  <circle class="component" cx="900" cy="700" r="70"/>
+  <line class="wire" x1="850" y1="655" x2="900" y2="680"/>
+  <line class="wire" x1="900" y1="680" x2="900" y2="720"/>
+  <line class="wire" x1="900" y1="720" x2="850" y2="770" marker-end="url(#arrow)"/>
+  <line class="wire" x1="830" y1="700" x2="900" y2="700"/>
+  <path class="wire" d="M850 770 V965"/>
+  <text class="label" x="872" y="690">Q1</text>
+  <text class="small" x="860" y="713">Q5 donor</text>
+  <text class="small" x="816" y="802">1AM / NPN</text>
+  <text class="pin" x="800" y="690">base pin 1</text>
+  <text class="pin" x="862" y="835">emitter pin 2</text>
+
+  <!-- GP4 and base resistor -->
+  <path class="signal" d="M1465 700 H1290"/>
+  <circle class="tp" cx="1385" cy="700" r="10"/>
+  <text class="net" x="1350" y="678">TP2 TX</text>
+  <rect class="component" x="1170" y="682" width="120" height="36" rx="3"/>
+  <text class="label" x="1208" y="674">R1</text>
+  <text class="text" x="1200" y="707">4.7 kΩ</text>
+  <path class="signal" d="M1170 700 H970"/>
+  <path class="wire" d="M970 700 H830"/>
+  <circle class="node" cx="1060" cy="700" r="7"/>
+  <path class="wire" d="M1060 700 V750"/>
+  <rect class="component" x="1042" y="750" width="36" height="105" rx="3"/>
+  <text class="label" x="1088" y="788">R2</text>
+  <text class="text" x="1088" y="812">47 kΩ</text>
+  <path class="wire" d="M1060 855 V965"/>
+
+  <!-- Unused comparator -->
+  <rect class="component" x="420" y="560" width="280" height="230" rx="10"/>
+  <text class="label" x="445" y="595">U1A — unused half</text>
+  <path class="component" d="M520 620 L520 740 L630 680 Z"/>
+  <text class="pin" x="495" y="654">3</text>
+  <text class="label" x="533" y="657">+</text>
+  <text class="pin" x="495" y="714">2</text>
+  <text class="label" x="533" y="717">−</text>
+  <text class="pin" x="610" y="671">1</text>
+  <path class="wire" d="M520 650 H475 V965"/>
+  <path class="wire" d="M520 710 H455 V610 H420"/>
+  <text class="net" x="426" y="635">VREF</text>
+  <text class="small" x="443" y="775">pin 3 → GND</text>
+  <text class="small" x="575" y="760">pin 1 NC / test pad</text>
+  <circle class="tp" cx="655" cy="680" r="9"/>
+  <path class="wire" d="M630 680 H646"/>
+
+  <!-- Pico block -->
+  <rect class="component" x="1465" y="145" width="195" height="720" rx="15"/>
+  <text class="label" x="1502" y="185">P1</text>
+  <text class="label" x="1490" y="214">Raspberry Pi Pico</text>
+  <text class="text" x="1483" y="270">GP5 / pin 7</text>
+  <line class="signal" x1="1465" y1="310" x2="1485" y2="310"/>
+  <text class="text" x="1483" y="340">UART1 RX</text>
+  <text class="text" x="1483" y="650">GP4 / pin 6</text>
+  <line class="signal" x1="1465" y1="700" x2="1485" y2="700"/>
+  <text class="text" x="1483" y="730">UART1 TX</text>
+  <text class="text" x="1483" y="780">3V3 OUT / pin 36</text>
+  <text class="text" x="1483" y="810">VBUS / pin 40</text>
+  <text class="text" x="1483" y="840">GND / pin 38</text>
+
+  <!-- Power rails -->
+  <path class="power" d="M650 120 H1580 V145"/>
+  <text class="label" x="650" y="108">+5_USB from Pico VBUS pin 40</text>
+  <circle class="tp" cx="720" cy="120" r="10"/>
+  <text class="net" x="682" y="150">TP4 5V</text>
+  <path class="power" d="M1180 95 H1540 V145"/>
+  <text class="label" x="1180" y="84">+3V3 from Pico pin 36</text>
+  <circle class="tp" cx="1330" cy="95" r="10"/>
+  <text class="net" x="1290" y="75">TP5 3V3</text>
+
+  <!-- Ground rail -->
+  <path class="ground" d="M230 400 H270 V965 H1555 V865"/>
+  <path class="ground" d="M230 460 H245"/>
+  <rect class="dnp" x="245" y="442" width="100" height="36" rx="3"/>
+  <text class="label" x="268" y="434">R10</text>
+  <text class="small" x="262" y="467">0 Ω DNP</text>
+  <path class="ground" d="M345 460 H370 V965"/>
+  <circle class="node" cx="270" cy="965" r="7"/>
+  <circle class="tp" cx="1380" cy="965" r="10"/>
+  <text class="net" x="1335" y="995">TP6 GND</text>
+  <path class="ground" d="M1380 965 V1010"/>
+  <path class="ground" d="M1348 1010 H1412 M1358 1022 H1402 M1368 1034 H1392"/>
+
+  <!-- Notes -->
+  <rect class="dnp" x="45" y="845" width="680" height="155" rx="10"/>
+  <text class="warn" x="65" y="875">PROTOTYPE LIMITS</text>
+  <text class="small" x="65" y="902">• D1 must be a new, traceable automotive single-wire suppressor.</text>
+  <text class="small" x="65" y="928">• Salvaged Q5 is likely only ~40 V; do not treat this as a sale/production design.</text>
+  <text class="small" x="65" y="954">• No K pull-up is fitted: the Subaru ECU supplies it. Use a bench-only 510 Ω pull-up when testing.</text>
+  <text class="small" x="65" y="980">• Keep current firmware TX inversion enabled. GP1 is left unconnected.</text>
+
+  <text class="small" x="1190" y="1070">Rev A — nominal K threshold 5.0 V; 1% resistors</text>
+</svg>

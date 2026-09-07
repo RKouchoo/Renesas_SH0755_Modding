@@ -23,10 +23,11 @@ import patch_boost as boost  # noqa: E402
 import patch_rotational_idle as rotational  # noqa: E402
 import patch_single_front_af as front_af  # noqa: E402
 import sh2_disasm  # noqa: E402
+import test_hook_execution as hook_execution  # noqa: E402
 
 
 DEFAULT_IMAGE = HERE / "D2WD610H_speed_density.bin"
-EXPECTED_OUTPUT_SHA256 = "9cfcf45d075818c1a8320e540eb855979289ce25a6e03b8879a0c4767db49d16"
+EXPECTED_OUTPUT_SHA256 = "272e623890a2cc516df35ea7bd340ec3e9f5076801e4a865627954799c9c1636"
 
 
 def expect(image: bytes, address: int, expected: bytes, label: str) -> None:
@@ -209,7 +210,7 @@ def verify_policy_model() -> None:
         raise SystemExit("FAIL: zero RPM did not override uninitialized sensor/calibration data")
 
     samples = (
-        ((300.0, 700.0, 20.0), 1, 4.59107145),
+        ((300.0, 700.0, 20.0), 1, 5.04241779),
         ((760.0, 3000.0, 20.0), 1, 90.27877076),
         ((1018.5747, 6800.0, 20.0), 3, 271.33833237),
         ((1150.0, 6800.0, 40.0), 3, 290.80075930),
@@ -273,6 +274,7 @@ def verify_definition() -> None:
         "Speed Density VE - AVLS Low Lift": patch.LOW_VE_DATA_ADDR,
         "Speed Density VE - AVLS High Lift": patch.HIGH_VE_DATA_ADDR,
         "Speed Density IAT Density Correction": patch.IAT_DATA_ADDR,
+        "Speed Density Load Filter Response": patch.LOAD_FILTER_ALPHA_ADDR,
     }
     tables = {table.get("name"): table for table in target.findall("table")}
     for name, address in expected_addresses.items():
@@ -284,6 +286,13 @@ def verify_definition() -> None:
             raise SystemExit(
                 "FAIL: %s address is 0x%X (expected 0x%X)" % (name, actual, address)
             )
+
+    response = roms[0].find("table[@name='Speed Density Load Filter Response']")
+    scaling = response.find("scaling") if response is not None else None
+    if scaling is None or (scaling.get("expression"), scaling.get("to_byte")) != (
+        "x*100", "x/100",
+    ):
+        raise SystemExit("FAIL: load-filter response must display percent per update")
 
     for name, rows, rpm_axis in (
         ("Speed Density VE - AVLS Low Lift", len(patch.LOW_RPM_AXIS), patch.LOW_RPM_AXIS_ADDR),
@@ -355,6 +364,33 @@ def verify_composition(stock: bytes) -> None:
                 raise SystemExit(
                     "FAIL: composed %s byte differs at 0x%05X" % (name, address)
                 )
+
+
+def verify_hook_contract(image: bytes) -> None:
+    """Pin the stock ABI anchors and the narrowly scoped fallback removal."""
+    for address, expected, label in (
+        (patch.CALLER_RPM_CAPTURE_ADDR, patch.CALLER_RPM_CAPTURE_STOCK, "saved FR15 RPM"),
+        (patch.STOCK_ENGINE_LOAD_CALC_ADDR, patch.STOCK_ENGINE_LOAD_CALC_SEQUENCE,
+         "retained load division by FR15"),
+        (patch.MAF_LOAD_FALLBACK_HELPER_PTR, patch.be32(patch.CONSTANT_ZERO_RETURN),
+         "local MAF-only load fallback bypass"),
+        (patch.CONSTANT_ZERO_RETURN, patch.CONSTANT_ZERO_RETURN_STOCK,
+         "stock constant-zero return"),
+        (patch.LOAD_FILTER_ALPHA_ADDR, patch.LOAD_FILTER_ALPHA_STOCK,
+         "unchanged default load-filter alpha"),
+        (patch.WRAPPER_ADDR, bytes.fromhex("ffcbffdb4f22"), "snapshot-register saves"),
+    ):
+        expect(image, address, expected, label)
+
+    # Other users of MAF diagnostic status, cranking load, and signal-timeout
+    # initialization must not be disabled by this local hook hardening.
+    stock = patch.STOCK.read_bytes()
+    for start, end, label in (
+        (0x65168, 0x6517C, "global diagnostic fallback getter"),
+        (0x17650, 0x17674, "retained cranking/ECT load branch"),
+        (0x1785C, 0x178C6, "retained engine-timeout airflow initializer"),
+    ):
+        expect(image, start, stock[start:end], label)
 
 
 def main(argv: list[str] | None = None) -> None:
@@ -473,6 +509,9 @@ def main(argv: list[str] | None = None) -> None:
     expected_changed = {
         patch.FINAL_AIRFLOW_HELPER_PTR + offset for offset in range(4)
     }
+    expected_changed.update(range(
+        patch.MAF_LOAD_FALLBACK_HELPER_PTR, patch.MAF_LOAD_FALLBACK_HELPER_PTR + 4
+    ))
     for address in patch.MAF_CONVERSION_CALL_ADDRS:
         expected_changed.update(
             range(address, address + len(patch.MAF_CONVERSION_CALL_PATCHED))
@@ -531,6 +570,56 @@ def main(argv: list[str] | None = None) -> None:
         0.0 < value <= 1.15 for value in patch.LOW_VE_TABLE + patch.HIGH_VE_TABLE
     ):
         raise SystemExit("FAIL: dual VE table contains an invalid default")
+    for row, rpm_weight in enumerate(patch.IDLE_VE_RPM_WEIGHTS):
+        for column, map_weight in enumerate(patch.IDLE_VE_MAP_WEIGHTS):
+            offset = row * len(patch.MAP_AXIS) + column
+            before = patch.UNCORRECTED_LOW_VE_TABLE[offset]
+            after = patch.LOW_VE_TABLE[offset]
+            expected = before * (
+                1.0 + patch.IDLE_VE_CORRECTION_GAIN * rpm_weight * map_weight
+            )
+            if not math.isclose(after, expected, rel_tol=0.0, abs_tol=1e-12):
+                raise SystemExit("FAIL: low-lift idle VE correction differs from policy")
+            if after < before:
+                raise SystemExit("FAIL: idle VE correction makes a cell leaner")
+            if (rpm_weight == 0.0 or map_weight == 0.0) and after != before:
+                raise SystemExit("FAIL: idle VE correction escapes its bounded region")
+    original_rows = tuple(
+        linear_interpolate(
+            patch.MAP_AXIS,
+            patch.UNCORRECTED_LOW_VE_TABLE[
+                row * len(patch.MAP_AXIS):(row + 1) * len(patch.MAP_AXIS)
+            ],
+            315.0,
+        )
+        for row in range(len(patch.LOW_RPM_AXIS))
+    )
+    corrected_idle_ve = interpolate_ve(315.0, 1300.0, committed_avls_mode=1)
+    original_idle_ve = linear_interpolate(
+        patch.LOW_RPM_AXIS, original_rows, 1300.0
+    )
+    if not 0.980 <= corrected_idle_ve <= 0.990:
+        raise SystemExit(
+            "FAIL: corrected 1300-RPM/315-mmHg VE is outside the intended window"
+        )
+    if not 1.575 <= corrected_idle_ve / original_idle_ve <= 1.585:
+        raise SystemExit("FAIL: interpolated 315-mmHg correction is outside its tapered window")
+    if not math.isclose(
+        max(
+            after / before
+            for before, after in zip(
+                patch.UNCORRECTED_LOW_VE_TABLE, patch.LOW_VE_TABLE
+            )
+        ),
+        1.59,
+        rel_tol=0.0,
+        abs_tol=1e-12,
+    ):
+        raise SystemExit("FAIL: peak idle-region correction is not the 1.59 total factor")
+    if patch.LOW_VE_TABLE[-2 * len(patch.MAP_AXIS):] != (
+        patch.UNCORRECTED_LOW_VE_TABLE[-2 * len(patch.MAP_AXIS):]
+    ):
+        raise SystemExit("FAIL: idle correction reaches the 3000/3200-RPM AVLS boundary")
     if not all(math.isfinite(value) and value > 0 for value in patch.IAT_DENSITY_CORRECTION):
         raise SystemExit("FAIL: IAT correction contains an invalid default")
 
@@ -553,7 +642,7 @@ def main(argv: list[str] | None = None) -> None:
     # Decode the executable region only. Locate its single balanced return and
     # derive the aligned literal-pool boundary from the deterministic wrapper.
     wrapper = patch.build_wrapper()
-    return_bytes = bytes.fromhex("4f26000b0009")
+    return_bytes = bytes.fromhex("4f26fdf9fcf9000b0009")
     return_offset = wrapper.find(return_bytes)
     if return_offset < 0 or wrapper.find(return_bytes, return_offset + 1) >= 0:
         raise SystemExit("FAIL: wrapper does not contain exactly one balanced return")
@@ -585,7 +674,6 @@ def main(argv: list[str] | None = None) -> None:
     required_literals = {
         patch.FAILSAFE_AIRFLOW_ADDR,
         patch.MAP_ADDR,
-        patch.RPM_ADDR,
         patch.IAT_ADDR,
         patch.AVLS_COMMITTED_MODE_ADDR,
         patch.LOW_VE_DESC_ADDR,
@@ -605,6 +693,17 @@ def main(argv: list[str] | None = None) -> None:
     }
     if not required_literals <= literal_values:
         raise SystemExit("FAIL: wrapper literal pool is missing a pinned dependency")
+    if patch.RPM_ADDR in literal_values:
+        raise SystemExit("FAIL: wrapper rereads live RPM instead of caller FR15")
+    for address in (patch.MAP_ADDR, patch.IAT_ADDR):
+        if sum("=0x%08x" % address in text for text in decoded) != 1:
+            raise SystemExit("FAIL: MAP/IAT must each be captured exactly once")
+    for instruction, count in (
+        ("fmov.s @r1,fr12", 1), ("fmov.s @r1,fr13", 1),
+        ("fmov fr15,fr5", 2), ("fmul fr12,fr0", 1), ("fmul fr15,fr0", 1),
+    ):
+        if decoded.count(instruction) != count:
+            raise SystemExit("FAIL: snapshot instruction count differs: " + instruction)
     if patch.STOCK_MAF_AIRFLOW_TASK in literal_values:
         raise SystemExit(
             "FAIL: MAFless airflow helper contains the retained stock task address"
@@ -615,6 +714,8 @@ def main(argv: list[str] | None = None) -> None:
         raise SystemExit("FAIL: wrapper lacks committed high-lift mode selection")
 
     verify_policy_model()
+    verify_hook_contract(image)
+    hook_execution.verify_execution(image)
     verify_definition()
     verify_composition(stock)
     if patch.STOCK.read_bytes() != stock:
@@ -627,10 +728,13 @@ def main(argv: list[str] | None = None) -> None:
           % (patch.AIRFLOW_TASK_PTR, patch.STOCK_MAF_AIRFLOW_TASK))
     print("  airflow hook    : helper pointer 0x%05X -> 0x%05X before B420 store"
           % (patch.FINAL_AIRFLOW_HELPER_PTR, patch.WRAPPER_ADDR))
+    print("  hook hardening  : saved caller RPM; MAP/IAT captured once; local MAF fallback bypass")
+    print("  load filter     : stock 6% per update retained and explicitly defined")
     print("  MAF removal     : converter/raw filter/diagnostics bypassed; final calculation replaced")
     print("  calibration     : low 13x%d / high 13x%d VE + %d-point IAT; %.3f L"
           % (len(patch.LOW_RPM_AXIS), len(patch.HIGH_RPM_AXIS), len(patch.IAT_AXIS),
              patch.DISPLACEMENT_LITRES))
+    print("  idle VE trial   : 0.624 -> 0.985 near 1300 RPM/315 mmHg; not a verified repair")
     print("  AVLS selection  : committed mode 3 high; fixed 3200/3000 RPM hysteresis")
     print("  output path     : final stock mass-airflow channel 0x%08X, capped at %.1f g/s"
           % (patch.FINAL_MASS_AIRFLOW_ADDR, patch.MAX_AIRFLOW_G_S))

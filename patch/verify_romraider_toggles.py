@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Audit the independent switches in the focused master ROM/definition."""
+"""Audit current master switches and reject retired actuator controls."""
 from pathlib import Path
 import xml.etree.ElementTree as ET
 
@@ -11,26 +11,11 @@ XMLIDS = ["32BITBASE", "D2WD610H_MASTER_PATCH"]
 
 CASES = (
     {
-        "switch": "Electronic Boost Control Enable",
-        "address": 0x7D80C,
-        "default": 0x00,
-        "alternate": 0x01,
-        "tables": {
-            "Boost Wastegate Duty (RPM)": 0x7D7C4,
-            "Boost Target (RPM)": 0x7D7E0,
-            "Boost Kp (proportional gain)": 0x7D800,
-            "Boost Max Duty Ratio": 0x7D804,
-            "Boost Overboost Cut (Duty, soft)": 0x7D808,
-            "Boost Minimum Throttle": 0x7D8BC,
-            "Boost Overboost Fuel Cut (hard)": 0x7D8C0,
-        },
-    },
-    {
         "switch": "Overboost Fuel Cut Enable",
         "address": 0x7D80D,
         "default": 0x01,
         "alternate": 0x00,
-        "tables": {},
+        "tables": {"Boost Overboost Fuel Cut (hard)": 0x7D8C0},
     },
     {
         "switch": "Rotational Idle Enable",
@@ -53,20 +38,40 @@ CASES = (
     },
 )
 
+RETIRED_ACTUATOR_TABLES = {
+    "Electronic Boost Control Enable": 0x7D80C,
+    "Boost Wastegate Duty (RPM)": 0x7D7C4,
+    "Boost Target (RPM)": 0x7D7E0,
+    "Boost Kp (proportional gain)": 0x7D800,
+    "Boost Max Duty Ratio": 0x7D804,
+    "Boost Overboost Cut (Duty, soft)": 0x7D808,
+    "Boost Minimum Throttle": 0x7D8BC,
+}
+
 
 def named_tables(root, name):
     return [table for table in root.findall(".//table") if table.get("name") == name]
 
 
-def main():
-    root = ET.parse(DEFINITION).getroot()
+def verify_definition_toggles(root, image):
     xmlids = [rom.findtext("./romid/xmlid") for rom in root.findall("./rom")]
     if xmlids != XMLIDS:
         raise SystemExit(f"FAIL: {DEFINITION.name} ROM IDs are {xmlids!r}, expected {XMLIDS!r}")
 
-    image = IMAGE.read_bytes()
     if len(image) != 0x80000:
         raise SystemExit(f"FAIL: {IMAGE.name} is not a 512-KiB image")
+
+    for table in root.findall(".//table"):
+        address = table.get("storageaddress")
+        if (table.get("name") in RETIRED_ACTUATOR_TABLES or
+            (address is not None and int(address, 16) in RETIRED_ACTUATOR_TABLES.values())):
+            raise SystemExit(f"FAIL: retired actuator control remains exposed: {table.get('name')!r}")
+    if image[0x3FD8C:0x3FD90] != bytes.fromhex("0000e8c4"):
+        raise SystemExit("FAIL: stock radiator-fan output pointer is not preserved")
+    for start, size in ((0x7D810, 172), (0x7E560, 224)):
+        if image[start:start + size] != bytes.fromhex("000b0009") + b"\xff" * (size - 4):
+            raise SystemExit(f"FAIL: retired actuator allocation at 0x{start:05X} contains executable code")
+    print("PASS: retired actuator controls absent; fan pointer stock; old actuator code inert")
 
     for case in CASES:
         switches = [table for table in named_tables(root, case["switch"])
@@ -107,6 +112,10 @@ def main():
         )
 
     print("Master RomRaider switch audit PASS")
+
+
+def main():
+    verify_definition_toggles(ET.parse(DEFINITION).getroot(), IMAGE.read_bytes())
 
 
 if __name__ == "__main__":
