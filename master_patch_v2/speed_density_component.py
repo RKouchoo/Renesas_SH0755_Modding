@@ -13,7 +13,7 @@ import sys
 
 HERE = Path(__file__).resolve().parent
 ROOT = HERE.parent
-SD_DIR = ROOT / "speed_density"
+SD_DIR = ROOT / "patches/speed_density"
 sys.path.insert(0, str(SD_DIR))
 
 import patch_speed_density as sd

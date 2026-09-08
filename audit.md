@@ -1,5 +1,11 @@
 # D2WD610H Patch Audits
 
+This is a chronological investigation record. Later findings can retract
+earlier identities and conclusions. Use the
+[central reference](docs/reference/README.md) and
+[correction register](docs/reference/FINDINGS.md) for current evidence;
+historical build statements here do not identify the current main or v2 ROM.
+
 ## 2026-09-08 — ECU/logger pressure definitions aligned
 
 Both master VE axes now link to native-MAP E518, replacing unavailable E52.
@@ -411,7 +417,7 @@ purge-DTC handling, checksum correction, and an overboost-cut bench test before 
 - The 5 psi defaults are a documented reduction of the donor's full-demand curves, not a raw 3D
   table transplant: the patch controller is RPM-only and has no integral state. See
   [boost_donor_A2WC510N.md](docs/boost_donor_A2WC510N.md).
-- The generated boost artifact is `patch/D2WD610H_boost.bin` (512 KiB, SHA-256
+- The generated boost artifact is `patches/core/D2WD610H_boost.bin` (512 KiB, SHA-256
   `d4c215a3acc2a68e7daa355d56510589b8f9aa4bf573e6bc4aa4224b16ffa2bc`). Its 370 changed bytes
   are confined to the two guarded hooks (`0x11D3C..0x11D3F`, `0x3FD8C..0x3FD8F`), MAP scaling
   (`0x72810..0x72817`), and injected free-space region (`0x7D790..0x7D903`). The obsolete split
@@ -521,7 +527,7 @@ the patch is used alone or enabled in the combined image.
   patches a private in-memory copy, and refuses an output path that aliases the stock file.
 - The root `2005 BLE MT.bin` remains unchanged at SHA-256
   `ed0fe0341d97fb760c2cda3f07277f861495d32f6520e3ce8047b8b0f7bfd4ee`.
-- The generated `patch/D2WD610H_single_front_af.bin` is 512 KiB with SHA-256
+- The generated `patches/core/D2WD610H_single_front_af.bin` is 512 KiB with SHA-256
   `99a0b2df7f24a247307dfdde6790d464264bbbe6ae8498632735d6d98b4ae5eb`.
 - All 442 changed bytes are confined to nine guarded front/rear hooks or task pointers, 13
   explicit removed-sensor DTC switches, and 12 injected allocations.
@@ -595,7 +601,7 @@ the patch is used alone or enabled in the combined image.
 
 ## Project cleanup checks
 
-- `patch/patch_single_front_af.py` and `patch/verify_single_front_af.py` replace the retired
+- `patches/core/patch_single_front_af.py` and `tests/verify_single_front_af.py` replace the retired
   wideband-named patcher and verifier.
 - The retired ECU-side aftermarket analog conversion, calibration, and RAM publication remain
   removed. The newly used `0x7DA60..0x7DB3B` blocks are rear-delete selectors only.
@@ -650,7 +656,7 @@ stock image `2005 BLE MT.bin`.
 
 ## Verdict
 
-`patch/patch_combined.py` produces one combined development image directly from a fresh copy of
+`patches/core/patch_combined.py` produces one combined development image directly from a fresh copy of
 the canonical root stock ROM. It does not patch either generated standalone image. The generated
 ROM is the exact, non-overlapping union of the boost-control patch and the single-front-A/F plus
 rear-O2-delete patch. Its structure, changed-byte ownership, injected instructions, O2 paths, and both
@@ -665,7 +671,7 @@ checksum.
 
 - `base_roms/2005 BLE MT.srf` is 524,749 bytes with SHA-256
   `05eae5322072449d90e20e20125d5333738675168d623a320735958bfc7619aa`.
-- `patch/extract_srf.py` parses the SRF as big-endian `INFO`, `DRMI`, `MEML`, and `MEMD` chunks;
+- `patches/core/extract_srf.py` parses the SRF as big-endian `INFO`, `DRMI`, `MEML`, and `MEMD` chunks;
   it does not scan for a guessed ROM signature or use a hard-coded tail carve.
 - The single `MEMD` payload starts at file offset `0x1CD`, is exactly `0x80000` bytes, and contains
   CALID `D2WD610H` at ROM address `0x2000`.
@@ -678,7 +684,7 @@ checksum.
 
 ## Combined binary checks completed
 
-- Generated artifact: `patch/D2WD610H_boost_single_front_af.bin`, 512 KiB, SHA-256
+- Generated artifact: `patches/core/D2WD610H_boost_single_front_af.bin`, 512 KiB, SHA-256
   `71b28714106dcc1eb7adfe59738fc8c6e968b2b94ca9337158f4442f46fcc1fe`.
 - Exactly 812 bytes differ from stock: 370 owned by the boost patch plus 442 owned by the
   single-front-A/F patch, with zero overlapping offsets.
@@ -689,7 +695,7 @@ checksum.
   the single-front-A/F artifact. The spring-pressure switch split changes boost to SHA-256
   `d4c215a3acc2a68e7daa355d56510589b8f9aa4bf573e6bc4aa4224b16ffa2bc`; single-front-A/F remains
   SHA-256 `99a0b2df7f24a247307dfdde6790d464264bbbe6ae8498632735d6d98b4ae5eb`.
-- `patch/verify_combined.py` regenerates the expected image from stock, checks every byte, pins all
+- `tests/verify_combined.py` regenerates the expected image from stock, checks every byte, pins all
   component hooks/task edits and enable-dependent branches, verifies all 13 removed-sensor DTC
   edits, and confirms the retained Bank-1 front plus both rear-delete paths.
 - All 13 injected code spans decode as 220 known SH-2E instructions with no unknown opcodes.
@@ -715,7 +721,7 @@ Audit date: 2026-07-15. The audited standalone output is retired and no longer c
 
 This section records the superseded pre-master artifact. The folder and standalone output were
 later removed; the applicable calibration logic and policy checks now live in
-`master_patch/master_calibration.py` and `master_patch/verify_master_calibration.py`.
+`master_patch/master_calibration.py` and `tests/verify_master_calibration.py`.
 
 ## Verdict
 
@@ -731,7 +737,7 @@ scaling, MAP validation, post-turbo wideband logging, and physical boost tests r
 - The historical builder read the pinned root stock ROM, verified both stock BIN copies and the
   original SRF `MEMD` payload, and reconstructs the combined patch in memory.
 - That intermediate stage must be byte-identical to
-  `patch/D2WD610H_boost_single_front_af.bin`, SHA-256
+  `patches/core/D2WD610H_boost_single_front_af.bin`, SHA-256
   `71b28714106dcc1eb7adfe59738fc8c6e968b2b94ca9337158f4442f46fcc1fe`, before calibration is
   allowed. No generated image is used as patch input.
 - The pinned 192-KiB A4TE002B injector donor must have CALID `A4TE002B`, SHA-256
@@ -814,7 +820,7 @@ stock image `2005 BLE MT.bin`.
 
 ## Verdict
 
-`patch/patch_rotational_idle.py` produces a separate, default-OFF development image that should
+`patches/core/patch_rotational_idle.py` produces a separate, default-OFF development image that should
 execute the intended bounded timing post-processing. It always runs the complete stock final
 timing task first, requires exact enable `01` and a warm/stationary/closed-throttle/high-vacuum
 idle window, then applies six retard-only offsets. It does not cut fuel, modify idle airflow,
@@ -853,7 +859,7 @@ temperature, vibration, misfire behavior, checksum acceptance, or safe operation
 - The builder always reads the fixed root stock ROM, requires its exact 512-KiB length and
   SHA-256 `ed0fe0341d97fb760c2cda3f07277f861495d32f6520e3ce8047b8b0f7bfd4ee`, patches an
   in-memory copy, and refuses an output path that aliases the stock source.
-- Generated artifact: `patch/D2WD610H_rotational_idle.bin`, 512 KiB, SHA-256
+- Generated artifact: `patches/core/D2WD610H_rotational_idle.bin`, 512 KiB, SHA-256
   `f5ce45cb46b244e0c3973e3dfab699a3a2a13a1b296b758c96ec19f655ed7165`.
 - Exactly 404 bytes differ from stock. Ownership is limited to the guarded task pointer and the
   dedicated enable/calibration/wrapper allocations at `0x7DB40..0x7DCEB`.
@@ -917,7 +923,7 @@ stock image `2005 BLE MT.bin`.
 
 ## Verdict
 
-`speed_density/patch_speed_density.py` now produces a separate, always-on MAFless development
+`patches/speed_density/patch_speed_density.py` now produces a separate, always-on MAFless development
 image. Periodic airflow is calculated only from MAP, RPM, a 13×17 VE surface, engine displacement,
 post-intercooler IAT density correction, and a global multiplier. The injected helper has no MAF
 fallback or runtime OFF state.
@@ -969,7 +975,7 @@ acceptance, hardware wiring correctness, or safe vehicle operation.
   stock task stores modeled airflow and then continues all downstream calculations.
 - MAP `0xFFFFABC4` is native mmHg absolute, RPM is float `0xFFFFB544`, IAT is degrees Celsius at
   `0xFFFFB3B8`, and final airflow is float g/s at `0xFFFFB420`.
-- `engine_load_from_mass_airflow_calculate`, `fueling_airflow_input_update`, the closed-loop fuel
+- `engine_load_from_mass_airflow_calculate`, `fuel_trim_airflow_region_classify`, the closed-loop fuel
   tables, fuel-trim modes, airflow monitors, and logger conversion routines all consume the shared
   final-airflow channel. The patch therefore supplies the established load/fueling pipeline
   without patching each consumer.
@@ -980,7 +986,7 @@ acceptance, hardware wiring correctness, or safe vehicle operation.
   their confirmed use of `B424/B430/B438/B43C/B440/B444`; the names do not claim a narrower
   subsystem role than the recovered data flow. The full address/name list is in
   `docs/D2WD610H_RE_notes.md`.
-- `speed_density/ghidra_scripts/ApplyMaflessNames.java` reproducibly applies all 49 late-trace
+- `patches/speed_density/ghidra_scripts/ApplyMaflessNames.java` reproducibly applies all 49 late-trace
   names, including the four function boundaries missed by auto-analysis. The final headless run
   saved every name and the hook comments to the same stock Ghidra program.
   `ReportMafDiagnostics.java` is the read-only reference report used to locate the raw converter,
@@ -1013,7 +1019,7 @@ acceptance, hardware wiring correctness, or safe vehicle operation.
 - The builder requires the canonical 512-KiB root stock SHA-256
   `ed0fe0341d97fb760c2cda3f07277f861495d32f6520e3ce8047b8b0f7bfd4ee`, patches an in-memory
   copy, refuses stock-alias output, and rechecks the root file after writing.
-- Generated image: `speed_density/D2WD610H_speed_density.bin`, SHA-256
+- Generated image: `patches/speed_density/D2WD610H_speed_density.bin`, SHA-256
   `548fc5353338248c683098507aed79a6c5f377bb2462b65a091a2f02b0899467`.
 - Exactly 1,695 bytes differ from stock. Ownership is limited to the final-airflow helper pointer,
   two raw-MAF calls, the raw-MAF limit/filter call, three MAF-dependent diagnostic-task pointers,
@@ -1128,7 +1134,7 @@ enter boost solely because the automated audit passes.
   raw B428 as `airflow_g_s * 60 / RPM`, and conditions it into B438 in g/rev. AVCS, ignition,
   fuel, and knock consumers use B438. The speed-density helper supplies B420 in g/s and retains
   this stock normalization, so calculated-load scaling remains correct.
-- `speed_density/verify_speed_density.py` now pins the exact stock load instruction sequence at
+- `tests/verify_speed_density.py` now pins the exact stock load instruction sequence at
   `0x1753C`, the 60.0 g/s-to-g/rev factor at `0x1761C`, the 4.0 g/rev limit at `0x17620`, and
   representative SD-to-load model samples. The standalone and master rebuilds retain all of them.
 - Every D2WD610H-derived definition now inherits the corrected km/h AVLS curve/hysteresis names,
@@ -1231,7 +1237,7 @@ enter boost solely because the automated audit passes.
   is builder input only, not a selectable complete definition. The verifier checks the
   complete document, embedded DTD, focused parameter sets, generated-file hash, and
   equality of all fourteen project entries with the fragment.
-- Run `python3 master_patch/verify_master_patch.py` from the repository root. A pass means the
+- Run `python3 tests/verify_master_patch.py` from the repository root. A pass means the
   checked development baseline matches this audit; it does not approve a later RomRaider edit.
 
 ## Remaining physical work
@@ -1278,7 +1284,7 @@ vehicle-speed-selected AVLS descriptions for the current master image.
   `intake_avcs_target_by_avls_mode_update` (`0x353B0`), and the airflow hook at
   `0x172A4` were rechecked. The sequence calls the state machine, commits the
   requested mode, then runs the actuation gate.
-- The merged `speed_density/ghidra_scripts/ApplyMaflessNames.java` and master
+- The merged `patches/speed_density/ghidra_scripts/ApplyMaflessNames.java` and master
   naming script reproduce these names/comments.
 
 ## Artifacts and verification
@@ -1382,7 +1388,7 @@ current master artifacts remain tracked.
 The remaining historical calibration packaging was subsequently removed. Its required
 calibration/checksum implementation was reduced to `master_patch/master_calibration.py`; the
 independent policy functions used by the master verifier moved to
-`master_patch/verify_master_calibration.py`. Redundant pre-master AVLS writes, the standalone
+`tests/verify_master_calibration.py`. Redundant pre-master AVLS writes, the standalone
 builder/output verifier, and duplicated/outdated calibration, manifest, and commissioning files
 were not carried forward. The master continues to source predictable AVLS exclusively from the
 speed-density component. A before/after rebuild retained the exact master SHA-256 and checksum.
@@ -1517,12 +1523,13 @@ modes. The same training volume documents a 30-second post-start 100%-to-33%
 transition for Subaru's related turbo fuel system. A subsequent direct D2WD610H
 Ghidra trace supersedes the earlier inference: `fuel_pump_control_state_update`
 reads engine-run counter `0xFFFFB688` and compares it with big-endian u16
-`0x794DA = 3750`, approximately 37.5 seconds at the derived 10 ms task cadence.
-The logged engine run lasted only 34.813 seconds and the lean trend was already
-obvious by about 26.8 seconds. If B688 reset with the non-running state as the
-code path indicates, this specific 37.5-second gate was not reached in the
-capture and is not the leading explanation for that event. The counter itself
-was not logged, so P47 remains worthwhile as a direct confirmation. COBB also
+`0x794DA = 3750`. **September 9 audit correction:** the traced nominal cadence
+is 8 ms, giving 30.0 seconds, not the previously stated 37.5 seconds. The
+34.813-second capture therefore cannot exclude this gate on duration alone.
+The lean trend was already visible around 26.8 seconds, but B688 and P47 were
+not captured, so the timing comparison does not establish the gate's actual
+state or a causal link to the lean-out. The clock period is still a target
+hardware assumption. See [central findings](docs/reference/FINDINGS.md). COBB also
 documents a tunable "Fuel Pump Duty Post-Start High Level" duration and advises
 comparing pressure at 100% and 33% duty after pump-system modifications. A 2004
 Liberty GT owner separately reported an upgraded DW65c struggling specifically

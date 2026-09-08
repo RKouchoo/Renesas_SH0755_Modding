@@ -1,5 +1,12 @@
 # A2WC510N EJ255 Boost-Control Donor
 
+> **Historical controller design:** the electronic boost actuator was retired
+> after its output was identified as radiator-fan PWM. Donor tables remain as
+> reserved provenance data; the current main has no active WGDC controller and
+> uses a different MAP transfer. The commissioning instructions below describe
+> the retired design. Use [current image contracts](reference/IMAGES.md) and
+> [corrected output identities](reference/MEMORY_AND_IO.md).
+
 This note records the exact stock turbo ROM used to seed the D2WD610H boost-patch defaults and
 the reduction from Subaru's 3D controller tables to this patch's RPM-only controller.
 
@@ -114,7 +121,7 @@ donor's atmospheric-pressure target compensation. The displayed 5 psi target and
 therefore mean pressure relative to 760 mmHg, not a constant 5/6/7 psi above local atmosphere at
 altitude.
 
-Run `python3 patch/verify_boost_donor.py` to re-extract the pinned donor bytes, check the A/B
+Run `python3 tests/verify_boost_donor.py` to re-extract the pinned donor bytes, check the A/B
 pairs, and compare the generated patch tables and MAP floats with this reduction.
 
 Use the MAP sensor matching this donor calibration and validate logged pressure against a

@@ -5,6 +5,8 @@ No physical pressure is inferred from the minimum observed in a log. Runs
 7A14, 25CC, 257C and 7A56 from saved ROM bytes. Hardware ADC acquisition and
 electrical sensor accuracy remain external; no BIN or calibration is written.
 """
+
+import _analysis_paths  # Locate shared offline interpreters after repository cleanup.
 import argparse
 import hashlib
 import json

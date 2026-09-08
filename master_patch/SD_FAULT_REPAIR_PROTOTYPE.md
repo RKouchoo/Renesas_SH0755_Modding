@@ -149,7 +149,7 @@ python3 master_patch/audit_sd_fault_repair_prototype.py --output /tmp/d2wd-sd-re
 ```
 
 Sources: [prototype](prototype_sd_fault_repair.py),
-[native tests](test_sd_fault_repair_prototype.py),
+[native tests](../tests/test_sd_fault_repair_prototype.py),
 [audit runner](audit_sd_fault_repair_prototype.py),
 [numeric report](../logs/20260908_sd_fault_repair_prototype.json).
 Input remains SHA-256

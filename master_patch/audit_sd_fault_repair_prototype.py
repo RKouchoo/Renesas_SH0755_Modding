@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
 """Run offline SD repair tests and write a JSON audit, never a BIN."""
+
+import _analysis_paths  # Locate shared offline interpreters after repository cleanup.
 import argparse
 import hashlib
 from io import StringIO

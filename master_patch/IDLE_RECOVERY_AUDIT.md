@@ -168,11 +168,11 @@ finish the offline work in this audit.
 Reproduce:
 
 ```sh
-python3 master_patch/test_transient_fuel_execution.py
-python3 master_patch/test_idle_recovery_candidate.py
+python3 tests/test_transient_fuel_execution.py
+python3 tests/test_idle_recovery_candidate.py
 python3 master_patch/idle_recovery_candidate.py
 python3 master_patch/replay_20260908_transient.py
-python3 master_patch/verify_master_patch.py
+python3 tests/verify_master_patch.py
 ```
 
 The complete numerical replay is saved in

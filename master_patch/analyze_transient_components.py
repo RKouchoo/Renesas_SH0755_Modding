@@ -7,6 +7,8 @@ pre-update state and alter only the slow negative gain in memory. This tests
 software sensitivity, not wall-film physics, combustion or a calibration fix.
 No BIN is written.
 """
+
+import _analysis_paths  # Locate shared offline interpreters after repository cleanup.
 import argparse
 import bisect
 from copy import deepcopy

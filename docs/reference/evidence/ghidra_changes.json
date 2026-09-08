@@ -1,0 +1,2374 @@
+{
+  "date": "2026-09-08",
+  "program": "2005 BLE MT.bin",
+  "server": "Ghidra MCP",
+  "mutations": [
+    {
+      "operation": "rename_data",
+      "address": "0000FA94",
+      "new_name": "timer_bank_a_descriptor_table",
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "Rename data attempted"
+          }
+        ],
+        "isError": false
+      },
+      "readback": [
+        "0000fa94: timer_bank_a_descriptor_table = fffff640"
+      ],
+      "verified": true
+    },
+    {
+      "operation": "rename_data",
+      "address": "0000FADC",
+      "new_name": "timer_bank_b_descriptor_table",
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "Rename data attempted"
+          }
+        ],
+        "isError": false
+      },
+      "readback": [
+        "0000fadc: timer_bank_b_descriptor_table = fffff650"
+      ],
+      "verified": true
+    },
+    {
+      "operation": "rename_data",
+      "address": "FFFFABC8",
+      "new_name": "map_filtered_adc_u16",
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "Rename data attempted"
+          }
+        ],
+        "isError": false
+      },
+      "readback": [],
+      "verified": false
+    },
+    {
+      "operation": "rename_data",
+      "address": "FFFFABC4",
+      "new_name": "map_pressure_mmhg_f32",
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "Rename data attempted"
+          }
+        ],
+        "isError": false
+      },
+      "readback": [
+        "ffffabc4: map_pressure_mmhg_f32 = ??"
+      ],
+      "verified": true
+    },
+    {
+      "operation": "rename_data",
+      "address": "FFFFAB04",
+      "new_name": "map_raw_adc_u16",
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "Rename data attempted"
+          }
+        ],
+        "isError": false
+      },
+      "readback": [
+        "ffffab04: map_raw_adc_u16 = ??"
+      ],
+      "verified": true
+    },
+    {
+      "operation": "rename_data",
+      "address": "FFFFB744",
+      "new_name": "injector_inhibit_word_u16",
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "Rename data attempted"
+          }
+        ],
+        "isError": false
+      },
+      "readback": [
+        "ffffb744: injector_inhibit_word_u16 = ??"
+      ],
+      "verified": true
+    },
+    {
+      "operation": "rename_data",
+      "address": "FFFFB46C",
+      "new_name": "accelerator_pedal_conditioned_percent_f32",
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "Rename data attempted"
+          }
+        ],
+        "isError": false
+      },
+      "readback": [
+        "ffffb46c: accelerator_pedal_conditioned_percent_f32 = ??"
+      ],
+      "verified": true
+    },
+    {
+      "operation": "rename_data",
+      "address": "FFFFCD7F",
+      "new_name": "radiator_fan_primary_mode_u8",
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "Rename data attempted"
+          }
+        ],
+        "isError": false
+      },
+      "readback": [],
+      "verified": false
+    },
+    {
+      "operation": "rename_data",
+      "address": "FFFFCD80",
+      "new_name": "radiator_fan_secondary_mode_u8",
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "Rename data attempted"
+          }
+        ],
+        "isError": false
+      },
+      "readback": [],
+      "verified": false
+    },
+    {
+      "operation": "rename_data",
+      "address": "FFFFF590",
+      "new_name": "ATU_BFR7A_fan_pwm_buffer",
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "Rename data attempted"
+          }
+        ],
+        "isError": false
+      },
+      "readback": [
+        "fffff590: ATU_BFR7A_fan_pwm_buffer = ??"
+      ],
+      "verified": true
+    },
+    {
+      "operation": "rename_data",
+      "address": "FFFFF598",
+      "new_name": "ATU_DTR7A_duty",
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "Rename data attempted"
+          }
+        ],
+        "isError": false
+      },
+      "readback": [
+        "fffff598: ATU_DTR7A_duty = ??"
+      ],
+      "verified": true
+    },
+    {
+      "operation": "rename_data",
+      "address": "FFFFF602",
+      "new_name": "ATU_TCNT2B_counter",
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "Rename data attempted"
+          }
+        ],
+        "isError": false
+      },
+      "readback": [],
+      "verified": false
+    },
+    {
+      "operation": "rename_data",
+      "address": "FFFFF666",
+      "new_name": "ATU_DSTR_downcounter_start",
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "Rename data attempted"
+          }
+        ],
+        "isError": false
+      },
+      "readback": [
+        "fffff666: ATU_DSTR_downcounter_start = ??"
+      ],
+      "verified": true
+    },
+    {
+      "operation": "rename_data",
+      "address": "FFFFF640",
+      "new_name": "ATU_DCNT8A_counter",
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "Rename data attempted"
+          }
+        ],
+        "isError": false
+      },
+      "readback": [],
+      "verified": false
+    },
+    {
+      "operation": "rename_data",
+      "address": "FFFFF650",
+      "new_name": "ATU_DCNT8I_counter",
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "Rename data attempted"
+          }
+        ],
+        "isError": false
+      },
+      "readback": [],
+      "verified": false
+    },
+    {
+      "operation": "rename_data",
+      "address": "FFFFF652",
+      "new_name": "ATU_DCNT8J_counter",
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "Rename data attempted"
+          }
+        ],
+        "isError": false
+      },
+      "readback": [],
+      "verified": false
+    },
+    {
+      "operation": "rename_data",
+      "address": "FFFFF444",
+      "new_name": "ATU_GR1A_general",
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "Rename data attempted"
+          }
+        ],
+        "isError": false
+      },
+      "readback": [],
+      "verified": false
+    },
+    {
+      "operation": "rename_function_by_address",
+      "address": "000096FC",
+      "new_name": "injector_timer_channel_duration_update",
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "Function renamed successfully"
+          }
+        ],
+        "isError": false
+      },
+      "readback": [
+        "injector_timer_channel_duration_update at 000096fc"
+      ],
+      "verified": true
+    },
+    {
+      "operation": "rename_function_by_address",
+      "address": "00026320",
+      "new_name": "injector_control_records_initialize",
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "Function renamed successfully"
+          }
+        ],
+        "isError": false
+      },
+      "readback": [
+        "injector_control_records_initialize at 00026320"
+      ],
+      "verified": true
+    },
+    {
+      "operation": "rename_function_by_address",
+      "address": "00024570",
+      "new_name": "injector_circuit_fault_monitor",
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "Function renamed successfully"
+          }
+        ],
+        "isError": false
+      },
+      "readback": [
+        "injector_circuit_fault_monitor at 00024570"
+      ],
+      "verified": true
+    },
+    {
+      "operation": "rename_function_by_address",
+      "address": "000202B8",
+      "new_name": "bank_lambda_feedback_targets_compose",
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "Function renamed successfully"
+          }
+        ],
+        "isError": false
+      },
+      "readback": [
+        "bank_lambda_feedback_targets_compose at 000202b8"
+      ],
+      "verified": true
+    },
+    {
+      "operation": "rename_function_by_address",
+      "address": "00020564",
+      "new_name": "legacy_o2_voltage_bank_target_offsets_update",
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "Function renamed successfully"
+          }
+        ],
+        "isError": false
+      },
+      "readback": [
+        "legacy_o2_voltage_bank_target_offsets_update at 00020564"
+      ],
+      "verified": true
+    },
+    {
+      "operation": "rename_function_by_address",
+      "address": "000219C6",
+      "new_name": "legacy_o2_voltage_pair_filter_update",
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "Function renamed successfully"
+          }
+        ],
+        "isError": false
+      },
+      "readback": [
+        "legacy_o2_voltage_pair_filter_update at 000219c6"
+      ],
+      "verified": true
+    },
+    {
+      "operation": "rename_function_by_address",
+      "address": "00021F0C",
+      "new_name": "legacy_o2_voltage_trim_state_update",
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "Function renamed successfully"
+          }
+        ],
+        "isError": false
+      },
+      "readback": [
+        "legacy_o2_voltage_trim_state_update at 00021f0c"
+      ],
+      "verified": true
+    },
+    {
+      "operation": "rename_function_by_address",
+      "address": "00014D1E",
+      "new_name": "throttle_history_delta_update",
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "Function renamed successfully"
+          }
+        ],
+        "isError": false
+      },
+      "readback": [
+        "throttle_history_delta_update at 00014d1e"
+      ],
+      "verified": true
+    },
+    {
+      "operation": "rename_function_by_address",
+      "address": "0002AAAC",
+      "new_name": "throttle_request_offset_and_fault_select",
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "Function renamed successfully"
+          }
+        ],
+        "isError": false
+      },
+      "readback": [
+        "throttle_request_offset_and_fault_select at 0002aaac"
+      ],
+      "verified": true
+    },
+    {
+      "operation": "rename_function_by_address",
+      "address": "0002AB06",
+      "new_name": "throttle_relative_request_clamp_and_mode_select",
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "Function renamed successfully"
+          }
+        ],
+        "isError": false
+      },
+      "readback": [
+        "throttle_relative_request_clamp_and_mode_select at 0002ab06"
+      ],
+      "verified": true
+    },
+    {
+      "operation": "rename_function_by_address",
+      "address": "0002AC16",
+      "new_name": "throttle_idle_and_driver_requests_combine",
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "Function renamed successfully"
+          }
+        ],
+        "isError": false
+      },
+      "readback": [
+        "throttle_idle_and_driver_requests_combine at 0002ac16"
+      ],
+      "verified": true
+    },
+    {
+      "operation": "rename_function_by_address",
+      "address": "0002C510",
+      "new_name": "idle_effective_target_rpm_limits_update",
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "Function renamed successfully"
+          }
+        ],
+        "isError": false
+      },
+      "readback": [
+        "idle_effective_target_rpm_limits_update at 0002c510"
+      ],
+      "verified": true
+    },
+    {
+      "operation": "set_disassembly_comment",
+      "address": "000009F4",
+      "comment": "2026-09-08 central audit: SH7055SF on-chip RAM is FFFF6000-FFFFDFFF (32 KiB), Renesas hardware manual sec.23. Existing project RAM block FFFF0000-FFFFBFFF is incorrect. MCP cannot change memory blocks or explicitly save the program; see docs/reference/GHIDRA.md. Firmware bytes unchanged.",
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "Comment set successfully"
+          }
+        ],
+        "isError": false
+      },
+      "verified": true,
+      "readback": [
+        "000009f4: mov.w 0x00000ac4,r4 ; 2026-09-08 central audit: SH7055SF on-chip RAM is FFFF6000-FFFFDFFF (32 KiB), Renesas hardware manual sec.23. Existing project RAM block FFFF0000-FFFFBFFF is incorrect. MCP cannot change memory blocks or explicitly save the program; see docs/reference/GHIDRA.md. Firmware bytes unchanged."
+      ]
+    },
+    {
+      "operation": "set_disassembly_comment",
+      "address": "00007A14",
+      "comment": "2026-09-08 verified stock path: AB04 u16 raw ADC -> 25CC Q8-coefficient integer filter -> ABC8 u16 filtered ADC -> 257C voltage affine conversion -> offset 72810/slope 72814 -> ABC4 float absolute mmHg. ABC8 is not a pressure float. Master/v2 change transfer constants; no intercept-floor correction was made in this audit.",
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "Comment set successfully"
+          }
+        ],
+        "isError": false
+      },
+      "verified": true,
+      "readback": [
+        "00007a14: mov.l r14,@-r15 ; 2026-09-08 verified stock path: AB04 u16 raw ADC -> 25CC Q8-coefficient integer filter -> ABC8 u16 filtered ADC -> 257C voltage affine conversion -> offset 72810/slope 72814 -> ABC4 float absolute mmHg. ABC8 is not a pressure float. Master/v2 change transfer constants; no intercept-floor correction was made in this audit."
+      ]
+    },
+    {
+      "operation": "set_disassembly_comment",
+      "address": "00007A56",
+      "comment": "2026-09-08: classifier reads ABC8 as an unsigned 16-bit filtered ADC word; thresholds are ADC codes. Pressure is separately published at ABC4. Do not define/log ABC8 as a float.",
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "Comment set successfully"
+          }
+        ],
+        "isError": false
+      },
+      "verified": true,
+      "readback": [
+        "00007a56: mov.l 0x00007a88,r3 ; 2026-09-08: classifier reads ABC8 as an unsigned 16-bit filtered ADC word; thresholds are ADC codes. Pressure is separately published at ABC4. Do not define/log ABC8 as a float."
+      ]
+    },
+    {
+      "operation": "set_disassembly_comment",
+      "address": "000096FC",
+      "comment": "2026-09-08: injector duration timer update, reached by 268E8 -> literal 269F4 -> thunk 90BA -> 96FC. Uses 6 records of 12 bytes at FA94 (literal 983C), not FAE8. A-record +0 down-counter F640+2*n, +4 GR1A+2*n, +8 u16 mask 1<<n. Hardware latency/output pin polarity is not measured by fixtures.",
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "Comment set successfully"
+          }
+        ],
+        "isError": false
+      },
+      "verified": true,
+      "readback": [
+        "000096fc: mov.l r14,@-r15 ; 2026-09-08: injector duration timer update, reached by 268E8 -> literal 269F4 -> thunk 90BA -> 96FC. Uses 6 records of 12 bytes at FA94 (literal 983C), not FAE8. A-record +0 down-counter F640+2*n, +4 GR1A+2*n, +8 u16 mask 1<<n. Hardware latency/output pin polarity is not measured by fixtures."
+      ]
+    },
+    {
+      "operation": "set_disassembly_comment",
+      "address": "000090BA",
+      "comment": "2026-09-08: exact BRA 96FC; NOP thunk. Injector duration output route from 268E8 uses this entry (pointer 269F4). The earlier cam-solenoid identity is retracted.",
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "Comment set successfully"
+          }
+        ],
+        "isError": false
+      },
+      "verified": true,
+      "readback": [
+        "000090ba: bra 0x000096fc ; 2026-09-08: exact BRA 96FC; NOP thunk. Injector duration output route from 268E8 uses this entry (pointer 269F4). The earlier cam-solenoid identity is retracted."
+      ]
+    },
+    {
+      "operation": "set_disassembly_comment",
+      "address": "00009D3A",
+      "comment": "2026-09-08: timer descriptor table B starts FADC, 6 records x 24 bytes. +0 DCNT8I+n, +4 OCR2A+n, +8 GR2A+n, +C TCNT2B shared counter, +10 DSTR, +14 u16 mask 0100<<n. FAE8 is record-0's counter pointer, not the table base. Do not infer physical output identity from these descriptors alone.",
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "Comment set successfully"
+          }
+        ],
+        "isError": false
+      },
+      "verified": true,
+      "readback": [
+        "00009d3a: mov.l r14,@-r15 ; 2026-09-08: timer descriptor table B starts FADC, 6 records x 24 bytes. +0 DCNT8I+n, +4 OCR2A+n, +8 GR2A+n, +C TCNT2B shared counter, +10 DSTR, +14 u16 mask 0100<<n. FAE8 is record-0's counter pointer, not the table base. Do not infer physical output identity from these descriptors alone."
+      ]
+    },
+    {
+      "operation": "set_disassembly_comment",
+      "address": "00009FEC",
+      "comment": "2026-09-08: two float inputs ABB4/AC00; descriptor 60998; integer-result two-axis helper 21B0; caches r0 as u16 at AD5C. Existing generic float-table-consumer name refers to float axes, not a float output.",
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "Comment set successfully"
+          }
+        ],
+        "isError": false
+      },
+      "verified": true,
+      "readback": [
+        "00009fec: sts.l PR,@-r15 ; 2026-09-08: two float inputs ABB4/AC00; descriptor 60998; integer-result two-axis helper 21B0; caches r0 as u16 at AD5C. Existing generic float-table-consumer name refers to float axes, not a float output."
+      ]
+    },
+    {
+      "operation": "set_disassembly_comment",
+      "address": "0000E8C4",
+      "comment": "2026-09-08: stock radiator-fan PWM writer. Fraction -> integer count B0F0; AB84 period; word output at E8EE to FFFFF590 = ATU BFR7A. FFFFF598 is DTR7A. This is not the CPC purge output. Main/v2 retain stock caller literal 3FD8C -> E8C4.",
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "Comment set successfully"
+          }
+        ],
+        "isError": false
+      },
+      "verified": true,
+      "readback": [
+        "0000e8c4: sts.l PR,@-r15 ; 2026-09-08: stock radiator-fan PWM writer. Fraction -> integer count B0F0; AB84 period; word output at E8EE to FFFFF590 = ATU BFR7A. FFFFF598 is DTR7A. This is not the CPC purge output. Main/v2 retain stock caller literal 3FD8C -> E8C4."
+      ]
+    },
+    {
+      "operation": "set_disassembly_comment",
+      "address": "0000B182",
+      "comment": "2026-09-08: actual CPC purge request writer. Scales FR4 fraction by 65536, caches AE4C and writes computed duty to AB60+4 = AB64. Current master dispatcher 1BAF0 tail-calls this with zero. This RAM request write does not by itself prove physical pin polarity.",
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "Comment set successfully"
+          }
+        ],
+        "isError": false
+      },
+      "verified": true,
+      "readback": [
+        "0000b182: sts.l PR,@-r15 ; 2026-09-08: actual CPC purge request writer. Scales FR4 fraction by 65536, caches AE4C and writes computed duty to AB60+4 = AB64. Current master dispatcher 1BAF0 tail-calls this with zero. This RAM request write does not by itself prove physical pin polarity."
+      ]
+    },
+    {
+      "operation": "set_disassembly_comment",
+      "address": "0003F878",
+      "comment": "2026-09-08: fan mode selection writes RAM CD7F/CD80. ROM literal 3F97C contains FFFFCD7F; ROM literal 3FA80 contains FFFFCD80. Prior FFFFF97C/FFFFFA80 hardware-address claims were a literal/address confusion; they are not relay register identities.",
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "Comment set successfully"
+          }
+        ],
+        "isError": false
+      },
+      "verified": true,
+      "readback": [
+        "0003f878: mov.l r14,@-r15 ; 2026-09-08: fan mode selection writes RAM CD7F/CD80. ROM literal 3F97C contains FFFFCD7F; ROM literal 3FA80 contains FFFFCD80. Prior FFFFF97C/FFFFFA80 hardware-address claims were a literal/address confusion; they are not relay register identities."
+      ]
+    },
+    {
+      "operation": "set_disassembly_comment",
+      "address": "00026320",
+      "comment": "2026-09-08: initializes six injector control records at FFFFBFB8, stride 28 hex; occupied through FFFFC0A7 inclusive. Computed per-field access means missing xrefs at BFF0/BFF8 is not evidence of unused RAM.",
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "Comment set successfully"
+          }
+        ],
+        "isError": false
+      },
+      "verified": true,
+      "readback": [
+        "00026320: mov.l r14,@-r15 ; 2026-09-08: initializes six injector control records at FFFFBFB8, stride 28 hex; occupied through FFFFC0A7 inclusive. Computed per-field access means missing xrefs at BFF0/BFF8 is not evidence of unused RAM."
+      ]
+    },
+    {
+      "operation": "set_disassembly_comment",
+      "address": "0001C5D4",
+      "comment": "2026-09-08: native injector inhibit-word producer, writes u16 B744 at 1C90A. Master added cuts must publish both BF6C bit80 and B744=FFFF. Wrappers protect the complete native-plus-added decision with 3AF4/3B08 because phase task 5 can outrank task 6.",
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "Comment set successfully"
+          }
+        ],
+        "isError": false
+      },
+      "verified": true,
+      "readback": [
+        "0001c5d4: sts.l PR,@-r15 ; 2026-09-08: native injector inhibit-word producer, writes u16 B744 at 1C90A. Master added cuts must publish both BF6C bit80 and B744=FFFF. Wrappers protect the complete native-plus-added decision with 3AF4/3B08 because phase task 5 can outrank task 6."
+      ]
+    },
+    {
+      "operation": "set_disassembly_comment",
+      "address": "00026F8C",
+      "comment": "2026-09-08: publishes scheduled-count-derived injector pulse-width channels; record inhibit governs the logged value. This is not a measurement of electrical injector on-time and does not directly report the instantaneous global B744 word.",
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "Comment set successfully"
+          }
+        ],
+        "isError": false
+      },
+      "verified": true,
+      "readback": [
+        "00026f8c: mov.l r14,@-r15 ; 2026-09-08: publishes scheduled-count-derived injector pulse-width channels; record inhibit governs the logged value. This is not a measurement of electrical injector on-time and does not directly report the instantaneous global B744 word."
+      ]
+    },
+    {
+      "operation": "set_disassembly_comment",
+      "address": "000172A4",
+      "comment": "2026-09-08: stock airflow/load task retained downstream of SD helper hook 1743C. MAIN SHA154760a5 redirects local status pointer 173FC from 65168 to 27088. V2 SHA2fe5f9cc retains 65168: D26F bit40 can still select processed-MAP fallback load. Do not transfer main-only bypass conclusions to v2.",
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "Comment set successfully"
+          }
+        ],
+        "isError": false
+      },
+      "verified": true,
+      "readback": [
+        "000172a4: mov.l r14,@-r15 ; 2026-09-08: stock airflow/load task retained downstream of SD helper hook 1743C. MAIN SHA154760a5 redirects local status pointer 173FC from 65168 to 27088. V2 SHA2fe5f9cc retains 65168: D26F bit40 can still select processed-MAP fallback load. Do not transfer main-only bypass conclusions to v2."
+      ]
+    },
+    {
+      "operation": "set_disassembly_comment",
+      "address": "00065168",
+      "comment": "2026-09-08: returns 2 when D26F mask40 is set, otherwise 0. Main locally bypasses this getter only at 173FC; v2 retains the pointer. Getter bytes and other callers are unchanged.",
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "Comment set successfully"
+          }
+        ],
+        "isError": false
+      },
+      "verified": true,
+      "readback": [
+        "00065168: mov.w 0x00065206,r0 ; 2026-09-08: returns 2 when D26F mask40 is set, otherwise 0. Main locally bypasses this getter only at 173FC; v2 retains the pointer. Getter bytes and other callers are unchanged."
+      ]
+    },
+    {
+      "operation": "set_disassembly_comment",
+      "address": "00018AEA",
+      "comment": "2026-09-08: B4C8 -> B46C conditioned accelerator-pedal percent snapshot. B46C is not vehicle speed or throttle blade opening. SD wrapper uses B448/B458/B45C airflow state and does not consume B46C.",
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "Comment set successfully"
+          }
+        ],
+        "isError": false
+      },
+      "verified": true,
+      "readback": [
+        "00018aea: mov.l 0x00018b7c,r2 ; 2026-09-08: B4C8 -> B46C conditioned accelerator-pedal percent snapshot. B46C is not vehicle speed or throttle blade opening. SD wrapper uses B448/B458/B45C airflow state and does not consume B46C."
+      ]
+    },
+    {
+      "operation": "set_disassembly_comment",
+      "address": "0001E7E8",
+      "comment": "2026-09-08: signed transient load-change compensation, not after-start-only enrichment. Reads B438, updates B878/B87C and four-sample B8B8..B8C4, publishes B874. Main falling history coefficient 76050=0.01; v2=0.08. Separate conditioned-load coefficient 73968=0.06 and slow-negative gain 76030=0.04 remain unchanged.",
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "Comment set successfully"
+          }
+        ],
+        "isError": false
+      },
+      "verified": true,
+      "readback": [
+        "0001e7e8: mov.l r14,@-r15 ; 2026-09-08: signed transient load-change compensation, not after-start-only enrichment. Reads B438, updates B878/B87C and four-sample B8B8..B8C4, publishes B874. Main falling history coefficient 76050=0.01; v2=0.08. Separate conditioned-load coefficient 73968=0.06 and slow-negative gain 76030=0.04 remain unchanged."
+      ]
+    },
+    {
+      "operation": "set_disassembly_comment",
+      "address": "0001DD04",
+      "comment": "2026-09-08: final fuel composer already includes signed B874 and primary BDF8 in bank factors. Multiplying logged final factor by 1+B874 again double-counts transient correction. Purge bank subtraction BE60/BE64 and legacy-O2 adders have separate publishers.",
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "Comment set successfully"
+          }
+        ],
+        "isError": false
+      },
+      "verified": true,
+      "readback": [
+        "0001dd04: mov.l r14,@-r15 ; 2026-09-08: final fuel composer already includes signed B874 and primary BDF8 in bank factors. Multiplying logged final factor by 1+B874 again double-counts transient correction. Purge bank subtraction BE60/BE64 and legacy-O2 adders have separate publishers."
+      ]
+    },
+    {
+      "operation": "set_disassembly_comment",
+      "address": "00022454",
+      "comment": "2026-09-08: primary OL target and ramp calculation remains stock. Added pressure wrapper calls this first, then can clear BE38 bit80. Clearing CL permission does not manufacture immediate enrichment or remove native ramp/delay gates.",
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "Comment set successfully"
+          }
+        ],
+        "isError": false
+      },
+      "verified": true,
+      "readback": [
+        "00022454: mov.l r14,@-r15 ; 2026-09-08: primary OL target and ramp calculation remains stock. Added pressure wrapper calls this first, then can clear BE38 bit80. Clearing CL permission does not manufacture immediate enrichment or remove native ramp/delay gates."
+      ]
+    },
+    {
+      "operation": "set_disassembly_comment",
+      "address": "00047DB2",
+      "comment": "2026-09-08: selector 737D9=0 chooses stored pressure estimate 8E04 rather than alternate sensor value B3A8, publishing CFBC. CFBC/P24 is not an independent barometer suitable for validating MAP sensor calibration.",
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "Comment set successfully"
+          }
+        ],
+        "isError": false
+      },
+      "verified": true,
+      "readback": [
+        "00047db2: mov.w 0x00047e42,r4 ; 2026-09-08: selector 737D9=0 chooses stored pressure estimate 8E04 rather than alternate sensor value B3A8, publishing CFBC. CFBC/P24 is not an independent barometer suitable for validating MAP sensor calibration."
+      ]
+    },
+    {
+      "operation": "set_disassembly_comment",
+      "address": "00047DCC",
+      "comment": "2026-09-08: estimate update priority D26C/10 fixed760, CFD0/80 ABC4 sample, CFD0/40 processed MAP plus CFC4 filter, CFD0/20 add2.5, else hold; clamp570..770 mmHg then protected write. This clamp does not clamp the ADC-derived ABC4 used by SD.",
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "Comment set successfully"
+          }
+        ],
+        "isError": false
+      },
+      "verified": true,
+      "readback": [
+        "00047dcc: fmov.s fr15,@-r15 ; 2026-09-08: estimate update priority D26C/10 fixed760, CFD0/80 ABC4 sample, CFD0/40 processed MAP plus CFC4 filter, CFD0/20 add2.5, else hold; clamp570..770 mmHg then protected write. This clamp does not clamp the ADC-derived ABC4 used by SD."
+      ]
+    },
+    {
+      "operation": "set_disassembly_comment",
+      "address": "0004FB8C",
+      "comment": "2026-09-08: internal rolling 16-bit diagnostic accumulator has upper literal 4FC30=7D790. Separate Subaru additive checksum descriptor covers 2000..7FAF7 inclusive, including injected code. Writing erased flash above7D790 still requires the Subaru checksum repair.",
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "Comment set successfully"
+          }
+        ],
+        "isError": false
+      },
+      "verified": true,
+      "readback": [
+        "0004fb8c: mov.l r14,@-r15 ; 2026-09-08: internal rolling 16-bit diagnostic accumulator has upper literal 4FC30=7D790. Separate Subaru additive checksum descriptor covers 2000..7FAF7 inclusive, including injected code. Writing erased flash above7D790 still requires the Subaru checksum repair."
+      ]
+    },
+    {
+      "operation": "set_disassembly_comment",
+      "address": "00032CA4",
+      "comment": "2026-09-08: native SSM byte receiver caps receive index at137. A8 requests with43 addresses fit (136 total bytes);44 do not. Correct profile XML alone does not prove the ECU accepts the request or that RomRaider scheduled every selected channel.",
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "Comment set successfully"
+          }
+        ],
+        "isError": false
+      },
+      "verified": true,
+      "readback": [
+        "00032ca4: mov.l r14,@-r15 ; 2026-09-08: native SSM byte receiver caps receive index at137. A8 requests with43 addresses fit (136 total bytes);44 do not. Correct profile XML alone does not prove the ECU accepts the request or that RomRaider scheduled every selected channel."
+      ]
+    },
+    {
+      "operation": "set_disassembly_comment",
+      "address": "000202B8",
+      "comment": "2026-09-08: lambda target composer. Current master/v2 replace only reads at202CC/202D0 with FLDI0 FR4 to exclude legacy voltage-loop trim BD04/BD08. Main lambda-feedback correction path remains; this is not blanket deletion of all O2 diagnostics.",
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "Comment set successfully"
+          }
+        ],
+        "isError": false
+      },
+      "verified": true,
+      "readback": [
+        "000202b8: mov.l r14,@-r15 ; 2026-09-08: lambda target composer. Current master/v2 replace only reads at202CC/202D0 with FLDI0 FR4 to exclude legacy voltage-loop trim BD04/BD08. Main lambda-feedback correction path remains; this is not blanket deletion of all O2 diagnostics."
+      ]
+    },
+    {
+      "operation": "set_disassembly_comment",
+      "address": "0002AB06",
+      "comment": "2026-09-08: produces combined relative throttle request C2B8, native upper bound84 degrees. E515 scales to percent with /0.84. Later2AAAC applies learned offset and fault overrides; this is not motor duty.",
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "Comment set successfully"
+          }
+        ],
+        "isError": false
+      },
+      "verified": true,
+      "readback": [
+        "0002ab06: mov.l r14,@-r15 ; 2026-09-08: produces combined relative throttle request C2B8, native upper bound84 degrees. E515 scales to percent with /0.84. Later2AAAC applies learned offset and fault overrides; this is not motor duty."
+      ]
+    },
+    {
+      "operation": "set_disassembly_comment",
+      "address": "0002C510",
+      "comment": "2026-09-08: idle-target limits/decaying contribution; publishes C468 at2C70E. E514 reads this effective RPM request; it does not independently establish idle-control eligibility.",
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "Comment set successfully"
+          }
+        ],
+        "isError": false
+      },
+      "verified": true,
+      "readback": [
+        "0002c510: mov.l r14,@-r15 ; 2026-09-08: idle-target limits/decaying contribution; publishes C468 at2C70E. E514 reads this effective RPM request; it does not independently establish idle-control eligibility."
+      ]
+    },
+    {
+      "operation": "set_disassembly_comment",
+      "address": "000279CC",
+      "comment": "2026-09-08: six final ignition angles C0EC..C100 are distinct from six correction floats CCC8..CCDC. Main rotational-idle wrapper runs this stock task first, then may retard final angles; default disabled.",
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "Comment set successfully"
+          }
+        ],
+        "isError": false
+      },
+      "verified": true,
+      "readback": [
+        "000279cc: mov.l r14,@-r15 ; 2026-09-08: six final ignition angles C0EC..C100 are distinct from six correction floats CCC8..CCDC. Main rotational-idle wrapper runs this stock task first, then may retard final angles; default disabled."
+      ]
+    },
+    {
+      "operation": "set_disassembly_comment",
+      "address": "00028354",
+      "comment": "2026-09-08: C17C is AVCS tracking ratio (measured C8C8+C8CC)/(target C974+C978), clamped0..1 with guarded zero and status branches. It is not IAM.",
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "Comment set successfully"
+          }
+        ],
+        "isError": false
+      },
+      "verified": true,
+      "readback": [
+        "00028354: mov.l r14,@-r15 ; 2026-09-08: C17C is AVCS tracking ratio (measured C8C8+C8CC)/(target C974+C978), clamped0..1 with guarded zero and status branches. It is not IAM."
+      ]
+    },
+    {
+      "operation": "set_disassembly_comment",
+      "address": "00028418",
+      "comment": "2026-09-08: timing blends A*k+D*(1-k), B*k+E*(1-k), C*k+F*(1-k). Native descriptors60108..60194 identify axes and unsigned-byte scale0.3515625 offset-20. Existing editor float-axis little labels are not proof of swapped bytes; see central methods reference.",
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "Comment set successfully"
+          }
+        ],
+        "isError": false
+      },
+      "verified": true,
+      "readback": [
+        "00028418: mov.l r14,@-r15 ; 2026-09-08: timing blends A*k+D*(1-k), B*k+E*(1-k), C*k+F*(1-k). Native descriptors60108..60194 identify axes and unsigned-byte scale0.3515625 offset-20. Existing editor float-axis little labels are not proof of swapped bytes; see central methods reference."
+      ]
+    },
+    {
+      "operation": "set_disassembly_comment",
+      "address": "00033964",
+      "comment": "2026-09-08 stock initializer writes rear-O2 state. Main/v2 repoint task pointer1055C to explicit zero initializer7EBA0 after retiring rear runtime tasks; C85C u16 and C860 u8 are then lean-cut state. Stock-project names must not silently imply patched semantics.",
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "Comment set successfully"
+          }
+        ],
+        "isError": false
+      },
+      "verified": true,
+      "readback": [
+        "00033964: mov.w 0x00033a68,r3 ; 2026-09-08 stock initializer writes rear-O2 state. Main/v2 repoint task pointer1055C to explicit zero initializer7EBA0 after retiring rear runtime tasks; C85C u16 and C860 u8 are then lean-cut state. Stock-project names must not silently imply patched semantics."
+      ]
+    },
+    {
+      "operation": "set_disassembly_comment",
+      "address": "0000FA94",
+      "comment": "2026-09-08 verified table A base: six12-byte records through FADB. +0 u32 down-counter address F640+2n; +4 u32 general-register address F444+2n; +8 u16 mask1<<n; +A padding. OldFA90 base was four bytes early.",
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "Comment set successfully"
+          }
+        ],
+        "isError": false
+      }
+    },
+    {
+      "operation": "set_disassembly_comment",
+      "address": "0000FADC",
+      "comment": "2026-09-08 verified table B base: six24-byte records through FB6B. FAE8 is first record+C, the sharedTCNT2B pointer. Record fields and exact register names: docs/reference/MEMORY_AND_IO.md.",
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "Comment set successfully"
+          }
+        ],
+        "isError": false
+      }
+    },
+    {
+      "operation": "rename_function_by_address",
+      "address": "000009F4",
+      "new_name": "bus_state_controller_and_ram_emulation_initialize",
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "Function renamed successfully"
+          }
+        ],
+        "isError": false
+      },
+      "readback": [
+        "Function: bus_state_controller_and_ram_emulation_initialize at 000009f4\nSignature: undefined __stdcall bus_state_controller_and_ram_emulation_initialize(void)\nEntry: 000009f4\nBody: 000009f4 - 00000a1d"
+      ],
+      "verified": true,
+      "date": "2026-09-09"
+    },
+    {
+      "operation": "set_disassembly_comment",
+      "address": "000009F4",
+      "comment": "2026-09-09: BSC group EC20 initialization, RAMER at +6 cleared, protected MSTCR word3C04 written to F70A; then waits on ED18/8000. Physical RAM remains FFFF6000-FFFFDFFF. MCP block/save limitation remains documented.",
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "Comment set successfully"
+          }
+        ],
+        "isError": false
+      },
+      "readback": [
+        "000009f4: mov.w 0x00000ac4,r4 ; 2026-09-09: BSC group EC20 initialization, RAMER at +6 cleared, protected MSTCR word3C04 written to F70A; then waits on ED18/8000. Physical RAM remains FFFF6000-FFFFDFFF. MCP block/save limitation remains documented."
+      ],
+      "verified": true,
+      "date": "2026-09-09"
+    },
+    {
+      "operation": "rename_function_by_address",
+      "address": "0000B536",
+      "new_name": "protected_float_pair_zero_initialize",
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "Function renamed successfully"
+          }
+        ],
+        "isError": false
+      },
+      "readback": [
+        "Function: protected_float_pair_zero_initialize at 0000b536\nSignature: undefined __stdcall protected_float_pair_zero_initialize(uint param_1)\nEntry: 0000b536\nBody: 0000b536 - 0000b54f"
+      ],
+      "verified": true,
+      "date": "2026-09-09"
+    },
+    {
+      "operation": "set_disassembly_comment",
+      "address": "0000B536",
+      "comment": "2026-09-09: Calls49530 with FR4=+0.0 and R4=FFFF803C, then tails same helper for FFFF8044. Initializes two protected float records; previous fp_support_helper / FP-register-support label was incorrect.",
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "Comment set successfully"
+          }
+        ],
+        "isError": false
+      },
+      "readback": [
+        "0000b536: fmov.s fr15,@-r15 ; 2026-09-09: Calls49530 with FR4=+0.0 and R4=FFFF803C, then tails same helper for FFFF8044. Initializes two protected float records; previous fp_support_helper / FP-register-support label was incorrect."
+      ],
+      "verified": true,
+      "date": "2026-09-09"
+    },
+    {
+      "operation": "rename_function_by_address",
+      "address": "0001B800",
+      "new_name": "purge_airflow_limit_and_correction_update",
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "Function renamed successfully"
+          }
+        ],
+        "isError": false
+      },
+      "readback": [
+        "Function: purge_airflow_limit_and_correction_update at 0001b800\nSignature: undefined __stdcall purge_airflow_limit_and_correction_update(uint param_1, undefined4 param_2)\nEntry: 0001b800\nBody: 0001b800 - 0001b957"
+      ],
+      "verified": true,
+      "date": "2026-09-09"
+    },
+    {
+      "operation": "set_disassembly_comment",
+      "address": "0001B800",
+      "comment": "2026-09-09: Reads CFBC,B544,B420,B314; publishes purge-related B714,B6F8,B6F4,B6F0. Final ratio B6F4/B420 is clamped0..B6F8. Does not publish engine load B428/B438; obsolete load-calculator name retracted. Main CPC dispatcher/subtractions are separately bypassed.",
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "Comment set successfully"
+          }
+        ],
+        "isError": false
+      },
+      "readback": [
+        "0001b800: mov.l r14,@-r15 ; 2026-09-09: Reads CFBC,B544,B420,B314; publishes purge-related B714,B6F8,B6F4,B6F0. Final ratio B6F4/B420 is clamped0..B6F8. Does not publish engine load B428/B438; obsolete load-calculator name retracted. Main CPC dispatcher/subtractions are separately bypassed."
+      ],
+      "verified": true,
+      "date": "2026-09-09"
+    },
+    {
+      "operation": "rename_function_by_address",
+      "address": "0000251C",
+      "new_name": "u16_add_saturating",
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "Function renamed successfully"
+          }
+        ],
+        "isError": false
+      },
+      "readback": [
+        "Function: u16_add_saturating at 0000251c\nSignature: undefined * __stdcall u16_add_saturating(uint param_1, uint param_2)\nEntry: 0000251c\nBody: 0000251c - 0000252f"
+      ],
+      "verified": true,
+      "date": "2026-09-09"
+    },
+    {
+      "operation": "set_disassembly_comment",
+      "address": "0000251C",
+      "comment": "2026-09-09: EXTU.W both inputs R4/R5; sum saturates at0000FFFF and returns R0.",
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "Comment set successfully"
+          }
+        ],
+        "isError": false
+      },
+      "readback": [
+        "0000251c: extu.w r4,r4 ; 2026-09-09: EXTU.W both inputs R4/R5; sum saturates at0000FFFF and returns R0."
+      ],
+      "verified": true,
+      "date": "2026-09-09"
+    },
+    {
+      "operation": "rename_function_by_address",
+      "address": "0000254C",
+      "new_name": "float_scale_offset_to_u16_round_clamp",
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "Function renamed successfully"
+          }
+        ],
+        "isError": false
+      },
+      "readback": [
+        "Function: float_scale_offset_to_u16_round_clamp at 0000254c\nSignature: undefined * __stdcall float_scale_offset_to_u16_round_clamp(double param_1, float param_2, undefined4 param_3)\nEntry: 0000254c\nBody: 0000254c - 00002573"
+      ],
+      "verified": true,
+      "date": "2026-09-09"
+    },
+    {
+      "operation": "set_disassembly_comment",
+      "address": "0000254C",
+      "comment": "2026-09-09: Computes (FR4-FR6)/FR5+0.5, FTRC then integer clamp0..65535; returnsR0. Valid finite/scaled inputs required; do not treat this as arbitrary IEEE exceptional-value handling.",
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "Comment set successfully"
+          }
+        ],
+        "isError": false
+      },
+      "readback": [
+        "0000254c: mova 0x00002574,r0 ; 2026-09-09: Computes (FR4-FR6)/FR5+0.5, FTRC then integer clamp0..65535; returnsR0. Valid finite/scaled inputs required; do not treat this as arbitrary IEEE exceptional-value handling."
+      ],
+      "verified": true,
+      "date": "2026-09-09"
+    },
+    {
+      "operation": "rename_function_by_address",
+      "address": "00049530",
+      "new_name": "protected_float_record_write",
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "Function renamed successfully"
+          }
+        ],
+        "isError": false
+      },
+      "readback": [
+        "Function: protected_float_record_write at 00049530\nSignature: undefined4 __stdcall protected_float_record_write(undefined4 param_1, undefined4 param_2, undefined8 * param_3)\nEntry: 00049530\nBody: 00049530 - 00049575"
+      ],
+      "verified": true,
+      "date": "2026-09-09"
+    },
+    {
+      "operation": "set_disassembly_comment",
+      "address": "00049530",
+      "comment": "2026-09-09: Rejects NaN by self-compare. Under3AF4(10)/3B08 stores FR4 at R4 and duplicates complement-of-sum-of-two-float-halfwords at +4/+6. R0=0 success,1 NaN. This is protected RAM-record publication, not generic FPU register support.",
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "Comment set successfully"
+          }
+        ],
+        "isError": false
+      },
+      "readback": [
+        "00049530: mov.l r14,@-r15 ; 2026-09-09: Rejects NaN by self-compare. Under3AF4(10)/3B08 stores FR4 at R4 and duplicates complement-of-sum-of-two-float-halfwords at +4/+6. R0=0 success,1 NaN. This is protected RAM-record publication, not generic FPU register support."
+      ],
+      "verified": true,
+      "date": "2026-09-09"
+    },
+    {
+      "operation": "rename_function_by_address",
+      "address": "000052DA",
+      "new_name": "ram_enable_and_fpu_stop_dispatch",
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "Function renamed successfully"
+          }
+        ],
+        "isError": false
+      },
+      "readback": [
+        "Function: ram_enable_and_fpu_stop_dispatch at 000052da\nSignature: undefined __stdcall ram_enable_and_fpu_stop_dispatch(void)\nEntry: 000052da\nBody: 000052da - 000052f5"
+      ],
+      "verified": true,
+      "date": "2026-09-09"
+    },
+    {
+      "operation": "set_disassembly_comment",
+      "address": "000052DA",
+      "comment": "2026-09-09: SYSCR(F708)=01 enables RAM and clears AUD reset. Reads MSTCR byte F70B, tests02=MSTOP1 (FPU clock stop), and tails D210 if set. Previous H-UDI-stop identification was wrong; H-UDI is mask04. Hardware manual24.2.3.",
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "Comment set successfully"
+          }
+        ],
+        "isError": false
+      },
+      "readback": [
+        "000052da: mov #0x1,r3 ; 2026-09-09: SYSCR(F708)=01 enables RAM and clears AUD reset. Reads MSTCR byte F70B, tests02=MSTOP1 (FPU clock stop), and tails D210 if set. Previous H-UDI-stop identification was wrong; H-UDI is mask04. Hardware manual24.2.3."
+      ],
+      "verified": true,
+      "date": "2026-09-09"
+    },
+    {
+      "operation": "rename_function_by_address",
+      "address": "00016CA4",
+      "new_name": "coolant_protected_records_initialize",
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "Function renamed successfully"
+          }
+        ],
+        "isError": false
+      },
+      "readback": [
+        "Function: coolant_protected_records_initialize at 00016ca4\nSignature: undefined __stdcall coolant_protected_records_initialize(undefined4 param_1)\nEntry: 00016ca4\nBody: 00016ca4 - 00016cbb"
+      ],
+      "verified": true,
+      "date": "2026-09-09"
+    },
+    {
+      "operation": "set_disassembly_comment",
+      "address": "00016CA4",
+      "comment": "2026-09-09: Writes raw converted ECT ABBC to protected record8100 via49530, then -40.0 to8108. It does not write conditioned coolant B3AC; main publisher is16B04, plus initialization at16C9C.",
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "Comment set successfully"
+          }
+        ],
+        "isError": false
+      },
+      "readback": [
+        "00016ca4: sts.l PR,@-r15 ; 2026-09-09: Writes raw converted ECT ABBC to protected record8100 via49530, then -40.0 to8108. It does not write conditioned coolant B3AC; main publisher is16B04, plus initialization at16C9C."
+      ],
+      "verified": true,
+      "date": "2026-09-09"
+    },
+    {
+      "operation": "rename_function_by_address",
+      "address": "00016B04",
+      "new_name": "engine_coolant_temperature_condition_update",
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "Function renamed successfully"
+          }
+        ],
+        "isError": false
+      },
+      "readback": [
+        "Function: engine_coolant_temperature_condition_update at 00016b04\nSignature: undefined __stdcall engine_coolant_temperature_condition_update(double param_1)\nEntry: 00016b04\nBody: 00016b04 - 00016c49"
+      ],
+      "verified": true,
+      "date": "2026-09-09"
+    },
+    {
+      "operation": "set_disassembly_comment",
+      "address": "00016B04",
+      "comment": "2026-09-09: Conditions converted coolant ABBC and fault/state alternatives; writes B3AC at16BCC,16C38,16C3A. Separate16CA4 initializes protected records8100/8108 and is not the B3AC producer.",
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "Comment set successfully"
+          }
+        ],
+        "isError": false
+      },
+      "readback": [
+        "00016b04: mov.l r14,@-r15 ; 2026-09-09: Conditions converted coolant ABBC and fault/state alternatives; writes B3AC at16BCC,16C38,16C3A. Separate16CA4 initializes protected records8100/8108 and is not the B3AC producer."
+      ],
+      "verified": true,
+      "date": "2026-09-09"
+    },
+    {
+      "operation": "rename_function_by_address",
+      "address": "00013330",
+      "new_name": "runtime_status_b19c_bit7_is_set",
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "Function renamed successfully"
+          }
+        ],
+        "isError": false
+      },
+      "readback": [
+        "Function: runtime_status_b19c_bit7_is_set at 00013330\nSignature: bool __stdcall runtime_status_b19c_bit7_is_set(void)\nEntry: 00013330\nBody: 00013330 - 00013343"
+      ],
+      "verified": true,
+      "date": "2026-09-09"
+    },
+    {
+      "operation": "set_disassembly_comment",
+      "address": "00013330",
+      "comment": "2026-09-09: Source word literal13346=B19C; returns boolean byteB19C/80. Previous runtime_status_b6c0_bit7_is_set name was incorrect.",
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "Comment set successfully"
+          }
+        ],
+        "isError": false
+      },
+      "readback": [
+        "00013330: mov.w 0x00013346,r0 ; 2026-09-09: Source word literal13346=B19C; returns boolean byteB19C/80. Previous runtime_status_b6c0_bit7_is_set name was incorrect."
+      ],
+      "verified": true,
+      "date": "2026-09-09"
+    },
+    {
+      "operation": "rename_function_by_address",
+      "address": "0001BE8E",
+      "new_name": "purge_operating_state_initialize",
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "Function renamed successfully"
+          }
+        ],
+        "isError": false
+      },
+      "readback": [
+        "Function: purge_operating_state_initialize at 0001be8e\nSignature: undefined __stdcall purge_operating_state_initialize(void)\nEntry: 0001be8e\nBody: 0001be8e - 0001be9f"
+      ],
+      "verified": true,
+      "date": "2026-09-09"
+    },
+    {
+      "operation": "set_disassembly_comment",
+      "address": "0001BE8E",
+      "comment": "2026-09-09: B702 word=0, B721/B722 bytes=FF; B721 is read by purge operating-condition1B15E. Previous fuel_trim_state_initialize name obscured the purge state boundary.",
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "Comment set successfully"
+          }
+        ],
+        "isError": false
+      },
+      "readback": [
+        "0001be8e: mov #0x0,r3 ; 2026-09-09: B702 word=0, B721/B722 bytes=FF; B721 is read by purge operating-condition1B15E. Previous fuel_trim_state_initialize name obscured the purge state boundary."
+      ],
+      "verified": true,
+      "date": "2026-09-09"
+    },
+    {
+      "operation": "set_disassembly_comment",
+      "address": "0003D95A",
+      "comment": "2026-09-09: Sets CCE1/CCE2=FF, then falls through separately defined entry3D964. Shared tail calls1A256 and conditionally tails3D980 to clear six correction floats. The five-instruction MCP function body is not the complete logical initializer.",
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "Comment set successfully"
+          }
+        ],
+        "isError": false
+      },
+      "readback": [
+        "0003d95a: mov.w 0x0003d99a,r4 ; 2026-09-09: Sets CCE1/CCE2=FF, then falls through separately defined entry3D964. Shared tail calls1A256 and conditionally tails3D980 to clear six correction floats. The five-instruction MCP function body is not the complete logical initializer."
+      ],
+      "verified": true,
+      "date": "2026-09-09"
+    },
+    {
+      "operation": "rename_function_by_address",
+      "address": "00017984",
+      "new_name": "accelerator_pedal_processing_sequence_update",
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "Function renamed successfully"
+          }
+        ],
+        "isError": false
+      },
+      "readback": [
+        "Function: accelerator_pedal_processing_sequence_update at 00017984\nSignature: undefined __stdcall accelerator_pedal_processing_sequence_update(uint param_1, undefined4 param_2)\nEntry: 00017984\nBody: 00017984 - 000179ed"
+      ],
+      "verified": true,
+      "date": "2026-09-09"
+    },
+    {
+      "operation": "set_disassembly_comment",
+      "address": "00017984",
+      "comment": "2026-09-09: Dispatches paired accelerator input filtering, protected-offset learning, normalization, conditioning and release flags. B46C/B4C8 are pedal percent, not vehicle speed. The airflow-load attribution was incorrect.",
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "Comment set successfully"
+          }
+        ],
+        "isError": false
+      },
+      "readback": [
+        "00017984: sts.l PR,@-r15 ; 2026-09-09: Dispatches paired accelerator input filtering, protected-offset learning, normalization, conditioning and release flags. B46C/B4C8 are pedal percent, not vehicle speed. The airflow-load attribution was incorrect."
+      ],
+      "verified": true,
+      "date": "2026-09-09"
+    },
+    {
+      "operation": "rename_function_by_address",
+      "address": "000179EE",
+      "new_name": "pedal_offset_records_initialize",
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "Function renamed successfully"
+          }
+        ],
+        "isError": false
+      },
+      "readback": [
+        "Function: pedal_offset_records_initialize at 000179ee\nSignature: undefined __stdcall pedal_offset_records_initialize(undefined4 param_1)\nEntry: 000179ee\nBody: 000179ee - 00017a23"
+      ],
+      "verified": true,
+      "date": "2026-09-09"
+    },
+    {
+      "operation": "set_disassembly_comment",
+      "address": "000179EE",
+      "comment": "2026-09-09: Calls49530 for8110=ROM739DC,8118=ROM739E0,8120=0; sets8128 bits2:3=2 and B483 bit20. Initializes pedal learned offsets, not airflow/load filters.",
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "Comment set successfully"
+          }
+        ],
+        "isError": false
+      },
+      "readback": [
+        "000179ee: mov.l r14,@-r15 ; 2026-09-09: Calls49530 for8110=ROM739DC,8118=ROM739E0,8120=0; sets8128 bits2:3=2 and B483 bit20. Initializes pedal learned offsets, not airflow/load filters."
+      ],
+      "verified": true,
+      "date": "2026-09-09"
+    },
+    {
+      "operation": "rename_function_by_address",
+      "address": "00017A24",
+      "new_name": "pedal_offset_records_require_initialization",
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "Function renamed successfully"
+          }
+        ],
+        "isError": false
+      },
+      "readback": [
+        "Function: pedal_offset_records_require_initialization at 00017a24\nSignature: undefined4 __stdcall pedal_offset_records_require_initialization(void)\nEntry: 00017a24\nBody: 00017a24 - 00017a81"
+      ],
+      "verified": true,
+      "date": "2026-09-09"
+    },
+    {
+      "operation": "set_disassembly_comment",
+      "address": "00017A24",
+      "comment": "2026-09-09: Checks protected records8110/8118/8120 through4963A and8128 field0402 through4244. Returns1 for invalid records or field outside1/2. Pedal-offset state, not airflow-load state.",
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "Comment set successfully"
+          }
+        ],
+        "isError": false
+      },
+      "readback": [
+        "00017a24: mov.l r14,@-r15 ; 2026-09-09: Checks protected records8110/8118/8120 through4963A and8128 field0402 through4244. Returns1 for invalid records or field outside1/2. Pedal-offset state, not airflow-load state."
+      ],
+      "verified": true,
+      "date": "2026-09-09"
+    },
+    {
+      "operation": "rename_function_by_address",
+      "address": "00017B2A",
+      "new_name": "pedal_pair_filter_delta_update",
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "Function renamed successfully"
+          }
+        ],
+        "isError": false
+      },
+      "readback": [
+        "Function: pedal_pair_filter_delta_update at 00017b2a\nSignature: undefined __stdcall pedal_pair_filter_delta_update(void)\nEntry: 00017b2a\nBody: 00017b2a - 00017c3f"
+      ],
+      "verified": true,
+      "date": "2026-09-09"
+    },
+    {
+      "operation": "set_disassembly_comment",
+      "address": "00017B2A",
+      "comment": "2026-09-09: Filters pedal AF80/AF84 into B488/B48C using739B0/B4; stores filtered-minus-current deltas B490/B494, updates B482 masks20/10. Not bank air charge.",
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "Comment set successfully"
+          }
+        ],
+        "isError": false
+      },
+      "readback": [
+        "00017b2a: mov #0x4,r0 ; 2026-09-09: Filters pedal AF80/AF84 into B488/B48C using739B0/B4; stores filtered-minus-current deltas B490/B494, updates B482 masks20/10. Not bank air charge."
+      ],
+      "verified": true,
+      "date": "2026-09-09"
+    },
+    {
+      "operation": "rename_function_by_address",
+      "address": "00017C40",
+      "new_name": "pedal_pair_offset_learning_update",
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "Function renamed successfully"
+          }
+        ],
+        "isError": false
+      },
+      "readback": [
+        "Function: pedal_pair_offset_learning_update at 00017c40\nSignature: undefined __stdcall pedal_pair_offset_learning_update(undefined4 param_1, undefined4 param_2)\nEntry: 00017c40\nBody: 00017c40 - 00018099"
+      ],
+      "verified": true,
+      "date": "2026-09-09"
+    },
+    {
+      "operation": "set_disassembly_comment",
+      "address": "00017C40",
+      "comment": "2026-09-09: Qualifies paired-pedal learned offsets using AF80/AF84, B488/B48C, diagnostic state, vehicle speed B538 and run counter B688; publishes protected8110/8118/8120 through49530. Does not calculate bank air charge.",
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "Comment set successfully"
+          }
+        ],
+        "isError": false
+      },
+      "readback": [
+        "00017c40: mov.l r14,@-r15 ; 2026-09-09: Qualifies paired-pedal learned offsets using AF80/AF84, B488/B48C, diagnostic state, vehicle speed B538 and run counter B688; publishes protected8110/8118/8120 through49530. Does not calculate bank air charge."
+      ],
+      "verified": true,
+      "date": "2026-09-09"
+    },
+    {
+      "operation": "rename_function_by_address",
+      "address": "0000A9A8",
+      "new_name": "ac00_lookup_and_ae_state_update",
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "Function renamed successfully"
+          }
+        ],
+        "isError": false
+      },
+      "readback": [
+        "Function: ac00_lookup_and_ae_state_update at 0000a9a8\nSignature: undefined __stdcall ac00_lookup_and_ae_state_update(undefined4 param_1)\nEntry: 0000a9a8\nBody: 0000a9a8 - 0000aa4f"
+      ],
+      "verified": true,
+      "date": "2026-09-09"
+    },
+    {
+      "operation": "set_disassembly_comment",
+      "address": "0000A9A8",
+      "comment": "2026-09-09: Uses AC00 for608E4/608F0 raw-u16 lookups toAE32/AE30 and6095C float toAE08; copiesAB3C toAE2E, conditionally filters toAE28/AE2C and setsAE3E hysteresis. Injector-only physical identity is not established by these accesses.",
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "Comment set successfully"
+          }
+        ],
+        "isError": false
+      },
+      "readback": [
+        "0000a9a8: mov.l r14,@-r15 ; 2026-09-09: Uses AC00 for608E4/608F0 raw-u16 lookups toAE32/AE30 and6095C float toAE08; copiesAB3C toAE2E, conditionally filters toAE28/AE2C and setsAE3E hysteresis. Injector-only physical identity is not established by these accesses."
+      ],
+      "verified": true,
+      "date": "2026-09-09"
+    },
+    {
+      "operation": "rename_function_by_address",
+      "address": "0000F5FE",
+      "new_name": "rom_additive_checksum_validate",
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "Function renamed successfully"
+          }
+        ],
+        "isError": false
+      },
+      "readback": [
+        "Function: rom_additive_checksum_validate at 0000f5fe\nSignature: int __stdcall rom_additive_checksum_validate(byte param_1)\nEntry: 0000f5fe\nBody: 0000f5fe - 0000f69f"
+      ],
+      "verified": true,
+      "date": "2026-09-09"
+    },
+    {
+      "operation": "set_disassembly_comment",
+      "address": "0000F5FE",
+      "comment": "2026-09-09: Validates descriptor7FB80+12*index viaF97C, sums big-endian32-bit words start<=address<end, adds descriptor checksum+8, compares5AA5A55A. Returns/latches B13E=0 success,1 failure; not the separate rolling4FB8C checksum.",
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "Comment set successfully"
+          }
+        ],
+        "isError": false
+      },
+      "readback": [
+        "0000f5fe: mov.l r14,@-r15 ; 2026-09-09: Validates descriptor7FB80+12*index viaF97C, sums big-endian32-bit words start<=address<end, adds descriptor checksum+8, compares5AA5A55A. Returns/latches B13E=0 success,1 failure; not the separate rolling4FB8C checksum."
+      ],
+      "verified": true,
+      "date": "2026-09-09"
+    },
+    {
+      "operation": "set_decompiler_comment",
+      "address": "00017984",
+      "comment": "2026-09-09: Dispatches paired accelerator input filtering, protected-offset learning, normalization, conditioning and release flags. B46C/B4C8 are pedal percent, not vehicle speed. The airflow-load attribution was incorrect.",
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "Comment set successfully"
+          }
+        ],
+        "isError": false
+      },
+      "readback": [
+        "\n/* Runs the stock airflow/load pipeline and, separately, vehicle-speed conditioning. The final chain\n   publishes B4C0, B4C8, then AVLS speed snapshot B46C. Speed density changes upstream airflow, not\n   this speed chain. */\n\nvoid accelerator_pedal_processing_sequence_update(uint param_1,undefined4 param_2)\n\n{\n  uint uVar1;\n  \n                    /* 2026-09-09: Dispatches paired accelerator input filtering, protected-offset\n                       learning, normalization, conditioning and release flags. B46C/B4C8 are pedal\n                       percent, not vehicle speed. The airflow-load attribution was incorrect. */\n  uVar1 = pedal_offset_records_require_initialization();\n  if ((uVar1 & 0xff) != 0) {\n    pedal_offset_records_initialize(param_1);\n  }\n  pedal_pair_filter_delta_update();\n  FUN_0001809a(param_1);\n  pedal_pair_offset_learning_update(param_1,param_2);\n  accelerator_pedal_pair_normalize(param_2);\n  accelerator_pedal_pair_select();\n  accelerator_pedal_compensation_update();\n  FUN_0001831a(param_1,param_2);\n  FUN_000183ce();\n  FUN_00018422();\n  pedal_conditioning_status_flags_update();\n  pedal_conditioning_coefficient_set_a_update(param_1);\n  pedal_conditioning_coefficient_set_b_update(param_1,param_2);\n  pedal_conditioned_source_update(param_1);\n  (*(code *)PTR_pedal_conditioned_filter_update_00017a90)();\n  (*(code *)PTR_pedal_conditioned_snapshot_copy_00017a94)();\n  (*(code *)PTR_FUN_00017a98)();\n  (*(code *)PTR_FUN_00017a9c)();\n  (*(code *)PTR_FUN_00017aa0)();\n  (*(code *)PTR_FUN_00017aa4)();\n  return;\n}\n"
+      ],
+      "verified": true,
+      "date": "2026-09-09"
+    },
+    {
+      "operation": "rename_function_by_address",
+      "address": "0001917A",
+      "new_name": "front_af_lambda_and_status_flags_update",
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "Function renamed successfully"
+          }
+        ],
+        "isError": false
+      },
+      "readback": [
+        "Function: front_af_lambda_and_status_flags_update at 0001917a\nSignature: undefined __stdcall front_af_lambda_and_status_flags_update(undefined4 param_1)\nEntry: 0001917a\nBody: 0001917a - 000192a7"
+      ],
+      "verified": true,
+      "date": "2026-09-09"
+    },
+    {
+      "operation": "set_disassembly_comment",
+      "address": "0001917A",
+      "comment": "2026-09-09: Direct lambda inputs B4F0/B4F4 average drive B51704 hysteresis. B512/B513/B52C status qualify B510 counter and B51408/B51702. No direct AE70/AE74 reads here; readiness is upstream in1903A.",
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "Comment set successfully"
+          }
+        ],
+        "isError": false
+      },
+      "readback": [
+        "0001917a: mov.l r14,@-r15 ; 2026-09-09: Direct lambda inputs B4F0/B4F4 average drive B51704 hysteresis. B512/B513/B52C status qualify B510 counter and B51408/B51702. No direct AE70/AE74 reads here; readiness is upstream in1903A."
+      ],
+      "verified": true,
+      "date": "2026-09-09"
+    },
+    {
+      "operation": "set_decompiler_comment",
+      "address": "0001917A",
+      "comment": "2026-09-09: Direct lambda inputs B4F0/B4F4 average drive B51704 hysteresis. B512/B513/B52C status qualify B510 counter and B51408/B51702. No direct AE70/AE74 reads here; readiness is upstream in1903A.",
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "Comment set successfully"
+          }
+        ],
+        "isError": false
+      },
+      "readback": [
+        "\nvoid front_af_lambda_and_status_flags_update(undefined4 param_1)\n\n{\n  undefined *puVar1;\n  short sVar2;\n  byte bVar3;\n  byte *pbVar4;\n  byte *pbVar5;\n  undefined4 in_fr0;\n  float in_fr1;\n  float fVar6;\n  double dVar7;\n  float fVar8;\n  double dVar9;\n  bool bVar10;\n  char in_FPSCR_PR;\n  char in_FPSCR_SZ;\n  \n                    /* 2026-09-09: Direct lambda inputs B4F0/B4F4 average drive B51704 hysteresis.\n                       B512/B513/B52C status qualify B510 counter and B51408/B51702. No direct\n                       AE70/AE74 reads here; readiness is upstream in1903A. */\n  if (in_FPSCR_SZ == '\\0') {\n    dVar7 = (double)CONCAT44(*(undefined4 *)(int)DAT_00019200,*(undefined4 *)(int)DAT_000191fe);\n  }\n  else {\n    dVar7 = *(double *)(int)DAT_00019200;\n  }\n  if (in_FPSCR_PR == '\\0') {\n    dVar7 = (double)CONCAT44((float)((ulonglong)dVar7 >> 0x20) + SUB84(dVar7,0),SUB84(dVar7,0));\n  }\n  else {\n    dVar7 = dVar7 + dVar7;\n  }\n  dVar9 = dVar7;\n  if (in_FPSCR_SZ == '\\0') {\n    dVar9 = (double)CONCAT44((int)((ulonglong)dVar7 >> 0x20),param_1);\n  }\n  pbVar4 = (byte *)(int)DAT_00019202;\n  if (in_FPSCR_SZ == '\\0') {\n    in_fr1 = DAT_00019220;\n  }\n  if (in_FPSCR_PR == '\\0') {\n    dVar9 = (double)CONCAT44((float)((ulonglong)dVar9 >> 0x20) * in_fr1,SUB84(dVar9,0));\n  }\n  else {\n    dVar9 = dVar9 * (double)CONCAT44(in_fr0,in_fr1);\n  }\n  if (in_FPSCR_SZ == '\\0') {\n    dVar7 = (double)CONCAT44(*(undefined4 *)DAT_00019224,SUB84(dVar7,0));\n  }\n  else {\n    dVar7 = *DAT_00019224;\n  }\n  fVar6 = (float)((ulonglong)dVar7 >> 0x20);\n  fVar8 = (float)((ulonglong)dVar9 >> 0x20);\n  if (in_FPSCR_PR == '\\0') {\n    bVar10 = fVar8 < fVar6;\n  }\n  else {\n    bVar10 = dVar9 < dVar7;\n  }\n  if (bVar10) {\n    if (in_FPSCR_SZ == '\\0') {\n      dVar7 = (double)CONCAT44(fVar6,*(undefined4 *)PTR_DAT_00019228);\n    }\n    if (in_FPSCR_PR == '\\0') {\n      bVar10 = fVar8 < SUB84(dVar7,0);\n    }\n    else {\n      bVar10 = dVar9 < dVar7;\n    }\n    if (bVar10) {\n      *pbVar4 = *pbVar4 & 0xfb;\n    }\n  }\n  else {\n    *pbVar4 = *pbVar4 | 4;\n  }\n  puVar1 = PTR_u16_add_saturating_00019390;\n  pbVar5 = (byte *)(int)DAT_00019206;\n  sVar2 = *(short *)(int)DAT_00019204;\n  if (((((int)*(char *)(int)DAT_00019208 & 0x80U) == 0) ||\n      (((int)*(char *)(int)DAT_0001920a & 0x80U) == 0)) ||\n     (((int)*(char *)(int)DAT_0001920c & 0x80U) != 0)) {\n    *pbVar5 = *pbVar5 & 0xf7;\n    sVar2 = 0;\n  }\n  else {\n    if ((*pbVar4 & 4) == 0) {\n      *pbVar5 = *pbVar5 & 0xf7;\n    }\n    else {\n      *pbVar5 = *pbVar5 | 8;\n      sVar2 = (*(code *)puVar1)((int)sVar2,1);\n    }\n    if (((*pbVar5 & 8) != 0) && ((*(byte *)(int)DAT_00019370 & 2) == 0)) {\n      sVar2 = 0;\n    }\n  }\n  *(short *)(int)DAT_00019372 = sVar2;\n  if ((*pbVar5 & 8) == 0) {\n    bVar3 = *pbVar4 & 0xfd;\n  }\n  else {\n    bVar3 = *pbVar4 | 2;\n  }\n  *pbVar4 = bVar3;\n  return;\n}\n"
+      ],
+      "verified": true,
+      "date": "2026-09-09"
+    },
+    {
+      "operation": "rename_function_by_address",
+      "address": "000192A8",
+      "new_name": "front_af_sensor_pump_current_pair_scale_update",
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "Function renamed successfully"
+          }
+        ],
+        "isError": false
+      },
+      "readback": [
+        "Function: front_af_sensor_pump_current_pair_scale_update at 000192a8\nSignature: undefined __stdcall front_af_sensor_pump_current_pair_scale_update(void)\nEntry: 000192a8\nBody: 000192a8 - 000192e7"
+      ],
+      "verified": true,
+      "date": "2026-09-09"
+    },
+    {
+      "operation": "set_disassembly_comment",
+      "address": "000192A8",
+      "comment": "2026-09-09: Guarded2458 computes(AE68+1.75)/0.625 and(AE6C+1.75)/0.625 toB508/B50C. No explicit clamp in this function; old offset_clamp name overstated its operation.",
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "Comment set successfully"
+          }
+        ],
+        "isError": false
+      },
+      "readback": [
+        "000192a8: fmov.s fr15,@-r15 ; 2026-09-09: Guarded2458 computes(AE68+1.75)/0.625 and(AE6C+1.75)/0.625 toB508/B50C. No explicit clamp in this function; old offset_clamp name overstated its operation."
+      ],
+      "verified": true,
+      "date": "2026-09-09"
+    },
+    {
+      "operation": "set_decompiler_comment",
+      "address": "000192A8",
+      "comment": "2026-09-09: Guarded2458 computes(AE68+1.75)/0.625 and(AE6C+1.75)/0.625 toB508/B50C. No explicit clamp in this function; old offset_clamp name overstated its operation.",
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "Comment set successfully"
+          }
+        ],
+        "isError": false
+      },
+      "readback": [
+        "\nvoid front_af_sensor_pump_current_pair_scale_update(void)\n\n{\n  undefined *puVar1;\n  undefined1 *puVar2;\n  undefined8 uVar3;\n  double dVar4;\n  double dVar5;\n  undefined8 in_dr14;\n  double dVar6;\n  undefined8 in_xd14;\n  undefined4 in_PR;\n  char in_FPSCR_PR;\n  char in_FPSCR_SZ;\n  undefined1 auStack_20 [16];\n  undefined1 local_10 [8];\n  undefined8 local_8;\n  \n                    /* 2026-09-09: Guarded2458 computes(AE68+1.75)/0.625 and(AE6C+1.75)/0.625\n                       toB508/B50C. No explicit clamp in this function; old offset_clamp name\n                       overstated its operation. */\n  if (in_FPSCR_SZ == '\\0') {\n    local_8 = CONCAT44(local_8._0_4_,(int)in_dr14);\n                    /* WARNING: Ignoring partial resolution of indirect */\n    local_8._0_4_ = (int)((ulonglong)in_dr14 >> 0x20);\n    puVar2 = local_10;\n  }\n  else {\n    puVar2 = auStack_20;\n    local_8 = in_xd14;\n  }\n  *(undefined4 *)(puVar2 + -4) = in_PR;\n  if (in_FPSCR_SZ == '\\0') {\n    dVar6 = (double)CONCAT44(*(undefined4 *)(PTR_DAT_00019394 + 4),(int)in_dr14);\n    dVar4 = (double)CONCAT44(*(undefined4 *)PTR_DAT_00019394,DAT_00019398);\n  }\n  else {\n    dVar4 = *(double *)PTR_DAT_00019394;\n    dVar6 = *(double *)(PTR_DAT_00019394 + 4);\n  }\n  dVar5 = (double)CONCAT44(DAT_00019398,DAT_0001939c);\n  if (in_FPSCR_PR == '\\0') {\n    dVar4 = (double)CONCAT44((float)((ulonglong)dVar4 >> 0x20) + DAT_0001939c,SUB84(dVar4,0));\n  }\n  else {\n    dVar4 = dVar4 + dVar5;\n  }\n  uVar3 = (*(code *)PTR_float_divide_guarded_000193a0)(dVar4);\n  puVar1 = PTR_float_divide_guarded_000193a0;\n  if (in_FPSCR_SZ == '\\0') {\n    dVar6 = (double)CONCAT44((int)((ulonglong)dVar6 >> 0x20),(int)((ulonglong)dVar5 >> 0x20));\n  }\n  if (in_FPSCR_SZ == '\\0') {\n    *(int *)(int)DAT_00019374 = (int)((ulonglong)uVar3 >> 0x20);\n  }\n  else {\n    *(undefined8 *)(int)DAT_00019374 = uVar3;\n  }\n  if (in_FPSCR_PR == '\\0') {\n    dVar6 = (double)CONCAT44((float)((ulonglong)dVar6 >> 0x20) + SUB84(dVar5,0),SUB84(dVar6,0));\n  }\n  else {\n    dVar6 = dVar6 + dVar5;\n  }\n  uVar3 = (*(code *)puVar1)(dVar6);\n  if (in_FPSCR_SZ == '\\0') {\n    *(int *)(int)DAT_00019376 = (int)((ulonglong)uVar3 >> 0x20);\n  }\n  else {\n    *(undefined8 *)(int)DAT_00019376 = uVar3;\n  }\n  return;\n}\n"
+      ],
+      "verified": true,
+      "date": "2026-09-09"
+    },
+    {
+      "operation": "set_disassembly_comment",
+      "address": "0003FDBC",
+      "comment": "2026-09-09: AVLS request sequence calls3FFDA,40138,40168,405B2, then tails40682 (1A256 conditional reset ofCD89/CD8A). It does not call405CC here; that actuation gate is separately scheduled by11958.",
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "Comment set successfully"
+          }
+        ],
+        "isError": false
+      },
+      "readback": [
+        "0003fdbc: sts.l PR,@-r15 ; 2026-09-09: AVLS request sequence calls3FFDA,40138,40168,405B2, then tails40682 (1A256 conditional reset ofCD89/CD8A). It does not call405CC here; that actuation gate is separately scheduled by11958."
+      ],
+      "verified": true,
+      "date": "2026-09-09"
+    },
+    {
+      "operation": "set_decompiler_comment",
+      "address": "0003FDBC",
+      "comment": "2026-09-09: AVLS request sequence calls3FFDA,40138,40168,405B2, then tails40682 (1A256 conditional reset ofCD89/CD8A). It does not call405CC here; that actuation gate is separately scheduled by11958.",
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "Comment set successfully"
+          }
+        ],
+        "isError": false
+      },
+      "readback": [
+        "\n/* WARNING: Globals starting with '_' overlap smaller symbols at the same address */\n/* Runs the AVLS selector, state machine, committed-mode copy, and OSV actuation sequence. Master\n   dual VE deliberately reads the post-decision committed byte 0xFFFFCD86 rather than requested mode\n   0xFFFFCD87. */\n\nvoid avls_control_sequence_update(undefined4 param_1,undefined4 param_2)\n\n{\n  byte *pbVar1;\n  undefined4 in_fr2;\n  float in_fr3;\n  double dVar2;\n  undefined4 uVar3;\n  bool bVar4;\n  char in_FPSCR_PR;\n  char in_FPSCR_SZ;\n  \n                    /* 2026-09-09: AVLS request sequence calls3FFDA,40138,40168,405B2, then\n                       tails40682 (1A256 conditional reset ofCD89/CD8A). It does not call405CC here;\n                       that actuation gate is separately scheduled by11958. */\n  pbVar1 = (byte *)(int)DAT_0003fe62;\n  if (in_FPSCR_SZ == '\\0') {\n    dVar2 = (double)CONCAT44(*(undefined4 *)(int)DAT_0003fe6e,param_1);\n    in_fr3 = DAT_0003fe78;\n  }\n  else {\n    dVar2 = *(double *)(int)DAT_0003fe6e;\n  }\n  if (in_FPSCR_PR == '\\0') {\n    bVar4 = (float)((ulonglong)dVar2 >> 0x20) < in_fr3;\n  }\n  else {\n    bVar4 = dVar2 < (double)CONCAT44(in_fr2,in_fr3);\n  }\n  if (((bVar4) || (((int)*(char *)(int)DAT_0003fe70 & 0x80U) == 0)) ||\n     (((int)*(char *)(int)DAT_0003fe72 & 0x80U) == 0)) {\n    *pbVar1 = *pbVar1 & 0x7f;\n  }\n  else {\n    *pbVar1 = *pbVar1 | 0x80;\n  }\n  avls_threshold_curve_selector_state_update(SUB84(dVar2,0));\n  uVar3 = SUB84(dVar2,0);\n  FUN_00040138();\n  avls_cam_mode_state_machine(uVar3,param_2);\n  avls_mode_commit_copy();\n  FUN_00040682();\n  return;\n}\n"
+      ],
+      "verified": true,
+      "date": "2026-09-09"
+    },
+    {
+      "operation": "rename_function_by_address",
+      "address": "000216EA",
+      "name": "fuel_trim_airflow_region_classify",
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "Function renamed successfully"
+          }
+        ],
+        "isError": false
+      },
+      "readback": [
+        "Function: fuel_trim_airflow_region_classify at 000216ea\nSignature: undefined __stdcall fuel_trim_airflow_region_classify(undefined4 param_1)\nEntry: 000216ea\nBody: 000216ea - 0002174d"
+      ],
+      "verified": true,
+      "date": "2026-09-09"
+    },
+    {
+      "operation": "set_disassembly_comment",
+      "address": "000216EA",
+      "comment": "2026-09-09 audit: Reads B420 airflow and BCF1; writes BCFE eligibility and BCD3 region 0..3 using 76168..76178 thresholds. It does not publish airflow.",
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "Comment set successfully"
+          }
+        ],
+        "isError": false
+      },
+      "readback": [
+        "000216ea: mov #0x1,r7 ; 2026-09-09 audit: Reads B420 airflow and BCF1; writes BCFE eligibility and BCD3 region 0..3 using 76168..76178 thresholds. It does not publish airflow."
+      ],
+      "verified": true,
+      "date": "2026-09-09"
+    },
+    {
+      "operation": "rename_function_by_address",
+      "address": "000217B8",
+      "name": "legacy_o2_voltage_loop_sequence_update",
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "Function renamed successfully"
+          }
+        ],
+        "isError": false
+      },
+      "readback": [
+        "Function: legacy_o2_voltage_loop_sequence_update at 000217b8\nSignature: undefined __stdcall legacy_o2_voltage_loop_sequence_update(undefined4 param_1, undefined * param_2)\nEntry: 000217b8\nBody: 000217b8 - 00021863"
+      ],
+      "verified": true,
+      "date": "2026-09-09"
+    },
+    {
+      "operation": "set_disassembly_comment",
+      "address": "000217B8",
+      "comment": "2026-09-09 audit: Snapshots RPM B544, load B438, coolant B3AC, airflow B424 and runtime B688 into BDA4/BDA8/BDAC/BDB0/BDCA, then runs legacy O2 voltage-loop helpers 218F0..21F0C. It does not produce B428/B438 load.",
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "Comment set successfully"
+          }
+        ],
+        "isError": false
+      },
+      "readback": [
+        "000217b8: sts.l PR,@-r15 ; 2026-09-09 audit: Snapshots RPM B544, load B438, coolant B3AC, airflow B424 and runtime B688 into BDA4/BDA8/BDAC/BDB0/BDCA, then runs legacy O2 voltage-loop helpers 218F0..21F0C. It does not produce B428/B438 load."
+      ],
+      "verified": true,
+      "date": "2026-09-09"
+    },
+    {
+      "operation": "rename_function_by_address",
+      "address": "000230E8",
+      "name": "purge_fuel_compensation_ratio_update",
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "Function renamed successfully"
+          }
+        ],
+        "isError": false
+      },
+      "readback": [
+        "Function: purge_fuel_compensation_ratio_update at 000230e8\nSignature: undefined __stdcall purge_fuel_compensation_ratio_update(undefined4 param_1, undefined4 param_2)\nEntry: 000230e8\nBody: 000230e8 - 000231d5"
+      ],
+      "verified": true,
+      "date": "2026-09-09"
+    },
+    {
+      "operation": "set_disassembly_comment",
+      "address": "000230E8",
+      "comment": "2026-09-09 audit: Purge-state inputs BE7C/BE80 drive BE68 qualification. Under coolant/history gates, publishes BE6C = clamp(BE70 / B420, 0, 0.125), with small-airflow and reset branches. Does not calculate engine airflow.",
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "Comment set successfully"
+          }
+        ],
+        "isError": false
+      },
+      "readback": [
+        "000230e8: mov.l r14,@-r15 ; 2026-09-09 audit: Purge-state inputs BE7C/BE80 drive BE68 qualification. Under coolant/history gates, publishes BE6C = clamp(BE70 / B420, 0, 0.125), with small-airflow and reset branches. Does not calculate engine airflow."
+      ],
+      "verified": true,
+      "date": "2026-09-09"
+    },
+    {
+      "operation": "rename_function_by_address",
+      "address": "0001F1DC",
+      "name": "closed_loop_correction_and_history_initialize",
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "Function renamed successfully"
+          }
+        ],
+        "isError": false
+      },
+      "readback": [
+        "Function: closed_loop_correction_and_history_initialize at 0001f1dc\nSignature: undefined __stdcall closed_loop_correction_and_history_initialize(uint param_1, undefined * param_2)\nEntry: 0001f1dc\nBody: 0001f1dc - 0001f2ad"
+      ],
+      "verified": true,
+      "date": "2026-09-09"
+    },
+    {
+      "operation": "set_disassembly_comment",
+      "address": "0001F1DC",
+      "comment": "2026-09-09 audit: Supersedes older publish/update label: returns unchanged unless 1A256 reports B52C bit7 set. Initialization resets short-term corrections to 1, both 22-float coefficient arrays and 21-float histories to 0, plus related feedback state.",
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "Comment set successfully"
+          }
+        ],
+        "isError": false
+      },
+      "readback": [
+        "0001f1dc: mov.l r13,@-r15 ; 2026-09-09 audit: Supersedes older publish/update label: returns unchanged unless 1A256 reports B52C bit7 set. Initialization resets short-term corrections to 1, both 22-float coefficient arrays and 21-float histories to 0, plus related feedback state."
+      ],
+      "verified": true,
+      "date": "2026-09-09"
+    },
+    {
+      "operation": "set_disassembly_comment",
+      "address": "0001FB16",
+      "comment": "2026-09-09 audit: Coefficient generator writes indices 1..21 of each 22-float array at B9D0/BA28 (88 bytes per bank); slot 0 is initialized by 1F1DC. This differs from the 21-float history arrays BA90/BAE4 consumed by 1FCD4. Main post-turbo AEM feedback does not retune these native response calibrations.",
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "Comment set successfully"
+          }
+        ],
+        "isError": false
+      },
+      "readback": [
+        "0001fb16: extu.b r5,r5 ; 2026-09-09 audit: Coefficient generator writes indices 1..21 of each 22-float array at B9D0/BA28 (88 bytes per bank); slot 0 is initialized by 1F1DC. This differs from the 21-float history arrays BA90/BAE4 consumed by 1FCD4. Main post-turbo AEM feedback does not retune these native response calibrations."
+      ],
+      "verified": true,
+      "date": "2026-09-09"
+    },
+    {
+      "operation": "rename_function_by_address",
+      "address": "0003D916",
+      "name": "ign_correction_records_any_invalid",
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "Function renamed successfully"
+          }
+        ],
+        "isError": false
+      },
+      "readback": [
+        "Function: ign_correction_records_any_invalid at 0003d916\nSignature: undefined4 __stdcall ign_correction_records_any_invalid(void)\nEntry: 0003d916\nBody: 0003d916 - 0003d959"
+      ],
+      "verified": true,
+      "date": "2026-09-09"
+    },
+    {
+      "operation": "set_disassembly_comment",
+      "address": "0003D916",
+      "comment": "2026-09-09 audit: Returns 1 if any of six protected records at 82EC+8*n fails 4963A. This is an integrity check, not a test for active or nonzero ignition correction.",
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "Comment set successfully"
+          }
+        ],
+        "isError": false
+      },
+      "readback": [
+        "0003d916: mov #0x0,r4 ; 2026-09-09 audit: Returns 1 if any of six protected records at 82EC+8*n fails 4963A. This is an integrity check, not a test for active or nonzero ignition correction."
+      ],
+      "verified": true,
+      "date": "2026-09-09"
+    },
+    {
+      "operation": "rename_function_by_address",
+      "address": "0004963A",
+      "name": "protected_float_record_validate_and_repair",
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "Function renamed successfully"
+          }
+        ],
+        "isError": false
+      },
+      "readback": [
+        "Function: protected_float_record_validate_and_repair at 0004963a\nSignature: undefined4 __stdcall protected_float_record_validate_and_repair(undefined8 * param_1)\nEntry: 0004963a\nBody: 0004963a - 00049697"
+      ],
+      "verified": true,
+      "date": "2026-09-09"
+    },
+    {
+      "operation": "set_disassembly_comment",
+      "address": "0004963A",
+      "comment": "2026-09-09 audit: Computes complemented halfword-sum checksum under 3AF4/3B08 masking. If either record checksum copy +4 or +6 matches, repairs both and returns 0; if neither matches returns 1. Does not test correction activity, NaN or physical plausibility.",
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "Comment set successfully"
+          }
+        ],
+        "isError": false
+      },
+      "readback": [
+        "0004963a: mov.l r14,@-r15 ; 2026-09-09 audit: Computes complemented halfword-sum checksum under 3AF4/3B08 masking. If either record checksum copy +4 or +6 matches, repairs both and returns 0; if neither matches returns 1. Does not test correction activity, NaN or physical plausibility."
+      ],
+      "verified": true,
+      "date": "2026-09-09"
+    },
+    {
+      "operation": "set_disassembly_comment",
+      "address": "00047000",
+      "comment": "2026-09-09 audit: CF94 selects B124 or diagnostic fallback 73B88=70 C. Qualified CF9D latch can also apply 73B8C=70 C as a floor to valid input; see 47078..470B0. CF98 is a separate startup snapshot.",
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "Comment set successfully"
+          }
+        ],
+        "isError": false
+      },
+      "readback": [
+        "00047000: sts.l PR,@-r15 ; 2026-09-09 audit: CF94 selects B124 or diagnostic fallback 73B88=70 C. Qualified CF9D latch can also apply 73B8C=70 C as a floor to valid input; see 47078..470B0. CF98 is a separate startup snapshot."
+      ],
+      "verified": true,
+      "date": "2026-09-09"
+    },
+    {
+      "operation": "set_disassembly_comment",
+      "address": "0003EB68",
+      "comment": "2026-09-09 audit: CD30 KCA selector: 601CC when CD86==1 OR C180/40 clear; 601E8 only when CD86==3 AND C180/40 set; otherwise holds prior CD30. Normal/high shorthand omits the transition hold case.",
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "Comment set successfully"
+          }
+        ],
+        "isError": false
+      },
+      "readback": [
+        "0003eb68: sts.l PR,@-r15 ; 2026-09-09 audit: CD30 KCA selector: 601CC when CD86==1 OR C180/40 clear; 601E8 only when CD86==3 AND C180/40 set; otherwise holds prior CD30. Normal/high shorthand omits the transition hold case."
+      ],
+      "verified": true,
+      "date": "2026-09-09"
+    },
+    {
+      "operation": "rename_data",
+      "address": "0004B1CC",
+      "new_name": "closed_loop_bank_a_delay_descriptor",
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "Rename data attempted"
+          }
+        ],
+        "isError": false
+      },
+      "readback": [
+        "0004b1cc: closed_loop_bank_a_delay_descriptor = ffffb9b0"
+      ],
+      "verified": true
+    },
+    {
+      "operation": "set_disassembly_comment",
+      "address": "0001EF0A",
+      "comment": "Audit 2026-09-09: 4B1CC is the 20-byte bank-A feedback/delay descriptor, containing B9B0, B9B8, B9C0, B9C8 and B9D0. Bank B follows at 4B1E0. This is not an SSM table; standard SSM handler pointers start at 4B6FC.",
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "Comment set successfully"
+          }
+        ],
+        "isError": false
+      },
+      "readback": [
+        "0001ef0a: mov.l 0x0001ef88,r4 ; Audit 2026-09-09: 4B1CC is the 20-byte bank-A feedback/delay descriptor, containing B9B0, B9B8, B9C0, B9C8 and B9D0. Bank B follows at 4B1E0. This is not an SSM table; standard SSM handler pointers start at 4B6FC."
+      ],
+      "verified": true
+    },
+    {
+      "operation": "set_disassembly_comment",
+      "address": "00033830",
+      "comment": "Audit 2026-09-09: publishes auxiliary duty C858. Startup lookup at 3387C uses descriptor 609EC, input B3B0, axis 7BDFC and u16 data 7BE0C scaled by 2^-15. It is not a fan case-7 table. Other branches use fixed values or 60A00; valid ratio 0..1 is scaled by 65536 and passed to 7DA4. Physical output identity remains unresolved.",
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "Comment set successfully"
+          }
+        ],
+        "isError": false
+      },
+      "readback": [
+        "00033830: mov.l r14,@-r15 ; Audit 2026-09-09: publishes auxiliary duty C858. Startup lookup at 3387C uses descriptor 609EC, input B3B0, axis 7BDFC and u16 data 7BE0C scaled by 2^-15. It is not a fan case-7 table. Other branches use fixed values or 60A00; valid ratio 0..1 is scaled by 65536 and passed to 7DA4. Physical output identity remains unresolved."
+      ],
+      "verified": true
+    },
+    {
+      "operation": "set_disassembly_comment",
+      "address": "0004677C",
+      "comment": "Audit 2026-09-09: ROM literal 46864 contains 0000251C, the u16 saturating-add helper. 46864 is not executable helper code. The word literal 4684E contains CF7B, sign-extended to RAM FFFFCF7B, not RAM at ROM offset 4684E.",
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "Comment set successfully"
+          }
+        ],
+        "isError": false
+      },
+      "readback": [
+        "0004677c: mov.l 0x00046864,r3 ; Audit 2026-09-09: ROM literal 46864 contains 0000251C, the u16 saturating-add helper. 46864 is not executable helper code. The word literal 4684E contains CF7B, sign-extended to RAM FFFFCF7B, not RAM at ROM offset 4684E."
+      ],
+      "verified": true
+    },
+    {
+      "operation": "set_disassembly_comment",
+      "address": "0003387C",
+      "comment": "Audit 2026-09-09: 609EC is a typed one-axis u16 lookup (209C), 4 points, axis 7BDFC, data 7BE0C, Q15 scale. Output goes to auxiliary request C858, not fan CD54.",
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "Comment set successfully"
+          }
+        ],
+        "isError": false
+      },
+      "readback": [
+        "0003387c: mov.l 0x0003393c,r4 ; Audit 2026-09-09: 609EC is a typed one-axis u16 lookup (209C), 4 points, axis 7BDFC, data 7BE0C, Q15 scale. Output goes to auxiliary request C858, not fan CD54."
+      ],
+      "verified": true
+    },
+    {
+      "operation": "set_disassembly_comment",
+      "address": "00014FC2",
+      "comment": "Audit 2026-09-09: literal 15000 points to u16 calibration 737DC = 3. This is the B2FC throttle/idle debounce call-count limit, not a throttle-angle float. Elapsed milliseconds are not established by this comparison.",
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "Comment set successfully"
+          }
+        ],
+        "isError": false
+      },
+      "readback": [
+        "00014fc2: mov.l 0x00015000,r1 ; Audit 2026-09-09: literal 15000 points to u16 calibration 737DC = 3. This is the B2FC throttle/idle debounce call-count limit, not a throttle-angle float. Elapsed milliseconds are not established by this comparison."
+      ],
+      "verified": true
+    },
+    {
+      "operation": "set_disassembly_comment",
+      "address": "00024B36",
+      "comment": "Audit 2026-09-09: rev limiter is hysteretic. BF6D/80 sets at or above 7644C and clears only below 76450; it holds between. BF6D/40 similarly uses 76454/76458. Stock primary pair is 7000/6970 RPM; saved main/v2 use 6800/6770. Secondary pair is 5000/4800.",
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "Comment set successfully"
+          }
+        ],
+        "isError": false
+      },
+      "readback": [
+        "00024b36: fcmp/gt fr5,fr3 ; Audit 2026-09-09: rev limiter is hysteretic. BF6D/80 sets at or above 7644C and clears only below 76450; it holds between. BF6D/40 similarly uses 76454/76458. Stock primary pair is 7000/6970 RPM; saved main/v2 use 6800/6770. Secondary pair is 5000/4800."
+      ],
+      "verified": true
+    }
+  ],
+  "limits": [
+    "rename_data only changes an already defined Data item; 'Rename data attempted' is not proof of success.",
+    "No MCP endpoint exists for memory block edits, defining Data, saving the program or creating a function.",
+    "Unmapped C000-DFFF symbols and undefined ADC/timer fields are documented at their mapped producer/consumer instructions.",
+    "Program transactions were committed in the live session; explicit program save/reopen was not verified.",
+    "set_decompiler_comment writes PRE comments; old PLATE comments can remain visible. Repository plate-comment corrections are prepared, not claimed live through MCP."
+  ],
+  "last_updated": "2026-09-09"
+}

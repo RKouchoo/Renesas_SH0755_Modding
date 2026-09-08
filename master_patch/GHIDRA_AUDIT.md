@@ -96,15 +96,15 @@ reproducible without importing a modified ROM into the stock analysis project.
 | `0x3FFDA` | `avls_threshold_curve_selector_state_update` | Publishes internal AVLS curve-selector state 1/2/3. |
 | `0x400EE` | `avls_curve_selector_oil_temp_band_latches_update` | Builds engine-oil-temperature selector latches at 13/15 and 113/115 degrees C. |
 | `0x40168` | `avls_cam_mode_state_machine` | Compares conditioned pedal percent with the oil-temperature-selected RPM-versus-pedal boundary. |
-| `0x3FDBC` | `avls_control_sequence_update` | Runs AVLS request selection/state machine, committed-mode copy, then OSV actuation. |
+| `0x3FDBC` | `avls_control_sequence_update` | Runs AVLS request selection/state machine, committed-mode copy and conditional mode reset;11958 separately calls405CC. |
 | `0x405B2` | `avls_mode_commit_copy` | Copies requested mode `0xFFFFCD87` to committed mode `0xFFFFCD86`. |
 | `0x405CC` | `avls_osv_actuation_gate` | Retained stock status/timing gate for lift-solenoid actuation. |
 | `0xF474` | `engine_oil_temperature_sensor_process` | Converts ADC AB12 through descriptor 0x60950 to B124 in degrees C. |
 | `0x3253C` | `engine_oil_temperature_logger_convert` | Logger conversion entry for B124. |
 | `0x47000` | `engine_oil_temperature_fallback_select` | Publishes valid B124 or the stock 70 C fallback to CF94. |
-| `0x17984` | `airflow_load_and_pedal_processing_sequence_update` | Orchestrates the load and accelerator-pedal chains. |
-| `0x179EE` | `airflow_load_filter_state_initialize` | Initializes airflow/load filter state. |
-| `0x17A24` | `airflow_load_filter_state_requires_initialization` | Checks that filter state before the processing sequence. |
+| `0x17984` | `accelerator_pedal_processing_sequence_update` | Orchestrates paired accelerator-pedal learning and conditioning. |
+| `0x179EE` | `pedal_offset_records_initialize` | Initializes protected pedal-offset records8110/8118/8120. |
+| `0x17A24` | `pedal_offset_records_require_initialization` | Checks the protected pedal-offset records and learned-state selector. |
 | `0x18438` | `pedal_conditioning_status_flags_update` | Status input for the pedal conditioner. |
 | `0x184CC` | `pedal_conditioning_coefficient_set_a_update` | Produces B4A4/B4A8/B4AC coefficients. |
 | `0x1873C` | `pedal_conditioning_coefficient_set_b_update` | Produces B4B0/B4B4/B4B8 coefficients. |
@@ -122,20 +122,20 @@ reproducible without importing a modified ROM into the stock analysis project.
 | `0x26256` | `crank_output_mode_select` | Selects and publishes the retained crank-output mode used ahead of injection scheduling. |
 | `0x26F8C` | `injector_scheduled_pulse_width_channels_publish` | Publishes scheduled pulse widths at `0xFFFFC0B8` onward and latency at `0xFFFFC0D8`; forms latency-inclusive outputs at `0xFFFFC0D0/C0D4`. |
 | `0x1ADD8` | `runtime_status_b6b8_bit7_is_set` | Common runtime/reset-condition predicate used by after-start fuel and other state updates. |
-| `0xA9A8` | `injector_control_lookup_sequence_a9a8` | Supporting injector lookup sequence. |
+| `0xA9A8` | `ac00_lookup_and_ae_state_update` | AC00-indexed lookups and AE-state updates; injector-only role unproved. |
 | `0xB690` | `front_af_sensor_pair_signal_process` | Original paired-front conversion entry replaced by the external-wideband hook. |
-| `0x192A8` | `front_af_sensor_pump_current_pair_offset_clamp_update` | Obsolete front pump-current diagnostic path. |
+| `0x192A8` | `front_af_sensor_pump_current_pair_scale_update` | Obsolete front pump-current diagnostic path. |
 | `0x18DAC` | `front_af_sensor_lambda_condition_filter` | Conditions lambda for stock closed-loop consumers. |
 | `0x18FDC` | `front_af_sensor_closed_loop_status_pair_update` | Updates the paired front-feedback status consumed by closed-loop logic. |
-| `0x1BE8E` | `fuel_trim_state_initialize` | Initializes retained fuel-trim controller state. |
+| `0x1BE8E` | `purge_operating_state_initialize` | Initializes retained fuel-trim controller state. |
 | `0x1DD04` | `final_fueling_multiplier_compose` | Combines short-term and learned trim inputs into final fueling. |
 | `0x1EE74` | `closed_loop_fuel_control_bank_update` | Confirms bank feedback/readiness consumption. |
-| `0x1F1DC` | `closed_loop_short_term_correction_publish` | Publishes/resets per-bank short-term correction state. |
+| `0x1F1DC` | `closed_loop_correction_and_history_initialize` | Initializes bank corrections and histories only when 1A256 requests reset; otherwise returns unchanged. |
 | `0x1FB16` | `closed_loop_lambda_delay_coefficients_update` | Builds the stock 21-element lambda response/delay vector. |
 | `0x1FCD4` | `closed_loop_lambda_delay_filter_update` | Applies the 21-sample feedback history against the target lambda. |
 | `0x20326` | `closed_loop_bank_feedback_correction_update` | Updates the retained per-bank feedback correction. |
 | `0x2104E` | `closed_loop_bank_trim_state_update` | Updates the long-term closed-loop trim state. |
-| `0x13330` | `runtime_status_b6c0_bit7_is_set` | Supporting front-feedback gate. |
+| `0x13330` | `runtime_status_b19c_bit7_is_set` | Supporting front-feedback gate. |
 | `0x1D228` | `runtime_status_b748_bit7_is_set` | Supporting front-feedback gate. |
 | `0x1884` | `diagnostic_request_download_handle` | Named while separating diagnostic infrastructure from sensor tasks. |
 
@@ -528,7 +528,7 @@ At the observed 1,300 RPM, 0.49--0.50 g/rev and 3--5 C indicated IAT, solving
 the exact patched equation backwards places the engine at approximately
 313--318 mmHg absolute MAP. The previous low-lift VE surface interpolated to
 only about 0.623--0.625 there. Those cells came from the synthetic commissioning
-formula in `speed_density/patch_speed_density.py`; they were not measured EZ30R
+formula in `patches/speed_density/patch_speed_density.py`; they were not measured EZ30R
 volumetric-efficiency data. The Primary Open Loop A surface requests 14.70 AFR
 at this speed/load. Changing an 18.6-AFR steady result to 14.7 requires a
 multiplier of about 1.265 if injector delivery is correctly modelled.
@@ -1022,7 +1022,7 @@ before adopting a newly flashed image. No new calibration fix is inferred.
   to the old wrapper allocation, local fallback pointer and checksum word.
   No other byte changed relative to pre-hardening master hash `745cd736...`.
 - Both ordinary binary verifiers now run the actual-wrapper opcode harness
-  `speed_density/test_hook_execution.py`. Eight test groups pass against both
+  `tests/test_hook_execution.py`. Eight test groups pass against both
   rebuilt ROMs: valid modes/edges, stale live RPM, MAP/IAT changed immediately
   after capture, adversarial scratch-register clobbering, invalid sensors and
   calibrations, invalid lookup returns, overflow/underflow/cap, and zero RPM.

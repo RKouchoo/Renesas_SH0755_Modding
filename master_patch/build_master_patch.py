@@ -32,10 +32,11 @@ import sys
 
 HERE = Path(__file__).resolve().parent
 ROOT = HERE.parent
-PATCH_DIR = ROOT / "patch"
-SD_DIR = ROOT / "speed_density"
-FUEL_SAFETY_DIR = ROOT / "fueling_safety"
-for directory in (PATCH_DIR, SD_DIR, FUEL_SAFETY_DIR, HERE):
+PATCH_DIR = ROOT / "patches/core"
+SD_DIR = ROOT / "patches/speed_density"
+FUEL_SAFETY_DIR = ROOT / "patches/fueling_safety"
+for directory in (PATCH_DIR, SD_DIR, FUEL_SAFETY_DIR,
+                  ROOT / "patches/wideband_o2", ROOT / "patches/purge_delete", HERE):
     sys.path.insert(0, str(directory))
 
 import extract_srf  # noqa: E402

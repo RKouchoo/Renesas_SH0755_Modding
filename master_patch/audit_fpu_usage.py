@@ -5,6 +5,8 @@ SD executes the actual float lookup helpers as well as the emitted wrapper.
 Guard fixtures reuse the existing native execution harness and its explicit
 stock-task boundaries. No ROM, logger, or calibration file is written.
 """
+
+import _analysis_paths  # Locate shared offline interpreters after repository cleanup.
 from collections import Counter
 import argparse
 import hashlib
@@ -15,7 +17,7 @@ from unittest.mock import patch as mock_patch
 
 HERE = Path(__file__).resolve().parent
 ROOT = HERE.parent
-for directory in (ROOT / 'patch', ROOT / 'speed_density', ROOT / 'fueling_safety', HERE):
+for directory in (ROOT / 'patches/core', ROOT / 'patches/speed_density', ROOT / 'patches/fueling_safety', HERE):
     sys.path.insert(0, str(directory))
 
 import patch_speed_density as sd

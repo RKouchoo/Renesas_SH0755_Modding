@@ -20,26 +20,26 @@ feed-forward boost control with throttle gating and independent soft/hard MAP li
 The repository-root `2005 BLE MT.bin` is the canonical stock image used by Ghidra. Never write
 patches into it and never replace it with a generated ROM.
 
-`patch/patch_boost.py` enforces this workflow:
+`patches/core/patch_boost.py` enforces this workflow:
 
 1. It reads only the fixed root stock path.
 2. It verifies SHA-256 `ed0fe0341d97fb760c2cda3f07277f861495d32f6520e3ce8047b8b0f7bfd4ee`.
 3. It makes a private in-memory copy.
 4. It applies all tables, code, and hooks to that copy.
-5. It writes `patch/D2WD610H_boost.bin` by default.
+5. It writes `patches/core/D2WD610H_boost.bin` by default.
 6. It refuses any output path that aliases the stock file.
 7. It rereads the stock file after the build and fails if its bytes changed.
 
 Build from the repository root:
 
 ```sh
-python3 patch/patch_boost.py
+python3 patches/core/patch_boost.py
 ```
 
 To create a disposable comparison build, supply only a different output path:
 
 ```sh
-python3 patch/patch_boost.py /tmp/D2WD610H_boost_test.bin
+python3 patches/core/patch_boost.py /tmp/D2WD610H_boost_test.bin
 ```
 
 There is no configurable input and no patch-stacking workflow.
@@ -47,7 +47,7 @@ There is no configurable input and no patch-stacking workflow.
 The original ECU read is `base_roms/2005 BLE MT.srf`. Run:
 
 ```sh
-python3 patch/extract_srf.py
+python3 patches/core/extract_srf.py
 ```
 
 The extractor parses the SRF chunk table and verifies that its `MEMD` payload at offset `0x1CD`
@@ -59,8 +59,8 @@ For the current integrated image, use:
 ```sh
 python3 master_patch/build_master_patch.py
 python3 master_patch/build_definition.py
-python3 master_patch/verify_master_patch.py
-python3 patch/verify_romraider_toggles.py
+python3 tests/verify_master_patch.py
+python3 tests/verify_romraider_toggles.py
 ```
 
 This writes the committed master ROM from a fresh root-stock copy, proves component ownership and
@@ -175,12 +175,12 @@ These addresses must remain synchronized with
 
 ## Toolchain
 
-- `patch/patch_boost.py`: guarded patch builder.
-- `patch/sh2_asm.py`: minimal two-pass SH-2E assembler.
-- `patch/sh2_disasm.py`: injected-code disassembler.
-- `patch/verify_regions.py`: flash/RAM region audit.
-- `patch/verify_boost_donor.py`: donor-table and generated-default verifier.
-- `patch/verify_romraider_toggles.py`: XML/switch-address/default-byte verifier for standalone and
+- `patches/core/patch_boost.py`: guarded patch builder.
+- `patches/core/sh2_asm.py`: minimal two-pass SH-2E assembler.
+- `patches/core/sh2_disasm.py`: injected-code disassembler.
+- `tests/verify_regions.py`: flash/RAM region audit.
+- `tests/verify_boost_donor.py`: donor-table and generated-default verifier.
+- `tests/verify_romraider_toggles.py`: XML/switch-address/default-byte verifier for standalone and
   combined patch definitions.
 - RomRaider/EcuFlash: calibration editing and a verified `subarudbw` checksum save before
   flashing.

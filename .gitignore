@@ -15,5 +15,5 @@ master_patch/logs/
 
 # Standalone component/test ROMs are reproducible local outputs.  The focused
 # master ROM is the only generated flash target kept under version control.
-patch/D2WD610H_*.bin
-speed_density/D2WD610H_speed_density.bin
+patches/core/D2WD610H_*.bin
+patches/speed_density/D2WD610H_speed_density.bin

@@ -140,9 +140,9 @@ scoped; ordinary BCB8/BCBC learned fuel corrections remain separate.
 Run:
 
 ```
-python3 master_patch/test_wideband_fuel_guard_execution.py master_patch/D2WD610H_master_patch.bin
-python3 master_patch/verify_master_patch.py
-python3 speed_density/test_hook_execution.py master_patch/D2WD610H_master_patch.bin
+python3 tests/test_wideband_fuel_guard_execution.py master_patch/D2WD610H_master_patch.bin
+python3 tests/verify_master_patch.py
+python3 tests/test_hook_execution.py master_patch/D2WD610H_master_patch.bin
 ```
 
 All 12 new execution test groups run inside the master verifier. This closes

@@ -1,6 +1,12 @@
 # D2WD610H — EZ30R Denso ECU Reverse Engineering Notes
 
-Working document. Updated as analysis progresses in Ghidra (live MCP session).
+Historical research notebook, retained pending user review. The
+[central reference](reference/README.md) now owns current conclusions and
+image identities; the [findings register](reference/FINDINGS.md) records
+corrections. Build descriptions below describe stages in the investigation,
+not a single current binary. Unreviewed routine names remain hypotheses.
+
+## September 8 build and investigation history
 **September 8 corrective build:** the wrongly identified boost hook has been
 removed. The current master preserves stock radiator-fan routing at
 `0x3FD8C → 0xE8C4` and contains no electronic boost actuator. Actual CPC output
@@ -10,7 +16,7 @@ wastegate-spring operation. Older fan-hook images remain quarantined, including
 EBCS-OFF images. Static verification does not prove this fixes the cold lean-out
 or makes the ROM vehicle-validated; see the latest master Ghidra audit.
 
-Current master SHA-256:
+Historical 10:30 master SHA-256:
 `48d63cf3b7085afc672dd809cf08f4aef2b1aaae8a880f421e656467b7aaf8f0`,
 checksum `0x1923EC61`. The fan/purge repair first produced `fbc1a8...` with a
 436-byte difference from `0600d73a...`. The two retained-sensor passes then
@@ -28,7 +34,7 @@ stock limiter returned. Both wrappers now publish the native all-channel word;
 the `aea793...` stage differs by 169 bytes from `5fff8b...`. See
 [the injector-cut audit](../master_patch/INJECTOR_CUT_EXECUTION_AUDIT.md).
 The earlier six-channel “cam-solenoid bank” identification is corrected below.
-Current `48d63c...` additionally fixes a temporary cut release during the update:
+That `48d63c...` stage additionally fixes a temporary cut release during the update:
 native task 5 (injector phase, priority 4) outranks task 6 (cut calculation,
 priority 2). Both wrappers use `3AF4(0x10)/3B08` to protect the complete decision.
 The [scheduler execution audit](../master_patch/INJECTOR_SCHEDULER_EXECUTION_AUDIT.md)
@@ -74,7 +80,8 @@ MAP/IAT inputs; only its obsolete MAF-fault load fallback is bypassed. The stock
 6% load filter is explicitly defined but unchanged, as are VE/injector/timing
 calibrations. Opcode tests and both binary audits pass; this is not a confirmed
 lean-out cure. See the hook-hardening implementation section in the master audit.
-This file is the canonical state doc. Companion references:
+The central reference supersedes this notebook as the current state document.
+Companion historical and operational references:
 
 - [ram_map.md](ram_map.md) — consolidated RAM variables
 - [hardware_io_map.md](hardware_io_map.md) — memory map + peripheral registers
@@ -104,7 +111,7 @@ This file is the canonical state doc. Companion references:
 | Region | Range | Notes |
 |---|---|---|
 | Flash | 0x00000000–0x0007FFFF | ROM image, base = file offset |
-| On-chip RAM | 0xFFFF0000–0xFFFFDFFF | directly referenced by code (good xref anchors); stack at 0xFFFFDFA0 |
+| On-chip RAM | 0xFFFF6000–0xFFFFDFFF | 32 KiB per Renesas section 23; stack at 0xFFFFDFA0; old Ghidra block geometry was incorrect |
 | Peripheral regs | 0xFFFFE400+ | I/O ports, timers, ADC — solenoid/sensor anchors live here |
 
 **Denso literal trick:** RAM addresses ≥0xFFFF8000 are stored as *16-bit* PC-relative
@@ -223,7 +230,7 @@ Verified: Base Timing A data 0x78AA0 → slot 0x60114 → desc 0x60108 → consu
   `ign_per_cylinder_correction_enable_latch_update` (`0x3D7E4`),
   `ign_per_cylinder_correction_array_update` (`0x3D824`),
   `ign_per_cylinder_correction_state_clear` (`0x3D8E2`),
-  `ign_per_cylinder_correction_state_any_active` (`0x3D916`),
+  `ign_correction_records_any_invalid` (`0x3D916`),
   `ign_per_cylinder_correction_initialize` (`0x3D95A`), and
   `ign_per_cylinder_correction_array_clear` (`0x3D980`).
 
@@ -317,7 +324,7 @@ Definition layout:
 - `defs/D2WD610H_AVLS.xml` is the AVLS-only custom RomRaider definition.
 - `defs/D2WD610H_AVLS_boost_patch.xml` is the D2WD610H + AVLS generator input
   with independent hard-overboost protection. Retired EBCS controls are removed.
-- `speed_density/D2WD610H_AVLS_speed_density_patch.xml` is the single standalone MAFless
+- `patches/speed_density/D2WD610H_AVLS_speed_density_patch.xml` is the single standalone MAFless
   component input used by the master definition generator. It contains committed-state
   low/high-lift VE and fixed 3200/3000-RPM AVLS hysteresis.
 - `master_patch/D2WD610H_master_patch.xml` is the current focused integration definition. It
@@ -400,7 +407,7 @@ data registers (datasheet) instead of descending the call tree.
       input. This is retained as historical documentation only and is superseded by the current
       `master_patch`, which deliberately uses the former MAF ADC for one external 0--5 V lambda
       controller and publishes explicit lambda/raw/readiness logger parameters.
-- [x] Historical combined stock-to-ROM builder and definition created. `patch/patch_combined.py` applied both
+- [x] Historical combined stock-to-ROM builder and definition created. `patches/core/patch_combined.py` applied both
       guarded components to one fresh stock copy; `verify_combined.py` proves the 811 changed bytes
       are the exact 369 + 442 union with zero overlap for that historical revision.
       Its former output-identity/commissioning assumptions are retracted; it is not the current
@@ -438,7 +445,7 @@ data registers (datasheet) instead of descending the call tree.
 
 _(underscore names only — strict naming enforcement is ON)_
 - 0x00010690 → **fnptr_task_list_dispatch** — init/scheduler sequential fn-ptr caller
-- 0x0000b536 → **fp_support_helper** — SH-2E FP register support
+- 0x0000B536 → **protected_float_pair_zero_initialize** — initializes protected records `0xFFFF803C/0xFFFF8044` through `0x49530`; old FP-register-support label retracted
 - 0x0000209C → **table2d_lookup_dispatch**
 - 0x00002150 → **table3d_lookup_dispatch**
 - 0x000026E0 → **axis_index_search_float**
@@ -467,7 +474,7 @@ _(underscore names only — strict naming enforcement is ON)_
 - 0x0003D7E4 → **ign_per_cylinder_correction_enable_latch_update**
 - 0x0003D824 → **ign_per_cylinder_correction_array_update**
 - 0x0003D8E2 → **ign_per_cylinder_correction_state_clear**
-- 0x0003D916 → **ign_per_cylinder_correction_state_any_active**
+- 0x0003D916 → **ign_correction_records_any_invalid**
 - 0x0003D95A → **ign_per_cylinder_correction_initialize**
 - 0x0003D980 → **ign_per_cylinder_correction_array_clear**
 - 0x00028C38 → **ign_timing_cylinder_minimum_check_update**
@@ -480,7 +487,7 @@ _(underscore names only — strict naming enforcement is ON)_
 - 0x000405CC → **avls_osv_actuation_gate**
 - 0x00040C94/40798/40CE6 → **cam_actuator_output_set_1/2/3**
 - 0x00022756 → **cl_ol_transition_delay_update**
-- 0x000096FC → **solenoid_pwm_channel_drive** (crank-angle-synced 6-ch PWM HW driver; AVCS/AVLS; table @0xFAE8)
+- 0x000096FC → **injector_timer_channel_duration_update** (injector path via 0x90BA; uses table A at 0xFA94; previous cam/table-B identity retracted)
 - 0x000268E8 → **injector_channel_pulse_output_gate** (duration→count and per-channel inhibit gate)
 - 0x00026DFC → **injector_inhibit_word_read** (returns native injector inhibit word @0xFFFFB744)
   (September 8 correction: these are six injector records shared with pulse logger 0x26F8C;
@@ -504,19 +511,19 @@ _(underscore names only — strict naming enforcement is ON)_
 - 0x000114B0 → **slow_task_dispatcher** (~50 fn-ptr sequential caller, slow loop)
 - 0x0003F878 → **radiator_fan_mode_select** (fan mode 0-3 from ECT hysteresis; relay stages, not PWM)
 - 0x000263EE → **injector_phase_scheduler** (six 0x28-byte records at BFB8; B744 cached at C0B2)
-- 0x00026320 → **solenoid_control_array_init** (inits 6 solenoid structs @0xFFFFBFB8 stride 0x28)
+- 0x00026320 → **injector_control_records_initialize** (six injector records @0xFFFFBFB8, stride 0x28; computed extent through 0xFFFFC0A7)
 - 0x0001C5D4 → **injector_fuel_cut_inhibit_word_build** (FFFF for native global cut, otherwise six channel fault bits at B744)
 - 0x00026AEC → **injector_schedule_inhibit_transition_update** (applies changing inhibit masks to the phase records)
 - 0x00024570 → **solenoid_circuit_diagnostic** (sets circuit-fault byte 0xFFFFBF21)
 - 0x000182AC → **accelerator_pedal_compensation_update**
-- 0x00017984 → **airflow_load_and_pedal_processing_sequence_update**
-- 0x000179EE → **airflow_load_filter_state_initialize**
-- 0x00017A24 → **airflow_load_filter_state_requires_initialization**
+- 0x00017984 → **accelerator_pedal_processing_sequence_update**
+- 0x000179EE → **pedal_offset_records_initialize**
+- 0x00017A24 → **pedal_offset_records_require_initialization**
 - 0x00018A68 → **pedal_conditioned_filter_update** (B4C0 → conditioned pedal percent @0xFFFFB4C8)
 - 0x00009FEC → **float_3d_table_consumer_update**
 - 0x0000C5C8 → **accelerator_pedal_adc_pair_update** (corrected September 8: AB08/AB0A → AF80/AF84; consumed by pedal normalization 180C6, separate from wideband AB06)
-- 0x00017B2A → **airflow_bank_charge_update**
-- 0x00017C40 → **airflow_bank_charge_diagnostic_update**
+- 0x00017B2A → **pedal_pair_filter_delta_update**
+- 0x00017C40 → **pedal_pair_offset_learning_update**
 - 0x000180C6 → **accelerator_pedal_pair_normalize**
 - 0x000181EA → **accelerator_pedal_pair_select**
 - 0x00018438 → **pedal_conditioning_status_flags_update**
@@ -524,11 +531,11 @@ _(underscore names only — strict naming enforcement is ON)_
 - 0x0001873C → **pedal_conditioning_coefficient_set_b_update**
 - 0x000188F4 → **pedal_conditioned_source_update** (B470 pedal percent → B4C0; B538 is a condition input)
 - 0x0001B15E → **fuel_system_monitor_enable_update**
-- 0x000216EA → **fueling_airflow_input_update**
+- 0x000216EA → **fuel_trim_airflow_region_classify**
 - 0x000098CC → **injector_battery_voltage_latency_lookup** (descriptor 0x608D8; voltage
   axis 0x7B304; latency data 0x7B318)
 - 0x0001E0C8 → **injector_flow_scaling_factor_update** (consumes flow scaling at 0x76014)
-- 0x0000A9A8 → **injector_control_lookup_sequence_a9a8**
+- 0x0000A9A8 → **ac00_lookup_and_ae_state_update**
 - 0x0003EB68 → **knock_correction_advance_max_select** (KCA A normal cam / KCA B AVLS high cam)
 - 0x000024B0 → **float_minimum_select** (returns the lower float; confirmed while tracing AVLS)
 - 0x000009F4 → **bus_state_controller_and_ram_emulation_initialize**
@@ -541,8 +548,8 @@ _(underscore names only — strict naming enforcement is ON)_
 - 0x0000529C → **flash_ram_emulation_disable** (writes zero to RAMER at 0xFFFFEC26)
 - 0x000052A4 → **flash_ram_emulation_disable_thunk**
 - 0x000052A8 → **aud_system_control_and_module_standby_initialize** (writes SYSCR=0x01 and protected MSTCR=0x3C04 in the normal PDDR-bit-13 state)
-- 0x000052DA → **aud_enable_and_hudi_module_stop_dispatch**
-- 0x0003FDBC → **avls_control_sequence_update** (request state machine, commit copy, then OSV gate)
+- 0x000052DA → **ram_enable_and_fpu_stop_dispatch** — tests MSTCR `0x02` (FPU stop), not H-UDI `0x04`
+- 0x0003FDBC → **avls_control_sequence_update** (request state machine, commit copy, then conditional mode reset; OSV gate is separately scheduled)
 - 0x000405B2 → **avls_mode_commit_copy** (CD87 requested mode → CD86 committed mode)
 - 0x000405CC → **avls_osv_actuation_gate** (retained timing/status gate for lift actuation)
 - 0x0003FFDA → **avls_threshold_curve_selector_state_update**
@@ -581,7 +588,7 @@ _(underscore names only — strict naming enforcement is ON)_
   using converted temperature signals, raw MAF ADC, and ADC status bits)
 - 0x0000786C → **intake_air_temperature_adc_conversion**
 - 0x00007974 → **engine_coolant_temperature_adc_conversion**
-- 0x00016CA4 → **engine_coolant_temperature_output_update**
+- 0x00016CA4 → **coolant_protected_records_initialize** — writes protected records `0xFFFF8100/0xFFFF8108`; conditioned coolant `0xFFFFB3AC` is published by `0x16B04`
 - 0x00013394 → **periodic_diagnostic_task_rate_dispatcher**
 - 0x000115EA → **diagnostic_task_list_dispatcher** (sequential diagnostic task-pointer caller;
   MAF high/low entry is pointer 0x11804 and the mixed temperature/MAF condition is 0x1185C)
@@ -592,7 +599,7 @@ _(underscore names only — strict naming enforcement is ON)_
 - 0x0001BAF0 → **fuel_trim_correction_mode_dispatch**
 - 0x0001BCCA → **fuel_trim_airflow_table_mode_update**
 - 0x0002300A → **airflow_monitor_periodic_update**
-- 0x000230E8 → **airflow_monitor_accumulator_update**
+- 0x000230E8 → **purge_fuel_compensation_ratio_update**
 - 0x0002333C → **airflow_based_monitor_conditions_update**
 - 0x000235D6 → **airflow_vehicle_speed_monitor_state_update**
 - 0x000374F0 → **airflow_rpm_diagnostic_monitor_update**
@@ -601,8 +608,8 @@ _(underscore names only — strict naming enforcement is ON)_
 - 0x00070CD6 → **airflow_temperature_monitor_bit80_update**
 - 0x00071104 → **airflow_temperature_monitor_bit40_update**
 - 0x00016D1C → **intake_air_temperature_update** (updates IAT 0xFFFFB3B8 in degrees C)
-- 0x0001B800 → **engine_load_from_mass_airflow_calculate** (reads RPM 0xFFFFB544, final mass
-  airflow 0xFFFFB420, and throttle 0xFFFFB314; confirms the SD write feeds stock load logic)
+- 0x0001B800 → **purge_airflow_limit_and_correction_update** (reads baro, RPM, final airflow
+  and throttle; publishes purge limits/ratio `0xFFFFB714/B6F8/B6F4/B6F0`, not engine load `B428/B438`)
 - 0x00011AD0 → **periodic_engine_control_task_dispatcher** (computed-call dispatcher whose
   pointer array contains the stock airflow slot at 0x11D20)
 - Confirmed filtered-airflow `0xFFFFB424` consumers:
@@ -639,7 +646,7 @@ _(underscore names only — strict naming enforcement is ON)_
   - 0x0003EBDC → **engine_load_dependent_update_3ebdc**
   - 0x0001E7E8 → **engine_load_dependent_update_1e7e8**
   - 0x00046D74 → **engine_load_dependent_update_46d74**
-  - 0x000217B8 → **engine_load_and_filtered_airflow_update_217b8**
+  - 0x000217B8 → **legacy_o2_voltage_loop_sequence_update**
   - 0x0001E5E8 → **engine_load_dependent_update_1e5e8**
   - 0x0006BBA2 → **engine_load_dependent_update_6bba2**
   - 0x0006BFDC → **engine_load_dependent_update_6bfdc**
@@ -650,9 +657,9 @@ _(underscore names only — strict naming enforcement is ON)_
 - 0x0000B690 → **front_af_sensor_pair_signal_process** (stock two-channel front A/F processing;
   single-front patch runs the complete body, then mirrors Bank 1 into Bank 2)
 - 0x00001884 → **diagnostic_request_download_handle**
-- 0x00013330 → **runtime_status_b6c0_bit7_is_set**
+- 0x00013330 → **runtime_status_b19c_bit7_is_set**
 - 0x0001D228 → **runtime_status_b748_bit7_is_set**
-- 0x000192A8 → **front_af_sensor_pump_current_pair_offset_clamp_update**
+- 0x000192A8 → **front_af_sensor_pump_current_pair_scale_update**
 - 0x0000B8CC → **front_af_sensor_pump_current_diagnostic_update** (retained stock front-sensor
   diagnostic calculation; single-front task wrapper refreshes Bank-2 readiness afterward)
 - 0x00064FD0 / 0x0006500C → **front_af_sensor_bank1_inhibit_check** /
@@ -662,7 +669,7 @@ _(underscore names only — strict naming enforcement is ON)_
   lambda path producing the B4E8/B4EC logger values)
 - 0x0001EE74 → **closed_loop_fuel_control_bank_update** (retained per-bank consumer; master
   patch deliberately feeds both banks from the same synthetic external-wideband lambda)
-- 0x0001917A → **front_af_sensor_ready_status_pair_update**
+- 0x0001917A → **front_af_lambda_and_status_flags_update**
 - 0x0000B62A → **front_af_sensor_sample_task**
 - 0x0000E0C8 → **rear_o2_sensor_pair_adc_task_thunk**
 - 0x0000E0D0 → **rear_o2_sensor_pair_adc_convert** (AB20/AB0C rear-input scaling to B098/B09C;
@@ -774,7 +781,7 @@ and 0x1B81E.
   the pump diagnostic pointer, rear ADC converter, and all five traced rear monitor pointers are
   no-ops; all 18 mapped front/rear O2 DTC switches are off. Heater output drivers remain stock and
   disconnected connector terminals must be insulated.
-- 2026-08-21: `master_patch/verify_master_patch.py` independently composes every component from
+- 2026-08-21: `tests/verify_master_patch.py` independently composes every component from
   immutable stock, decodes each new SH-2E executable region, checks hooks/task pointers/DTC bytes,
   validates sensor math and tune policy, enforces free-space ownership (including leaving the
   separate rotational-idle region untouched), regenerates the focused XML, and validates the

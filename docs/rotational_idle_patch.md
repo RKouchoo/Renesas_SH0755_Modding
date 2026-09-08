@@ -65,8 +65,8 @@ retains the original stock angle. The patch does not add hysteresis or retain st
 
 | File | Purpose |
 |---|---|
-| `patch/patch_rotational_idle.py` | Reusable guarded component API; can still build a local standalone test image |
-| `patch/verify_rotational_idle.py` | Standalone opcode, policy, and ownership audit |
+| `patches/core/patch_rotational_idle.py` | Reusable guarded component API; can still build a local standalone test image |
+| `tests/verify_rotational_idle.py` | Standalone opcode, policy, and ownership audit |
 | `master_patch/D2WD610H_master_patch.bin` | Only committed flashable generated image; includes this component OFF |
 | `master_patch/D2WD610H_master_patch.xml` | Current definition containing all rotational-idle controls |
 
@@ -75,7 +75,7 @@ From the repository root:
 ```sh
 python3 master_patch/build_master_patch.py
 python3 master_patch/build_definition.py
-python3 master_patch/verify_master_patch.py
+python3 tests/verify_master_patch.py
 ```
 
 The master builder always reads the canonical root `2005 BLE MT.bin`, verifies its pinned

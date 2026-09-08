@@ -24,7 +24,7 @@ import sys
 
 HERE = Path(__file__).resolve().parent
 ROOT = HERE.parent
-PATCH_DIR = ROOT / "patch"
+PATCH_DIR = ROOT / "patches/core"
 sys.path.insert(0, str(PATCH_DIR))
 
 import patch_boost as boost  # noqa: E402

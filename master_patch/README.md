@@ -290,7 +290,7 @@ the checksum entry. The numbering controls RomRaider's otherwise alphabetical
 flat category list; it does not affect ROM addresses or calibration data.
 
 The executable hook regression check is
-`python3 speed_density/test_hook_execution.py master_patch/D2WD610H_master_patch.bin`
+`python3 tests/test_hook_execution.py master_patch/D2WD610H_master_patch.bin`
 from the repository root. It executes wrapper opcodes against descriptor-based
 lookup models; it is not a whole-ECU emulator or CPU-timing measurement.
 `02.8 - Fueling - Fuel Pump Control` exposes the Ghidra-verified stock 33.3 and
@@ -306,7 +306,7 @@ Run from the repository root:
 ```sh
 python3 master_patch/build_master_patch.py
 python3 master_patch/build_definition.py
-python3 master_patch/verify_master_patch.py
+python3 tests/verify_master_patch.py
 ```
 
 The checked-in complete logger was generated from the metric-English file in

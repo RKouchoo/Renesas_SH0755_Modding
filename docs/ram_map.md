@@ -1,9 +1,10 @@
 # D2WD610H RAM Variable Map
 
-Consolidated reference of confirmed RAM variables (segment `0xFFFF0000–0xFFFFBFFF`, plus
-actuator-state block up into `0xFFFFCxxx`). Addresses verified in the live Ghidra session
-unless marked *(inferred)*. Cross-refs: [D2WD610H_RE_notes.md](D2WD610H_RE_notes.md),
-[boost_repurpose_notes.md](boost_repurpose_notes.md).
+The central [signal reference](reference/SIGNALS.md) and
+[address evidence index](reference/ADDRESS_INDEX.md) now own the reviewed
+types, producers, consumers and confidence. Physical SH7055SF RAM spans
+`0xFFFF6000–0xFFFFDFFF`. This older topic map is retained pending review;
+an existing Ghidra label alone is not proof of a variable's meaning.
 
 ## Engine core signals
 | RAM addr | Type | Meaning | Evidence |
@@ -17,17 +18,17 @@ unless marked *(inferred)*. Cross-refs: [D2WD610H_RE_notes.md](D2WD610H_RE_notes
 | **0xFFFFB124** | float | **Engine-oil temperature, degrees C** | AB12 thermistor conversion through descriptor 0x60950; source for the AVLS selector |
 | **0xFFFFCF94** | float | **Conditioned/fallback engine-oil temperature, degrees C** | valid B124 or stock 70 C fallback; selects AVLS cold/normal/hot state |
 | **0xFFFFABC4** | float | **Manifold pressure (MAP), native mmHg absolute** | `map_sensor_voltage_to_pressure_process` @0x7A14 output; `MAP = voltage × scaling[1] + scaling[0]` |
-| 0xFFFFABC8 | — | MAP filtered/scaled intermediate | `map_sensor_voltage_to_pressure_process` |
+| 0xFFFFABC8 | u16 | Filtered MAP ADC word, not pressure or float | word accesses at `0x7A28/0x7A36/0x7A3E` in `map_sensor_voltage_to_pressure_process` |
 | 0xFFFFAB04 | u16 | MAP raw ADC value | `map_sensor_voltage_to_pressure_process` input |
 | **0xFFFFB3AC** | float | **Coolant temp (ECT), °C** | read by ~100 fns; purge/thermal input |
 | **0xFFFFB3B8** | float | **Intake-air temperature (IAT), °C** | written by `intake_air_temperature_update` @0x16D1C; input to stock MAF-IAT compensation and the speed-density density curve |
 | **0xFFFFB314** | float | **Processed throttle opening** | produced by `throttle_position_sensor_process` @0x14DCC; input to CL/OL throttle threshold and the boost-control demand gate |
 
-> Boost feedback for the WRX-style loop = **0xFFFFABC4**. The patch replaces the stock
-> `{-150.0, 250.0}` calibration at `0x72810` with the A2WC510N EJ255 donor calibration
-> `{-414.0, 514.199951}`. Fit the matching sensor and validate the result against a reference;
-> pressure remains native mmHg absolute in RAM even though the patch definition displays psi
-> relative to its 760 mmHg sea-level reference.
+> **Standalone donor component only:** its MAP transfer at `0x72810` is
+> `{-414.0, 514.199951}`. Stock uses `{-150.0, 250.0}`. Current main and v2
+> instead use the Omni transfer `{-67.7766571, 487.9919434}` in mmHg and
+> mmHg/V. These calibrations are not interchangeable. See
+> [exact image contracts](reference/IMAGES.md).
 
 The standalone MAFless component retains the stock task at `0x172A4` for its downstream
 `B428..B440` load/filter/state calculations, but redirects its final-airflow helper at `0x1743C`

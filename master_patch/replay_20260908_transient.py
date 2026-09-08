@@ -6,6 +6,8 @@ crank-slot map gives one fuel-task update per 120 degrees (interval 20/RPM).
 Phase, sub-sample input variation, other fuel factors, and injector scheduling
 are unrecorded. This is a scoped attribution model, not an engine simulation.
 """
+
+import _analysis_paths  # Locate shared offline interpreters after repository cleanup.
 import bisect
 import hashlib
 import json

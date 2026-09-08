@@ -21,7 +21,7 @@ import xml.etree.ElementTree as ET
 HERE = Path(__file__).resolve().parent
 ROOT = HERE.parent
 SOURCE = ROOT / "defs" / "D2WD610H_AVLS.xml"
-SD_SOURCE = ROOT / "speed_density" / "D2WD610H_AVLS_speed_density_patch.xml"
+SD_SOURCE = ROOT / "patches/speed_density" / "D2WD610H_AVLS_speed_density_patch.xml"
 BOOST_SOURCE = ROOT / "defs" / "D2WD610H_AVLS_boost_patch.xml"
 OUTPUT = HERE / "D2WD610H_master_patch.xml"
 

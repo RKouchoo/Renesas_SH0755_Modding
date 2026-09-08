@@ -111,8 +111,8 @@ with the corrected SH-2E arithmetic model. The earlier primary-fueling pass
 also added eight target/transition/composer groups and five FPU groups.
 
 ```
-python3 master_patch/verify_master_patch.py
-python3 speed_density/test_hook_execution.py master_patch/D2WD610H_master_patch.bin
+python3 tests/verify_master_patch.py
+python3 tests/test_hook_execution.py master_patch/D2WD610H_master_patch.bin
 ```
 
 Both pass. The master verifier confirms a deterministic rebuild, valid checksum,

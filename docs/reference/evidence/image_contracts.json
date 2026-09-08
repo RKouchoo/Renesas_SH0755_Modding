@@ -1,0 +1,132 @@
+{
+  "images": {
+    "stock": {
+      "path": "2005 BLE MT.bin",
+      "sha256": "ed0fe0341d97fb760c2cda3f07277f861495d32f6520e3ce8047b8b0f7bfd4ee",
+      "load_status_pointer_173FC": "00065168",
+      "fan_pointer_3FD8C": "0000E8C4",
+      "map_offset_72810": -150.0,
+      "map_slope_72814": 250.0,
+      "conditioned_load_alpha_73968": 0.05999999865889549,
+      "slow_negative_gain_76030": 0.03999999910593033,
+      "falling_history_alpha_76050": 0.009999999776482582,
+      "dashpot_decrement_7963C": 0.5999999642372131,
+      "sd_minimum_7DD10": null
+    },
+    "main": {
+      "path": "master_patch/D2WD610H_master_patch.bin",
+      "sha256": "154760a5f2fdadbf6d9221480595f58dc77c6a4eccc492f50899c815aca79e4d",
+      "load_status_pointer_173FC": "00027088",
+      "fan_pointer_3FD8C": "0000E8C4",
+      "map_offset_72810": -67.77665710449219,
+      "map_slope_72814": 487.991943359375,
+      "conditioned_load_alpha_73968": 0.05999999865889549,
+      "slow_negative_gain_76030": 0.03999999910593033,
+      "falling_history_alpha_76050": 0.009999999776482582,
+      "dashpot_decrement_7963C": 0.5999999642372131,
+      "sd_minimum_7DD10": 78.61495971679688
+    },
+    "v2": {
+      "path": "master_patch_v2/D2WD610H_master_patch_v2.bin",
+      "sha256": "2fe5f9cc7f960bff1efd784bb29e6c984ccbc025f1d8029c920fd52a3ce25ac9",
+      "load_status_pointer_173FC": "00065168",
+      "fan_pointer_3FD8C": "0000E8C4",
+      "map_offset_72810": -67.77665710449219,
+      "map_slope_72814": 487.991943359375,
+      "conditioned_load_alpha_73968": 0.05999999865889549,
+      "slow_negative_gain_76030": 0.03999999910593033,
+      "falling_history_alpha_76050": 0.07999999821186066,
+      "dashpot_decrement_7963C": 0.15000000596046448,
+      "sd_minimum_7DD10": 78.61495971679688
+    }
+  },
+  "load_fallback_cases": [
+    {
+      "image": "main",
+      "d26f": 0,
+      "getter_result": 0,
+      "airflow_g_s": 12.5,
+      "rpm": 1500,
+      "initial_load": 0.5,
+      "processed_map_mmhg": 250,
+      "result_load_g_rev": 0.5
+    },
+    {
+      "image": "main",
+      "d26f": 0,
+      "getter_result": 0,
+      "airflow_g_s": 20.0,
+      "rpm": 1500,
+      "initial_load": 0.5,
+      "processed_map_mmhg": 250,
+      "result_load_g_rev": 0.5180000066757202
+    },
+    {
+      "image": "main",
+      "d26f": 64,
+      "getter_result": 0,
+      "airflow_g_s": 12.5,
+      "rpm": 1500,
+      "initial_load": 0.5,
+      "processed_map_mmhg": 250,
+      "result_load_g_rev": 0.5
+    },
+    {
+      "image": "main",
+      "d26f": 64,
+      "getter_result": 0,
+      "airflow_g_s": 20.0,
+      "rpm": 1500,
+      "initial_load": 0.5,
+      "processed_map_mmhg": 250,
+      "result_load_g_rev": 0.5180000066757202
+    },
+    {
+      "image": "v2",
+      "d26f": 0,
+      "getter_result": 0,
+      "airflow_g_s": 12.5,
+      "rpm": 1500,
+      "initial_load": 0.5,
+      "processed_map_mmhg": 250,
+      "result_load_g_rev": 0.5
+    },
+    {
+      "image": "v2",
+      "d26f": 0,
+      "getter_result": 0,
+      "airflow_g_s": 20.0,
+      "rpm": 1500,
+      "initial_load": 0.5,
+      "processed_map_mmhg": 250,
+      "result_load_g_rev": 0.5180000066757202
+    },
+    {
+      "image": "v2",
+      "d26f": 64,
+      "getter_result": 2,
+      "airflow_g_s": 12.5,
+      "rpm": 1500,
+      "initial_load": 0.5,
+      "processed_map_mmhg": 250,
+      "result_load_g_rev": 0.5748999118804932
+    },
+    {
+      "image": "v2",
+      "d26f": 64,
+      "getter_result": 2,
+      "airflow_g_s": 20.0,
+      "rpm": 1500,
+      "initial_load": 0.5,
+      "processed_map_mmhg": 250,
+      "result_load_g_rev": 0.5748999118804932
+    }
+  ],
+  "descriptor_and_literal_checks": "PASS: FA94/FADC records; fan RAM literals; internal checksum end",
+  "limits": [
+    "The load replay executes each image's status getter and retained 1753A..1770A body.",
+    "The caller frame and upstream sensor/status producers are supplied fixtures; table interpolation is mathematical.",
+    "D26F bit40 is forced for the diagnostic cases; this does not establish its state during historical captures.",
+    "No calibration or firmware artifact is written. Timing, engine response and physical sensor transfer are not validated."
+  ]
+}

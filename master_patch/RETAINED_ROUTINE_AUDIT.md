@@ -214,9 +214,9 @@ all table data, or the exact installed September 7 ROM.
 Commands:
 
 ```
-python3 master_patch/verify_master_patch.py
-python3 master_patch/test_stock_sensor_corrections.py master_patch/D2WD610H_master_patch.bin
-python3 speed_density/test_hook_execution.py master_patch/D2WD610H_master_patch.bin
+python3 tests/verify_master_patch.py
+python3 tests/test_stock_sensor_corrections.py master_patch/D2WD610H_master_patch.bin
+python3 tests/test_hook_execution.py master_patch/D2WD610H_master_patch.bin
 ```
 
 The auxiliary-adder test executes the retained 49B20 opcodes in 192

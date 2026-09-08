@@ -6,6 +6,8 @@ sentinels. SD replay executes the saved BIN's wrapper instructions with modeled
 table lookups; CSV columns are not an atomic ECU state snapshot. Neither the
 replay nor gauge agreement proves physical fuel delivery or sensor accuracy.
 """
+
+import _analysis_paths  # Locate shared offline interpreters after repository cleanup.
 import argparse
 import csv
 import hashlib
@@ -18,7 +20,7 @@ import sys
 
 HERE = Path(__file__).resolve().parent
 ROOT = HERE.parent
-sys.path[:0] = [str(ROOT / "speed_density"), str(ROOT / "patch")]
+sys.path[:0] = [str(ROOT / "patches/speed_density"), str(ROOT / "patches/core")]
 import patch_speed_density as sd
 import test_hook_execution as hook
 from historical_roms import master_1030 as read_image

@@ -115,7 +115,7 @@ vehicle-variant wiring issues. The post-turbo wideband must be logged independen
 | Rear monitor selectors | `0x7DAA0`, `0x7DAC0`, `0x7DAE0`, `0x7DB00`, `0x7DB20` |
 
 The standalone boost patch occupies `0x7D790..0x7D903`; these blocks do not overlap it.
-`patch/patch_combined.py` applies both guarded change sets to one fresh root-stock copy and audits
+`patches/core/patch_combined.py` applies both guarded change sets to one fresh root-stock copy and audits
 the result as a new combined system. It never stacks generated binaries.
 
 ## Harness boundary

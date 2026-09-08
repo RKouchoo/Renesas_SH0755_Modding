@@ -659,11 +659,11 @@ Current complete logger SHA-256:
 `f225b9688b05823941f6939e71f22a08deb0f11f898eb5bb477f0657f5b97d2e`.
 
 ```sh
-python3 master_patch/test_load_conditioning_execution.py
-python3 master_patch/test_idle_air_execution.py
-python3 master_patch/test_idle_air_handover_execution.py
-python3 master_patch/test_idle_air_request_execution.py
-python3 master_patch/test_idle_air_override_execution.py
+python3 tests/test_load_conditioning_execution.py
+python3 tests/test_idle_air_execution.py
+python3 tests/test_idle_air_handover_execution.py
+python3 tests/test_idle_air_request_execution.py
+python3 tests/test_idle_air_override_execution.py
 python3 master_patch/replay_20260908_load_recovery.py --output logs/20260908_load_recovery_replay.json
-python3 master_patch/verify_master_patch.py
+python3 tests/verify_master_patch.py
 ```

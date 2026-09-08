@@ -93,7 +93,7 @@ the stock Ghidra project using the established underscore convention:
 | `0x529C` | `flash_ram_emulation_disable` | Writes zero to `RAMER` at `0xFFFFEC26` |
 | `0x52A4` | `flash_ram_emulation_disable_thunk` | Tail-branches to the RAMER-clear function |
 | `0x52A8` | `aud_system_control_and_module_standby_initialize` | Writes `SYSCR=0x01`; selects the protected MSTCR word from PDDR bit 13 |
-| `0x52DA` | `aud_enable_and_hudi_module_stop_dispatch` | Reasserts `SYSCR=0x01`, reads MSTCR and dispatches on the H-UDI stop bit |
+| `0x52DA` | `ram_enable_and_fpu_stop_dispatch` | Reasserts `SYSCR=0x01`, reads MSTCR and dispatches to `0xD210` on mask `0x02` (FPU stop); previous H-UDI identity was wrong |
 
 Every direct PDDR write found in the Ghidra xref pass (`0x3EFF`, `0x3CFF`, and `0x287F`)
 keeps bit 13 set. At normal startup that condition selects a word write of `0x3C04` to

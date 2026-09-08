@@ -4,6 +4,8 @@
 This is an open-loop calculation on fixed recorded inputs, not an engine
 prediction. Alternative filter constants exist only in memory; no BIN output.
 """
+
+import _analysis_paths  # Locate shared offline interpreters after repository cleanup.
 import argparse
 import bisect
 import hashlib

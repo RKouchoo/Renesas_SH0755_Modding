@@ -22,6 +22,7 @@ wrappers; the contiguous unallocated tail is now 3,320 bytes.
 | `0x7D8BC..0x7D8C3` | Inert former throttle gate and active hard-overboost limit. |
 | `0x7D8C4..0x7D91B` | Independent rev-limiter/hard-overboost fuel-cut wrapper, including injector inhibit publication and scheduler lock (88 bytes). |
 | `0x7D91C` | Master wideband/O2 architecture signature. |
+| `0x7D920..0x7DB3B` | Erased former standalone front-mirror/rear-delete wrapper area; those wrappers are not installed in current main. |
 | `0x7DB40..0x7DCEB` | Integrated default-OFF rotational-idle calibration and wrapper. |
 | `0x7DD00..0x7E18B` | Speed-density calibration, descriptors and original seed data. |
 | `0x7E18C..0x7E3A3` | Hardened dual-VE speed-density wrapper (536 bytes including literals). |
@@ -119,7 +120,7 @@ site, excluding interrupt frames and the caller's pre-existing frame. Total
 runtime stack headroom remains unmeasured. The wrapper is 16 bytes smaller than
 before; the later cut-publication/locking changes leave the 3,320-byte tail shown above.
 
-`python3 master_patch/verify_master_patch.py` checks all declared blob ranges,
+`python3 tests/verify_master_patch.py` checks all declared blob ranges,
 stock hook ranges, calibration ranges, the rotational-idle component,
 undeclared changed bytes, fresh-rebuild equality, checksum, and pinned output
 hash.

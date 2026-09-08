@@ -40,6 +40,31 @@ public class ApplyMasterNames extends GhidraScript {
 
     @Override
     public void run() throws Exception {
+        // September 9 central review, applied live through MCP and read back.
+        createOrRename("0000b536", "protected_float_pair_zero_initialize");
+        createOrRename("0000251c", "u16_add_saturating");
+        createOrRename("0000254c", "float_scale_offset_to_u16_round_clamp");
+        createOrRename("00049530", "protected_float_record_write");
+        createOrRename("00016ca4", "coolant_protected_records_initialize");
+        createOrRename("00016b04", "engine_coolant_temperature_condition_update");
+        createOrRenameData("0004b1cc", "closed_loop_bank_a_delay_descriptor");
+        setEOLComment(toAddr("0001ef0a"),
+            "4B1CC is the 20-byte bank-A feedback descriptor, paired with " +
+            "4B1E0; not an SSM table. Standard SSM handlers begin at 4B6FC.");
+        setEOLComment(toAddr("00014fc2"),
+            "737DC is u16 debounce limit 3, compared with B2FC. This is " +
+            "a call-count threshold, not a throttle-angle float.");
+        setEOLComment(toAddr("00024b36"),
+            "Rev limiter is hysteretic: BF6D/80 uses 7644C/76450 and " +
+            "BF6D/40 uses 76454/76458. State holds between thresholds. " +
+            "Stock primary pair is 7000/6970 RPM; main/v2 use 6800/6770.");
+        setEOLComment(toAddr("0004677c"),
+            "46864 is a ROM literal containing helper address 251C. " +
+            "Word literal 4684E resolves to RAM FFFFCF7B.");
+        setPlateComment(toAddr("00033830"),
+            "Auxiliary duty C858 publisher. Startup descriptor 609EC uses " +
+            "B3B0, axis 7BDFC and Q15 u16 data 7BE0C. Not a fan case-7 " +
+            "table; physical actuator identity remains unresolved.");
         // September 8 final-throttle override producer trace; no ROM edits.
         createOrRename("0000c5c8", "accelerator_pedal_adc_pair_update");
         createOrRename("00019c04", "ignition_switch_is_on");
@@ -227,7 +252,7 @@ public class ApplyMasterNames extends GhidraScript {
             "000052a8", "aud_system_control_and_module_standby_initialize"
         );
         createOrRename(
-            "000052da", "aud_enable_and_hudi_module_stop_dispatch"
+            "000052da", "ram_enable_and_fpu_stop_dispatch"
         );
         // Correct an earlier mid-function entry at 0x6892. The real wrapper
         // starts with its PR save and function-pointer load at 0x688E.
@@ -262,7 +287,7 @@ public class ApplyMasterNames extends GhidraScript {
         createOrRename(
             "000123f6", "diagnostic_enable_runtime_latch_update_123f6"
         );
-        createOrRename("0000a9a8", "injector_control_lookup_sequence_a9a8");
+        createOrRename("0000a9a8", "ac00_lookup_and_ae_state_update");
         createOrRename("0000b690", "front_af_sensor_pair_signal_process");
         createOrRename("0000d24c", "periodic_status_counter_service_d24c");
         createOrRename("0000deaa", "fuel_pump_pwm_output_write");
@@ -271,19 +296,19 @@ public class ApplyMasterNames extends GhidraScript {
         createOrRename(
             "0000f710", "hardware_register_guarded_initialize_f710"
         );
-        createOrRename("00013330", "runtime_status_b6c0_bit7_is_set");
+        createOrRename("00013330", "runtime_status_b19c_bit7_is_set");
         createOrRename("00016acc", "atmospheric_pressure_sensor_value_condition");
         createOrRename("000172a4", "maf_airflow_temperature_compensation_update");
         createOrRename("0001785c", "airflow_state_coolant_initialization");
         createOrRename("00011ad0", "periodic_engine_control_task_dispatcher");
         createOrRename(
-            "00017984", "airflow_load_and_pedal_processing_sequence_update"
+            "00017984", "accelerator_pedal_processing_sequence_update"
         );
-        createOrRename("000179ee", "airflow_load_filter_state_initialize");
+        createOrRename("000179ee", "pedal_offset_records_initialize");
         createOrRename(
-            "00017a24", "airflow_load_filter_state_requires_initialization"
+            "00017a24", "pedal_offset_records_require_initialization"
         );
-        createOrRename("00017b2a", "airflow_bank_charge_update");
+        createOrRename("00017b2a", "pedal_pair_filter_delta_update");
         createOrRename("000180c6", "accelerator_pedal_pair_normalize");
         createOrRename("000181ea", "accelerator_pedal_pair_select");
         createOrRename("000182ac", "accelerator_pedal_compensation_update");
@@ -300,7 +325,7 @@ public class ApplyMasterNames extends GhidraScript {
         createOrRename("00018dac", "front_af_sensor_lambda_condition_filter");
         createOrRename("00018fdc", "front_af_sensor_closed_loop_status_pair_update");
         createOrRename(
-            "000192a8", "front_af_sensor_pump_current_pair_offset_clamp_update"
+            "000192a8", "front_af_sensor_pump_current_pair_scale_update"
         );
         createOrRename("0001add8", "runtime_status_b6b8_bit7_is_set");
         createOrRename("0001a838", "engine_run_counter_update");
@@ -308,7 +333,7 @@ public class ApplyMasterNames extends GhidraScript {
         createOrRename("0001a0ee", "engine_runtime_b52c_bit6_warmup_gate_update");
         createOrRename("0001a16e", "engine_runtime_b52c_bit7_update_from_ac0c");
         createOrRename("0001a202", "engine_runtime_b52c_bit5_diagnostic_gate_update");
-        createOrRename("0001be8e", "fuel_trim_state_initialize");
+        createOrRename("0001be8e", "purge_operating_state_initialize");
         createOrRename("0001cc34", "cranking_fuel_state_periodic_update");
         createOrRename("0001cfee", "cranking_fuel_state_initialize");
         createOrRename(
@@ -337,7 +362,11 @@ public class ApplyMasterNames extends GhidraScript {
         createOrRename("0001ca38", "injector_crank_running_duration_select");
         createOrRename("0001ee74", "closed_loop_fuel_control_bank_update");
         createOrRename("0001f0d8", "closed_loop_feedback_bank_state_update");
-        createOrRename("0001f1dc", "closed_loop_short_term_correction_publish");
+        createOrRename("0001f1dc", "closed_loop_correction_and_history_initialize");
+        createOrRename("000216ea", "fuel_trim_airflow_region_classify");
+        createOrRename("000217b8", "legacy_o2_voltage_loop_sequence_update");
+        createOrRename("000230e8", "purge_fuel_compensation_ratio_update");
+        createOrRename("0004963a", "protected_float_record_validate_and_repair");
         createOrRename("0001fb16", "closed_loop_lambda_delay_coefficients_update");
         createOrRename("0001fcd4", "closed_loop_lambda_delay_filter_update");
         createOrRename("00020326", "closed_loop_bank_feedback_correction_update");
@@ -408,7 +437,7 @@ public class ApplyMasterNames extends GhidraScript {
         createOrRename("0003d824", "ign_per_cylinder_correction_array_update");
         createOrRename("0003d8e2", "ign_per_cylinder_correction_state_clear");
         createOrRename(
-            "0003d916", "ign_per_cylinder_correction_state_any_active"
+            "0003d916", "ign_correction_records_any_invalid"
         );
         createOrRename("0003d95a", "ign_per_cylinder_correction_initialize");
         createOrRename("0003d980", "ign_per_cylinder_correction_array_clear");
@@ -665,7 +694,7 @@ public class ApplyMasterNames extends GhidraScript {
         setPlateComment(
             toAddr("0003fdbc"),
             "Runs the AVLS selector, state machine, committed-mode copy, and " +
-            "OSV actuation sequence. Master dual VE deliberately reads the " +
+            "conditional mode reset via40682. OSV gate405CC runs in11958. Dual VE reads the " +
             "post-decision committed byte 0xFFFFCD86 rather than requested " +
             "mode 0xFFFFCD87."
         );
@@ -721,7 +750,7 @@ public class ApplyMasterNames extends GhidraScript {
         );
         setPlateComment(
             toAddr("00017984"),
-            "Runs stock airflow/load and accelerator-pedal processing. The " +
+            "Runs paired accelerator-pedal learning and conditioning. The " +
             "pedal chain publishes B4C0, B4C8, then B46C used by P30, AVLS and " +
             "the idle-air pedal-release qualification. Earlier vehicle-speed " +
             "names were incorrect; see IDLE_AIR_RECOVERY_AUDIT.md."
@@ -887,13 +916,13 @@ public class ApplyMasterNames extends GhidraScript {
         );
         setPlateComment(
             toAddr("0001fb16"),
-            "Builds the stock 21-element per-bank closed-loop lambda response/delay " +
-            "coefficient vector. Master patch supplies both banks from one post-turbo " +
+            "Writes coefficient indices 1..21 in 22-float arrays B9D0/BA28, " +
+            "88 bytes per bank; slot 0 is initialized by 1F1DC. Master patch supplies both banks from one post-turbo " +
             "AEM signal; these stock pre-turbo response calibrations remain unchanged."
         );
         setPlateComment(
             toAddr("0001fcd4"),
-            "Applies the stock 21-sample lambda history/delay model using conditioned " +
+            "Applies the stock 21-float history at BA90/BAE4 (84 bytes per bank), using conditioned " +
             "feedback B4E8/B4EC and targets B8F4/B8F8. Moving feedback post-turbo adds " +
             "uncalibrated transport delay."
         );

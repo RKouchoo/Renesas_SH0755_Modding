@@ -21,7 +21,7 @@ hard MAP fuel cut and no electronic boost actuator:
   EBCS tuning controls have been removed from the focused definition. The
   independently enabled hard overboost fuel-cut wrapper remains installed.
 - Actual CPC purge is deleted separately by
-  `master_patch/purge_delete_component.py`. Its replacement at `0x1BAF0` clears
+  `patches/purge_delete/purge_delete_component.py`. Its replacement at `0x1BAF0` clears
   duty `B6D4`, modeled purge airflow `B6D8` and mode `B720`, then passes exactly
   zero to the unchanged stock CPC writer `0xB182`.
 - The replacement at `0x23054` stores zero at its supplied bank destination.
@@ -46,6 +46,11 @@ fan-hook images remain quarantined. Use the current master README/build and
 verification workflow, not the historical instructions below.
 
 ## Retracted historical analysis and implementation record
+
+The September 9 [central audit](reference/FINDINGS.md) also corrects the
+claimed case-7 table, the helper-versus-literal confusion, the period-refresh
+writer attribution and the stateless rev-limiter description below. These
+passages remain as historical evidence, not current implementation guidance.
 
 Everything below preserves the earlier reasoning and implementation history.
 Its output identities, confidence claims, EBCS controls and commissioning advice
@@ -239,14 +244,14 @@ custom code in free space, driving the repurposed purge PWM output (0xFFFFF590).
 ================================================================================
 ## PATCH STATUS (single proportional + feed-forward controller)
 ================================================================================
-- `patch/patch_boost.py` is the reusable boost component patcher. It always reads the root
+- `patches/core/patch_boost.py` is the reusable boost component patcher. It always reads the root
   `2005 BLE MT.bin`, patches a private copy, and writes an ignored local standalone output by
   default. The stock input path is fixed, and the patcher refuses output paths that alias it.
-- `patch/patch_combined.py` calls the same guarded boost apply function and the guarded
+- `patches/core/patch_combined.py` calls the same guarded boost apply function and the guarded
   single-front-A/F apply function against one fresh stock copy. It verifies the original SRF
   payload and rejects overlapping component byte ownership; it never stacks generated images.
-- `patch/sh2_asm.py` is a two-pass SH-2E assembler with a known-encoding self-test;
-  `patch/sh2_disasm.py` supports binary inspection; `patch/verify_regions.py` audits free flash
+- `patches/core/sh2_asm.py` is a two-pass SH-2E assembler with a known-encoding self-test;
+  `patches/core/sh2_disasm.py` supports binary inspection; `tests/verify_regions.py` audits free flash
   and RAM assumptions.
 - The controller stub is at 0x7D810. `evap_purge_duty_compute` @0x3FC0A tail-calls its output via
   pooled pointer @0x3FD8C (=0x0000E8C4); the patch repoints that pointer to the stub. Disassembly

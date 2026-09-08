@@ -8,6 +8,13 @@
 > and [fan/purge repair](../master_patch/GHIDRA_AUDIT.md).
 > The original research below is retained as history.
 
+> **Further MCP correction:** descriptor A starts at `0xFA94`, B at `0xFADC`;
+> `0x96FC` uses A. `0xFFFFF602` is a counter, not an enable word. The supposed
+> fan I/O addresses `0xFFFFF97C/0xFFFFFA80` are also false: ROM literals
+> `0x3F97C/0x3FA80` point to RAM `0xFFFFCD7F/0xFFFFCD80`. Use the
+> [corrected central layouts](reference/MEMORY_AND_IO.md); the historical
+> tables and repurpose instructions below are not current hardware guidance.
+
 Two independent solenoid/PWM output systems were reverse-engineered. Keeping them straight
 matters for the boost patch: the **purge** output (a free-running duty PWM) is the repurpose
 target; the **cam bank** (crank-angle-synced) is a different subsystem and must be left alone.

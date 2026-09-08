@@ -1,73 +1,69 @@
-# D2WD610H Hardware / Memory / I-O Map (SH7055)
+# D2WD610H hardware and memory map
 
-Reference for the SH7055 memory layout and the on-chip peripheral registers identified so far.
-Peripheral register *names* are inferred from behaviour (no datasheet loaded); addresses are
-confirmed from code. See also [ram_map.md](ram_map.md), [solenoid_subsystem.md](solenoid_subsystem.md).
+The [central memory/I/O reference](reference/MEMORY_AND_IO.md) now owns the
+reviewed layouts, register identities and evidence. This page remains as a
+compatibility entry point pending review of the
+[document retirement register](reference/DOCUMENT_REGISTER.md).
 
-## Memory map
-| Region | Range | Notes |
+## Corrected address spaces
+
+| Region | Inclusive range | Meaning |
 |---|---|---|
-| Flash (ROM) | 0x00000000 – 0x0007FFFF | 512 KB; flash base = file offset in the .bin |
-| RAM | 0xFFFF0000 – 0xFFFFBFFF | on-chip RAM (setup script block); actuator state extends into 0xFFFFCxxx |
-| I/O (peripherals) | 0xFFFFE400 – 0xFFFFFFFF | marked volatile in Ghidra |
+| Saved flash | `0x00000000–0x0007FFFF` | 512 KiB; file offset equals ROM address. |
+| Physical SH7055SF RAM | `0xFFFF6000–0xFFFFDFFF` | 32 KiB; initial stack pointer `0xFFFFDFA0`. |
+| Ghidra I/O mapping | `0xFFFFE400–0xFFFFFFFF` | Broad analysis block, including reserved holes. |
 
-## ROM landmarks
-| Address | Meaning |
+The old `0xFFFF0000–0xFFFFBFFF` RAM block is wrong. The repository setup
+helper is corrected; changing the open project's blocks is unavailable through
+the current MCP server. See [Ghidra status](reference/GHIDRA.md).
+
+Reset PC is `0x000009E0`. Internal ID is at `0x00002000`, packed ECU ID at
+`0x0007BDA8`, and CALID at `0x0007BDDD`. The stock erased patch window starts
+at `0x0007D790`; that is not a claim that the current image has 9 KiB free.
+Main's contiguous unallocated tail is `0x0007EE00–0x0007FAF7` (3,320 bytes).
+The native rolling checksum stops before `0x0007D790`, but the separate
+additive checksum covers `0x00002000–0x0007FAF7` inclusive, including patches.
+
+## Timer descriptors and output identities
+
+| Object | Correct identity |
 |---|---|
-| 0x000009E0 | Reset PC (`reset_entry`) |
-| 0xFFFFDFA0 | Initial SP |
-| 0x00002000 | Internal ID string "D2WD610H" |
-| 0x0007BDA8 | ECU ID `3C5A387116` |
-| 0x0007BDDD | CALID `D2WD610H` |
-| **0x0007D790** | **~9 KB free space** (patch code + new tables land here). Also the ROM checksum's END boundary (`rom_checksum_accumulate` @0x4FB8C sums up to, not into, this address) — so free-space writes are outside the internal sum; only in-range edits need the flasher's checksum recalc. |
-| 0x0007FFFF | end of flash |
+| `0x0000FA94` | Table A: six 12-byte records; down-counter pointer, general-register pointer, u16 mask, padding. |
+| `0x0000FADC` | Table B: six 24-byte records; three channel pointers, shared counter pointer, start-register pointer, u16 mask, padding. |
+| `0x000096FC` | Injector timer duration driver using table A, reached through `0x000268E8 → 0x000090BA`. |
+| `0xFFFFF602` | `TCNT2B`, a counter. It is not a channel-enable word. |
+| `0xFFFFF666` | `DSTR`, down-count start register. |
+| `0xFFFFF640` / `0xFFFFF444` | Table A series start: `DCNT8A` / `GR1A`. |
+| `0xFFFFF650` / `0xFFFFF614` / `0xFFFFF604` | Table B series start: `DCNT8I` / `OCR2A` / `GR2A`. |
+| `0xFFFFF590` / `0xFFFFF598` | `BFR7A` / `DTR7A`; traced fan PWM path. |
+| `0xFFFFF592` | `BFR7B`; separate traced fuel-pump PWM path. |
 
-## Denso literal trick (how RAM/I-O addresses appear in code)
-Addresses ≥ 0xFFFF8000 are stored as **sign-extended 16-bit `mov.w` literals** (2-byte pool
-entry, e.g. `0xC17C` → `0xFFFFC17C`). 32-bit `mov.l` literals are used for flash pointers and
-some full I/O addresses. When scanning the ROM, a 2-byte pool word `0x8000–0xFFFF` may be an
-`0xFFFF8000–0xFFFFFFFF` address.
+The former descriptor bases `0xFA90` and `0xFAE8` were incorrect. Table B's
+physical output assignment is still unresolved. The old cam-solenoid labels
+must not be used to select an output.
 
-## Identified peripheral registers
-### ATU-II — cam/valve-timing solenoid bank (AVCS/AVLS)  (crank-angle synced)
-6 output channels; see [solenoid_subsystem.md](solenoid_subsystem.md).
-| Register | Role |
-|---|---|
-| 0xFFFFF602 | shared channel-enable control word (bit `0x0100<<n` = channel n) |
-| 0xFFFFF666 | shared control register |
-| 0xFFFFF652 + 2·n | per-channel output-compare / duty register (ch0..5) |
-| 0xFFFFF640 + 2·n | per-channel counter/reload (bank A descriptor @0xFA90) |
-| 0xFFFFF444 + 2·n | per-channel ATU config (bank A) |
-| 0xFFFFF606 + 2·n, 0xFFFFF616 + 2·n | per-channel aux compare regs |
+Fan duty is float percent at `0xFFFFCD54`; the native route is
+`0x3FD8C → 0xE8C4 → 0xFFFFF590`. Period state is `0xFFFFAB84`.
+Fan mode uses RAM bytes `0xFFFFCD7F` and `0xFFFFCD80`: ROM literal locations
+`0x3F97C` and `0x3FA80` contain those pointers. The old `0xFFFFF97C` and
+`0xFFFFFA80` hardware-address claims were false.
 
-### ATU-II — EVAP purge PWM (the boost-patch output)
-| Register | Role |
-|---|---|
-| **0xFFFFF590** | **purge solenoid output-compare register** (written = period − scaled duty) |
-| 0xFFFFF598 | paired/complement register (adjacent) |
-| period source | RAM 0xFFFFAB84 (see ram_map.md) |
-Output stage `evap_purge_pwm_output_write` @0xE8C4; setup fn ~0xE884. **This is the pin to
-reuse for the boost (wastegate) solenoid.**
+Actual CPC purge duty is `0xFFFFB6D4`, modeled flow `0xFFFFB6D8`.
+Writer `0xB182` publishes a scaled request at `0xFFFFAB64`, through a pointer
+to `0xFFFFAB60`; this alone does not identify the final pin or polarity.
+Main deletes CPC command/flow and bank purge subtraction while preserving fan
+control. The former fan-as-purge repurpose instructions are retracted.
 
-### A/D — sensors
-| Register/var | Role |
-|---|---|
-| MAP raw ADC → RAM 0xFFFFAB04 | manifold pressure sensor; processed by `map_sensor_voltage_to_pressure_process` @0x7A14 into native mmHg absolute at 0xFFFFABC4 |
-| **0xFFFFAB18** | **RH/Bank-1 front A/F raw channel**; retained factory pre-turbo sensor (`E47`, signal `B134-33/B134-26`) |
-| 0xFFFFAB00 | LH/Bank-2 front A/F raw channel; physical sensor removed by the single-front-A/F patch, whose processed Bank-2 paths mirror Bank 1 |
-| **0xFFFFAB20** | **RH rear-O2 raw ADC**; module-1 channel 4; hardware sampling remains, but the single-front patch bypasses rear conversion/monitoring while enabled |
-| 0xFFFFAB0C | LH rear-O2 raw ADC; hardware sampling remains, but the single-front patch bypasses rear conversion/monitoring while enabled |
+## Sensor and RAM references
 
-See [single_front_af_patch.md](single_front_af_patch.md) for the exact firmware boundary and the
-matching-generation front-sensor connector assignments. An aftermarket post-turbo wideband is
-logged externally and is not connected to any ECU ADC channel.
+MAP raw ADC is u16 `0xFFFFAB04`, filtered ADC is u16 `0xFFFFABC8`, and the
+converted pressure is float mmHg absolute at `0xFFFFABC4`. Routine `0x7A14`
+performs the conversion. The current external wideband uses former-MAF ADC
+`0xFFFFAB06`; the older single-front-A/F design used different channels.
 
-## Notable ROM data-structure locations
-| Address | Meaning |
-|---|---|
-| 0x0000FA90 | ATU cam-bank descriptor A (6 × 0x0C) |
-| 0x0000FAE8 | ATU cam-bank descriptor B (6 × 0x18: ctrl/mask/compare regs) |
-| 0x000116E8 | slow-task dispatch table (~50 fn ptrs; `slow_task_dispatcher` @0x114B0) |
-| 0x0004B1CC | SSM datalogger RAM-address table (154 entries) |
-| 0x000609C4 / 0x000609D8 | purge temp→duty map descriptors |
-| 0x0007BD6C.. | purge calibration block (maps) |
+Use [signals](reference/SIGNALS.md) for types, units and producers,
+[logger contracts](reference/LOGGER.md) for exported sources, and
+[methods](reference/METHODS.md) for sign-extended literals and computed access.
+Hardware names are checked against the
+[Renesas SH7055S manual](https://www.renesas.com/en/document/mah/sh-2e-sh7055s-hardware-manual).
+Physical harness assignments require separate evidence.

@@ -81,7 +81,7 @@ No engine response, hardware deadline, flash or ECU connection was tested.
 
 ```sh
 python3 master_patch/build_master_patch.py
-python3 master_patch/verify_master_patch.py
+python3 tests/verify_master_patch.py
 ```
 
 The builder starts from canonical stock and declares every calibration write.

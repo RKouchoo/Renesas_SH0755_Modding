@@ -5,6 +5,8 @@ Historical user BIN versions are reconstructed in memory and SHA-256 checked
 because the same on-disk filename was edited again. No ROM files are written.
 Native timing outputs use explicit unlogged cam/flag/correction fixtures.
 """
+
+import _analysis_paths  # Locate shared offline interpreters after repository cleanup.
 import argparse
 import csv
 import hashlib

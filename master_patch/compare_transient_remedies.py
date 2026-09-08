@@ -5,6 +5,8 @@ Fixed recorded engine inputs cannot predict a corrected engine trajectory.
 The narrow alternative changes the first slow-negative RPM multiplier from
 4 to 2, tapering back to the original calibration at 1600 RPM. No BIN output.
 """
+
+import _analysis_paths  # Locate shared offline interpreters after repository cleanup.
 import argparse
 import bisect
 import hashlib

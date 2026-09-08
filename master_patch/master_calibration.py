@@ -24,9 +24,9 @@ import sys
 
 HERE = Path(__file__).resolve().parent
 ROOT = HERE.parent
-PATCH_DIR = ROOT / "patch"
+PATCH_DIR = ROOT / "patches/core"
 sys.path.insert(0, str(PATCH_DIR))
-sys.path.insert(0, str(ROOT / 'speed_density'))
+sys.path.insert(0, str(ROOT / 'patches/speed_density'))
 
 import patch_boost as boost  # noqa: E402
 import patch_speed_density as speed_density  # noqa: E402

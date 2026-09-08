@@ -1,5 +1,27 @@
 # D2WD610H — ADM/JDM EZ30R Denso ECU Reverse Engineering
 
+Start with the [central reference](docs/reference/README.md) for the patch's
+history, signal flow, reviewed addresses and remaining uncertainties. It is
+backed by saved-image checks, execution fixtures and Ghidra MCP evidence.
+Older documents remain available pending review; see the
+[audit status](docs/reference/AUDIT_STATUS.md) and
+[document retirement register](docs/reference/DOCUMENT_REGISTER.md).
+
+## Repository layout
+
+| Location | Purpose |
+|---|---|
+| [patches/](patches/README.md) | Shared firmware components and low-level build tools. |
+| [tests/](tests/README.md) | Offline execution tests, verifiers and interpreter helpers. |
+| [master_patch/](master_patch/README.md) | Rolling master builder, calibration, ROM, definitions, profiles and historical investigations. |
+| `master_patch_v2/` | Separate v2 build; shared component references follow the new layout. |
+| [docs/reference/](docs/reference/README.md) | Central reference, evidence and explicit review status. |
+| [logs/](logs/README.md) | Preserved captures and analysis results. |
+| `base_roms/`, `defs/` | Stock/donor inputs and source definitions. |
+| `pico_kline_adapter/` | Independent adapter project, unchanged by this cleanup. |
+
+## Rolling master
+
 The single current output is
 [master_patch/D2WD610H_master_patch.bin](master_patch/D2WD610H_master_patch.bin).
 Fixes go into the rolling master sources and normal build; Git retains previous
@@ -14,7 +36,7 @@ verifier passes. The cause of the logged near-stall remains unresolved.
 
 ```sh
 python3 master_patch/build_master_patch.py
-python3 master_patch/verify_master_patch.py
+python3 tests/verify_master_patch.py
 ```
 
 Earlier firmware repair history:
@@ -71,7 +93,7 @@ None of the public ECU definitions for the 3.0 H6 have AVLS mapped out. Denso ma
 | 2 | Replace all four stock oxygen sensors with one post-turbo wideband feedback source. | *Integrated development patch built* — the supplied seller-labelled 50-4110/30-4110-style P0/P1 signal enters through the former MAF ADC, feeds both stock bank lambda/readiness paths, and is directly loggable. Both front A/F and both rear O2 conversion/monitor paths plus 18 mapped DTC switches are removed. The controller is single-ended and its fault voltages remain a commissioning blocker. The older one-factory-front-sensor patch remains only as a standalone historical alternative. Heater drivers are not electrically forced off. See [master_patch/README.md](master_patch/README.md). |
 | 3 | Repurpose removed sensor inputs for other hardware. | **Architecture decided** — the former MAF signal input is the external-wideband channel. Its original signal-ground terminal is not used by the four-wire controller; controller black must use a clean power ground. Original oxygen-sensor circuits are deliberately not repurposed; all four connectors must be disconnected and insulated. |
 | 4 | Retain boost protection for direct wastegate-spring operation. | **Electronic actuator retired** — the previous supposed EVAP output was radiator-fan PWM. The master now retains stock `0x3FD8C → 0xE8C4` fan control, removes electronic-boost tuning controls, and keeps the independently enabled 6.5 psi hard MAP fuel cut. Actual CPC purge and its fuel compensation are deleted separately. Direct 5 psi spring operation is the baseline; no electronic boost output is implemented. |
-| 5 | Replace MAF logic with MAFless Speed Density. | *Integrated development patch built* — one speed-density component supplies committed-AVLS-state low/high-lift VE tables over their real 0..3200 and 3000..7500 RPM ranges, a provisional Haltech HT-010206 IAT curve for an assumed 1.00 kOhm ECU pull-up, and no MAF fallback. Raw MAF conversion/filter/diagnostic paths and P0102/P0103 are bypassed; the ADC remains live for the external-wideband input. Invalid running data selects a fixed 500 g/s high-load fail-safe; exact zero RPM writes zero. See [speed_density/README.md](speed_density/README.md) and [master_patch/README.md](master_patch/README.md). |
+| 5 | Replace MAF logic with MAFless Speed Density. | *Integrated development patch built* — one speed-density component supplies committed-AVLS-state low/high-lift VE tables over their real 0..3200 and 3000..7500 RPM ranges, a provisional Haltech HT-010206 IAT curve for an assumed 1.00 kOhm ECU pull-up, and no MAF fallback. Raw MAF conversion/filter/diagnostic paths and P0102/P0103 are bypassed; the ADC remains live for the external-wideband input. Invalid running data selects a fixed 500 g/s high-load fail-safe; exact zero RPM writes zero. See [patches/speed_density/README.md](patches/speed_density/README.md) and [master_patch/README.md](master_patch/README.md). |
 | 6 | Add a conservative rotational/lumpy idle mode. | *Integrated into master, default OFF* — the complete stock final-timing task runs first, then an exact-`01`, warm/stationary/closed-throttle/high-vacuum gate applies six bounded retard-only offsets. The master verifier checks its hook, opcodes, calibration, policy model, and collision-free ownership. Binary-verified, not vehicle-verified. See [rotational_idle_patch.md](docs/rotational_idle_patch.md). |
 | 7 | Produce one focused turbo-conversion master image and definition. | **Corrective development baseline built** — `master_patch` deterministically composes SD with committed-state dual VE, exact 3-bar MAP scaling, spring-pressure boost safeties, actual purge deletion, external-wideband input/four-stock-O2 delete, live-pressure forced open loop, a delayed/confirmed/latched lean fuel cut, `16611AA510`/A4TE002B injector scaling and dead-time, conservative fuel/timing with a corrected 1000--6800 RPM Primary OL grid, the existing unvalidated second idle-VE trial, fixed 3200/3000 RPM AVLS, and a 6800 RPM limit from immutable stock. Static verification does not resolve the observed lean-out or replace physical commissioning. |
 
@@ -88,7 +110,7 @@ full **ignition-timing** blend/selection logic. See the notes.
 | [patch_build_guide.md](docs/patch_build_guide.md) | Historical boost-build reference; its output-hook advice is superseded by the September 8 correction. Use the master README for the current build. |
 | [single_front_af_patch.md](docs/single_front_af_patch.md) | One-factory-A/F architecture, rear-narrowband logical deletion, external logging boundary, and commissioning limits. |
 | [rotational_idle_patch.md](docs/rotational_idle_patch.md) | Integrated default-OFF per-cylinder retard component, operating gates, allocation, verifier, and commissioning limits. |
-| [speed_density/README.md](speed_density/README.md) | Single always-on MAFless MAP/RPM/IAT component with committed-state low/high-lift VE, Ghidra trace, verifier, and commissioning boundary. |
+| [patches/speed_density/README.md](patches/speed_density/README.md) | Single always-on MAFless MAP/RPM/IAT component with committed-state low/high-lift VE, Ghidra trace, verifier, and commissioning boundary. |
 | [master_patch/README.md](master_patch/README.md) | **Current integrated target** — architecture, exact hardware assumptions, deterministic builder, artifact, definition, logger, and limitations. |
 | [master_patch/GHIDRA_AUDIT.md](master_patch/GHIDRA_AUDIT.md) | Stock-ROM function evidence, injected layout, verified decisions, and unresolved physical risks for the master. |
 | [master_patch/RETAINED_ROUTINE_AUDIT.md](master_patch/RETAINED_ROUTINE_AUDIT.md) | Retained factory sensor assumptions: atmospheric lambda, O2-voltage fuel adders and feedback-target repairs, execution tests and unresolved cold-idle paths. |
@@ -104,7 +126,7 @@ full **ignition-timing** blend/selection logic. See the notes.
 | [defs/D2WD610H.xml](defs/D2WD610H.xml) | Base metric EcuFlash definition retained as the D2WD610H source definition. |
 | [defs/D2WD610H_AVLS.xml](defs/D2WD610H_AVLS.xml) | Self-contained metric RomRaider definition: D2WD610H standard tables + AVLS only. |
 | [defs/D2WD610H_AVLS_boost_patch.xml](defs/D2WD610H_AVLS_boost_patch.xml) | Internal boost-definition source used by the master generator; not the current flash target. |
-| [speed_density/D2WD610H_AVLS_speed_density_patch.xml](speed_density/D2WD610H_AVLS_speed_density_patch.xml) | Internal speed-density-definition source used by the master generator; not the current flash target. |
+| [patches/speed_density/D2WD610H_AVLS_speed_density_patch.xml](patches/speed_density/D2WD610H_AVLS_speed_density_patch.xml) | Internal speed-density-definition source used by the master generator; not the current flash target. |
 | [master_patch/D2WD610H_master_patch.xml](master_patch/D2WD610H_master_patch.xml) | Current focused metric definition: active timing/KCA identities, fuel/injectors, AVLS, SD/VE, exact Omni MAP, hard-overboost protection, wideband, pressure/lean safety, and default-OFF rotational idle. Retired EBCS controls are absent. |
 | [master_patch/D2WD610H_master_logger.xml](master_patch/D2WD610H_master_logger.xml) | Complete metric SSM K-line ECU logger; the lean-out diagnostic set and D2WD610H project parameters E500--E516 are always visible. |
 | [master_patch/D2WD610H_idle_diagnostic_profile.xml](master_patch/D2WD610H_idle_diagnostic_profile.xml) | Core idle capture, live-verified at 12:36; within the stock receiver's 43-address limit. |
@@ -126,6 +148,6 @@ full **ignition-timing** blend/selection logic. See the notes.
 The ROM is analysed in Ghidra (imported as `SuperH4:BE:32:default`, base 0x0) driven live over
 GhidraMCP. `ghidra_sh7055_setup.py` creates the RAM/IO memory blocks and labels the reset entry,
 CALID/ECU-ID, and free-space markers before auto-analysis. Working ROM image: `2005 BLE MT.bin`
-(flash base = file offset 0). `patch/extract_srf.py` parses the original
+(flash base = file offset 0). `patches/core/extract_srf.py` parses the original
 `base_roms/2005 BLE MT.srf` and verifies that its 512-KiB `MEMD` payload is byte-identical to this
 canonical stock image.

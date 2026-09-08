@@ -8,6 +8,8 @@ establish the SD MAP input or whether its gate was crossed between samples.
 The filter fixtures execute retained code with normal flags and mathematical
 transient-table lookups. No engine model, ECU connection or BIN output.
 """
+
+import _analysis_paths  # Locate shared offline interpreters after repository cleanup.
 import argparse
 import hashlib
 import json

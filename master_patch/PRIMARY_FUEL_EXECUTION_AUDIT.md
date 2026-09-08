@@ -18,7 +18,7 @@ add separately. These rules are specified in Renesas's
 [SH-2E Software Manual](https://www.renesas.com/en/document/mah/sh-2e-software-manual),
 sections 4.2–4.4 and 7.3.9.
 
-`speed_density/sh2e_test_fpu.py` now applies those value rules using exact
+`tests/sh2e_test_fpu.py` now applies those value rules using exact
 rational arithmetic for executed instructions. ROM constants and test fixtures
 retain their binary32 encoding. Table interpolation remains an explicit
 mathematical substitute; its internal instructions are not emulated.
@@ -99,8 +99,8 @@ injector selection, scheduling or physical pulse delivery.
 ## Verification and remaining limits
 
 ```
-python3 master_patch/verify_master_patch.py
-python3 speed_density/test_hook_execution.py master_patch/D2WD610H_master_patch.bin
+python3 tests/verify_master_patch.py
+python3 tests/test_hook_execution.py master_patch/D2WD610H_master_patch.bin
 ```
 
 Both pass. The master verifier also confirms a deterministic rebuild,

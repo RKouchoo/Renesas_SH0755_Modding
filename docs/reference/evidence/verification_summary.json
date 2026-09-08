@@ -1,0 +1,59 @@
+{
+  "date": "2026-09-09",
+  "python_ast_files": 86,
+  "markdown_files": 59,
+  "local_links_checked": 1663,
+  "missing_links": [],
+  "protected_files": 2884,
+  "permitted_protected_differences": [
+    "master_patch_v2/build_definition.py",
+    "master_patch_v2/build_master_patch.py",
+    "master_patch_v2/master_calibration.py",
+    "master_patch_v2/speed_density_component.py",
+    "master_patch_v2/verify_master_patch.py",
+    "Renesas_SH0755_modding.rep/idata/00/~00000000.db/db.30.gbf",
+    "Renesas_SH0755_modding.rep/idata/00/~00000000.db/tmp13523813915536724308.ps"
+  ],
+  "unexpected_protected_changes": [],
+  "check_commands": [
+    "python3 -B tests/verify_master_patch.py",
+    "python3 -B master_patch_v2/verify_master_patch.py",
+    "python3 -B tools/audit_image_contracts.py",
+    "python3 -B tools/audit_documented_data.py",
+    "git diff --check"
+  ],
+  "existing_verification_records": [
+    {
+      "label": "Full main verifier PASS",
+      "output_sha256": "d635306a4af26ef1c576030ad99a80543f26ba802486d1ea4a604df9281e3c2a",
+      "output": "  SH-2E FPU: 5 execution/value test groups passed\n  MAP lower boundary: 6 execution/integrity groups passed\n  Primary fueling: 8 execution test groups passed\n  Transient fuel: 8 execution test groups passed\n  Idle timing: 5 execution test groups passed\n  Opening timing: 6 execution test groups passed\n  Throttle tip-in: 7 execution test groups passed\n  Load conditioning: 4 execution test groups passed\n  Idle air: 11 execution test groups passed\n  Idle handover: 5 execution test groups passed\n  Idle request: 6 execution test groups passed\n  Idle overrides: 7 execution test groups passed\n  Throttle link: 7 execution test groups passed\n  DBW tables: 5 execution test groups passed\n  Pedal dependencies: 5 execution/integrity groups passed\n  Injector cut: 6 execution test groups passed\n  Injector scheduler: 12 execution test groups passed\n  Cut IRQ/context: 8 execution test groups passed\n  SSM receive: 3 execution test groups passed\n  D2WD610H_idle_diagnostic_profile.xml: 43/43 SSM addresses, 136-byte request (131-byte payload)\n  D2WD610H_afterstart_diagnostic_profile.xml: 43/43 SSM addresses, 136-byte request (131-byte payload)\n  D2WD610H_idle_recovery_profile.xml: 43/43 SSM addresses, 136-byte request (131-byte payload)\n  D2WD610H_idle_air_diagnostic_profile.xml: 43/43 SSM addresses, 136-byte request (131-byte payload)\n  D2WD610H_map_source_diagnostic_profile.xml: 43/43 SSM addresses, 136-byte request (131-byte payload)\nmaster patch audit PASS\n  stock SHA-256     : ed0fe0341d97fb760c2cda3f07277f861495d32f6520e3ce8047b8b0f7bfd4ee\n  output SHA-256    : 154760a5f2fdadbf6d9221480595f58dc77c6a4eccc492f50899c815aca79e4d\n  checksum          : 0x16F63B0D (valid=True)\n  air model         : always-on MAFless committed-state dual VE speed density\n  idle VE           : retained 500/800-RPM plateau and increasing mass transition\n  MAP lower bound   : 10.48113 kPa, aligned with existing ADC acceptance\n  DBW/dashpot       : stock calibration; independent user experiment excluded\n  MAP               : Omni MAP-SUP-3BR 30..300 kPa / 0.60..4.75 V\n  IAT               : provisional HT-010206 curve; assumed 1.00-kohm ECU pull-up\n  wideband/O2       : P0/P1; unity lambda baro; legacy voltage adders/target terms neutralized\n  boost             : electronic actuator retired; independent hard cut ON\n  fan / purge       : stock fan command retained; CPC duty/flow/bank subtraction zero\n  load axes         : all eight active axes extend to 4.0 g/rev\n  primary OL        : exact 1000..6800 RPM axes; conservative resample verified\n  injectors         : 16611AA510; pinned A4TE002B JDM-STI flow/deadtime translation\n  timing/AVLS       : dual VE; fixed 3200/3000 lift switch; cam timing endpoints identified\n  rotational idle   : bounded retard-only component installed, default OFF\n  memory layout     : no component, hook, calibration, or RAM collisions\n  definition        : workflow-grouped master XML; dormant timing pair and obsolete defs omitted\n  fueling safety    : pressure-forced OL ON; 13.0-AFR delayed/latched cut ON\n  guard execution   : cuts, native IRQ/context restore, locks and injector queues PASS\n  logger            : complete D2WD610H-only SSM definition and fragment validated\n  capture profiles  : all five profiles, including MAP-source, within native 43-address limit\n  provenance        : root stock, base copy, and SRF payload remain byte-identical\n"
+    },
+    {
+      "label": "Existing three v2 checks PASS",
+      "output_sha256": "454e0351bddf3c3cc874fc6484a82db1901d5ddc189907a5e13ae365f96f5d40",
+      "output": "Verifying D2WD610H master patch v2...\n  [1/3] Subaru Checksum       : 0xECD02DF7 (VALID)\n  [2/3] Memory Layout & Safety: NO COLLISIONS (6 components, 6253 changed bytes)\n  [3/3] RomRaider XML Def     : VALID (D2WD610H target, verified table addresses)\n\nALL 3 ESSENTIAL CHECKS PASSED.\nROM SHA-256: 2fe5f9cc7f960bff1efd784bb29e6c984ccbc025f1d8029c920fd52a3ce25ac9\nReady for vehicle flashing: D2WD610H_master_patch_v2.bin\n"
+    }
+  ],
+  "scope": "Final documentation/preservation checks; retained full main/v2 verifier outputs were run after relocation. Subsequent changes were documentation, Ghidra annotations and read-only evidence tools.",
+  "review_coverage": {
+    "documents": 44,
+    "candidates": 1187,
+    "occurrences": 3000,
+    "defined_routine_entries": 392,
+    "instruction_capture_bodies": 408,
+    "undefined_routine_queries": 23,
+    "unreviewed_candidates": 0,
+    "corrections": 34
+  },
+  "semantic_counts": {
+    "verified_static": 557,
+    "numeric_not_address": 31,
+    "verified_execution": 249,
+    "verified_dependency": 80,
+    "verified_build_contract": 137,
+    "corrected": 123,
+    "prototype_only": 6,
+    "verified_hardware": 2,
+    "incorrect_address_claim": 2
+  }
+}
