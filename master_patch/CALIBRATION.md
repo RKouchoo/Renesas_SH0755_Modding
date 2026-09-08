@@ -141,10 +141,19 @@ unvalidated trial: AFR was still rising at the chosen endpoint, so the ratio
 does not establish steady-state VE or the cause of the pulse-width decline.
 The earlier recommendation to diagnose on the first-VE ROM is withdrawn because
 that firmware also hijacks radiator-fan control. A future first-VE comparison
-must use corrected firmware, not the old BIN; the current 83-address logger
-profile remains applicable. Changing VE also changes calculated load and
+must use corrected firmware, not the old BIN. Use the separate 43-address idle
+and after-start profiles; the former combined profile exceeded the native
+receiver's limit. Changing VE also changes calculated load and
 therefore timing/AVCS lookup positions. The example 315-mmHg idle pressure was
-not measured in the latest usable log, which lacks MAP.
+not measured in the earlier September 7 log, which lacks MAP.
+
+The complete September 8 12:36 capture on the 10:30 BIN now measures median
+MAP of 44.02 kPa before the blips and 41.32 kPa after recovery, with RPM
+falling from 1252 to 1069 and AFR rising from 14.59 to 16.61. At fixed
+41.32 kPa, the low-lift table's modeled VE falls 11.5% across those RPMs.
+That slope is a leading calibration concern; a separate transient pulse
+reduction is not yet attributed. No VE or other calibration change has been
+made from this capture. See the [log review](../logs/20260908_idle_review.md).
 
 The remainder of both surfaces is still an unmeasured EZ30R starting model and
 must be calibrated from controlled data. Global multiplier defaults to 1.0.

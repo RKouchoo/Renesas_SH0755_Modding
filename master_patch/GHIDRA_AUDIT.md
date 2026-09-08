@@ -654,14 +654,25 @@ bytes plus two distinct switch bytes require 87 addresses. An SSM A8 payload
 has two prefix bytes plus three bytes per address, and its one-byte length
 allows at most 84 addresses. The profile now explicitly deselects E81/E105,
 retains the equivalent bank corrections P3/P5, and initially used 79 addresses.
-The September 8 pre-run review adds P4/P6 learned trims and P38/P92 purge/fan
-commands, bringing the current profile to 83 addresses (251-byte payload).
-Those commands and both types of trims are now captured together. The
-verifier counts expanded address lengths and deduplicates shared switch/view
-addresses before checking the packet limit. E81/E105 remain available in the
-logger definition. Clear unrelated subscriptions in every logger view before
-loading the profile; loading it cannot guarantee removal of arbitrary older
-subscriptions. This corrects the profile budget, not proof of a vehicle run.
+The September 8 pre-run review added P4/P6 learned trims and P38/P92 purge/fan
+commands, bringing that profile to 83 addresses (251-byte payload). This was
+later found insufficient: native `32CA4` clamps the receive index to 137 and
+cannot accept more than **43 addresses**. The 79/81/83-address versions are
+superseded by separate idle and after-start captures, each with 43 addresses.
+The [logger connection audit](LOGGER_CONNECTION_AUDIT.md) documents the opcode
+proof, header-only CSV evidence and the additional RomRaider selection-queue
+repair. The old combined-channel measurement plan below is historical;
+establish full key-on/engine-off data and review the first idle capture before
+requesting another start for the separate after-start capture.
+
+The subsequent September 8 12:36 capture confirms complete core-profile
+logging on the user-reported 10:30 `48d63c...` image; recorded FastECU final
+block CRCs independently match that BIN. Steady idle is improved, but blips
+produce a 726-RPM minimum and later recovery near 1069 RPM / 16.61 AFR. The
+low-RPM VE taper fits the sustained lean change; an additional transient
+pulse reduction is not yet attributed. The separate after-start capture is
+not automatically the next engine test. See the
+[current log review](../logs/20260908_idle_review.md).
 
 Next evidence is a single synchronized capture on the user-confirmed first-VE
 ROM with the repaired profile. In particular, compare MAP/IAT/load, E60 net

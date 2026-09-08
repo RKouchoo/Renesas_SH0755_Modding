@@ -137,21 +137,34 @@ to the ECU. If they are absent, RomRaider is using another file or a stale
 in-memory definition; reselect the exact complete path above and restart.
 
 RomRaider keeps Data, Graph, and Dashboard selections separately. Load
-`D2WD610H_idle_diagnostic_profile.xml` to select the complete cold-idle capture
-in both Data and Dashboard. Every entry includes an exact unit conversion so
-older RomRaider builds do not reject or silently ignore it. It includes E503
-to prove which AVLS VE surface is active and omits only boost-only lean-cut
-state E504/E505. P3/P5 are the immediate bank corrections; P4/P6 additionally
-capture learned trims. P38/P92 capture purge and fan commands. Neutral, idle,
-and starter switches are also selected for the clutch-stall diagnosis. If an old profile leaves the
-gauges absent, load this profile or delete the stale profile and create a new
-one. The current profile uses 83 distinct SSM read addresses, below the
-84-address request limit. E81/E105 remain defined but are explicitly deselected
-because P3/P5 already record both bank corrections. Clear unrelated selections
-in Data, Graph and Dashboard first: hidden selections also consume request
-addresses. Start recording before cranking and check that the actual CSV
-header includes MAP, E60 pulse width, E50 latency, E123 base factor and the
-after-start channels. Dashboard display alone does not record a value.
+`D2WD610H_idle_diagnostic_profile.xml` for the first capture. It selects 22
+channels in both Data and Dashboard, expanding to **43 byte addresses** and a
+136-byte A8 request. The native receiver clamps its index at 137: the earlier
+79/81/83-address profiles exceeded this ROM's limit despite fitting the SSM
+length field. Do not add channels to the supplied captures. The separate
+`D2WD610H_afterstart_diagnostic_profile.xml` selects 17 channels and also uses
+43 addresses. Load one capture at a time; their combined selection cannot fit.
+Both profiles specify exact units and clear the other capture's selections.
+
+The September 8 header-only CSV exposed a second fault in the local RomRaider
+build: pending removals can cancel channels reselected during a definition or
+profile reload. The UI and CSV header still list them, but the query manager
+does not request them. The local JAR now includes the tested queue fix; fully
+quit and reopen RomRaider to use it. Reloading the XML in the old running
+process is insufficient. See [LOGGER_CONNECTION_AUDIT.md](LOGGER_CONNECTION_AUDIT.md)
+and the reproducible [RomRaider repair](romraider_query_fix/README.md).
+
+First record a short **key-on, engine-off** CSV and verify that it contains
+actual rows for all 22 channels. A header or a few moving gauges alone is not
+evidence of a complete capture. Establish this before another engine start.
+
+**September 8, 12:36 result:** the user restarted RomRaider and supplied a
+complete capture with all 22 channels and 1,786 rows. The logger check above
+has now passed for the core profile. Throttle blips exposed near-stall RPM
+and a sustained lean recovery on the 10:30 BIN. Keep further rev/flash trials
+on hold while the low-RPM VE taper and transient duration path are reviewed;
+the generic first-start procedure below is not a request to repeat the run.
+See the [log review](../logs/20260908_idle_review.md).
 
 The previous instruction to capture on the installed first-VE ROM is withdrawn
 because that firmware also hijacked fan control. Use only a corrected-code
@@ -164,25 +177,26 @@ The focused first-idle profile records:
 - E500 external-wideband AFR (raw lambda remains an alternate conversion);
 - E501 raw former-MAF ADC/input voltage;
 - E502 external-wideband readiness;
-- E506 raw CL/OL flags;
-- E507 engine-run counter;
-- E508--E513 raw after-start fueling groups/compensations;
 - MAP, barometric pressure, RPM, IAT, modeled airflow, calculated load;
-- standard P47 Fuel Pump Duty and battery voltage;
-- E84 primary OL enrichment and E123 composed base fuel factor, displayed as
-  estimated AFR; these are neither measured AFR nor the complete injector command;
+- coolant temperature, standard P47 Fuel Pump Duty and battery voltage;
 - both immediate and learned bank corrections, plus CL/OL state;
-- total ignition timing, E503 committed AVLS VE state and throttle;
-- E60 scheduled pulse without latency, E50 latency and P21 inclusive pulse;
-- actual CPC request (P38, expected zero) and radiator-fan request (P92); and
-- neutral, idle and starter switches.
+- total ignition timing and throttle; and
+- E60 scheduled pulse without latency, E50 latency and P21 inclusive pulse.
+
+The after-start profile captures E507 run counter, E508--E513 raw after-start
+terms and E123 composed base fuel factor, alongside RPM, standard P7 MAP,
+coolant/IAT, battery, pump duty, CL/OL state, external AFR and inclusive P21
+pulse width. E123's estimated AFR conversion is not measured AFR or the entire
+injector command. This separate capture omits raw/ready, load, high-resolution
+pulse/latency and trims. Review the first run before deciding whether another
+engine start is needed for the after-start capture.
 
 Record independently measured fuel pressure and wideband/controller status with
 a common timestamp alongside the CSV. The profile cannot measure rail pressure,
 actual injector delivery or physical fan motion. Warm feedback, cam-control,
-knock and boost validation require separate captures with their own channel
-budgets. E504/E505 are for positive-pressure lean-cut commissioning and are not
-needed in this stationary vacuum-only test.
+knock, fan/purge, AVLS and clutch/switch diagnosis require separate captures
+within the same 43-address budget. E504/E505 are for positive-pressure lean-cut
+commissioning and are not needed in this stationary vacuum-only test.
 
 E500 equal to zero means invalid input. Never treat it as an extremely rich
 sample or average it into tuning data.
@@ -215,9 +229,10 @@ after diagnosis unless continuous full-speed operation has been validated.
 3. Compare the controller gauge, ECU lambda, raw ADC voltage, and an independent dyno
    lambda reference. Resolve any offset before changing VE or injector data.
 4. Revalidate the bounded low-lift idle correction after after-start enrichment
-   has fully decayed. Its example site is 1300 RPM/315 mmHg; MAP was not captured
-   in the latest usable log, so that pressure is an assumption, not a measured
-   idle site. The increase applies through a tapered neighbourhood. Because the
+   has fully decayed. Its original example site was 1300 RPM/315 mmHg; that
+   pressure was assumed because the September 7 log lacked MAP. The September 8
+   log measures about 44 kPa before the blips and 41 kPa after recovery, where
+   the correction's low-RPM taper is now a concern. Because the
    unchanged stock
    after-start enrichment may have concealed a lean base model, the first
    seconds may now be visibly richer than the prior start. Stop immediately

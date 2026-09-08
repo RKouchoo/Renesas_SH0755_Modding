@@ -88,7 +88,8 @@ full **ignition-timing** blend/selection logic. See the notes.
 | [speed_density/D2WD610H_AVLS_speed_density_patch.xml](speed_density/D2WD610H_AVLS_speed_density_patch.xml) | Internal speed-density-definition source used by the master generator; not the current flash target. |
 | [master_patch/D2WD610H_master_patch.xml](master_patch/D2WD610H_master_patch.xml) | Current focused metric definition: active timing/KCA identities, fuel/injectors, AVLS, SD/VE, exact Omni MAP, hard-overboost protection, wideband, pressure/lean safety, and default-OFF rotational idle. Retired EBCS controls are absent. |
 | [master_patch/D2WD610H_master_logger.xml](master_patch/D2WD610H_master_logger.xml) | Complete metric SSM K-line ECU logger; the lean-out diagnostic set and D2WD610H project parameters E500--E513 are always visible. |
-| [master_patch/D2WD610H_idle_diagnostic_profile.xml](master_patch/D2WD610H_idle_diagnostic_profile.xml) | Ready RomRaider profile selecting the focused cold-idle/after-start capture without the unrelated AVLS/boost-state channels. |
+| [master_patch/D2WD610H_idle_diagnostic_profile.xml](master_patch/D2WD610H_idle_diagnostic_profile.xml) | Core idle capture within the stock receiver's 43-address limit. Use this first. |
+| [master_patch/D2WD610H_afterstart_diagnostic_profile.xml](master_patch/D2WD610H_afterstart_diagnostic_profile.xml) | Separate 43-address after-start/fuel-factor capture; the two profiles are not simultaneous. |
 | [defs/romraider_ecu_defs.xml](defs/romraider_ecu_defs.xml) | Clean upstream RomRaider metric definition set from SubaruDefs Stable; no project AVLS/boost modifications. |
 
 > Load the AVLS-only definition for the stock/AVLS-only ROM, or the focused master definition

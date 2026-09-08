@@ -251,7 +251,8 @@ injector duration B82C, final fuel factors, scheduled pulse/latency and after-st
 terms alongside MAP/RPM/IAT/AFR. A targeted follow-up can substitute D114/D118,
 B90C and the two legacy voltages to test the first identified path. A separate
 targeted profile can capture B900/B904, BD04/BD08, B8F4/B8F8 and CEFC/CF00.
-Keep the
-SSM request within 84 byte addresses; the current 83-address profile cannot
-simply have all these channels appended. No live ECU traffic or flashing was
+Keep each SSM request within this ROM's native **43-byte-address** limit; the
+earlier 84-address protocol-only limit was insufficient. The current idle and
+after-start profiles each use 43 addresses and must run separately. See
+[the connection audit](LOGGER_CONNECTION_AUDIT.md). No live ECU traffic or flashing was
 performed during this audit.

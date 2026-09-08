@@ -1,0 +1,161 @@
+diff --git a/src/main/java/com/romraider/logger/ecu/comms/manager/QueryManagerImpl.java b/src/main/java/com/romraider/logger/ecu/comms/manager/QueryManagerImpl.java
+index 46daf16e..78916cbc 100644
+--- a/src/main/java/com/romraider/logger/ecu/comms/manager/QueryManagerImpl.java
++++ b/src/main/java/com/romraider/logger/ecu/comms/manager/QueryManagerImpl.java
+@@ -25,6 +25,7 @@ import static com.romraider.util.ParamChecker.checkNotNull;
+ import static com.romraider.util.ParamChecker.isNullOrEmpty;
+ import static com.romraider.util.ThreadUtil.sleep;
+ import static java.lang.System.currentTimeMillis;
++import static java.util.Collections.singleton;
+ import static java.util.Collections.synchronizedList;
+ import static java.util.Collections.synchronizedMap;
+ 
+@@ -124,6 +125,9 @@ public final class QueryManagerImpl implements QueryManager {
+ 
+         //FIXME: This is a hack!!
+         String queryId = buildQueryId(callerId, loggerData);
++        // A profile/definition reload can reselect a query before the polling
++        // thread drains its removal. The latest selection must take precedence.
++        removeList.removeAll(singleton(queryId));
+         if (loggerData.getDataType() == EXTERNAL) {
+             addList.put(queryId, new ExternalQueryImpl((ExternalData) loggerData));
+         } else {
+@@ -141,7 +145,9 @@ public final class QueryManagerImpl implements QueryManager {
+         queryCounter = 1;
+         queryStart = currentTimeMillis();
+ 
+-        removeList.add(buildQueryId(callerId, loggerData));
++        String queryId = buildQueryId(callerId, loggerData);
++        addList.remove(queryId);
++        removeList.add(queryId);
+         if (loggerData.getDataType() != EXTERNAL) {
+             pollState.setNewQuery(true);
+         }
+diff --git a/src/test/java/com/romraider/logger/ecu/comms/manager/QueryManagerImplTest.java b/src/test/java/com/romraider/logger/ecu/comms/manager/QueryManagerImplTest.java
+new file mode 100644
+index 00000000..51cd51d3
+--- /dev/null
++++ b/src/test/java/com/romraider/logger/ecu/comms/manager/QueryManagerImplTest.java
+@@ -0,0 +1,122 @@
++package com.romraider.logger.ecu.comms.manager;
++
++import static org.junit.Assert.assertEquals;
++import static org.junit.Assert.assertSame;
++
++import java.lang.reflect.Field;
++import java.lang.reflect.InvocationHandler;
++import java.lang.reflect.Method;
++import java.lang.reflect.Proxy;
++import java.util.Map;
++
++import org.junit.Before;
++import org.junit.Test;
++
++import com.romraider.Settings;
++import com.romraider.logger.ecu.comms.query.EcuInitCallback;
++import com.romraider.logger.ecu.comms.query.Query;
++import com.romraider.logger.ecu.definition.EcuAddressImpl;
++import com.romraider.logger.ecu.definition.EcuData;
++import com.romraider.logger.ecu.definition.EcuDataType;
++import com.romraider.logger.ecu.ui.MessageListener;
++import com.romraider.util.SettingsManager;
++
++/** Pending UI selections must survive definition/profile reloads before polling.
++ * These tests never start the query thread or open an ECU connection.
++ */
++public class QueryManagerImplTest {
++    private QueryManagerImpl manager;
++    private EcuData rpm;
++
++    @Before
++    public void setUp() throws Exception {
++        // Avoid loading or saving the operator's settings in an offline test.
++        Field settings = SettingsManager.class.getDeclaredField("settings");
++        settings.setAccessible(true);
++        settings.set(null, new Settings());
++        manager = new QueryManagerImpl(noCalls(EcuInitCallback.class),
++                noCalls(MessageListener.class));
++        rpm = parameter("Engine Speed", "0x00000E");
++    }
++
++    @Test
++    public void reselectedParameterSurvivesPendingRemoval() throws Exception {
++        manager.addQuery("Data", rpm);
++        manager.removeQuery("Data", rpm);
++        manager.addQuery("Data", rpm);
++        assertEquals(1, drain().size());
++    }
++
++    @Test
++    public void repeatedRemovalsDoNotCancelFinalSelection() throws Exception {
++        manager.removeQuery("Data", rpm);
++        manager.removeQuery("Data", rpm);
++        manager.addQuery("Data", rpm);
++        assertEquals(1, drain().size());
++    }
++
++    @Test
++    public void finalDeselectionStillRemovesTheParameter() throws Exception {
++        manager.addQuery("Data", rpm);
++        assertEquals(1, drain().size());
++        manager.removeQuery("Data", rpm);
++        manager.addQuery("Data", rpm);
++        manager.removeQuery("Data", rpm);
++        assertEquals(0, drain().size());
++    }
++
++    @Test
++    public void viewsKeepIndependentSubscriptions() throws Exception {
++        manager.addQuery("Data", rpm);
++        manager.addQuery("Dashboard", rpm);
++        manager.removeQuery("Data", rpm);
++        Map<String, Query> queries = drain();
++        assertEquals(1, queries.size());
++        assertSame(rpm, queries.get("Dashboard_Engine Speed").getLoggerData());
++    }
++
++    @Test
++    public void definitionReloadUsesTheNewParameterObject() throws Exception {
++        manager.addQuery("Data", rpm);
++        assertEquals(1, drain().size());
++        manager.removeQuery("Data", rpm);
++        EcuData replacement = parameter("Engine Speed", "0xFFB000");
++        manager.addQuery("Data", replacement);
++        Map<String, Query> queries = drain();
++        assertEquals(1, queries.size());
++        assertSame(replacement, queries.get("Data_Engine Speed").getLoggerData());
++    }
++
++    @SuppressWarnings("unchecked")
++    private Map<String, Query> drain() throws Exception {
++        Method update = QueryManagerImpl.class.getDeclaredMethod("updateQueryList");
++        update.setAccessible(true);
++        update.invoke(manager);
++        Field queries = QueryManagerImpl.class.getDeclaredField("queryMap");
++        queries.setAccessible(true);
++        return (Map<String, Query>) queries.get(manager);
++    }
++
++    private static EcuData parameter(final String name, String address) {
++        final EcuAddressImpl ecuAddress = new EcuAddressImpl(address, 2, -1);
++        return (EcuData) Proxy.newProxyInstance(EcuData.class.getClassLoader(),
++                new Class<?>[] { EcuData.class }, new InvocationHandler() {
++            public Object invoke(Object proxy, Method method, Object[] args) {
++                if (method.getName().equals("getName")) return name;
++                if (method.getName().equals("getAddress")) return ecuAddress;
++                if (method.getName().equals("getDataType")) return EcuDataType.PARAMETER;
++                throw new AssertionError("Unexpected parameter call: " + method);
++            }
++        });
++    }
++
++    @SuppressWarnings("unchecked")
++    private static <T> T noCalls(Class<T> type) {
++        return (T) Proxy.newProxyInstance(type.getClassLoader(),
++                new Class<?>[] { type }, new InvocationHandler() {
++            public Object invoke(Object proxy, Method method, Object[] args) {
++                throw new AssertionError("Offline test made an unexpected call: " + method);
++            }
++        });
++    }
++}

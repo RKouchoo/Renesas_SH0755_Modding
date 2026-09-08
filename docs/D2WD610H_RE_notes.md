@@ -39,13 +39,23 @@ the cut release when either a wrapper lock or that gate is removed. Full
 verification passes without further ROM changes; timer timing and actual fuel
 delivery remain unmeasured.
 
-Current cold-idle investigation: the second VE increase is an unvalidated
-trial, not a proved repair. The latest run used the first increase, but its
-AFR was still rising. The master idle profile now fits SSM's request limit
-(83 addresses instead of 87, including both learned trims and purge/fan commands).
-The first corrected-code capture targets 60 seconds of untouched idle, stopping
-earlier for a fault or returning lean/rich trend. See the 2026-09-07 reassessment in the master
-Ghidra audit for the retained load/fuel trace and next measurement.
+Current cold-idle investigation: the second VE increase remains a trial,
+not a resolved tune. The September 7 first-increase log still had rising AFR.
+The native SSM receiver has a **43-address** limit; the earlier 79/81/83-address
+profiles were too large. Idle and detailed after-start diagnosis now use
+separate 43-address profiles. A further RomRaider queue bug omitted ticked
+channels from requests, leaving the first two September 8 CSVs header-only.
+The repaired local JAR and application restart subsequently produced a complete
+12:36 capture: all 22 channels, 1,786 rows. See the
+[logger connection audit](../master_patch/LOGGER_CONNECTION_AUDIT.md).
+
+The user confirms the 10:30 `48d63c...` BIN and physical-gauge agreement with
+RomRaider. All 16 final ECU block CRCs in the recorded FastECU flash match
+that BIN. The new run holds about 14.6 AFR before the blips, dips to 726 RPM,
+then recovers near 1069 RPM / 16.61 AFR. The low-RPM VE correction taper is
+the leading clue for the sustained lean recovery; a further transient pulse
+reduction remains unattributed. No ROM/calibration change or next engine test
+has been selected. See the [full log review](../logs/20260908_idle_review.md).
 September 8 update: the SD hook now uses the caller's saved RPM and single-read
 MAP/IAT inputs; only its obsolete MAF-fault load fallback is bypassed. The stock
 6% load filter is explicitly defined but unchanged, as are VE/injector/timing

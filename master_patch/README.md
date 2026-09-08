@@ -45,6 +45,13 @@ AFR endpoint. The old recommendation to continue running the first-VE ROM is
 withdrawn: that image also used the erroneous fan hook. Any future first-VE
 comparison must use the corrected firmware, not the old BIN. See the
 reassessment in [GHIDRA_AUDIT.md](GHIDRA_AUDIT.md).
+
+The September 8 12:36 capture now confirms complete logging on this 10:30
+image. Steady idle is substantially improved, but the throttle blips produce
+near-stall RPM followed by a sustained lean recovery. The low-RPM VE taper
+and an additional transient pulse reduction need further work. No new BIN
+was generated from this run. See the [log review](../logs/20260908_idle_review.md).
+
 The September 8 hook hardening uses saved caller RPM and single-read MAP/IAT,
 and removes only this load task's obsolete MAF-fault fallback. Cranking and
 signal-timeout protections remain. `Speed Density Load Filter Response` is now
@@ -269,7 +276,9 @@ and verifies provenance and checksum.
 | `D2WD610H_master_patch.xml` | Matching self-contained metric RomRaider definition. |
 | `D2WD610H_master_logger.xml` | Complete metric, SSM-only logger definition for ECU ID `3C5A387116`; ready artifact generated from logger v370. |
 | `D2WD610H_master_logger_ecuparams.xml` | Internal fourteen-parameter fragment used to generate the complete logger definition. |
-| `D2WD610H_idle_diagnostic_profile.xml` | 83-address cold-idle profile with explicit units, immediate/learned bank trims, pulse/latency, MAP/load, fueling factors, AVLS state, purge/fan commands, switches and after-start terms. Redundant E81/E105 trims are explicitly deselected to fit the 84-address SSM limit. |
+| `D2WD610H_idle_diagnostic_profile.xml` | First-idle capture: wideband/raw/ready, MAP/load, immediate/learned trims, pulse/latency, pump/battery and operating conditions. 43 addresses, 136-byte request. |
+| `D2WD610H_afterstart_diagnostic_profile.xml` | Separate follow-up: all six after-start terms, composed base factor/runtime, AFR, pulse and operating conditions. 43 addresses, 136-byte request; not simultaneous with the first profile. |
+| `LOGGER_CONNECTION_AUDIT.md` | Native 43-address receive limit, RomRaider subscription-queue repair, and the successful complete 12:36 idle capture. |
 | `install_master_logger.py` | Generates a complete D2WD610H-only logger from a normal complete logger XML, retaining its DTD and applicable stock channels. |
 | `ghidra_scripts/ApplyMasterNames.java` | Reproducibly reapplies the names/comments confirmed in live Ghidra. |
 

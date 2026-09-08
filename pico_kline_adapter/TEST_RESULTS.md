@@ -53,6 +53,16 @@ The full idle diagnostic profile is not thereby validated; request size must
 be reduced or split before using that complete selection. A VM is not needed
 to fix this demonstrated profile failure.
 
+September 8 follow-up: the generic 84-address protocol limit above is not
+the target ECU's receive limit. Native routine `32CA4` accepts at most
+**43 byte addresses**. Separate idle/after-start profiles now each fit this
+limit. A second fault in RomRaider's queued channel selection was repaired
+locally. After restarting the application, the 12:36 capture contains all
+22 idle channels in 1,786 complete rows, with valid full-size ECU responses.
+This validates the core profile on the existing adapter; the after-start
+profile is checked offline only. See the
+[logger connection audit](../master_patch/LOGGER_CONNECTION_AUDIT.md).
+
 ### Earlier flash test failure — superseded by the 21:17 pass below
 
 The existing 350 nm flash-driver kernel responds to `FLASH_DISABLE` (`0x21`)

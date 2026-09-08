@@ -1839,3 +1839,55 @@ stop sooner for a returning lean trend, excessive richness, rough running,
 pressure loss or invalid input. There is no requirement to wait for full
 warm-up or a fan cycle. Focused profile validation and the full master verifier
 pass. No ROM, calibration or logger-definition changes.
+
+## 2026-09-08 — Native SSM limit, host selection repair and complete idle log
+
+The 83-address profile approval in the preceding entry was wrong: the
+one-byte SSM length field is not this ROM's limiting constraint. Native
+receive routine `32CA4` saturates its index at 137, permitting at most 43
+requested byte addresses. A 44-address request cannot reach checksum/header
+validation. Executed native receive tests cover valid 43-address frames,
+oversized 44/79/81/83/84-address requests and malformed frames. The supplied
+idle and after-start profiles now each request 43 addresses, as separate
+captures. The full master verifier passes without changing the BIN.
+
+The first two September 8 CSVs contain only headings. A separate RomRaider
+subscription bug allowed queued removals to discard immediately reselected
+channels after ECU identification/profile reload, despite ticked UI entries.
+The local `QueryManagerImpl` now cancels the opposing pending action per
+subscription. Five offline regression cases reproduce three failures on the
+original JAR and all pass on the repaired JAR. Both real XML profiles survive
+the reload sequence and produce 136-byte, checksum-valid A8 requests using
+RomRaider's own builder. Only `QueryManagerImpl.class` changes in the installed
+JAR; the original is backed up and the source fix is retained.
+
+The user's subsequent restart and
+`logs/romraiderlog_idle_diagnostic_20260908_123651.csv` establish live success:
+1,786 rows over 185.698 seconds, all 22 channels populated, and 101--108 ms
+sample intervals. The serial log contains the full 43-address request and
+2,295 subsequent complete 49-byte replies with valid checksums. This verifies
+the core profile; the separate after-start profile remains offline-tested.
+See [the logger audit](master_patch/LOGGER_CONNECTION_AUDIT.md) and
+[reproducible host repair](master_patch/romraider_query_fix/README.md).
+
+The user identifies the 10:30 BIN and confirms that the physical gauge
+followed RomRaider during the lean throttle-blip recovery. The on-disk
+`48d63cf3b7085afc672dd809cf08f4aef2b1aaae8a880f421e656467b7aaf8f0`
+image is timestamped 10:30:49. All 16 final ECU CRCs recorded by FastECU at
+11:58:47--11:58:51 match independently calculated block CRCs from that image.
+This supports the reported flash identity without performing a new ECU read.
+
+The engine holds roughly 14.6 AFR before the blips, crosses the earlier
+30-second problem window, then dips to 726 RPM during the blips and recovers
+near 1069 RPM / 16.61 AFR. At fixed 41.32 kPa, the low-lift VE table falls
+11.5% from 1252 to 1069 RPM. The before/after pulse-to-load ratio stays
+approximately constant, making that taper a leading clue for the sustained
+lean recovery. It does not explain the full transient: net pulse per unit of
+load briefly falls further, and the intermediate composition/cut states were
+not recorded. Most zero-AFR samples during the blips coincide with ADC input
+above the accepted 4.5-V window, rather than missing logger responses.
+
+No new ROM or calibration was produced. Further rev/flash trials remain on
+hold while the low-RPM VE shape and retained transient-duration path are
+reviewed. The evidence, limits, chart and numerical reproduction are in
+[the capture review](logs/20260908_idle_review.md).

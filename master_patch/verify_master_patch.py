@@ -44,6 +44,8 @@ import test_sh2e_fpu as fpu_test  # noqa: E402
 import test_injector_cut_execution as injector_cut_test  # noqa: E402
 import test_injector_scheduler_execution as injector_scheduler_test  # noqa: E402
 import test_cut_interrupt_execution as cut_interrupt_test  # noqa: E402
+import test_ssm_receive_execution as ssm_receive_test  # noqa: E402
+import logger_profiles as capture_profiles  # noqa: E402
 
 
 OUTPUT = HERE / "D2WD610H_master_patch.bin"
@@ -906,22 +908,7 @@ def verify_logger_definition() -> None:
 
 
 def verify_logger_profile() -> None:
-    try:
-        profile = ET.parse(LOGGER_PROFILE).getroot()
-        logger = ET.parse(LOGGER_DEFINITION).getroot()
-    except (OSError, ET.ParseError) as exc:
-        fail(f"idle diagnostic logger profile is missing or invalid: {exc}")
-    if profile.tag != "profile" or profile.get("protocol") != "SSM":
-        fail("idle diagnostic logger profile is not an SSM profile")
-    profile_parameters = profile.findall("./parameters/parameter")
-    profile_parameter_ids = [item.get("id") for item in profile_parameters]
-    if len(profile_parameter_ids) != len(set(profile_parameter_ids)):
-        fail("idle diagnostic profile contains duplicate parameter IDs")
-    selected_ids = {
-        item.get("id")
-        for item in profile_parameters
-        if any(item.get(view) == "selected" for view in ("livedata", "dash", "graph"))
-    }
+    logger = ET.parse(LOGGER_DEFINITION).getroot()
     logger_parameters = {
         item.get("id"): item
         for path in (
@@ -930,105 +917,64 @@ def verify_logger_profile() -> None:
         )
         for item in logger.findall(path)
     }
-    if not selected_ids or not set(profile_parameter_ids) <= set(logger_parameters):
-        fail("idle diagnostic profile refers to absent logger parameters")
-    expected_standard = {
-        "P2", "P3", "P4", "P5", "P6", "P8", "P10", "P11", "P12", "P13", "P17",
-        "P21", "P24", "P38", "P47", "P92", "E32", "E33", "E50", "E51", "E60",
-        "E84", "E123",
-    }
-    expected_custom = logger_definition.PARAMETER_IDS - {"E504", "E505"}
-    if selected_ids != expected_standard | expected_custom:
-        fail("idle diagnostic profile has the wrong focused parameter set")
-    # Explicit unselected entries clear previous selections of the redundant
-    # four-byte trims. P3/P5 still capture both banks at one byte each.
-    if set(profile_parameter_ids) - selected_ids != {"E81", "E105"}:
-        fail("idle diagnostic profile must deselect redundant four-byte trims")
-    for item in profile_parameters:
-        parameter_id = item.get("id")
-        units = item.get("units")
-        available_units = {
-            conversion.get("units")
-            for conversion in logger_parameters[parameter_id].findall("./conversions/conversion")
-        }
-        if not units or units not in available_units:
-            fail(
-                f"idle diagnostic profile parameter {parameter_id} has absent or invalid units"
-            )
-    live_custom = {
-        item.get("id")
-        for item in profile_parameters
-        if item.get("livedata") == "selected" and item.get("id") in logger_definition.PARAMETER_IDS
-    }
-    if live_custom != expected_custom:
-        fail("idle diagnostic profile has the wrong project parameter set")
-    dashboard_custom = {
-        item.get("id")
-        for item in profile_parameters
-        if item.get("dash") == "selected" and item.get("id") in logger_definition.PARAMETER_IDS
-    }
-    if dashboard_custom != expected_custom:
-        fail("idle diagnostic profile has the wrong project dashboard channels")
-    if any(
-        item.get("livedata") != "selected" or item.get("dash") != "selected"
-        for item in profile_parameters
-        if item.get("id") in selected_ids
-    ):
-        fail("idle diagnostic profile does not select every focused parameter on both tabs")
-    expected_stock_diagnostics = (
-        logger_definition.ALWAYS_VISIBLE_STOCK_PARAMETER_IDS - {"E81", "E105"}
-    )
-    selected_stock_diagnostics = selected_ids & expected_stock_diagnostics
-    if selected_stock_diagnostics != expected_stock_diagnostics:
-        fail("idle diagnostic profile omits a required stock high-resolution channel")
-    profile_switches = profile.findall("./switches/switch")
-    profile_switch_ids = [item.get("id") for item in profile_switches]
-    expected_switches = {"S4", "S5", "S11"}
-    logger_switch_ids = {
-        item.get("id") for item in logger.findall("./protocols/protocol/switches/switch")
-    }
-    if (
-        len(profile_switch_ids) != len(set(profile_switch_ids))
-        or set(profile_switch_ids) != expected_switches
-        or not expected_switches <= logger_switch_ids
-        or any(
-            item.get("livedata") != "selected" or item.get("dash") != "selected"
-            for item in profile_switches
-        )
-    ):
-        fail("idle diagnostic profile has the wrong neutral/idle/start switch set")
-
-    # SSM A8 payload: command byte + mode byte + three bytes per requested
-    # address, bounded by the one-byte payload length. RomRaider deduplicates
-    # complete query address sequences, not partially overlapping float ranges.
-    # Identical queries shared across views or switch bits count only once.
-    requested_queries = set()
-    for parameter_id in selected_ids:
-        parameter = logger_parameters[parameter_id]
-        addresses = parameter.findall("./address")
-        if not addresses:
-            fail(f"cannot budget SSM addresses for {parameter_id}")
-        query = []
-        for address in addresses:
-            start = int(address.text.strip(), 0)
-            length = int(address.get("length", "1"))
-            if length <= 0 or not 0 <= start <= start + length - 1 <= 0xFFFFFF:
-                fail(f"invalid SSM address range for {parameter_id}")
-            query.extend(range(start, start + length))
-        requested_queries.add(tuple(query))
     logger_switches = {
         item.get("id"): item
         for item in logger.findall("./protocols/protocol/switches/switch")
     }
-    for switch_id in profile_switch_ids:
-        requested_queries.add((int(logger_switches[switch_id].get("byte"), 0),))
-    address_count = sum(len(query) for query in requested_queries)
-    payload_length = 2 + 3 * address_count
-    if payload_length > 0xFF:
-        fail(
-            f"idle diagnostic profile requests {address_count} SSM bytes "
-            f"({payload_length}-byte payload); maximum is 84 addresses"
-        )
+    for path, expected_selected in capture_profiles.PROFILE_SELECTIONS.items():
+        try:
+            profile = ET.parse(path).getroot()
+        except (OSError, ET.ParseError) as exc:
+            fail(f"diagnostic logger profile is missing or invalid: {path.name}: {exc}")
+        if profile.tag != "profile" or profile.get("protocol") != "SSM":
+            fail(f"{path.name} is not an SSM profile")
+        parameters = profile.findall("./parameters/parameter")
+        ids = [item.get("id") for item in parameters]
+        if len(ids) != len(set(ids)) or set(ids) != set(capture_profiles.UNITS):
+            fail(f"{path.name} has duplicate or missing capture/reset entries")
+        if not set(ids) <= set(logger_parameters):
+            fail(f"{path.name} refers to absent logger parameters")
+        for view in ("livedata", "dash", "graph"):
+            selected = {item.get("id") for item in parameters if item.get(view) == "selected"}
+            if selected != (set() if view == "graph" else expected_selected):
+                fail(f"{path.name} has the wrong {view} selections")
+        for item in parameters:
+            parameter_id = item.get("id")
+            units = {conversion.get("units") for conversion in
+                     logger_parameters[parameter_id].findall("./conversions/conversion")}
+            if item.get("units") not in units:
+                fail(f"{path.name}: invalid units for {parameter_id}")
+        switches = profile.findall("./switches/switch")
+        switch_ids = [item.get("id") for item in switches]
+        if (len(switch_ids) != len(set(switch_ids)) or
+                set(switch_ids) != capture_profiles.SWITCHES or
+                not set(switch_ids) <= set(logger_switches) or
+                any(item.get(view) == "selected" for item in switches
+                    for view in ("livedata", "dash", "graph"))):
+            fail(f"{path.name} must explicitly clear the previous switch selections")
+
+        # RomRaider deduplicates complete address queries shared across views,
+        # not partly overlapping byte ranges. Count actual requested bytes.
+        requested_queries = set()
+        for parameter_id in expected_selected:
+            addresses = logger_parameters[parameter_id].findall("./address")
+            if not addresses:
+                fail(f"cannot budget SSM addresses for {parameter_id}")
+            query = []
+            for address in addresses:
+                start = int(address.text.strip(), 0)
+                length = int(address.get("length", "1"))
+                if length <= 0 or not 0 <= start <= start + length - 1 <= 0xFFFFFF:
+                    fail(f"invalid SSM address range for {parameter_id}")
+                query.extend(range(start, start + length))
+            requested_queries.add(tuple(query))
+        address_count = sum(len(query) for query in requested_queries)
+        try:
+            payload_length, request_length = capture_profiles.request_sizes(address_count)
+        except ValueError as exc:
+            fail(f"{path.name}: {exc}")
+        print(f"  {path.name}: {address_count}/43 SSM addresses, "
+              f"{request_length}-byte request ({payload_length}-byte payload)")
 
 
 def verify_component_hooks(image: bytes, component_stage: bytes) -> None:
@@ -1227,6 +1173,7 @@ def main() -> None:
     injector_cut_test.verify_execution(image)
     injector_scheduler_test.verify_execution(image)
     cut_interrupt_test.verify_execution(image)
+    ssm_receive_test.verify_execution(image)
     try:
         fueling_safety_verify.verify_image(image)
     except AssertionError as exc:
@@ -1275,7 +1222,7 @@ def main() -> None:
     print("  fueling safety    : pressure-forced OL ON; 13.0-AFR delayed/latched cut ON")
     print("  guard execution   : cuts, native IRQ/context restore, locks and injector queues PASS")
     print("  logger            : complete D2WD610H-only SSM definition and fragment validated")
-    print("  capture profile   : SSM address budget checked, including shared switch/view bytes")
+    print("  capture profiles  : separate idle/after-start captures within native 43-address limit")
     print("  provenance        : root stock, base copy, and SRF payload remain byte-identical")
 
 
