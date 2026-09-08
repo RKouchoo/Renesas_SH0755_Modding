@@ -11,6 +11,8 @@ from pathlib import Path
 import struct
 import sys
 
+from _audit_images import AUDIT_COMMIT, read_audit_image
+
 ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT / "tests"))
 from test_wideband_fuel_guard_execution import GuardMachine  # noqa: E402
@@ -40,7 +42,8 @@ class StatusAwareLoadMachine(LoadConditioningMachine):
 
 
 def main():
-    images = {name: (ROOT / path).read_bytes() for name, path in IMAGES.items()}
+    images = {name: read_audit_image({"path": path, "sha256": PINS[name]})
+              for name, path in IMAGES.items()}
     report = {"images": {}, "load_fallback_cases": []}
     for name, blob in images.items():
         assert len(blob) == 0x80000
@@ -95,7 +98,7 @@ def main():
     ]
     destination = ROOT / "docs/reference/evidence/image_contracts.json"
     destination.write_text(json.dumps(report, indent=2) + "\n")
-    print(f"Saved-image contracts and 8 load-status cases PASS -> {destination}")
+    print(f"Audit baseline {AUDIT_COMMIT}: image contracts and 8 load-status cases PASS -> {destination}")
 
 
 if __name__ == "__main__":

@@ -3,7 +3,8 @@
 
 Fixes the idle-recovery VE cliff and the 1600-RPM hump while retaining the
 identical code wrapper, descriptors, axes, and validation gates from
-speed_density/patch_speed_density.py.
+patches/speed_density/patch_speed_density.py, including its local bypass of
+the obsolete MAF-fault load substitution.
 """
 from __future__ import annotations
 
@@ -45,6 +46,8 @@ FINAL_AIRFLOW_CALL_SEQUENCE_ADDR = sd.FINAL_AIRFLOW_CALL_SEQUENCE_ADDR
 FINAL_AIRFLOW_CALL_SEQUENCE_STOCK = sd.FINAL_AIRFLOW_CALL_SEQUENCE_STOCK
 FINAL_AIRFLOW_HELPER_PTR = sd.FINAL_AIRFLOW_HELPER_PTR
 STOCK_FINAL_AIRFLOW_HELPER = sd.STOCK_FINAL_AIRFLOW_HELPER
+MAF_LOAD_FALLBACK_HELPER_PTR = sd.MAF_LOAD_FALLBACK_HELPER_PTR
+STOCK_MAF_LOAD_FALLBACK_HELPER = sd.STOCK_MAF_LOAD_FALLBACK_HELPER
 CONSTANT_ZERO_RETURN = sd.CONSTANT_ZERO_RETURN
 CONSTANT_ZERO_RETURN_STOCK = sd.CONSTANT_ZERO_RETURN_STOCK
 CALLER_RPM_CAPTURE_ADDR = sd.CALLER_RPM_CAPTURE_ADDR
@@ -185,6 +188,13 @@ def apply_to_rom(rom: bytearray) -> list[tuple[str, int, bytes]]:
         LOAD_FILTER_ALPHA_STOCK,
         LOAD_FILTER_ALPHA_STOCK,
         "retained stock load smoothing alpha",
+    )
+    checked_write(
+        rom,
+        MAF_LOAD_FALLBACK_HELPER_PTR,
+        be32(STOCK_MAF_LOAD_FALLBACK_HELPER),
+        be32(CONSTANT_ZERO_RETURN),
+        "local obsolete MAF load-fallback bypass",
     )
     for call_address in MAF_CONVERSION_CALL_ADDRS:
         checked_write(

@@ -10,13 +10,17 @@ python3 -B master_patch_v2/verify_master_patch.py
 
 The first command rebuilds the rolling master in memory, checks its saved
 artifact, and runs the retained routine, hook, FPU, scheduler, calibration,
-definition, logger and provenance checks. The v2 verifier remains its existing
-checksum/layout/definition check; it is not equivalent to the master suite.
+definition, logger and provenance checks. The v2 verifier checks checksum,
+layout and definition plus five local load-fallback regression groups. The
+new groups execute the actual status call/store and retained conditioning
+body, preserve diagnostics/calibration and reproduce the old failure with a
+negative control. Coverage is still narrower than the master suite.
 
 For a focused check, run its script directly, for example:
 
 ```sh
 python3 -B tests/test_map_boundary_execution.py
+python3 -B tests/test_v2_load_fallback_execution.py
 python3 -B tests/test_ssm_receive_execution.py
 python3 -B tests/test_hook_execution.py master_patch/D2WD610H_master_patch.bin
 python3 -B tests/verify_romraider_toggles.py

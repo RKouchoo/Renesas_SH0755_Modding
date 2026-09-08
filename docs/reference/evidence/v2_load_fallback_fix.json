@@ -1,0 +1,197 @@
+{
+  "date": "2026-09-09",
+  "draft_baseline_commit": "eb05a3209179618e04dfcfb79ba42aae17414f53",
+  "rom_path": "master_patch_v2/D2WD610H_master_patch_v2.bin",
+  "pre_fix_sha256": "2fe5f9cc7f960bff1efd784bb29e6c984ccbc025f1d8029c920fd52a3ce25ac9",
+  "repaired_sha256": "3ad3f0708843961ad54175e40236521990ed8b2ed60d082dcc51368e1c75b7b7",
+  "checksum": "ECD40ED7",
+  "changed_bytes": [
+    {
+      "address": "000173FD",
+      "before": "06",
+      "after": "02"
+    },
+    {
+      "address": "000173FE",
+      "before": "51",
+      "after": "70"
+    },
+    {
+      "address": "000173FF",
+      "before": "68",
+      "after": "88"
+    },
+    {
+      "address": "0007FB89",
+      "before": "D0",
+      "after": "D4"
+    },
+    {
+      "address": "0007FB8A",
+      "before": "2D",
+      "after": "0E"
+    },
+    {
+      "address": "0007FB8B",
+      "before": "F7",
+      "after": "D7"
+    }
+  ],
+  "all_other_rom_bytes_unchanged": true,
+  "representative_cases": [
+    {
+      "image": "pre_fix_v2",
+      "d26f": "00",
+      "airflow_g_s": 12.5,
+      "rpm": 1500,
+      "processed_map_mmhg": 250,
+      "status_byte": 0,
+      "conditioned_load_g_rev": 0.5
+    },
+    {
+      "image": "pre_fix_v2",
+      "d26f": "00",
+      "airflow_g_s": 20.0,
+      "rpm": 1500,
+      "processed_map_mmhg": 250,
+      "status_byte": 0,
+      "conditioned_load_g_rev": 0.5180000066757202
+    },
+    {
+      "image": "pre_fix_v2",
+      "d26f": "40",
+      "airflow_g_s": 12.5,
+      "rpm": 1500,
+      "processed_map_mmhg": 250,
+      "status_byte": 2,
+      "conditioned_load_g_rev": 0.5748999118804932
+    },
+    {
+      "image": "pre_fix_v2",
+      "d26f": "40",
+      "airflow_g_s": 20.0,
+      "rpm": 1500,
+      "processed_map_mmhg": 250,
+      "status_byte": 2,
+      "conditioned_load_g_rev": 0.5748999118804932
+    },
+    {
+      "image": "repaired_v2",
+      "d26f": "00",
+      "airflow_g_s": 12.5,
+      "rpm": 1500,
+      "processed_map_mmhg": 250,
+      "status_byte": 0,
+      "conditioned_load_g_rev": 0.5
+    },
+    {
+      "image": "repaired_v2",
+      "d26f": "00",
+      "airflow_g_s": 20.0,
+      "rpm": 1500,
+      "processed_map_mmhg": 250,
+      "status_byte": 0,
+      "conditioned_load_g_rev": 0.5180000066757202
+    },
+    {
+      "image": "repaired_v2",
+      "d26f": "40",
+      "airflow_g_s": 12.5,
+      "rpm": 1500,
+      "processed_map_mmhg": 250,
+      "status_byte": 0,
+      "conditioned_load_g_rev": 0.5
+    },
+    {
+      "image": "repaired_v2",
+      "d26f": "40",
+      "airflow_g_s": 20.0,
+      "rpm": 1500,
+      "processed_map_mmhg": 250,
+      "status_byte": 0,
+      "conditioned_load_g_rev": 0.5180000066757202
+    }
+  ],
+  "v2_verifier": [
+    "Verifying D2WD610H master patch v2...",
+    "  [1/4] Subaru Checksum       : 0xECD40ED7 (VALID)",
+    "  [2/4] Memory Layout         : NO COLLISIONS (6 components, 6256 changed bytes)",
+    "  [3/4] RomRaider XML Def     : VALID (D2WD610H target, verified table addresses)",
+    "  [4/4] Local load fallback   : 5 execution/regression groups passed",
+    "",
+    "ALL 4 OFFLINE CHECK GROUPS PASSED.",
+    "ROM SHA-256: 3ad3f0708843961ad54175e40236521990ed8b2ed60d082dcc51368e1c75b7b7",
+    "Offline verification complete: D2WD610H_master_patch_v2.bin"
+  ],
+  "main_verifier": [
+    "  SH-2E FPU: 5 execution/value test groups passed",
+    "  MAP lower boundary: 6 execution/integrity groups passed",
+    "  Primary fueling: 8 execution test groups passed",
+    "  Transient fuel: 8 execution test groups passed",
+    "  Idle timing: 5 execution test groups passed",
+    "  Opening timing: 6 execution test groups passed",
+    "  Throttle tip-in: 7 execution test groups passed",
+    "  Load conditioning: 4 execution test groups passed",
+    "  Idle air: 11 execution test groups passed",
+    "  Idle handover: 5 execution test groups passed",
+    "  Idle request: 6 execution test groups passed",
+    "  Idle overrides: 7 execution test groups passed",
+    "  Throttle link: 7 execution test groups passed",
+    "  DBW tables: 5 execution test groups passed",
+    "  Pedal dependencies: 5 execution/integrity groups passed",
+    "  Injector cut: 6 execution test groups passed",
+    "  Injector scheduler: 12 execution test groups passed",
+    "  Cut IRQ/context: 8 execution test groups passed",
+    "  SSM receive: 3 execution test groups passed",
+    "  D2WD610H_idle_diagnostic_profile.xml: 43/43 SSM addresses, 136-byte request (131-byte payload)",
+    "  D2WD610H_afterstart_diagnostic_profile.xml: 43/43 SSM addresses, 136-byte request (131-byte payload)",
+    "  D2WD610H_idle_recovery_profile.xml: 43/43 SSM addresses, 136-byte request (131-byte payload)",
+    "  D2WD610H_idle_air_diagnostic_profile.xml: 43/43 SSM addresses, 136-byte request (131-byte payload)",
+    "  D2WD610H_map_source_diagnostic_profile.xml: 43/43 SSM addresses, 136-byte request (131-byte payload)",
+    "master patch audit PASS",
+    "  stock SHA-256     : ed0fe0341d97fb760c2cda3f07277f861495d32f6520e3ce8047b8b0f7bfd4ee",
+    "  output SHA-256    : 154760a5f2fdadbf6d9221480595f58dc77c6a4eccc492f50899c815aca79e4d",
+    "  checksum          : 0x16F63B0D (valid=True)",
+    "  air model         : always-on MAFless committed-state dual VE speed density",
+    "  idle VE           : retained 500/800-RPM plateau and increasing mass transition",
+    "  MAP lower bound   : 10.48113 kPa, aligned with existing ADC acceptance",
+    "  DBW/dashpot       : stock calibration; independent user experiment excluded",
+    "  MAP               : Omni MAP-SUP-3BR 30..300 kPa / 0.60..4.75 V",
+    "  IAT               : provisional HT-010206 curve; assumed 1.00-kohm ECU pull-up",
+    "  wideband/O2       : P0/P1; unity lambda baro; legacy voltage adders/target terms neutralized",
+    "  boost             : electronic actuator retired; independent hard cut ON",
+    "  fan / purge       : stock fan command retained; CPC duty/flow/bank subtraction zero",
+    "  load axes         : all eight active axes extend to 4.0 g/rev",
+    "  primary OL        : exact 1000..6800 RPM axes; conservative resample verified",
+    "  injectors         : 16611AA510; pinned A4TE002B JDM-STI flow/deadtime translation",
+    "  timing/AVLS       : dual VE; fixed 3200/3000 lift switch; cam timing endpoints identified",
+    "  rotational idle   : bounded retard-only component installed, default OFF",
+    "  memory layout     : no component, hook, calibration, or RAM collisions",
+    "  definition        : workflow-grouped master XML; dormant timing pair and obsolete defs omitted",
+    "  fueling safety    : pressure-forced OL ON; 13.0-AFR delayed/latched cut ON",
+    "  guard execution   : cuts, native IRQ/context restore, locks and injector queues PASS",
+    "  logger            : complete D2WD610H-only SSM definition and fragment validated",
+    "  capture profiles  : all five profiles, including MAP-source, within native 43-address limit",
+    "  provenance        : root stock, base copy, and SRF payload remain byte-identical"
+  ],
+  "regression_groups": 5,
+  "airflow_fault_pressure_sweep_cases": 36,
+  "pre_fix_regression_failed": true,
+  "restored_pointer_negative_control_reproduces_fault": true,
+  "native_diagnostics_preserved": true,
+  "protected_tracked_files": 214,
+  "unexpected_protected_changes": [],
+  "original_audit_replay_byte_identical": true,
+  "limits": [
+    "The status call/store and retained conditioning execute ROM instructions; the upstream state/frame and later 1D228 helper are fixture boundaries, and interpolation is modeled.",
+    "No historical capture establishes the forced D26F fault-bit state.",
+    "No ECU connection, flashing, physical calibration or vehicle-response validation was performed."
+  ],
+  "documentation_links": {
+    "files": 68,
+    "local_links": 1830,
+    "broken": []
+  },
+  "python_syntax_files": 88,
+  "diff_whitespace": "PASS, including the new files"
+}

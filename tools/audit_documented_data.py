@@ -11,6 +11,8 @@ import json
 from pathlib import Path
 import struct
 
+from _audit_images import read_audit_image
+
 ROOT = Path(__file__).resolve().parent.parent
 EVIDENCE = ROOT / "docs/reference/evidence"
 
@@ -111,7 +113,7 @@ def decode(blob, address, schema):
 
 def main():
     pins = json.loads((EVIDENCE / "image_contracts.json").read_text())["images"]
-    images = {name: (ROOT / p["path"]).read_bytes() for name, p in pins.items()}
+    images = {name: read_audit_image(record) for name, record in pins.items()}
     for name, blob in images.items():
         assert hashlib.sha256(blob).hexdigest() == pins[name]["sha256"]
     tables = []

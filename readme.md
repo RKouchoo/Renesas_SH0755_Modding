@@ -14,10 +14,11 @@ records where the older notes now live.
 | Build | State |
 |---|---|
 | [V1 / rolling main](master_patch/README.md) | Contains the local MAF-fault load bypass and SD low-pressure boundary repair. Its saved ROM matches its builder. |
-| [V2](docs/reference/IMAGES.md) | Includes timing and MAP-pressure tip-in corrections absent from v1, plus other separate calibration changes. It still lacks main's local load-fallback bypass. |
+| [V2](docs/reference/IMAGES.md) | Includes its timing and MAP-pressure tip-in corrections plus main's local load-fallback bypass, added in the September 9 repair. Existing v2 calibration is preserved. |
 
-**A ROM combining those fixes has not been built.** The September audit and
-the subsequent cleanup changed no firmware or calibration. The logged
+The [v2 bypass repair](docs/reference/V2_LOAD_FALLBACK_FIX.md) is built and
+verified offline. Its only binary changes are the local helper pointer and
+checksum. The logged
 near-stall remains unresolved; offline verification establishes the tested
 software behavior. See [image identities and differences](docs/reference/IMAGES.md)
 before choosing a build or interpreting a capture.
@@ -55,9 +56,10 @@ python3 -B tools/audit_image_contracts.py
 ```
 
 The main verifier rebuilds in memory and checks the saved image, calibration,
-ownership, definitions, logger and instruction fixtures. V2's existing three
-checks cover checksum/layout/definition and are narrower. The image audit
-also exercises both builds' conditional MAF-fault load paths.
+ownership, definitions, logger and instruction fixtures. V2 checks its
+checksum/layout/definition plus five load-fallback regression groups; its
+coverage is still narrower than main's. The image audit reproduces the original
+pre-fix comparison using the pinned images at `2d95301`.
 
 Make fixes in the relevant rolling sources and use Git for regression history.
 Build commands and hardware assumptions are in the [master guide](master_patch/README.md).

@@ -1,21 +1,27 @@
 # Images, calibration and ownership
 
-[Reference home](README.md) · [Saved-image evidence](evidence/image_contracts.json)
+[Reference home](README.md) · [Original audit evidence](evidence/image_contracts.json) · [V2 repair](V2_LOAD_FALLBACK_FIX.md)
 
-## Exact inputs and outputs at the audit baseline
+## Current saved images
 
-Repository baseline: commit `2d95301`, September 8, 2026. All three images are
-512 KiB and share CALID D2WD610H. CALID alone cannot identify a patch revision.
+All three images are 512 KiB and share CALID D2WD610H. CALID alone cannot
+identify a patch revision. V2 below includes the September 9 load-fallback repair.
 
 | Image | Path | SHA-256 |
 |---|---|---|
 | Stock | [2005 BLE MT.bin](../../2005%20BLE%20MT.bin) | `ed0fe0341d97fb760c2cda3f07277f861495d32f6520e3ce8047b8b0f7bfd4ee` |
 | Rolling main | [master BIN](../../master_patch/D2WD610H_master_patch.bin) | `154760a5f2fdadbf6d9221480595f58dc77c6a4eccc492f50899c815aca79e4d` |
-| V2 | [v2 BIN](../../master_patch_v2/D2WD610H_master_patch_v2.bin) | `2fe5f9cc7f960bff1efd784bb29e6c984ccbc025f1d8029c920fd52a3ce25ac9` |
+| V2 | [v2 BIN](../../master_patch_v2/D2WD610H_master_patch_v2.bin) | `3ad3f0708843961ad54175e40236521990ed8b2ed60d082dcc51368e1c75b7b7` |
 
-Main's additive checksum is `16F63B0D`; v2's is `ECD02DF7`. Main marker
-`26090804` is at `7FC4C`. The stock file, base copy and extracted SRF payload
-are checked for equality. No BIN or definition XML was changed by this audit.
+Main's additive checksum is `16F63B0D`; v2's is `ECD40ED7`. Both retain marker
+`26090804` at `7FC4C`, so use the hash to identify the repair. Stock, its base
+copy and the extracted SRF payload are checked for equality.
+
+The original audit at `2d95301` used v2 SHA-256
+`2fe5f9cc7f960bff1efd784bb29e6c984ccbc025f1d8029c920fd52a3ce25ac9`, checksum
+`ECD02DF7`. Those historical bytes remain available through the audit readers
+and Git. The later repair changes only the local pointer and checksum; no
+calibration or definition XML changes.
 
 ## Main and v2 are different calibration and control contracts
 
@@ -23,7 +29,7 @@ Values below are decoded from the saved bytes, rounded for display.
 
 | Address / behavior | Main | V2 |
 |---|---|---|
-| `173FC`, local load-status helper | `27088`, constant zero | `65168`, native MAF-fault getter |
+| `173FC`, local load-status helper | `27088`, constant zero | Same; repaired from native getter `65168` |
 | `3FD8C`, fan output literal | `E8C4`, stock | Same |
 | `72810/72814`, MAP offset/slope | −67.7766571 mmHg; 487.9919434 mmHg/V | Same |
 | `7DD10`, SD lower valid pressure | 78.6149597 mmHg | Same; old 100-mmHg limit was repaired |
@@ -37,42 +43,43 @@ Values below are decoded from the saved bytes, rounded for display.
 | Low-lift VE | Integrated ten-cell idle plateau | Separate v2 smoothing |
 | Timing | Main's existing resampling/caps | A/D low-RPM floors and different boost caps |
 
-The v2 builder header says the 2000-RPM full-boost cap is +6 degrees. Its
-actual `FULL_BOOST_TIMING_CAP` begins at **+10 degrees**; the final table also
-depends on the original/resampled value and load offset. This is a stale
-description of materially different calibration, not proof of a universal
-10-degree output. V2 source/calibration was left unchanged under the agreed
-component-reference-only scope.
+V2's `FULL_BOOST_TIMING_CAP` begins at **+10 degrees**; the final table also
+depends on the original/resampled value and load offset. The bypass repair
+corrects its stale +6-degree header/output without changing timing calibration.
+The cap is not a universal 10-degree output.
 
 The user's independent dashpot experiment was not merged into main. Recording
 the already-present v2 value above does not adopt that experiment.
 
-## Conditional load fallback still present in v2
+## Local load-fallback repair in v2
 
-`65168` returns 2 when `D26F & 40` is set. In the retained load task that
-selects `max(B2A0 * 0.00264 - 0.0851, 0)` instead of the SD-derived load path.
-Main bypasses the getter locally. V2 does not, despite sharing main's SD
-sensor snapshots and low-pressure boundary.
+`65168` returns 2 when `D26F & 40` is set. In the audit-baseline v2 load task
+that selects `max(B2A0 * 0.00264 - 0.0851, 0)` instead of the SD-derived load
+path. Both current builds bypass that getter locally. The native diagnostic
+getter and fault byte remain intact.
 
 Main's bypass was already present in commit `ead14bb` on September 8; it was
-not added during the documentation audit. V2's timing and MAP-pressure tip-in
-corrections are separate fixes missing from main. A combined ROM retaining
-those corrections and adding the local bypass to v2 has not been generated.
+not added during the documentation audit. The [September 9 v2 repair](V2_LOAD_FALLBACK_FIX.md)
+combines it with v2's existing timing and MAP-pressure tip-in corrections,
+preserving every calibration byte.
 
-Eight bounded cases execute each saved image's getter and retained
-`1753A–1770A` load body. At 1500 RPM, initial load 0.5, ECT 45 C and processed
-MAP 250 mmHg:
+The original eight audit cases execute each getter and retained load body.
+The new v2 regression also executes the caller's actual pointer load and
+status store before feeding `1753A–1770A`. At 1500 RPM, initial load 0.5,
+ECT 45 C and processed MAP 250 mmHg:
 
 | Image / flag | 12.5 g/s input | 20 g/s input |
 |---|---:|---:|
 | Main, D26F clear or bit 40 set | 0.5000 g/rev | 0.5180 g/rev |
-| V2, D26F clear | 0.5000 g/rev | 0.5180 g/rev |
-| V2, D26F bit 40 set | 0.5749 g/rev | 0.5749 g/rev |
+| Audit-baseline v2, D26F clear | 0.5000 g/rev | 0.5180 g/rev |
+| Audit-baseline v2, D26F bit 40 set | 0.5749 g/rev | 0.5749 g/rev |
+| Repaired v2, D26F clear or bit 40 set | 0.5000 g/rev | 0.5180 g/rev |
 
 This establishes a conditional software difference. It does not establish that
 the bit was set during any historical near-stall. The existing main fixture
-supplies a zero local getter result; simply running that fixture on v2 would
-miss the distinction. See [replay boundaries](evidence/image_contracts.json).
+supplies a zero local getter result; the new v2 test explicitly supplies the
+executed caller result and reproduces failure when the bypass is removed.
+See [repair evidence and boundaries](V2_LOAD_FALLBACK_FIX.md).
 
 ## Ownership and reproducible commands
 
@@ -101,14 +108,15 @@ python3 -B tools/audit_image_contracts.py
 
 The first command rebuilds in memory and checks main's saved image, ownership,
 calibration, definitions, logger, arithmetic and retained-routine fixtures.
-V2's existing verifier checks its checksum/layout/definition contract and is
-not equivalent to the full main execution suite. Build commands remain
+V2's verifier checks its checksum/layout/definition contract plus five local
+load-fallback regression groups; coverage is still narrower than main's.
+The image-audit command reproduces the pre-fix evidence from Git at `2d95301`.
+Build commands remain
 `python3 -B master_patch/build_master_patch.py` and the corresponding v2 script;
 these commands write their normal output files.
 
-The v2 verifier's final "Ready for vehicle flashing" message exceeds those
-three checks: it does not establish vehicle validation or exercise the
-conditional load-fallback behavior documented above.
+V2's final verifier message now reports offline verification. Physical engine
+behavior remains outside the scope of these checks.
 
 ## Calibration assumptions still requiring physical evidence
 

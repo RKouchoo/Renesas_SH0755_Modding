@@ -102,7 +102,9 @@ def main():
     fixtures = json.loads((EVIDENCE / "fixture_accesses.json").read_text())
     contracts = json.loads((EVIDENCE / "image_contracts.json").read_text())
     main_sha = contracts["images"]["main"]["sha256"]
-    images = {name: (ROOT / record["path"]).read_bytes()
+    from _audit_images import read_audit_file, read_audit_image
+
+    images = {name: read_audit_image(record)
               for name, record in contracts["images"].items()}
     for name, blob in images.items():
         assert hashlib.sha256(blob).hexdigest() == contracts["images"][name]["sha256"], name
@@ -110,7 +112,7 @@ def main():
     xml_references = defaultdict(list)
     for name in ("main", "v2"):
         path = Path(contracts["images"][name]["path"]).with_suffix(".xml")
-        root = ET.parse(ROOT / path).getroot()
+        root = ET.fromstring(read_audit_file(str(path)))
 
         def collect(element, parent_name=""):
             label = element.get("name", parent_name)

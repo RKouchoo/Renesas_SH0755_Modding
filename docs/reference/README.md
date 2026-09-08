@@ -13,6 +13,7 @@ See [findings](FINDINGS.md) before relying on an older address label.
 |---|---|
 | [Patch story and operation](PATCH_STORY.md) | Why the patch exists, how the pieces interact, and the investigation's history. |
 | [Images and calibration](IMAGES.md) | Exact stock/main/v2 identities, differences, ownership and build commands. |
+| [V2 load-fallback repair](V2_LOAD_FALLBACK_FIX.md) | Local bypass added to v2 while preserving its timing, MAP tip-in and other calibrations. |
 | [Memory and hardware](MEMORY_AND_IO.md) | Correct RAM range, timer descriptors, fan/purge paths and checksum boundaries. |
 | [Signals and routines](SIGNALS.md) | Types, units, producers, consumers and sensor sources. |
 | [Methods](METHODS.md) | Lookup descriptors, SH-2E arithmetic, literal decoding, scheduling and test limits. |
@@ -61,8 +62,8 @@ in [tests](../../tests/README.md), and capture/replay tools are in
 in the [archive](../archive/README.md). The audit index reproduces the source
 text at its reviewed Git revision and maps links to these current locations.
 
-V1 and v2 contain different fixes; the [image comparison](IMAGES.md) records
-the missing v2 load-fallback bypass and v2's timing/tip-in corrections. A ROM
-combining those fixes has not been generated. This cleanup changed no runtime
-source, calibration or ROM; v2, the K-line adapter, the Ghidra project and the
-user's independent dashpot image were preserved.
+The [image comparison](IMAGES.md) records v1/v2 calibration differences and the
+[September 9 v2 repair](V2_LOAD_FALLBACK_FIX.md), which carries main's local
+load-fallback bypass into v2 while preserving its timing/tip-in corrections.
+The earlier cleanup changed no runtime source, calibration or ROM. Historical
+audit results remain tied to their reviewed images as later repairs are added.

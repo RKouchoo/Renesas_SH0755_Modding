@@ -6,6 +6,10 @@ Started September 8, 2026 from commit `2d95301`; this report was finalized
 September 9 in Australia/Sydney. The audit used the connected Ghidra MCP
 server, saved images, source builders and offline instruction fixtures.
 
+This page records the completed audit and its original image identities.
+The subsequent [v2 bypass repair](V2_LOAD_FALLBACK_FIX.md) has its own bounded
+regression evidence; it does not retroactively change the audit snapshot.
+
 ## Repository organization and preservation
 
 Shared components are grouped under `patches/`. Thirty-seven existing Python
@@ -93,9 +97,9 @@ remaining physical/software questions.
 | Region-inspection utility | Runs with corrected physical RAM bounds; literal-reference gaps are no longer described as proven spare RAM. |
 | Protected-file comparison | PASS; no unexpected protected-file changes. |
 
-Current main SHA-256:
+Main SHA-256 at audit completion:
 `154760a5f2fdadbf6d9221480595f58dc77c6a4eccc492f50899c815aca79e4d`.
-Current v2 SHA-256:
+V2 SHA-256 at audit completion, before the later bypass repair:
 `2fe5f9cc7f960bff1efd784bb29e6c984ccbc025f1d8029c920fd52a3ce25ac9`.
 The standalone images used for verification live only in ignored
 `tmp/documentation_audit/`; they are not new release or flashing candidates.

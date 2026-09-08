@@ -12,9 +12,9 @@ Subaru checksum `16F63B0D`.
 
 V1 contains the local MAF-fault load bypass, repaired SD pressure boundary and
 ten-cell idle-VE correction. V2 contains additional timing and MAP-pressure
-tip-in corrections, but is missing that bypass. **The combined fix set has not
-been built.** Neither the audit nor the cleanup changed either ROM. The
-near-stall's cause remains unresolved.
+tip-in corrections and now includes the same bypass through the
+[September 9 repair](../docs/reference/V2_LOAD_FALLBACK_FIX.md). This v1 image
+is unchanged. The near-stall's cause remains unresolved.
 
 ## Build and verify
 
@@ -64,7 +64,7 @@ python3 -B master_patch/install_master_logger.py \
 | [Memory layout](MEMORY_LAYOUT.md) | Injected code/data ownership and collision checks. |
 | [Wiring](WIRING.md) | Harness connections and installed-hardware assumptions. |
 | [Commissioning](COMMISSIONING.md) | Physical checks and validation boundaries. |
-| [Image comparison](../docs/reference/IMAGES.md) | Main/v2 differences, exact hashes and the missing v2 bypass. |
+| [Image comparison](../docs/reference/IMAGES.md) | Main/v2 differences, exact hashes and the v2 bypass repair. |
 | [Historical investigations](../docs/archive/README.md) | Original traces, earlier fixes and capture-specific conclusions. |
 
 The calibration assumes the Omni MAP-SUP-3BR transfer, Haltech HT-010206 IAT

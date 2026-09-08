@@ -99,10 +99,12 @@ dashpot calibration remain stock. The user's independent dashpot BIN is
 preserved only for matching historical captures; it was not integrated.
 
 V2 arrived in `536d29f`, with timing, tip-in pressure compensation, VE,
-transient-history and air-decay changes. It now shares the lower SD bound,
-but retains the MAF-fault load substitution that main bypasses. Its existing
-verifier does not exercise that branch. The [image comparison](IMAGES.md)
-records these differences without silently making v2 equivalent to main.
+transient-history and air-decay changes. The audit found that it shared the
+lower SD bound but retained the MAF-fault load substitution that main bypasses.
+The [September 9 repair](V2_LOAD_FALLBACK_FIX.md) adds that local bypass and
+execution regression to v2, changing only the pointer and checksum bytes.
+Its timing/tip-in corrections and all other calibration bytes are retained.
+The [image comparison](IMAGES.md) separates the audit baseline from this repair.
 
 FPU reuse and sensor-fault/injector-inhibit experiments remain memory-only
 prototypes. They are not newly generated flash candidates. The project uses

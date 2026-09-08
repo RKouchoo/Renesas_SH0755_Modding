@@ -3,7 +3,8 @@
 
 Fixes:
 - Base Timing D & A low-RPM timing floor to eliminate off-idle stumble/bog.
-- Full boost timing cap at 2000 RPM raised from -2.0 deg to +6.0 deg for smooth revving.
+- Full boost timing cap at 2000 RPM raised from -2.0 deg to +10.0 deg.
+- Local obsolete MAF-fault load substitution bypassed, matching rolling main.
 - Tip-in Enrichment Compensation (MRP) zero-multiplier defect fixed near atmospheric/boost.
 - Smoothed low-lift VE table (no 1200-1600 RPM spike, flattened idle vacuum cells).
 - Deceleration dashpot air decrement softened from 0.6 to 0.15 for gentle return to idle.
@@ -231,8 +232,10 @@ def main(argv: list[str] | None = None) -> None:
         % (OMNI_MAP_MULTIPLIER, OMNI_MAP_OFFSET, MASTER_MAP_LOW_CEL_VOLTS)
     )
     print("  speed density     : always-on MAFless, smoothed dual VE, 2.999 L")
+    print("  load source       : local obsolete MAF-fault substitution bypassed")
     print("  AVLS switch       : fixed 3200 engage / 3000 release RPM")
-    print("  timing fixes      : Base Timing D/A low-RPM floor >=9-15 deg; 2000 RPM full boost cap +6.0 deg")
+    print("  timing fixes      : Base Timing D/A low-RPM floor >=9-15 deg; 2000 RPM full boost cap %+.1f deg"
+          % calibration.interpolate(calibration.FULL_BOOST_TIMING_CAP, 2000))
     print("  tip-in fix        : Tip-in MRP table neutral (128) across vacuum/boost (no zero multiplier)")
     print("  idle/decel fixes  : Dashpot decel air decrement 0.15; transient load filter 0.08")
     print("  injectors         : 550cc (Subaru 16611AA510), %.2f cc/min (raw %.6f)" % (flow_disp, flow_raw))
