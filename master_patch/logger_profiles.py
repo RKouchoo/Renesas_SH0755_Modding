@@ -10,6 +10,7 @@ IDLE_PROFILE = HERE / 'D2WD610H_idle_diagnostic_profile.xml'
 AFTERSTART_PROFILE = HERE / 'D2WD610H_afterstart_diagnostic_profile.xml'
 RECOVERY_PROFILE = HERE / 'D2WD610H_idle_recovery_profile.xml'
 IDLE_AIR_PROFILE = HERE / 'D2WD610H_idle_air_diagnostic_profile.xml'
+MAP_SOURCE_PROFILE = HERE / 'D2WD610H_map_source_diagnostic_profile.xml'
 IDLE_PARAMETERS = {
     'P2', 'P3', 'P4', 'P5', 'P6', 'P8', 'P10', 'P11', 'P12', 'P13',
     'P17', 'P21', 'P24', 'P47', 'E32', 'E33', 'E50', 'E51', 'E60',
@@ -26,11 +27,16 @@ IDLE_AIR_PARAMETERS = {
     'P2', 'P7', 'P8', 'P10', 'P11', 'P12', 'P13', 'P17', 'P30',
     'E32', 'E33', 'E60', 'E123', 'E500', 'E501', 'E511', 'E514', 'E515', 'E517',
 }
+MAP_SOURCE_PARAMETERS = {
+    'P2', 'P8', 'P10', 'P11', 'P12', 'P13', 'E32', 'E33', 'E51', 'E60',
+    'E500', 'E503', 'E511', 'E518', 'E519', 'E520', 'E521', 'E522', 'E523',
+}
 PROFILE_SELECTIONS = {
     IDLE_PROFILE: IDLE_PARAMETERS,
     AFTERSTART_PROFILE: AFTERSTART_PARAMETERS,
     RECOVERY_PROFILE: RECOVERY_PARAMETERS,
     IDLE_AIR_PROFILE: IDLE_AIR_PARAMETERS,
+    MAP_SOURCE_PROFILE: MAP_SOURCE_PARAMETERS,
 }
 UNIT_OVERRIDES = {path: {'E123': 'fuel-air equivalence ratio'}
                   for path in (RECOVERY_PROFILE, IDLE_AIR_PROFILE)}
@@ -47,6 +53,8 @@ UNITS = {
     'E505': 'task calls', 'E506': 'raw flags', 'E507': 'task calls',
     **{f'E{i}': 'raw additive factor' for i in range(508, 514)},
     'E514': 'rpm', 'E515': '%', 'E516': 'raw flags', 'E517': 'raw flags',
+    'E518': 'kPa absolute', 'E519': 'Volts', 'E520': 'kPa absolute',
+    'E521': 'raw flags', 'E522': 'raw flags', 'E523': 'raw flags',
 }
 SWITCHES = {'S4', 'S5', 'S11'}
 

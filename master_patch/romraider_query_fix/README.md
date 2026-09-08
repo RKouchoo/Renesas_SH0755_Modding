@@ -81,3 +81,8 @@ The prepared `D2WD610H_idle_air_diagnostic_profile.xml` also passes this check:
 Pass it as a further argument, using the updated complete master logger.
 Its new idle target and combined throttle request are offline-validated only;
 the live repeat-rev proposal is withdrawn. See [the ongoing offline investigation](../IDLE_AIR_RECOVERY_AUDIT.md).
+
+The newer `D2WD610H_map_source_diagnostic_profile.xml` passes the same offline
+check with the E518–E523 definition: 19 channels, 38 subscriptions, 43 addresses,
+136-byte request and valid checksum. Existing four profiles also still pass.
+No connection was opened. See [the MAP-source audit](../MAP_SOURCE_AUDIT.md).

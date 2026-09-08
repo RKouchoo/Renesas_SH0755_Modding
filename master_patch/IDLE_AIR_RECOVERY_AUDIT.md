@@ -1,5 +1,11 @@
 # September 8 — load replay and idle-air investigation
 
+**MAP-source correction:** E51 in these captures reads processed B2A0, while
+SD reads ABC4. Earlier SD predictions using logged MAP are conditional proxy
+calculations. This does not change the directly logged load/B874 evidence.
+See the [native MAP and barometric audit](MAP_SOURCE_AUDIT.md) and its new
+profile for distinguishing the sources and diagnostic substitutions.
+
 **Evening follow-up:** the [18:01/18:11/18:15 review](../logs/20260908_dashpot_review.md)
 adds opening timing and separate throttle-tip-in execution. A retained pressure
 multiplier can suppress tip-in fuel near atmospheric MAP; its actual short

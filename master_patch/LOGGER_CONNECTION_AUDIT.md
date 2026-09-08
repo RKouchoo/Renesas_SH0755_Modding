@@ -242,5 +242,29 @@ profiles: 22/17/19/19 channels, each 43 addresses and a checksum-valid
 136-byte request. This is offline validation; no connection or engine run
 was performed, and the repeat rev test remains withdrawn.
 
-Current complete logger SHA-256:
+Previous complete logger SHA-256 before MAP-source diagnostics:
 `f225b9688b05823941f6939e71f22a08deb0f11f898eb5bb477f0657f5b97d2e`.
+
+## MAP-source diagnostic follow-up
+
+E51 reads factory-processed MAP at B2A0, whereas SD reads sensor-converted
+ABC4. New E518–E523 expose ABC4, raw MAP ADC voltage, selected baro CFBC,
+diagnostic bytes D26C/D26F and baro-update flags CFD0. E51 keeps its address,
+conversions; its name and description now identify factory-processed MAP.
+See [the native source audit](MAP_SOURCE_AUDIT.md).
+
+The separate `D2WD610H_map_source_diagnostic_profile.xml` selects 19 channels
+and 43 addresses. All five profiles pass the installed RomRaider pending
+reload and real A8 builder check: 136-byte requests with valid checksums.
+The native receiver tests and XML/conversion checks also pass. This is offline
+validation, not a new live capture or permission to repeat the higher-RPM blips.
+The profile adds no firmware instrumentation and cannot latch missed events.
+
+Current complete logger SHA-256:
+`595ab35b02e995aec3a82f017a028c7a839c9c4df6ae2fa307caf62fdd8eaff8`.
+
+The ECU definition now links both VE pressure axes to E518 and displays
+kPa absolute to match the profile. Retained load/cranking pressure uses E51;
+the CL/OL barometric axis uses E520. P24 is explicitly named as an estimate.
+E522's description also records that SD already bypasses the old local
+airflow-fault load substitution, although the shared diagnostic state remains.

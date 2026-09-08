@@ -1,5 +1,11 @@
 # September 8 evening — opening timing, tip-in fuel and recovery
 
+**MAP-source correction:** all MAP figures below are processed E51/B2A0.
+The SD input ABC4 and MAP/airflow fallback flags were not captured. Comparisons
+that feed these MAP samples into SD are proxy fixtures; see the subsequent
+[source audit](../master_patch/MAP_SOURCE_AUDIT.md). Native tip-in itself uses
+B2A0, so its pressure-source identification remains unchanged.
+
 The user confirms sluggish pickup predates the dashpot experiment. Further
 dashpot changes did not help; larger blips worsen recovery, and small throttle
 movements can leave prolonged rough low RPM. The captures show separate

@@ -1,0 +1,518 @@
+{
+  "status": "READ-ONLY NATIVE SWEEP; this script changes no calibration, BIN or logger.",
+  "captured_map_source": "E51 is FFFFB2A0 processed/fallback MAP, not the converter/SD input at FFFFABC4. Capture minima are not measured ADC-conversion limits.",
+  "image": "/Users/regan/Dev/Renesas_SH0755_modding/master_patch/candidates/D2WD610H_slight_dashpot_candidate.bin",
+  "image_sha256": "2f80b8e5cb80361cdee170655bc26aa8ed8a41bcf4cd7f7249fe3f8c8eaa1f1c",
+  "equation": {
+    "offset_mmhg": -67.77665710449219,
+    "multiplier_mmhg_per_v": 487.991943359375,
+    "offset_kpa": -9.03614444883246,
+    "multiplier_kpa_per_v": 65.06024165906403
+  },
+  "native_converter": "0x7a14",
+  "offset_address": "0x72810",
+  "multiplier_address": "0x72814",
+  "pressure_output_address": "0xffffabc4",
+  "sweep": {
+    "adc_codes": 65536,
+    "strictly_increasing": true,
+    "kpa_at_zero": -9.03614444883246,
+    "kpa_at_full_scale": 316.260057340923,
+    "min_step_kpa": 0.004947509765599989,
+    "max_step_kpa": 0.004980059171998619,
+    "maximum_kpa_for_adc_volts_at_or_below_0_5": 23.490998110018275
+  },
+  "voltage_cases": [
+    {
+      "requested_volts": 0,
+      "raw_adc": 0,
+      "represented_volts": 0.0,
+      "pressure_kpa": -9.03614444883246,
+      "native_electrical_class": 2,
+      "conditional_1500rpm_airflow": 500.0,
+      "fixed_sd_fallback": true
+    },
+    {
+      "requested_volts": 0.1,
+      "raw_adc": 1311,
+      "represented_volts": 0.1000213623046875,
+      "pressure_kpa": -2.528730830142372,
+      "native_electrical_class": 2,
+      "conditional_1500rpm_airflow": 500.0,
+      "fixed_sd_fallback": true
+    },
+    {
+      "requested_volts": 0.2,
+      "raw_adc": 2621,
+      "represented_volts": 0.1999664306640625,
+      "pressure_kpa": 3.9737190040789145,
+      "native_electrical_class": 2,
+      "conditional_1500rpm_airflow": 500.0,
+      "fixed_sd_fallback": true
+    },
+    {
+      "requested_volts": 0.25,
+      "raw_adc": 3277,
+      "represented_volts": 0.2500152587890625,
+      "pressure_kpa": 7.229907705658359,
+      "native_electrical_class": 2,
+      "conditional_1500rpm_airflow": 500.0,
+      "fixed_sd_fallback": true
+    },
+    {
+      "requested_volts": 0.3,
+      "raw_adc": 3932,
+      "represented_volts": 0.29998779296875,
+      "pressure_kpa": 10.481132622769003,
+      "native_electrical_class": 0,
+      "conditional_1500rpm_airflow": 500.0,
+      "fixed_sd_fallback": true
+    },
+    {
+      "requested_volts": 0.32,
+      "raw_adc": 4194,
+      "represented_volts": 0.319976806640625,
+      "pressure_kpa": 11.781623810215997,
+      "native_electrical_class": 0,
+      "conditional_1500rpm_airflow": 500.0,
+      "fixed_sd_fallback": true
+    },
+    {
+      "requested_volts": 0.35,
+      "raw_adc": 4588,
+      "represented_volts": 0.35003662109375,
+      "pressure_kpa": 13.737322341517396,
+      "native_electrical_class": 0,
+      "conditional_1500rpm_airflow": 4.652686595916748,
+      "fixed_sd_fallback": false
+    },
+    {
+      "requested_volts": 0.4,
+      "raw_adc": 5243,
+      "represented_volts": 0.4000091552734375,
+      "pressure_kpa": 16.98854624145909,
+      "native_electrical_class": 0,
+      "conditional_1500rpm_airflow": 5.753842353820801,
+      "fixed_sd_fallback": false
+    },
+    {
+      "requested_volts": 0.45,
+      "raw_adc": 5898,
+      "represented_volts": 0.449981689453125,
+      "pressure_kpa": 20.239772175738683,
+      "native_electrical_class": 0,
+      "conditional_1500rpm_airflow": 6.888318061828613,
+      "fixed_sd_fallback": false
+    },
+    {
+      "requested_volts": 0.5,
+      "raw_adc": 6554,
+      "represented_volts": 0.500030517578125,
+      "pressure_kpa": 23.495959860149178,
+      "native_electrical_class": 0,
+      "conditional_1500rpm_airflow": 8.518251419067383,
+      "fixed_sd_fallback": false
+    },
+    {
+      "requested_volts": 0.6,
+      "raw_adc": 7864,
+      "represented_volts": 0.5999755859375,
+      "pressure_kpa": 29.998409694370466,
+      "native_electrical_class": 0,
+      "conditional_1500rpm_airflow": 12.205876350402832,
+      "fixed_sd_fallback": false
+    },
+    {
+      "requested_volts": 0.65794,
+      "raw_adc": 8624,
+      "represented_volts": 0.657958984375,
+      "pressure_kpa": 33.770824860522616,
+      "native_electrical_class": 0,
+      "conditional_1500rpm_airflow": 14.541669845581055,
+      "fixed_sd_fallback": false
+    },
+    {
+      "requested_volts": 1.0,
+      "raw_adc": 13107,
+      "represented_volts": 0.9999847412109375,
+      "pressure_kpa": 56.02310241899991,
+      "native_electrical_class": 0,
+      "conditional_1500rpm_airflow": 26.609939575195312,
+      "fixed_sd_fallback": false
+    },
+    {
+      "requested_volts": 4.75,
+      "raw_adc": 62259,
+      "represented_volts": 4.7499847412109375,
+      "pressure_kpa": 299.9989598163805,
+      "native_electrical_class": 0,
+      "conditional_1500rpm_airflow": 500.0,
+      "fixed_sd_fallback": true
+    }
+  ],
+  "offset_sensitivity": [
+    {
+      "hypothetical_offset_shift_kpa": 0,
+      "formula": {
+        "offset_mmhg": -67.77665710449219,
+        "multiplier_mmhg_per_v": 487.991943359375,
+        "offset_kpa": -9.03614444883246,
+        "multiplier_kpa_per_v": 65.06024165906403
+      },
+      "points": [
+        {
+          "volts": 0,
+          "pressure_kpa": -9.03614444883246,
+          "conditional_airflow": 500.0,
+          "fixed_sd_fallback": true
+        },
+        {
+          "volts": 0.3,
+          "pressure_kpa": 10.481132622769003,
+          "conditional_airflow": 500.0,
+          "fixed_sd_fallback": true
+        },
+        {
+          "volts": 0.5,
+          "pressure_kpa": 23.495959860149178,
+          "conditional_airflow": 8.518251419067383,
+          "fixed_sd_fallback": false
+        },
+        {
+          "volts": 0.6579462872755686,
+          "pressure_kpa": 33.770824860522616,
+          "conditional_airflow": 14.541669845581055,
+          "fixed_sd_fallback": false
+        }
+      ]
+    },
+    {
+      "hypothetical_offset_shift_kpa": -5,
+      "formula": {
+        "offset_mmhg": -105.27973937988281,
+        "multiplier_mmhg_per_v": 487.991943359375,
+        "offset_kpa": -14.036144200877137,
+        "multiplier_kpa_per_v": 65.06024165906403
+      },
+      "points": [
+        {
+          "volts": 0,
+          "pressure_kpa": -14.036144200877137,
+          "conditional_airflow": 500.0,
+          "fixed_sd_fallback": true
+        },
+        {
+          "volts": 0.3,
+          "pressure_kpa": 5.481132870724325,
+          "conditional_airflow": 500.0,
+          "fixed_sd_fallback": true
+        },
+        {
+          "volts": 0.5,
+          "pressure_kpa": 18.4959601081045,
+          "conditional_airflow": 6.264387130737305,
+          "fixed_sd_fallback": false
+        },
+        {
+          "volts": 0.6579462872755686,
+          "pressure_kpa": 28.77082510847794,
+          "conditional_airflow": 11.465539932250977,
+          "fixed_sd_fallback": false
+        }
+      ]
+    },
+    {
+      "hypothetical_offset_shift_kpa": -13.770000000000003,
+      "formula": {
+        "offset_mmhg": -171.06015014648438,
+        "multiplier_mmhg_per_v": 487.991943359375,
+        "offset_kpa": -22.806144359990167,
+        "multiplier_kpa_per_v": 65.06024165906403
+      },
+      "points": [
+        {
+          "volts": 0,
+          "pressure_kpa": -22.806144359990167,
+          "conditional_airflow": 500.0,
+          "fixed_sd_fallback": true
+        },
+        {
+          "volts": 0.3,
+          "pressure_kpa": -3.2888672883887033,
+          "conditional_airflow": 500.0,
+          "fixed_sd_fallback": true
+        },
+        {
+          "volts": 0.5,
+          "pressure_kpa": 9.725959948991472,
+          "conditional_airflow": 500.0,
+          "fixed_sd_fallback": true
+        },
+        {
+          "volts": 0.6579462872755686,
+          "pressure_kpa": 20.000824949364908,
+          "conditional_airflow": 6.774405479431152,
+          "fixed_sd_fallback": false
+        }
+      ]
+    },
+    {
+      "hypothetical_offset_shift_kpa": -18.770000000000003,
+      "formula": {
+        "offset_mmhg": -208.563232421875,
+        "multiplier_mmhg_per_v": 487.991943359375,
+        "offset_kpa": -27.806144112034843,
+        "multiplier_kpa_per_v": 65.06024165906403
+      },
+      "points": [
+        {
+          "volts": 0,
+          "pressure_kpa": -27.806144112034843,
+          "conditional_airflow": 500.0,
+          "fixed_sd_fallback": true
+        },
+        {
+          "volts": 0.3,
+          "pressure_kpa": -8.28886704043338,
+          "conditional_airflow": 500.0,
+          "fixed_sd_fallback": true
+        },
+        {
+          "volts": 0.5,
+          "pressure_kpa": 4.7259601969467955,
+          "conditional_airflow": 500.0,
+          "fixed_sd_fallback": true
+        },
+        {
+          "volts": 0.6579462872755686,
+          "pressure_kpa": 15.000825197320232,
+          "conditional_airflow": 5.080621719360352,
+          "fixed_sd_fallback": false
+        }
+      ]
+    }
+  ],
+  "voltage_for_pressure_kpa": {
+    "10": 0.29259258747589345,
+    "12": 0.3233333278881505,
+    "15": 0.3694444385065361,
+    "20": 0.44629628953717876,
+    "33.77": 0.6579462872755686
+  },
+  "unchanged_filter": 0.05999999865889549,
+  "unchanged_slow_negative_gain": 0.03999999910593033,
+  "unchanged_first_negative_rpm_multiplier": 4.0,
+  "capture_checks": [
+    {
+      "label": "18:01",
+      "file": "romraiderlog_20260908_180131.csv",
+      "log_sha256": "6fd6a6ecbc03d5d326c265ec8000ed4656666b0f3fb9db287a60f9f1be36c66d",
+      "image_sha256": "7590b6ce79b41caea9d8bb850a31c41318708687120e45a584ad5030c1c47b8f",
+      "min_map_sample": {
+        "time": 95.335,
+        "battery": 14.4,
+        "state": 7.0,
+        "coolant": 29.0,
+        "load": 0.72,
+        "rpm": 1536.0,
+        "afr": 13.25,
+        "adc": 20480.0,
+        "latency": 0.6335,
+        "total_pulse": 2.05,
+        "pulse": 1.3573,
+        "pump": 33.33,
+        "timing": 15.0,
+        "iat": 20.0,
+        "map": 29.64,
+        "airflow": 13.38,
+        "throttle": 8.24,
+        "baro": 712.0,
+        "ready": 50.0,
+        "raw_load_from_flow": 0.52265625
+      },
+      "min_running_load_sample": {
+        "time": 95.751,
+        "battery": 14.48,
+        "state": 7.0,
+        "coolant": 29.0,
+        "load": 0.57,
+        "rpm": 1028.0,
+        "afr": 13.14,
+        "adc": 20544.0,
+        "latency": 0.6525,
+        "total_pulse": 1.54,
+        "pulse": 0.8005,
+        "pump": 33.33,
+        "timing": 15.0,
+        "iat": 20.0,
+        "map": 33.21,
+        "airflow": 9.29,
+        "throttle": 5.88,
+        "baro": 712.0,
+        "ready": 50.0,
+        "raw_load_from_flow": 0.5422178988326848
+      },
+      "samples_at_33_77_kpa": [
+        {
+          "time": 82.751,
+          "rpm": 1174.0,
+          "map": 33.77,
+          "load": 0.67,
+          "throttle": 5.88,
+          "pulse": 1.242
+        }
+      ]
+    },
+    {
+      "label": "18:11",
+      "file": "romraiderlog_dashpot2_20260908_181118.csv",
+      "log_sha256": "dd07aeadc3d5c390c2ccb2fdf8514343acf54dfb2b9c83558bfcbcb28d0dc99d",
+      "image_sha256": "7590b6ce79b41caea9d8bb850a31c41318708687120e45a584ad5030c1c47b8f",
+      "min_map_sample": {
+        "time": 29.649,
+        "battery": 14.4,
+        "state": 7.0,
+        "coolant": 32.0,
+        "load": 0.62,
+        "rpm": 1096.0,
+        "afr": 14.6,
+        "adc": 30016.0,
+        "latency": 0.6382,
+        "total_pulse": 2.3,
+        "pulse": 1.6395,
+        "pump": 100.0,
+        "timing": 15.0,
+        "iat": 20.0,
+        "map": 33.69,
+        "airflow": 9.91,
+        "throttle": 6.27,
+        "baro": 712.0,
+        "ready": 50.0,
+        "raw_load_from_flow": 0.5425182481751825
+      },
+      "min_running_load_sample": {
+        "time": 29.857,
+        "battery": 14.48,
+        "state": 7.0,
+        "coolant": 33.0,
+        "load": 0.58,
+        "rpm": 992.0,
+        "afr": 14.56,
+        "adc": 30016.0,
+        "latency": 0.6288,
+        "total_pulse": 2.3,
+        "pulse": 1.5455,
+        "pump": 100.0,
+        "timing": 15.0,
+        "iat": 20.0,
+        "map": 33.77,
+        "airflow": 8.91,
+        "throttle": 5.88,
+        "baro": 712.0,
+        "ready": 50.0,
+        "raw_load_from_flow": 0.5389112903225807
+      },
+      "samples_at_33_77_kpa": [
+        {
+          "time": 29.545,
+          "rpm": 1161.0,
+          "map": 33.77,
+          "load": 0.64,
+          "throttle": 6.27,
+          "pulse": 1.727
+        },
+        {
+          "time": 29.857,
+          "rpm": 992.0,
+          "map": 33.77,
+          "load": 0.58,
+          "throttle": 5.88,
+          "pulse": 1.5455
+        }
+      ]
+    },
+    {
+      "label": "18:15",
+      "file": "romraiderlog_dashpot3_20260908_181505.csv",
+      "log_sha256": "5150975c8ce9377691a7a7b38e5977aeb796d43c54be24d1debbbb71bddf1739",
+      "image_sha256": "7590b6ce79b41caea9d8bb850a31c41318708687120e45a584ad5030c1c47b8f",
+      "min_map_sample": {
+        "time": 34.528,
+        "battery": 14.32,
+        "state": 7.0,
+        "coolant": 48.0,
+        "load": 0.51,
+        "rpm": 1698.0,
+        "afr": 13.55,
+        "adc": 20544.0,
+        "latency": 0.6502,
+        "total_pulse": 2.05,
+        "pulse": 1.1338,
+        "pump": 33.33,
+        "timing": 15.0,
+        "iat": 21.0,
+        "map": 22.33,
+        "airflow": 8.68,
+        "throttle": 4.71,
+        "baro": 712.0,
+        "ready": 50.0,
+        "raw_load_from_flow": 0.30671378091872786
+      },
+      "min_running_load_sample": {
+        "time": 35.048,
+        "battery": 14.32,
+        "state": 7.0,
+        "coolant": 48.0,
+        "load": 0.36,
+        "rpm": 1014.0,
+        "afr": 13.13,
+        "adc": 20352.0,
+        "latency": 0.643,
+        "total_pulse": 1.54,
+        "pulse": 0.8568,
+        "pump": 33.33,
+        "timing": 15.0,
+        "iat": 21.0,
+        "map": 26.54,
+        "airflow": 6.09,
+        "throttle": 4.71,
+        "baro": 712.0,
+        "ready": 50.0,
+        "raw_load_from_flow": 0.3603550295857988
+      },
+      "samples_at_33_77_kpa": []
+    }
+  ],
+  "recovery_minimum": {
+    "time": 248.085,
+    "battery": 14.24,
+    "state": 7.0,
+    "coolant": 46.0,
+    "load": 0.31,
+    "rpm": 1494.0,
+    "afr": 15.61,
+    "adc": 36800.0,
+    "latency": 0.6525,
+    "total_pulse": 1.28,
+    "pulse": 0.6188,
+    "pump": 33.33,
+    "timing": 15.0,
+    "iat": 26.0,
+    "map": 16.29,
+    "airflow": 6.15,
+    "throttle": 4.31,
+    "lift": 1.0,
+    "factor": 0.63,
+    "transient": -0.3707,
+    "volts": 2.8076171875,
+    "flow_derived_load": 0.2469879518072289
+  },
+  "limitations": [
+    "ADC counts are supplied; hardware voltage/reference/ground, installed sensor identity and true pressure are unmeasured.",
+    "Electrical range classification is a separate native routine; diagnostic consequences beyond that classification are not executed.",
+    "SD uses fixed 1500 RPM/25 C/low-lift fixtures here; no downstream load/transient or engine response is predicted.",
+    "0 V can be executed mathematically but is not a valid physical sensor calibration reference for running the engine.",
+    "Offset variants are in-memory negative controls derived from hypothetical pressure targets, not recommended calibration values.",
+    "Native arithmetic is modeled with valid finite FTRC operands; FPSCR exceptions, hardware ADC timing and IRQ interleaving are not simulated."
+  ]
+}

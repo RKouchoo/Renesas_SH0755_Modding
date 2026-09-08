@@ -1,0 +1,296 @@
+{
+  "candidate_sha256": "6af0d130b585abf9c9b275840ddb0b237485d84f8f8adf7b15df8462adc72433",
+  "capture_sha256": "7b5c3fda47a64d97ee0761333bff9b1b53516d4239565681049159b2bef6d855",
+  "negative_slow_gain_address": "0x76030",
+  "original_gain": 0.03999999910593033,
+  "native_updates": 6639,
+  "B874_median_absolute_error": 0.001995143496990197,
+  "selected_points": [
+    {
+      "seconds": 192.959,
+      "update_seconds": 192.96402656185157,
+      "logged": {
+        "rpm": 837.0,
+        "coolant": 43.0,
+        "load": 0.54,
+        "map": 34.09,
+        "throttle": 6.27,
+        "afr": 13.15,
+        "transient": -0.6097,
+        "factor": 0.4,
+        "pulse": 0.763
+      },
+      "baseline": {
+        "history_load": 0.8971049189567566,
+        "fast_load_delta": -0.005778133869171143,
+        "slow_load_delta": -0.35663074254989624,
+        "fast_before_final_gains": -0.016192398965358734,
+        "slow_before_final_gains": -0.014265228994190693,
+        "fast_coolant_gain": 1.616943359375,
+        "fast_rpm_gain": 1.0086419582366943,
+        "slow_coolant_gain": 10.580078125,
+        "slow_rpm_gain": 3.8834388256073,
+        "startup_gain": 1.0,
+        "fast_term_before_startup_gain": -0.02640845626592636,
+        "slow_term_before_startup_gain": -0.58611661195755,
+        "native_B874": -0.6125250458717346
+      },
+      "variants": {
+        "half_negative_slow_gain": {
+          "history_load": 0.8971049189567566,
+          "fast_load_delta": -0.005778133869171143,
+          "slow_load_delta": -0.35663074254989624,
+          "fast_before_final_gains": -0.016192398965358734,
+          "slow_before_final_gains": -0.0071326144970953465,
+          "fast_coolant_gain": 1.616943359375,
+          "fast_rpm_gain": 1.0086419582366943,
+          "slow_coolant_gain": 10.580078125,
+          "slow_rpm_gain": 3.8834388256073,
+          "startup_gain": 1.0,
+          "fast_term_before_startup_gain": -0.02640845626592636,
+          "slow_term_before_startup_gain": -0.293058305978775,
+          "native_B874": -0.3194667398929596,
+          "net_ms_at_fixed_logged_load_and_residual": 1.2175714832530182
+        },
+        "zero_negative_slow_gain": {
+          "history_load": 0.8971049189567566,
+          "fast_load_delta": -0.005778133869171143,
+          "slow_load_delta": -0.35663074254989624,
+          "fast_before_final_gains": -0.016192398965358734,
+          "slow_before_final_gains": -0.0,
+          "fast_coolant_gain": 1.616943359375,
+          "fast_rpm_gain": 1.0086419582366943,
+          "slow_coolant_gain": 10.580078125,
+          "slow_rpm_gain": 3.8834388256073,
+          "startup_gain": 1.0,
+          "fast_term_before_startup_gain": -0.02640845626592636,
+          "slow_term_before_startup_gain": -0.0,
+          "native_B874": -0.02640845626592636,
+          "net_ms_at_fixed_logged_load_and_residual": 1.734526300846154
+        }
+      }
+    },
+    {
+      "seconds": 248.188,
+      "update_seconds": 248.20335797562728,
+      "logged": {
+        "rpm": 1288.0,
+        "coolant": 46.0,
+        "load": 0.28,
+        "map": 16.81,
+        "throttle": 4.31,
+        "afr": 14.61,
+        "transient": -0.4257,
+        "factor": 0.57,
+        "pulse": 0.6
+      },
+      "baseline": {
+        "history_load": 0.6555111408233643,
+        "fast_load_delta": -0.010262936353683472,
+        "slow_load_delta": -0.37698787450790405,
+        "fast_before_final_gains": -0.04784410446882248,
+        "slow_before_final_gains": -0.015079514123499393,
+        "fast_coolant_gain": 1.583984375,
+        "fast_rpm_gain": 1.116021752357483,
+        "slow_coolant_gain": 10.4599609375,
+        "slow_rpm_gain": 2.435122013092041,
+        "startup_gain": 1.0,
+        "fast_term_before_startup_gain": -0.08457693457603455,
+        "slow_term_before_startup_gain": -0.3840945065021515,
+        "native_B874": -0.46867144107818604
+      },
+      "variants": {
+        "half_negative_slow_gain": {
+          "history_load": 0.6555111408233643,
+          "fast_load_delta": -0.010262936353683472,
+          "slow_load_delta": -0.37698787450790405,
+          "fast_before_final_gains": -0.04784410446882248,
+          "slow_before_final_gains": -0.007539757061749697,
+          "fast_coolant_gain": 1.583984375,
+          "fast_rpm_gain": 1.116021752357483,
+          "slow_coolant_gain": 10.4599609375,
+          "slow_rpm_gain": 2.435122013092041,
+          "startup_gain": 1.0,
+          "fast_term_before_startup_gain": -0.08457693457603455,
+          "slow_term_before_startup_gain": -0.19204725325107574,
+          "native_B874": -0.2766241729259491,
+          "net_ms_at_fixed_logged_load_and_residual": 0.6577146965417731
+        },
+        "zero_negative_slow_gain": {
+          "history_load": 0.6555111408233643,
+          "fast_load_delta": -0.010262936353683472,
+          "slow_load_delta": -0.37698787450790405,
+          "fast_before_final_gains": -0.04784410446882248,
+          "slow_before_final_gains": -0.0,
+          "fast_coolant_gain": 1.583984375,
+          "fast_rpm_gain": 1.116021752357483,
+          "slow_coolant_gain": 10.4599609375,
+          "slow_rpm_gain": 2.435122013092041,
+          "startup_gain": 1.0,
+          "fast_term_before_startup_gain": -0.08457693457603455,
+          "slow_term_before_startup_gain": -0.0,
+          "native_B874": -0.08457693457603455,
+          "net_ms_at_fixed_logged_load_and_residual": 0.8333739056782691
+        }
+      }
+    },
+    {
+      "seconds": 248.604,
+      "update_seconds": 248.61903190782184,
+      "logged": {
+        "rpm": 792.0,
+        "coolant": 46.0,
+        "load": 0.26,
+        "map": 23.61,
+        "throttle": 5.1,
+        "afr": 13.58,
+        "transient": -0.5275,
+        "factor": 0.48,
+        "pulse": 0.6
+      },
+      "baseline": {
+        "history_load": 0.5815790891647339,
+        "fast_load_delta": 0.0,
+        "slow_load_delta": -0.3186883330345154,
+        "fast_before_final_gains": 0.0,
+        "slow_before_final_gains": -0.012747532688081264,
+        "fast_coolant_gain": 1.7000000476837158,
+        "fast_rpm_gain": 0.7421875,
+        "slow_coolant_gain": 10.4599609375,
+        "slow_rpm_gain": 4.0,
+        "startup_gain": 1.0,
+        "fast_term_before_startup_gain": 0.0,
+        "slow_term_before_startup_gain": -0.5333547592163086,
+        "native_B874": -0.5333547592163086
+      },
+      "variants": {
+        "half_negative_slow_gain": {
+          "history_load": 0.5815790891647339,
+          "fast_load_delta": 0.0,
+          "slow_load_delta": -0.3186883330345154,
+          "fast_before_final_gains": 0.0,
+          "slow_before_final_gains": -0.006373766344040632,
+          "fast_coolant_gain": 1.7000000476837158,
+          "fast_rpm_gain": 0.7421875,
+          "slow_coolant_gain": 10.4599609375,
+          "slow_rpm_gain": 4.0,
+          "startup_gain": 1.0,
+          "fast_term_before_startup_gain": 0.0,
+          "slow_term_before_startup_gain": -0.2666773796081543,
+          "native_B874": -0.2666773796081543,
+          "net_ms_at_fixed_logged_load_and_residual": 0.6292053520066035
+        },
+        "zero_negative_slow_gain": {
+          "history_load": 0.5815790891647339,
+          "fast_load_delta": 0.0,
+          "slow_load_delta": -0.3186883330345154,
+          "fast_before_final_gains": 0.0,
+          "slow_before_final_gains": -0.0,
+          "fast_coolant_gain": 1.7000000476837158,
+          "fast_rpm_gain": 0.7421875,
+          "slow_coolant_gain": 10.4599609375,
+          "slow_rpm_gain": 4.0,
+          "startup_gain": 1.0,
+          "fast_term_before_startup_gain": 0.0,
+          "slow_term_before_startup_gain": -0.0,
+          "native_B874": 0.0,
+          "net_ms_at_fixed_logged_load_and_residual": 0.8557033420649999
+        }
+      }
+    },
+    {
+      "seconds": 249.124,
+      "update_seconds": 249.12861453656913,
+      "logged": {
+        "rpm": 558.0,
+        "coolant": 46.0,
+        "load": 0.47,
+        "map": 44.97,
+        "throttle": 5.88,
+        "afr": 13.6,
+        "transient": 0.5111,
+        "factor": 1.52,
+        "pulse": 2.3405
+      },
+      "baseline": {
+        "history_load": 0.2874327301979065,
+        "fast_load_delta": 0.05237835645675659,
+        "slow_load_delta": 0.18522951006889343,
+        "fast_before_final_gains": 0.3166118860244751,
+        "slow_before_final_gains": 0.018522949889302254,
+        "fast_coolant_gain": 1.7000000476837158,
+        "fast_rpm_gain": 0.7421875,
+        "slow_coolant_gain": 3.4000000953674316,
+        "slow_rpm_gain": 1.27978515625,
+        "startup_gain": 1.0,
+        "fast_term_before_startup_gain": 0.3994751274585724,
+        "slow_term_before_startup_gain": 0.08059834688901901,
+        "native_B874": 0.4800734519958496
+      },
+      "variants": {
+        "half_negative_slow_gain": {
+          "history_load": 0.2874327301979065,
+          "fast_load_delta": 0.05237835645675659,
+          "slow_load_delta": 0.18522951006889343,
+          "fast_before_final_gains": 0.3166118860244751,
+          "slow_before_final_gains": 0.018522949889302254,
+          "fast_coolant_gain": 1.7000000476837158,
+          "fast_rpm_gain": 0.7421875,
+          "slow_coolant_gain": 3.4000000953674316,
+          "slow_rpm_gain": 1.27978515625,
+          "startup_gain": 1.0,
+          "fast_term_before_startup_gain": 0.3994751274585724,
+          "slow_term_before_startup_gain": 0.08059834688901901,
+          "native_B874": 0.4800734519958496,
+          "net_ms_at_fixed_logged_load_and_residual": 2.2860705966248784
+        },
+        "zero_negative_slow_gain": {
+          "history_load": 0.2874327301979065,
+          "fast_load_delta": 0.05237835645675659,
+          "slow_load_delta": 0.18522951006889343,
+          "fast_before_final_gains": 0.3166118860244751,
+          "slow_before_final_gains": 0.018522949889302254,
+          "fast_coolant_gain": 1.7000000476837158,
+          "fast_rpm_gain": 0.7421875,
+          "slow_coolant_gain": 3.4000000953674316,
+          "slow_rpm_gain": 1.27978515625,
+          "startup_gain": 1.0,
+          "fast_term_before_startup_gain": 0.3994751274585724,
+          "slow_term_before_startup_gain": 0.08059834688901901,
+          "native_B874": 0.4800734519958496,
+          "net_ms_at_fixed_logged_load_and_residual": 2.2860705966248784
+        }
+      }
+    }
+  ],
+  "direction_controls": [
+    {
+      "trajectory": "steady",
+      "changed_updates": {
+        "half_negative_slow_gain": 0,
+        "zero_negative_slow_gain": 0
+      }
+    },
+    {
+      "trajectory": "opening",
+      "changed_updates": {
+        "half_negative_slow_gain": 0,
+        "zero_negative_slow_gain": 0
+      }
+    },
+    {
+      "trajectory": "closing",
+      "changed_updates": {
+        "half_negative_slow_gain": 100,
+        "zero_negative_slow_gain": 100
+      }
+    }
+  ],
+  "limits": [
+    "Fixed recorded conditioned load/RPM/ECT; arbitrary initial crank phase and settled startup/flag fixtures.",
+    "Stock table interpolation is mathematical; native routine and component arithmetic execute SH-2E operations.",
+    "Alternative gain values exist only in memory and are sensitivity controls, not recommended calibrations.",
+    "Pulse sensitivity holds logged load and B7DC-minus-B874 fixed; no engine/AFR, injector-event or wall-film prediction.",
+    "Latest evening captures do not contain B874; their zero-pulse cause is unlogged."
+  ]
+}

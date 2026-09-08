@@ -66,7 +66,7 @@ LOGGER_FRAGMENT = HERE / "D2WD610H_master_logger_ecuparams.xml"
 LOGGER_DEFINITION = HERE / "D2WD610H_master_logger.xml"
 LOGGER_PROFILE = HERE / "D2WD610H_idle_diagnostic_profile.xml"
 EXPECTED_OUTPUT_SHA256 = "48d63cf3b7085afc672dd809cf08f4aef2b1aaae8a880f421e656467b7aaf8f0"
-EXPECTED_LOGGER_SHA256 = "f225b9688b05823941f6939e71f22a08deb0f11f898eb5bb477f0657f5b97d2e"
+EXPECTED_LOGGER_SHA256 = "595ab35b02e995aec3a82f017a028c7a839c9c4df6ae2fa307caf62fdd8eaff8"
 
 
 def fail(message: str) -> None:
@@ -657,6 +657,31 @@ def verify_definition() -> None:
 
     parent_names = {table.get("name") for table in roms[0].findall("table")}
     parent_tables = {table.get("name"): table for table in roms[0].findall("table")}
+    logger_parameters = {p.get("id"): p for p in
+        ET.parse(LOGGER_DEFINITION).findall("./protocols/protocol/parameters/parameter")}
+    for name, axis_type, log_id, ram in (
+        ("Speed Density VE - AVLS Low Lift", "X Axis", "E518", 0xFFABC4),
+        ("Speed Density VE - AVLS High Lift", "X Axis", "E518", 0xFFABC4),
+        ("Engine Load Compensation (MP)", "X Axis", "E51", 0xFFB2A0),
+        ("Cranking Fuel IPW Compensation (MAP)", "Y Axis", "E51", 0xFFB2A0),
+        ("CL to OL Delay (Atm. Pressure)", "Y Axis", "E520", 0xFFCFBC),
+    ):
+        axis = parent_tables[name].find(f"table[@type='{axis_type}']")
+        if axis is None or axis.get("logparam") != log_id:
+            fail(f"{name} uses the wrong pressure logger channel")
+        scale = axis.find("scaling")
+        channel = logger_parameters[log_id]
+        conversion = channel.find("conversions/conversion[@units='kPa absolute']")
+        if (int(channel.findtext("address"), 0) != ram
+                or channel.find("address").get("length") != "4"
+                or conversion is None or conversion.get("storagetype") != "float"
+                or scale.get("units") != "kPa absolute"
+                or scale.get("expression") != conversion.get("expr")
+                or scale.get("expression") != "x*0.1333224"
+                or scale.get("to_byte") != "x/0.1333224"):
+            fail(f"{name} pressure units/source disagree with the logger")
+    if any(t.get("logparam") == "E52" for t in roms[0].iter("table")):
+        fail("master pressure definition retains the missing E52 logger reference")
     iat_template = parent_tables.get("Intake Temp Sensor Scaling")
     if (
         iat_template is None
@@ -824,6 +849,12 @@ def verify_logger_fragment() -> None:
         "E515": ("0xFFC2B8", "4", "float", {"x/.84"}),
         "E516": ("0xFFB2BC", "1", "uint8", {"x"}),
         "E517": ("0xFFC4D9", "1", "uint8", {"x"}),
+        "E518": ("0xFFABC4", "4", "float", {"x", "x*0.1333224"}),
+        "E519": ("0xFFAB04", "2", "uint16", {"x", "x*0.0000762939453125"}),
+        "E520": ("0xFFCFBC", "4", "float", {"x", "x*0.1333224"}),
+        "E521": ("0xFFD26C", "1", "uint8", {"x"}),
+        "E522": ("0xFFD26F", "1", "uint8", {"x"}),
+        "E523": ("0xFFCFD0", "1", "uint8", {"x"}),
     }
     parameters = list(root.findall("ecuparam"))
     by_id = {parameter.get("id"): parameter for parameter in parameters}
@@ -1256,7 +1287,7 @@ def main() -> None:
     print("  fueling safety    : pressure-forced OL ON; 13.0-AFR delayed/latched cut ON")
     print("  guard execution   : cuts, native IRQ/context restore, locks and injector queues PASS")
     print("  logger            : complete D2WD610H-only SSM definition and fragment validated")
-    print("  capture profiles  : idle/after-start/recovery/idle-air profiles within native 43-address limit")
+    print("  capture profiles  : all five profiles, including MAP-source, within native 43-address limit")
     print("  provenance        : root stock, base copy, and SRF payload remain byte-identical")
 
 

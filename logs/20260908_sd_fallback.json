@@ -1,0 +1,503 @@
+{
+  "scope": "Offline B2A0-as-ABC4 proxy fixtures, not exact SD-input replay; no ROM/calibration/logger changes.",
+  "map_source_correction": "Logged E51 is FFFFB2A0. SD reads FFFFABC4, which was not captured. A positive processed-MAP margin does not establish an SD-input margin; zero proxy fallbacks cannot exclude actual fallback events.",
+  "checked_image_sha256": [
+    "48d63cf3b7085afc672dd809cf08f4aef2b1aaae8a880f421e656467b7aaf8f0",
+    "6af0d130b585abf9c9b275840ddb0b237485d84f8f8adf7b15df8462adc72433",
+    "7590b6ce79b41caea9d8bb850a31c41318708687120e45a584ad5030c1c47b8f",
+    "2f80b8e5cb80361cdee170655bc26aa8ed8a41bcf4cd7f7249fe3f8c8eaa1f1c"
+  ],
+  "constants": {
+    "FAILSAFE_AIRFLOW_ADDR": 500.0,
+    "MAX_AIRFLOW_ADDR": 500.0,
+    "MAP_MIN_ADDR": 100.0,
+    "MAP_MAX_ADDR": 1600.0,
+    "RPM_MIN_ADDR": 0.0,
+    "RPM_MAX_ADDR": 7500.0,
+    "IAT_MIN_ADDR": -50.0,
+    "IAT_MAX_ADDR": 150.0
+  },
+  "captures": [
+    {
+      "label": "12:36",
+      "file": "romraiderlog_idle_diagnostic_20260908_123651.csv",
+      "log_sha256": "9a1469b3666798d897fdab9f38301a4a8f5961c744be36dc76f175faef782a2b",
+      "image_sha256": "48d63cf3b7085afc672dd809cf08f4aef2b1aaae8a880f421e656467b7aaf8f0",
+      "samples": 1786,
+      "native_invocations": 3572,
+      "map_input_kind": "E51/B2A0 processed MAP supplied as proxy for unlogged ABC4",
+      "fixed_fallback_invocations": [],
+      "normal_cap_invocations": 0,
+      "minimum_map_sample": {
+        "time": 180.71,
+        "rpm": 734.0,
+        "map": 20.43,
+        "airflow": 2.34,
+        "load": 0.36,
+        "pulse": 0.0
+      },
+      "processed_map_proxy_margin_kpa": 7.097759999999999,
+      "maximum_logged_airflow": 38.2,
+      "logged_airflow_500_samples": 0,
+      "replay_airflow_range": [
+        0.0,
+        37.588966369628906
+      ],
+      "median_interval_ms": 103.9999999999992,
+      "largest_gap_seconds": 0.10800000000000409
+    },
+    {
+      "label": "14:13",
+      "file": "romraiderlog_idle_diagnostic2_20260908_141335.csv",
+      "log_sha256": "7b5c3fda47a64d97ee0761333bff9b1b53516d4239565681049159b2bef6d855",
+      "image_sha256": "6af0d130b585abf9c9b275840ddb0b237485d84f8f8adf7b15df8462adc72433",
+      "samples": 2510,
+      "native_invocations": 2510,
+      "map_input_kind": "E51/B2A0 processed MAP supplied as proxy for unlogged ABC4",
+      "fixed_fallback_invocations": [],
+      "normal_cap_invocations": 0,
+      "minimum_map_sample": {
+        "time": 248.085,
+        "rpm": 1494.0,
+        "map": 16.29,
+        "airflow": 6.15,
+        "load": 0.31,
+        "pulse": 0.6188
+      },
+      "processed_map_proxy_margin_kpa": 2.9577599999999986,
+      "maximum_logged_airflow": 47.27,
+      "logged_airflow_500_samples": 0,
+      "replay_airflow_range": [
+        0.0,
+        45.16700744628906
+      ],
+      "median_interval_ms": 103.9999999999992,
+      "largest_gap_seconds": 0.10699999999999932
+    },
+    {
+      "label": "18:01",
+      "file": "romraiderlog_20260908_180131.csv",
+      "log_sha256": "6fd6a6ecbc03d5d326c265ec8000ed4656666b0f3fb9db287a60f9f1be36c66d",
+      "image_sha256": "7590b6ce79b41caea9d8bb850a31c41318708687120e45a584ad5030c1c47b8f",
+      "samples": 1112,
+      "native_invocations": 2224,
+      "map_input_kind": "E51/B2A0 processed MAP supplied as proxy for unlogged ABC4",
+      "fixed_fallback_invocations": [],
+      "normal_cap_invocations": 0,
+      "minimum_map_sample": {
+        "time": 95.335,
+        "rpm": 1536.0,
+        "map": 29.64,
+        "airflow": 13.38,
+        "load": 0.72,
+        "pulse": 1.3573
+      },
+      "processed_map_proxy_margin_kpa": 16.307760000000002,
+      "maximum_logged_airflow": 51.43,
+      "logged_airflow_500_samples": 0,
+      "replay_airflow_range": [
+        7.809607982635498,
+        51.116432189941406
+      ],
+      "median_interval_ms": 103.9999999999992,
+      "largest_gap_seconds": 8.265
+    },
+    {
+      "label": "18:11",
+      "file": "romraiderlog_dashpot2_20260908_181118.csv",
+      "log_sha256": "dd07aeadc3d5c390c2ccb2fdf8514343acf54dfb2b9c83558bfcbcb28d0dc99d",
+      "image_sha256": "7590b6ce79b41caea9d8bb850a31c41318708687120e45a584ad5030c1c47b8f",
+      "samples": 1813,
+      "native_invocations": 3626,
+      "map_input_kind": "E51/B2A0 processed MAP supplied as proxy for unlogged ABC4",
+      "fixed_fallback_invocations": [],
+      "normal_cap_invocations": 0,
+      "minimum_map_sample": {
+        "time": 29.649,
+        "rpm": 1096.0,
+        "map": 33.69,
+        "airflow": 9.91,
+        "load": 0.62,
+        "pulse": 1.6395
+      },
+      "processed_map_proxy_margin_kpa": 20.35776,
+      "maximum_logged_airflow": 18.38,
+      "logged_airflow_500_samples": 0,
+      "replay_airflow_range": [
+        0.0,
+        18.42986488342285
+      ],
+      "median_interval_ms": 103.9999999999992,
+      "largest_gap_seconds": 17.840000000000003
+    },
+    {
+      "label": "18:15",
+      "file": "romraiderlog_dashpot3_20260908_181505.csv",
+      "log_sha256": "5150975c8ce9377691a7a7b38e5977aeb796d43c54be24d1debbbb71bddf1739",
+      "image_sha256": "7590b6ce79b41caea9d8bb850a31c41318708687120e45a584ad5030c1c47b8f",
+      "samples": 498,
+      "native_invocations": 996,
+      "map_input_kind": "E51/B2A0 processed MAP supplied as proxy for unlogged ABC4",
+      "fixed_fallback_invocations": [],
+      "normal_cap_invocations": 0,
+      "minimum_map_sample": {
+        "time": 34.528,
+        "rpm": 1698.0,
+        "map": 22.33,
+        "airflow": 8.68,
+        "load": 0.51,
+        "pulse": 1.1338
+      },
+      "processed_map_proxy_margin_kpa": 8.997759999999998,
+      "maximum_logged_airflow": 52.3,
+      "logged_airflow_500_samples": 0,
+      "replay_airflow_range": [
+        5.32139778137207,
+        54.36225128173828
+      ],
+      "median_interval_ms": 103.9999999999992,
+      "largest_gap_seconds": 0.10600000000000165
+    }
+  ],
+  "boundaries": {
+    "edge_cases": [
+      {
+        "case": "one_float_below_minimum",
+        "rpm": 1500,
+        "map_mmhg": 99.99999237060547,
+        "iat": 25,
+        "airflow": 500.0,
+        "fixed_fallback_read": true
+      },
+      {
+        "case": "at_minimum",
+        "rpm": 1500,
+        "map_mmhg": 100.0,
+        "iat": 25,
+        "airflow": 4.515488147735596,
+        "fixed_fallback_read": false
+      },
+      {
+        "case": "one_float_above_minimum",
+        "rpm": 1500,
+        "map_mmhg": 100.00000762939453,
+        "iat": 25,
+        "airflow": 4.515489101409912,
+        "fixed_fallback_read": false
+      },
+      {
+        "case": "minimum_processed_map_as_proxy",
+        "rpm": 1494,
+        "map_mmhg": 122.18501917157205,
+        "iat": 26,
+        "airflow": 5.471068859100342,
+        "fixed_fallback_read": false
+      },
+      {
+        "case": "invalid_iat",
+        "rpm": 1500,
+        "map_mmhg": 315,
+        "iat": "NaN",
+        "airflow": 500.0,
+        "fixed_fallback_read": true
+      },
+      {
+        "case": "stopped_with_invalid_map",
+        "rpm": 0,
+        "map_mmhg": "NaN",
+        "iat": 25,
+        "airflow": 0.0,
+        "fixed_fallback_read": false
+      }
+    ],
+    "consecutive_valid_pressure_steps": [
+      {
+        "map_mmhg": 712,
+        "airflow": 51.87301254272461
+      },
+      {
+        "map_mmhg": 100.0,
+        "airflow": 5.532564163208008
+      },
+      {
+        "map_mmhg": 712,
+        "airflow": 51.87301254272461
+      },
+      {
+        "map_mmhg": 100.0,
+        "airflow": 5.532564163208008
+      },
+      {
+        "map_mmhg": 315,
+        "airflow": 20.197879791259766
+      }
+    ]
+  },
+  "filter_fixtures": [
+    {
+      "fallback_calls": 0,
+      "fixture": "1500 RPM, 45 C, initial steady load 0.30; one transient update per load update; normal flags",
+      "first_ten_updates": [
+        {
+          "call": 1,
+          "airflow": 7.5,
+          "raw_load": 0.29999998211860657,
+          "conditioned_load": 0.29999998211860657,
+          "B874": 0.0
+        },
+        {
+          "call": 2,
+          "airflow": 7.5,
+          "raw_load": 0.29999998211860657,
+          "conditioned_load": 0.29999998211860657,
+          "B874": 0.0
+        },
+        {
+          "call": 3,
+          "airflow": 7.5,
+          "raw_load": 0.29999998211860657,
+          "conditioned_load": 0.29999998211860657,
+          "B874": 0.0
+        },
+        {
+          "call": 4,
+          "airflow": 7.5,
+          "raw_load": 0.29999998211860657,
+          "conditioned_load": 0.29999998211860657,
+          "B874": 0.0
+        },
+        {
+          "call": 5,
+          "airflow": 7.5,
+          "raw_load": 0.29999998211860657,
+          "conditioned_load": 0.29999998211860657,
+          "B874": 0.0
+        },
+        {
+          "call": 6,
+          "airflow": 7.5,
+          "raw_load": 0.29999998211860657,
+          "conditioned_load": 0.29999998211860657,
+          "B874": 0.0
+        },
+        {
+          "call": 7,
+          "airflow": 7.5,
+          "raw_load": 0.29999998211860657,
+          "conditioned_load": 0.29999998211860657,
+          "B874": 0.0
+        },
+        {
+          "call": 8,
+          "airflow": 7.5,
+          "raw_load": 0.29999998211860657,
+          "conditioned_load": 0.29999998211860657,
+          "B874": 0.0
+        },
+        {
+          "call": 9,
+          "airflow": 7.5,
+          "raw_load": 0.29999998211860657,
+          "conditioned_load": 0.29999998211860657,
+          "B874": 0.0
+        },
+        {
+          "call": 10,
+          "airflow": 7.5,
+          "raw_load": 0.29999998211860657,
+          "conditioned_load": 0.29999998211860657,
+          "B874": 0.0
+        }
+      ],
+      "last_update": {
+        "call": 100,
+        "airflow": 7.5,
+        "raw_load": 0.29999998211860657,
+        "conditioned_load": 0.29999998211860657,
+        "B874": 0.0
+      },
+      "max_conditioned_load": 0.29999998211860657,
+      "B874_range": [
+        0.0,
+        0.0
+      ]
+    },
+    {
+      "fallback_calls": 1,
+      "fixture": "1500 RPM, 45 C, initial steady load 0.30; one transient update per load update; normal flags",
+      "first_ten_updates": [
+        {
+          "call": 1,
+          "airflow": 500,
+          "raw_load": 4.0,
+          "conditioned_load": 0.5220003128051758,
+          "B874": 2.584359884262085
+        },
+        {
+          "call": 2,
+          "airflow": 7.5,
+          "raw_load": 0.29999998211860657,
+          "conditioned_load": 0.5086802840232849,
+          "B874": 2.637974977493286
+        },
+        {
+          "call": 3,
+          "airflow": 7.5,
+          "raw_load": 0.29999998211860657,
+          "conditioned_load": 0.49615946412086487,
+          "B874": 2.612441301345825
+        },
+        {
+          "call": 4,
+          "airflow": 7.5,
+          "raw_load": 0.29999998211860657,
+          "conditioned_load": 0.48438987135887146,
+          "B874": -0.17653517425060272
+        },
+        {
+          "call": 5,
+          "airflow": 7.5,
+          "raw_load": 0.29999998211860657,
+          "conditioned_load": 0.4733264744281769,
+          "B874": -0.17175880074501038
+        },
+        {
+          "call": 6,
+          "airflow": 7.5,
+          "raw_load": 0.29999998211860657,
+          "conditioned_load": 0.46292686462402344,
+          "B874": -0.16668012738227844
+        },
+        {
+          "call": 7,
+          "airflow": 7.5,
+          "raw_load": 0.29999998211860657,
+          "conditioned_load": 0.45315122604370117,
+          "B874": -0.16138426959514618
+        },
+        {
+          "call": 8,
+          "airflow": 7.5,
+          "raw_load": 0.29999998211860657,
+          "conditioned_load": 0.44396212697029114,
+          "B874": -0.15594391524791718
+        },
+        {
+          "call": 9,
+          "airflow": 7.5,
+          "raw_load": 0.29999998211860657,
+          "conditioned_load": 0.43532437086105347,
+          "B874": -0.15042008459568024
+        },
+        {
+          "call": 10,
+          "airflow": 7.5,
+          "raw_load": 0.29999998211860657,
+          "conditioned_load": 0.4272049069404602,
+          "B874": -0.1448640525341034
+        }
+      ],
+      "last_update": {
+        "call": 100,
+        "airflow": 7.5,
+        "raw_load": 0.29999998211860657,
+        "conditioned_load": 0.3004850447177887,
+        "B874": -0.0140308802947402
+      },
+      "max_conditioned_load": 0.5220003128051758,
+      "B874_range": [
+        -0.17653517425060272,
+        2.637974977493286
+      ]
+    },
+    {
+      "fallback_calls": 5,
+      "fixture": "1500 RPM, 45 C, initial steady load 0.30; one transient update per load update; normal flags",
+      "first_ten_updates": [
+        {
+          "call": 1,
+          "airflow": 500,
+          "raw_load": 4.0,
+          "conditioned_load": 0.5220003128051758,
+          "B874": 2.584359884262085
+        },
+        {
+          "call": 2,
+          "airflow": 500,
+          "raw_load": 4.0,
+          "conditioned_load": 0.7306804656982422,
+          "B874": 1.7292712926864624
+        },
+        {
+          "call": 3,
+          "airflow": 500,
+          "raw_load": 4.0,
+          "conditioned_load": 0.9268398284912109,
+          "B874": 1.2704287767410278
+        },
+        {
+          "call": 4,
+          "airflow": 500,
+          "raw_load": 4.0,
+          "conditioned_load": 1.111229658126831,
+          "B874": 1.1162484884262085
+        },
+        {
+          "call": 5,
+          "airflow": 500,
+          "raw_load": 4.0,
+          "conditioned_load": 1.2845559120178223,
+          "B874": 1.0324959754943848
+        },
+        {
+          "call": 6,
+          "airflow": 7.5,
+          "raw_load": 0.29999998211860657,
+          "conditioned_load": 1.22548246383667,
+          "B874": 1.056040644645691
+        },
+        {
+          "call": 7,
+          "airflow": 7.5,
+          "raw_load": 0.29999998211860657,
+          "conditioned_load": 1.1699533462524414,
+          "B874": 0.37395086884498596
+        },
+        {
+          "call": 8,
+          "airflow": 7.5,
+          "raw_load": 0.29999998211860657,
+          "conditioned_load": 1.1177560091018677,
+          "B874": -0.4027694761753082
+        },
+        {
+          "call": 9,
+          "airflow": 7.5,
+          "raw_load": 0.29999998211860657,
+          "conditioned_load": 1.068690538406372,
+          "B874": -0.41111311316490173
+        },
+        {
+          "call": 10,
+          "airflow": 7.5,
+          "raw_load": 0.29999998211860657,
+          "conditioned_load": 1.022568941116333,
+          "B874": -0.4170994758605957
+        }
+      ],
+      "last_update": {
+        "call": 100,
+        "airflow": 7.5,
+        "raw_load": 0.29999998211860657,
+        "conditioned_load": 0.3027563691139221,
+        "B874": -0.07133938372135162
+      },
+      "max_conditioned_load": 1.2845559120178223,
+      "B874_range": [
+        -0.428663969039917,
+        2.584359884262085
+      ]
+    }
+  ],
+  "limitations": "Logged MAP is processed B2A0, not the ABC4 SD input. Both normal history processing and diagnostic load-derived MAP substitution can separate them. Channels are rounded and asynchronous, usually 104 ms apart, with longer gaps in some captures. Proxy fixtures cannot exclude an actual input-gate crossing, transient sensor fault, corrupt RAM/ROM, or fallback between samples. This is not a CPU timing or engine/fuel-delivery model. Unlogged AVLS uses both surfaces as fixtures. Filter/transient fixtures use normal flags and mathematical transient LUT boundaries; other fuel factors and cuts are not composed. A 500 g/s numerical result alone cannot distinguish the fixed fallback from the normal cap; the fixture identifies the fixed ROM constant read."
+}

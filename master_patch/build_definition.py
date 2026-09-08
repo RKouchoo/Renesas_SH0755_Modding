@@ -804,6 +804,57 @@ def clarify_tip_in_units(parent: ET.Element) -> None:
         "the signed load-change fuel correction.")
 
 
+def clarify_pressure_sources(parent: ET.Element) -> None:
+    # RomRaider forwards the selected logger conversion to table highlighting
+    # without converting units. Match the diagnostic profile's kPa display as
+    # well as the actual RAM source used by each routine.
+    pressure_axes = (
+        ("Speed Density VE - AVLS Low Lift", "X Axis", "E518"),
+        ("Speed Density VE - AVLS High Lift", "X Axis", "E518"),
+        ("Engine Load Compensation (MP)", "X Axis", "E51"),
+        ("Cranking Fuel IPW Compensation (MAP)", "Y Axis", "E51"),
+        ("CL to OL Delay (Atm. Pressure)", "Y Axis", "E520"),
+    )
+    for name, axis_type, parameter in pressure_axes:
+        table = table_by_name(parent, name)
+        axis = next(a for a in table.findall("table") if a.get("type") == axis_type)
+        axis.set("logparam", parameter)
+        axis.find("scaling").attrib.update(
+            units="kPa absolute", expression="x*0.1333224", to_byte="x/0.1333224",
+            format="0.00", fineincrement=".1", coarseincrement="1")
+        if parameter == "E518":
+            note = "MAP axis uses the sensor-converted SD Native MAP Input E518."
+        elif parameter == "E51":
+            note = "MAP axis uses Factory Processed MAP E51, which can differ from the SD input."
+        else:
+            note = "Pressure axis uses Selected Barometric Estimate E520; this is not an independent pressure sensor."
+        set_description(table, table.findtext("description", "") + " " + note)
+
+    transfer = table_by_name(parent, "Omni Power MAP-SUP-3BR Scaling")
+    transfer.find("scaling").attrib.update(
+        units="kPa transfer", expression="x*0.1333224", to_byte="x/0.1333224",
+        format="0.000000", fineincrement=".01", coarseincrement=".1")
+    labels = transfer.findall("table/data")
+    labels[0].text, labels[1].text = "Offset (kPa absolute)", "Multiplier (kPa/V)"
+    set_description(transfer,
+        "Sensor pressure = MAP input voltage * multiplier + offset. Offset and "
+        "multiplier are displayed in kPa and kPa/V. Compare MAP Sensor Input ADC "
+        "E519 in Volts with SD Native MAP Input E518 in kPa absolute. Factory "
+        "Processed MAP E51 and the MAP-derived barometric estimate are not "
+        "independent calibration references. Changing the intercept shifts the "
+        "entire pressure range; a logged minimum alone does not establish a scaling error.")
+    valid = table_by_name(parent, "Speed Density MAP Valid Range")
+    valid.find("scaling").attrib.update(
+        units="kPa absolute", expression="x*0.1333224", to_byte="x/0.1333224",
+        format="0.000", fineincrement=".1", coarseincrement="1")
+    set_description(valid,
+        "Validity window for the sensor-converted SD Native MAP Input E518. "
+        "At nonzero RPM an out-of-range input publishes the fixed 500 g/s "
+        "fallback; it does not itself command injector inhibition. These are "
+        "input-rejection limits, separate from VE table edge interpolation. "
+        "Factory Processed MAP E51 can differ from this input.")
+
+
 def apply_master_categories(parent: ET.Element, target: ET.Element) -> None:
     """Assign and order the flat RomRaider menu categories by tuning workflow."""
     for rom in (parent, target):
@@ -1002,6 +1053,7 @@ def build_tree() -> ET.ElementTree:
         target.append(deepcopy(table_by_name(boost_target, name)))
     update_patch_descriptions(target)
     clarify_tip_in_units(parent)
+    clarify_pressure_sources(parent)
     add_wideband_templates(parent, target)
     add_fueling_safety_templates(parent, target)
     add_fuel_pump_tables(target)

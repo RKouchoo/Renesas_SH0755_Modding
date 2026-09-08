@@ -27,7 +27,7 @@ FRAGMENT = HERE / "D2WD610H_master_logger_ecuparams.xml"
 ECU_ID = "3C5A387116"
 TRANSPORT_ID = "iso9141"
 MODULE_ID = "ecu"
-PARAMETER_IDS = {f"E{number}" for number in range(500, 518)}
+PARAMETER_IDS = {f"E{number}" for number in range(500, 524)}
 
 # The upstream logger contains a global catalogue for many Subaru ECUs, TCMs,
 # diesel engines, and DCCD controllers.  Standard SSM parameters do not carry
@@ -183,6 +183,15 @@ def build_definition(source_text: str) -> tuple[str, int]:
         if parameter.get("id") not in STANDARD_PARAMETER_IDS:
             standard_parameters.remove(parameter)
 
+    baro = standard_parameters.find("parameter[@id='P24']")
+    if baro is None:
+        fail("source is missing the standard atmospheric-pressure channel P24")
+    baro.set("name", "Atmospheric Pressure Estimate")
+    baro.set("desc", "D2WD610H reports its selected MAP-derived atmospheric "
+        "estimate in whole kPa through this standard SSM channel. It is not an "
+        "independent barometric measurement. E520 records the selected native "
+        "float estimate at CFBC without the standard channel's whole-kPa rounding.")
+
     standard_switches = protocol.find("switches")
     if standard_switches is None:
         fail("SSM protocol has no standard <switches> block")
@@ -244,6 +253,13 @@ def build_definition(source_text: str) -> tuple[str, int]:
                 sorted(ALWAYS_VISIBLE_STOCK_PARAMETER_IDS - set(visible_stock))
             )
         )
+
+    visible_stock["E51"].set("name", "Factory Processed MAP (4-byte)*")
+    visible_stock["E51"].set("desc",
+        "D2WD610H processed MAP at FFFFB2A0 from 1496C. Includes pressure-history "
+        "selection and can be substituted from engine load when D26C mask 16 is set. "
+        "This is not the native SD input at ABC4; use E518 to record that input. "
+        "The 4-byte representation has no standard-byte pressure limit.")
 
     if not target_was_supported:
         fail(f"the source SSM definition has no ECU-specific support for {ECU_ID}")
@@ -380,7 +396,7 @@ def main(argv: list[str] | None = None) -> None:
         "  always-visible stock  : "
         f"{len(ALWAYS_VISIBLE_STOCK_PARAMETER_IDS)}"
     )
-    print("  project params         : E500 through E517 (always visible)")
+    print("  project params         : E500 through E523 (always visible)")
     print(f"  ECU-specific records   : {ECU_ID} only")
 
 

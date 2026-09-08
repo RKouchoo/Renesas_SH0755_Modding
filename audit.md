@@ -1,5 +1,78 @@
 # D2WD610H Patch Audits
 
+## 2026-09-08 — ECU/logger pressure definitions aligned
+
+Both master VE axes now link to native-MAP E518, replacing unavailable E52.
+Retained load/cranking pressure uses E51; CL/OL barometric delay uses E520.
+Axes and MAP transfer/validity displays use kPa units, matching the profile
+and avoiding RomRaider's lack of unit conversion during live highlighting.
+E51/P24 labels identify processed MAP and estimated atmosphere. E522 now
+correctly states that SD already bypasses the old local load-fallback getter
+at 173FC; the shared D26F diagnostic alone cannot invoke that substitution.
+This corrects the preceding audit's overly broad description. No BIN changed.
+
+## 2026-09-08 — MAP source mismatch and barometric path verified
+
+The [MAP-source audit](master_patch/MAP_SOURCE_AUDIT.md) establishes that SD
+reads ABC4 while the supplied E51 captures read processed B2A0. D26C/0x10
+can substitute load-derived MAP: fixed load 0.58 produces 33.588 kPa even
+with ABC4 at 15 kPa. The barometric estimator separately clamps its estimate
+to 570..770 mmHg without changing ABC4. These conditional native results
+do not prove either diagnostic was active in the car.
+
+All 65,536 ADC inputs give strictly increasing native MAP: no 33.77-kPa
+conversion floor. The earlier fallback replay is corrected to identify
+B2A0 as a proxy; it cannot establish ABC4's margin above the SD gate.
+The load/B874 component replay remains independently supported.
+New E518–E523 and a 19-channel/43-address profile expose both MAPs, ADC voltage,
+baro and diagnostic flags. Native SSM and actual offline RomRaider request
+checks pass. No BIN, intercept, slow-negative gain or 0.06 filter changed.
+
+## 2026-09-08 — low-RPM transient remedy narrowed to one table cell
+
+The [remedy comparison](master_patch/TRANSIENT_COMPONENT_AUDIT.md#narrower-remedy-comparison-reduce-the-low-rpm-negative-multiplier)
+tests the first slow-negative RPM multiplier at `76E7E`, 4.0→2.0, against
+halving the global negative gain. It gives the same −0.5334→−0.2667 result
+at 792 RPM while tapering to unchanged behaviour at 1600 RPM. All 6,639
+updates per variant and 45 direction/RPM/coolant controls preserve history,
+fast terms and positive correction. This is a diagnostic proposal at fixed
+recorded inputs, not an engine-validated fix; no BIN changed.
+
+The [fallback repair specification](master_patch/SD_FALLBACK_AUDIT.md#required-direction-for-a-fallback-repair)
+separates valid low-MAP calculation from true input faults and requires an
+explicit, logged injector-inhibit response and full scheduler verification.
+That firmware change is not yet implemented. The load filter stays at 0.06.
+
+## 2026-09-08 — fixed SD fallback checked against all five relevant captures
+
+The [fallback audit](master_patch/SD_FALLBACK_AUDIT.md) supplies 7,719 recorded
+rows to 12,928 native SD invocations, including both VE surfaces where AVLS
+was unlogged. **Correction:** MAP is B2A0 used as a proxy for unlogged ABC4.
+No proxy fixture reads the fixed fallback; minimum processed MAP 16.29 kPa
+does not prove a margin above the 13.332-kPa SD gate. Brief actual input and
+fallback events remain unresolved.
+
+A boundary fixture confirms a jump from 4.515 g/s at 100 mmHg to 500 g/s one
+float step below it. Injected fallback calls also produce large positive
+native transient corrections, so the design remains a consequential edge
+case. The retained 6% load filter behaves predictably; slow negative history
+compensation remains the strongest measured recovery lead. No BIN or logger
+changed. Reproduction: `master_patch/analyze_sd_fallback.py`.
+
+## 2026-09-08 — slow negative fuel term isolated; FPU prototype kept separate
+
+The [component replay](master_patch/TRANSIENT_COMPONENT_AUDIT.md) identifies
+the slow load-history term as the dominant measured fuel subtraction. At
+792 RPM it produces −0.5334 against logged B874 −0.5275, while the fast term
+is zero. A single negative-only scalar at `76030` was halved/zeroed in memory;
+the positive recovery branch and history states remain unchanged. Fixed-input
+replay is not proof of a calibration fix or physical wall-film behaviour.
+
+The separate [FPU prototype](master_patch/FPU_USAGE_AUDIT.md) reduces valid SD
+wrapper instructions 200→178, FP instructions 101→88 and immediate dependency
+pairs 42→13. Eight regression groups and 518 bit-identical paired native cases
+pass on each of three images. No default builder, BIN or logger changed.
+
 ## 2026-09-08 — native FPU workload and interlocks
 
 The [FPU census](master_patch/FPU_USAGE_AUDIT.md) executes SD's stock float

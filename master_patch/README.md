@@ -1,5 +1,12 @@
 # D2WD610H master turbo patch
 
+**Latest MAP investigation:** [source and barometric audit](MAP_SOURCE_AUDIT.md)
+confirms SD reads ABC4 while the supplied E51 logs record processed B2A0,
+which can be substituted from load under a diagnostic flag. The ADC converter
+has no 33.77-kPa floor. The new MAP-source logger profile captures the missing
+values and flags; it needs no BIN change. Intercept, negative gain and 0.06
+filter remain unchanged. Runtime activation and physical calibration are unresolved.
+
 > **September 8 static repair built:** the current image restores stock
 > radiator-fan control and deletes actual canister-purge duty and fuel
 > subtraction. Electronic boost control is removed; hard-overboost fuel cut
@@ -127,7 +134,7 @@ remain; the target ignores the separate voltage trim, including stored history.
 Other raw-voltage consumers and closed-loop transport dynamics remain audit
 limits; this does not establish total independence from the removed circuits.
 The complete generated logger definition has SHA-256
-`f225b9688b05823941f6939e71f22a08deb0f11f898eb5bb477f0657f5b97d2e`.
+`595ab35b02e995aec3a82f017a028c7a839c9c4df6ae2fa307caf62fdd8eaff8`.
 E511 now correctly identifies the signed transient load correction at B874.
 E503/E504 units use semicolons to prevent RomRaider splitting CSV headers.
 
@@ -250,7 +257,7 @@ reduces the upstream global catalogue to 63 H6-MT standard parameters, 46
 relevant switches, and 35 useful stock extended parameters. Nine stock
 high-resolution channels required for the lean-out capture are converted to
 unconditional direct SSM-address entries; the other 26 remain restricted to ECU
-ID `3C5A387116`. Project parameters E500--E517 are also unconditional. The
+ID `3C5A387116`. Project parameters E500--E523 are also unconditional. The
 complete diagnostic set therefore remains visible in Data, Graph, and Dashboard
 before RomRaider completes ECU identification. TCU/DCCD, diesel/common-rail/DPF,
 removed stock-O2/MAF, and unrelated-model dashboard entries are omitted. The
@@ -332,11 +339,13 @@ and verifies provenance and checksum.
 | `build_definition.py` | Generates the focused D2WD610H RomRaider definition. |
 | `D2WD610H_master_patch.xml` | Matching self-contained metric RomRaider definition. |
 | `D2WD610H_master_logger.xml` | Complete metric, SSM-only logger definition for ECU ID `3C5A387116`; ready artifact generated from logger v370. |
-| `D2WD610H_master_logger_ecuparams.xml` | Internal eighteen-parameter fragment used to generate the complete logger definition. |
+| `D2WD610H_master_logger_ecuparams.xml` | Internal 24-parameter fragment used to generate the complete logger definition. |
 | `D2WD610H_idle_diagnostic_profile.xml` | First-idle capture: wideband/raw/ready, MAP/load, immediate/learned trims, pulse/latency, pump/battery and operating conditions. 43 addresses, 136-byte request. |
 | `D2WD610H_afterstart_diagnostic_profile.xml` | Separate follow-up: six retained fuel terms (including transient E511), composed base factor/runtime, AFR, pulse and operating conditions. 43 addresses, 136-byte request. |
 | `D2WD610H_idle_recovery_profile.xml` | Previous recovery capture: 19 channels including signed transient E511, base factor E123 and committed AVLS E503. 43 addresses, 136-byte request. Load separately. |
 | `D2WD610H_idle_air_diagnostic_profile.xml` | Prepared profile; live test deferred. Idle RPM target, combined throttle request, pedal, C4D9 air-feedback flags and fuel response. 19 channels; 43 addresses. |
+| `D2WD610H_map_source_diagnostic_profile.xml` | Native/processed MAP, raw MAP voltage, selected baro, MAP/airflow fallback and baro-update flags with load/B874 and fuel response. 19 channels; 43 addresses. No BIN change. |
+| `MAP_SOURCE_AUDIT.md` / `audit_map_sources.py` / `audit_map_intercept.py` | Native MAP conversion, processed-MAP substitution and barometric estimate fixtures; correction of earlier SD-input replay claims. |
 | `IDLE_AIR_RECOVERY_AUDIT.md` / `test_load_conditioning_execution.py` / `replay_20260908_load_recovery.py` | Native load/transient replay and idle-air investigation; repeat rev test withdrawn. |
 | `test_idle_air_execution.py` | Native pedal/air eligibility, pressure demand and output limits, RPM-delta production, and P30 identity; eleven bounded groups, no engine-response proof. |
 | `test_idle_air_handover_execution.py` | Native periodic timer division, task call order and stationary deceleration-air/feedback handover; five bounded groups, including distinct fault effects. |

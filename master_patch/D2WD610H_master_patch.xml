@@ -14,12 +14,12 @@
    <flashmethod>sti04</flashmethod>
   </romid>
   <table type="2D" name="Omni Power MAP-SUP-3BR Scaling" category="01.1 - Air Model - MAP Sensor" storagetype="float" endian="little" sizey="2" userlevel="4">
-   <scaling units="bar absolute" expression="x*.001333224" to_byte="x/.001333224" format="0.0000" fineincrement=".01" coarseincrement=".1" />
+   <scaling units="kPa transfer" expression="x*0.1333224" to_byte="x/0.1333224" format="0.000000" fineincrement=".01" coarseincrement=".1" />
    <table type="Static Y Axis" name="MPS Voltage to Manifold Absolute Pressure" sizey="2">
-    <data>Offset (bara)</data>
-    <data>Multiplier (bara/v)</data>
+    <data>Offset (kPa absolute)</data>
+    <data>Multiplier (kPa/V)</data>
    </table>
-   <description>This is the scaling for the manifold pressure sensor. The multiplier is applied to manifold pressure sensor voltage and the offset is added to the result to determine manifold absolute pressure.</description>
+   <description>Sensor pressure = MAP input voltage * multiplier + offset. Offset and multiplier are displayed in kPa and kPa/V. Compare MAP Sensor Input ADC E519 in Volts with SD Native MAP Input E518 in kPa absolute. Factory Processed MAP E51 and the MAP-derived barometric estimate are not independent calibration references. Changing the intercept shifts the entire pressure range; a logged minimum alone does not establish a scaling error.</description>
   </table>
   <table type="2D" name="Omni Power MAP-SUP-3BR Input Limits (CEL)" category="01.1 - Air Model - MAP Sensor" storagetype="uint16" endian="big" sizey="2" userlevel="3">
    <scaling units="Volts" expression="x*.000076293945" to_byte="x/.000076293945" format="0.00" fineincrement=".01" coarseincrement=".1" />
@@ -73,12 +73,12 @@
    <description>Maximum normal speed-density airflow. A non-positive or non-finite value invokes the fixed 500 g/s rich/high-load fail-safe.</description>
   </table>
   <table type="2D" name="Speed Density MAP Valid Range" category="01.3 - Air Model - Speed Density" storagetype="float" endian="little" sizey="2" userlevel="4">
-   <scaling units="mmHg absolute" expression="x" to_byte="x" format="0.0" fineincrement="1" coarseincrement="10" />
+   <scaling units="kPa absolute" expression="x*0.1333224" to_byte="x/0.1333224" format="0.000" fineincrement=".1" coarseincrement="1" />
    <table type="Static Y Axis" name="Gate" sizey="2">
     <data>Minimum</data>
     <data>Maximum</data>
    </table>
-   <description>Native absolute-MAP validity window. Outside it the task writes the fixed 500 g/s rich/high-load fail-safe.</description>
+   <description>Validity window for the sensor-converted SD Native MAP Input E518. At nonzero RPM an out-of-range input publishes the fixed 500 g/s fallback; it does not itself command injector inhibition. These are input-rejection limits, separate from VE table edge interpolation. Factory Processed MAP E51 can differ from this input.</description>
   </table>
   <table type="2D" name="Speed Density RPM Valid Range" category="01.3 - Air Model - Speed Density" storagetype="float" endian="little" sizey="2" userlevel="4">
    <scaling units="RPM" expression="x" to_byte="x" format="#" fineincrement="10" coarseincrement="100" />
@@ -98,23 +98,23 @@
   </table>
   <table type="3D" name="Speed Density VE - AVLS Low Lift" category="01.4 - Air Model - VE Tables" storagetype="float" endian="little" sizex="13" sizey="9" userlevel="2">
    <scaling units="VE fraction" expression="x" to_byte="x" format="0.000" fineincrement=".005" coarseincrement=".02" />
-   <table type="X Axis" name="Manifold Pressure" storagetype="float" endian="little" logparam="E52">
-    <scaling units="mmHg absolute" expression="x" to_byte="x" format="0.0" fineincrement="1" coarseincrement="10" />
+   <table type="X Axis" name="Manifold Pressure" storagetype="float" endian="little" logparam="E518">
+    <scaling units="kPa absolute" expression="x*0.1333224" to_byte="x/0.1333224" format="0.00" fineincrement=".1" coarseincrement="1" />
    </table>
    <table type="Y Axis" name="Engine Speed" storagetype="float" endian="little" logparam="P8">
     <scaling units="RPM" expression="x" to_byte="x" format="#" fineincrement="50" coarseincrement="100" />
    </table>
-   <description>VE fraction used while committed AVLS mode 0xFFFFCD86 is not 3. The RPM axis stops at the 3200 RPM high-lift engage threshold. The 3000-3200 overlap is selected by committed state. The generated baseline contains an unvalidated second idle-VE trial near 1300 RPM/315 mmHg, raising VE from about 0.624 to 0.985. The added correction tapers to zero by 2500 RPM and 1150 mmHg. The latest log used the first trial and its AFR was still rising, so the second increase is not a verified repair. Validate with measured MAP and fuel data after after-start enrichment fully decays.</description>
+   <description>VE fraction used while committed AVLS mode 0xFFFFCD86 is not 3. The RPM axis stops at the 3200 RPM high-lift engage threshold. The 3000-3200 overlap is selected by committed state. The generated baseline contains an unvalidated second idle-VE trial near 1300 RPM/315 mmHg, raising VE from about 0.624 to 0.985. The added correction tapers to zero by 2500 RPM and 1150 mmHg. The latest log used the first trial and its AFR was still rising, so the second increase is not a verified repair. Validate with measured MAP and fuel data after after-start enrichment fully decays. MAP axis uses the sensor-converted SD Native MAP Input E518.</description>
   </table>
   <table type="3D" name="Speed Density VE - AVLS High Lift" category="01.4 - Air Model - VE Tables" storagetype="float" endian="little" sizex="13" sizey="11" userlevel="2">
    <scaling units="VE fraction" expression="x" to_byte="x" format="0.000" fineincrement=".005" coarseincrement=".02" />
-   <table type="X Axis" name="Manifold Pressure" storagetype="float" endian="little" logparam="E52">
-    <scaling units="mmHg absolute" expression="x" to_byte="x" format="0.0" fineincrement="1" coarseincrement="10" />
+   <table type="X Axis" name="Manifold Pressure" storagetype="float" endian="little" logparam="E518">
+    <scaling units="kPa absolute" expression="x*0.1333224" to_byte="x/0.1333224" format="0.00" fineincrement=".1" coarseincrement="1" />
    </table>
    <table type="Y Axis" name="Engine Speed" storagetype="float" endian="little" logparam="P8">
     <scaling units="RPM" expression="x" to_byte="x" format="#" fineincrement="50" coarseincrement="100" />
    </table>
-   <description>VE fraction used only while committed AVLS mode 0xFFFFCD86 is 3. The RPM axis starts at the 3000 RPM release threshold and extends through 7500 RPM. Values are conservative seeds requiring log calibration.</description>
+   <description>VE fraction used only while committed AVLS mode 0xFFFFCD86 is 3. The RPM axis starts at the 3000 RPM release threshold and extends through 7500 RPM. Values are conservative seeds requiring log calibration. MAP axis uses the sensor-converted SD Native MAP Input E518.</description>
   </table>
   <table type="2D" name="Engine Load Limit (Maximum)" category="01.5 - Air Model - Load Calculation" storagetype="float" endian="little" sizey="1" userlevel="3">
    <scaling units="Engine Load (g/rev)" expression="x" to_byte="x" format="0.00" fineincrement=".01" coarseincrement=".1" />
@@ -125,13 +125,13 @@
   </table>
   <table type="3D" name="Engine Load Compensation (MP)" category="01.5 - Air Model - Load Calculation" storagetype="uint8" endian="big" sizex="11" sizey="15" userlevel="3">
    <scaling units="Engine Load Compensation (%)" expression="(x*.390625)-50" to_byte="(x+50)/.390625" format="0.0" fineincrement=".2" coarseincrement="1" />
-   <table type="X Axis" name="Manifold Pressure" storagetype="float" endian="little" logparam="E52">
-    <scaling units="bar absolute" expression="x*.001333224" to_byte="x/.001333224" format="#0.000" fineincrement=".01" coarseincrement=".1" />
+   <table type="X Axis" name="Manifold Pressure" storagetype="float" endian="little" logparam="E51">
+    <scaling units="kPa absolute" expression="x*0.1333224" to_byte="x/0.1333224" format="0.00" fineincrement=".1" coarseincrement="1" />
    </table>
    <table type="Y Axis" name="Engine Speed" storagetype="float" endian="little" logparam="P8">
     <scaling units="RPM" expression="x" to_byte="x" format="#" fineincrement="50" coarseincrement="100" />
    </table>
-   <description>This is the compensation of engine load based on RPM and manifold pressure.</description>
+   <description>This is the compensation of engine load based on RPM and manifold pressure. MAP axis uses Factory Processed MAP E51, which can differ from the SD input.</description>
   </table>
   <table type="2D" name="Speed Density Load Filter Response" category="01.5 - Air Model - Load Calculation" storagetype="float" endian="little" sizey="1" userlevel="3">
    <scaling units="% per update" expression="x*100" to_byte="x/100" format="0.0" fineincrement=".5" coarseincrement="1" />
@@ -200,10 +200,10 @@
   </table>
   <table type="2D" name="CL to OL Delay (Atm. Pressure)" category="02.4 - Fueling - CL/OL Transition" storagetype="uint16" endian="big" sizey="7" userlevel="3">
    <scaling units="counter threshold" expression="x" to_byte="x" format="#" fineincrement="1" coarseincrement="100" />
-   <table type="Y Axis" name="Atmospheric Pressure" storagetype="float" endian="little" logparam="P24">
-    <scaling units="bar" expression="x*.001333224" to_byte="x/.001333224" format="0.000" fineincrement=".01" coarseincrement=".1" />
+   <table type="Y Axis" name="Atmospheric Pressure" storagetype="float" endian="little" logparam="E520">
+    <scaling units="kPa absolute" expression="x*0.1333224" to_byte="x/0.1333224" format="0.00" fineincrement=".1" coarseincrement="1" />
    </table>
-   <description>This is the period over which the 'CL to OL with Delay' throttle or base pulse width thresholds must be continuously exceeded before the closed loop to open loop fueling transition can take place. Only one of these delay values will be used depending on atmospheric pressure. If the current delay is non-zero, the 'CL to OL Transition with Delay (Throttle)' or 'CL to OL Transition with Delay (Base Pulse Width)' tables will be used to determine the transition from closed loop to open loop if either threshold is continuously exceeded over the current delay period. If the delay is zero, then these tables will not be used and the closed loop to open loop transition will be decided by the current enrichment value as determined by the 'Primary Open Loop Fueling' map.</description>
+   <description>This is the period over which the 'CL to OL with Delay' throttle or base pulse width thresholds must be continuously exceeded before the closed loop to open loop fueling transition can take place. Only one of these delay values will be used depending on atmospheric pressure. If the current delay is non-zero, the 'CL to OL Transition with Delay (Throttle)' or 'CL to OL Transition with Delay (Base Pulse Width)' tables will be used to determine the transition from closed loop to open loop if either threshold is continuously exceeded over the current delay period. If the delay is zero, then these tables will not be used and the closed loop to open loop transition will be decided by the current enrichment value as determined by the 'Primary Open Loop Fueling' map. Pressure axis uses Selected Barometric Estimate E520; this is not an independent pressure sensor.</description>
   </table>
   <table type="2D" name="CL to OL Transition with Delay (Throttle)" category="02.4 - Fueling - CL/OL Transition" storagetype="uint8" endian="big" sizey="16" userlevel="2" logparam="E38">
    <scaling units="Throttle Plate Opening Angle (%)" expression="x*.581287202" to_byte="x/.581287202" format="0.0" fineincrement=".3" coarseincrement="1" />
@@ -317,9 +317,9 @@
   <table type="2D" name="Cranking Fuel IPW Compensation (MAP)" category="02.5 - Fueling - Cranking" storagetype="uint8" endian="big" sizey="10" userlevel="5">
    <scaling units="Cranking Fuel Injector Pulse Width Compensation (%)" expression="(x*.78125)-100" to_byte="(x+100)/.78125" format="0.0" fineincrement=".4" coarseincrement="1" />
    <table type="Y Axis" name="Manifold Pressure" storagetype="float" endian="little" logparam="E51">
-    <scaling units="bar absolute" expression="x*.001333224" to_byte="x/.001333224" format="0.0000" fineincrement=".01" coarseincrement=".1" />
+    <scaling units="kPa absolute" expression="x*0.1333224" to_byte="x/0.1333224" format="0.00" fineincrement=".1" coarseincrement="1" />
    </table>
-   <description>This is the change to the 'Cranking Fuel Injector Pulse Width (ECT)', based on the manifold absolute pressure.</description>
+   <description>This is the change to the 'Cranking Fuel Injector Pulse Width (ECT)', based on the manifold absolute pressure. MAP axis uses Factory Processed MAP E51, which can differ from the SD input.</description>
   </table>
   <table type="2D" name="Cranking Fuel IPW Compensation (Accelerator)" category="02.5 - Fueling - Cranking" storagetype="uint8" endian="big" sizey="6" userlevel="5">
    <scaling units="Cranking Fuel Injector Pulse Width Compensation (%)" expression="(x*.78125)-100" to_byte="(x+100)/.78125" format="0.0" fineincrement=".4" coarseincrement="1" />

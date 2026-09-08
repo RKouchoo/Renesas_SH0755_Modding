@@ -47,6 +47,12 @@
         <parameter id="E515" livedata="selected" dash="selected" units="%" />
         <parameter id="E516" units="raw flags" />
         <parameter id="E517" livedata="selected" dash="selected" units="raw flags" />
+        <parameter id="E518" units="kPa absolute" />
+        <parameter id="E519" units="Volts" />
+        <parameter id="E520" units="kPa absolute" />
+        <parameter id="E521" units="raw flags" />
+        <parameter id="E522" units="raw flags" />
+        <parameter id="E523" units="raw flags" />
     </parameters>
     <switches>
         <switch id="S4" />

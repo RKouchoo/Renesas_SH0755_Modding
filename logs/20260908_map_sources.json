@@ -1,0 +1,369 @@
+{
+  "status": "Conditional native fixtures; no ECU I/O, firmware or calibration changes.",
+  "image_sha256": "2f80b8e5cb80361cdee170655bc26aa8ed8a41bcf4cd7f7249fe3f8c8eaa1f1c",
+  "native_map": "0xffffabc4",
+  "matching_captured_image_sha256": "7590b6ce79b41caea9d8bb850a31c41318708687120e45a584ad5030c1c47b8f",
+  "airflow_load_fallback_local_getter_bypassed": true,
+  "captured_E51_map": "0xffffb2a0",
+  "baro": "0xffffcfbc",
+  "map_cases": [
+    {
+      "native_kpa": 10,
+      "diagnostic_flags": 0,
+      "supplied_load": 0.58,
+      "processed_kpa": 9.999999504089354
+    },
+    {
+      "native_kpa": 10,
+      "diagnostic_flags": 16,
+      "supplied_load": 0.58,
+      "processed_kpa": 33.58814742038124
+    },
+    {
+      "native_kpa": 10,
+      "diagnostic_flags": 239,
+      "supplied_load": 0.58,
+      "processed_kpa": 9.999999504089354
+    },
+    {
+      "native_kpa": 10,
+      "diagnostic_flags": 255,
+      "supplied_load": 0.58,
+      "processed_kpa": 33.58814742038124
+    },
+    {
+      "native_kpa": 12,
+      "diagnostic_flags": 0,
+      "supplied_load": 0.58,
+      "processed_kpa": 11.999999811774803
+    },
+    {
+      "native_kpa": 12,
+      "diagnostic_flags": 16,
+      "supplied_load": 0.58,
+      "processed_kpa": 33.58814742038124
+    },
+    {
+      "native_kpa": 12,
+      "diagnostic_flags": 239,
+      "supplied_load": 0.58,
+      "processed_kpa": 11.999999811774803
+    },
+    {
+      "native_kpa": 12,
+      "diagnostic_flags": 255,
+      "supplied_load": 0.58,
+      "processed_kpa": 33.58814742038124
+    },
+    {
+      "native_kpa": 15,
+      "diagnostic_flags": 0,
+      "supplied_load": 0.58,
+      "processed_kpa": 15.000000273302978
+    },
+    {
+      "native_kpa": 15,
+      "diagnostic_flags": 16,
+      "supplied_load": 0.58,
+      "processed_kpa": 33.58814742038124
+    },
+    {
+      "native_kpa": 15,
+      "diagnostic_flags": 239,
+      "supplied_load": 0.58,
+      "processed_kpa": 15.000000273302978
+    },
+    {
+      "native_kpa": 15,
+      "diagnostic_flags": 255,
+      "supplied_load": 0.58,
+      "processed_kpa": 33.58814742038124
+    },
+    {
+      "native_kpa": 20,
+      "diagnostic_flags": 0,
+      "supplied_load": 0.58,
+      "processed_kpa": 19.99999900817871
+    },
+    {
+      "native_kpa": 20,
+      "diagnostic_flags": 16,
+      "supplied_load": 0.58,
+      "processed_kpa": 33.58814742038124
+    },
+    {
+      "native_kpa": 20,
+      "diagnostic_flags": 239,
+      "supplied_load": 0.58,
+      "processed_kpa": 19.99999900817871
+    },
+    {
+      "native_kpa": 20,
+      "diagnostic_flags": 255,
+      "supplied_load": 0.58,
+      "processed_kpa": 33.58814742038124
+    },
+    {
+      "native_kpa": 33.77,
+      "diagnostic_flags": 0,
+      "supplied_load": 0.58,
+      "processed_kpa": 33.77000095367431
+    },
+    {
+      "native_kpa": 33.77,
+      "diagnostic_flags": 16,
+      "supplied_load": 0.58,
+      "processed_kpa": 33.58814742038124
+    },
+    {
+      "native_kpa": 33.77,
+      "diagnostic_flags": 239,
+      "supplied_load": 0.58,
+      "processed_kpa": 33.77000095367431
+    },
+    {
+      "native_kpa": 33.77,
+      "diagnostic_flags": 255,
+      "supplied_load": 0.58,
+      "processed_kpa": 33.58814742038124
+    },
+    {
+      "native_kpa": 95,
+      "diagnostic_flags": 0,
+      "supplied_load": 0.58,
+      "processed_kpa": 94.99999935752466
+    },
+    {
+      "native_kpa": 95,
+      "diagnostic_flags": 16,
+      "supplied_load": 0.58,
+      "processed_kpa": 33.58814742038124
+    },
+    {
+      "native_kpa": 95,
+      "diagnostic_flags": 239,
+      "supplied_load": 0.58,
+      "processed_kpa": 94.99999935752466
+    },
+    {
+      "native_kpa": 95,
+      "diagnostic_flags": 255,
+      "supplied_load": 0.58,
+      "processed_kpa": 33.58814742038124
+    },
+    {
+      "native_kpa": 150,
+      "diagnostic_flags": 0,
+      "supplied_load": 0.58,
+      "processed_kpa": 150.00000069869188
+    },
+    {
+      "native_kpa": 150,
+      "diagnostic_flags": 16,
+      "supplied_load": 0.58,
+      "processed_kpa": 33.58814742038124
+    },
+    {
+      "native_kpa": 150,
+      "diagnostic_flags": 239,
+      "supplied_load": 0.58,
+      "processed_kpa": 150.00000069869188
+    },
+    {
+      "native_kpa": 150,
+      "diagnostic_flags": 255,
+      "supplied_load": 0.58,
+      "processed_kpa": 33.58814742038124
+    }
+  ],
+  "normal_and_fallback_step": [
+    {
+      "map_diagnostic_flags": 0,
+      "native_step_kpa": [
+        95,
+        15
+      ],
+      "processed_updates_kpa": [
+        94.99999935752466,
+        15.000000273302978,
+        15.000000273302978,
+        15.000000273302978
+      ]
+    },
+    {
+      "map_diagnostic_flags": 16,
+      "native_step_kpa": [
+        95,
+        15
+      ],
+      "processed_updates_kpa": [
+        64.29407338895295,
+        33.58814742038124,
+        33.58814742038124,
+        33.58814742038124
+      ]
+    }
+  ],
+  "baro_cases": [
+    {
+      "native_kpa": 10,
+      "diagnostic_flags": 0,
+      "baro_flags": 0,
+      "selected_baro_mmhg": 712.0
+    },
+    {
+      "native_kpa": 10,
+      "diagnostic_flags": 0,
+      "baro_flags": 32,
+      "selected_baro_mmhg": 714.5
+    },
+    {
+      "native_kpa": 10,
+      "diagnostic_flags": 0,
+      "baro_flags": 128,
+      "selected_baro_mmhg": 570.0
+    },
+    {
+      "native_kpa": 10,
+      "diagnostic_flags": 16,
+      "baro_flags": 128,
+      "selected_baro_mmhg": 760.0
+    },
+    {
+      "native_kpa": 15,
+      "diagnostic_flags": 0,
+      "baro_flags": 0,
+      "selected_baro_mmhg": 712.0
+    },
+    {
+      "native_kpa": 15,
+      "diagnostic_flags": 0,
+      "baro_flags": 32,
+      "selected_baro_mmhg": 714.5
+    },
+    {
+      "native_kpa": 15,
+      "diagnostic_flags": 0,
+      "baro_flags": 128,
+      "selected_baro_mmhg": 570.0
+    },
+    {
+      "native_kpa": 15,
+      "diagnostic_flags": 16,
+      "baro_flags": 128,
+      "selected_baro_mmhg": 760.0
+    },
+    {
+      "native_kpa": 33.77,
+      "diagnostic_flags": 0,
+      "baro_flags": 0,
+      "selected_baro_mmhg": 712.0
+    },
+    {
+      "native_kpa": 33.77,
+      "diagnostic_flags": 0,
+      "baro_flags": 32,
+      "selected_baro_mmhg": 714.5
+    },
+    {
+      "native_kpa": 33.77,
+      "diagnostic_flags": 0,
+      "baro_flags": 128,
+      "selected_baro_mmhg": 570.0
+    },
+    {
+      "native_kpa": 33.77,
+      "diagnostic_flags": 16,
+      "baro_flags": 128,
+      "selected_baro_mmhg": 760.0
+    },
+    {
+      "native_kpa": 95,
+      "diagnostic_flags": 0,
+      "baro_flags": 0,
+      "selected_baro_mmhg": 712.0
+    },
+    {
+      "native_kpa": 95,
+      "diagnostic_flags": 0,
+      "baro_flags": 32,
+      "selected_baro_mmhg": 714.5
+    },
+    {
+      "native_kpa": 95,
+      "diagnostic_flags": 0,
+      "baro_flags": 128,
+      "selected_baro_mmhg": 712.55859375
+    },
+    {
+      "native_kpa": 95,
+      "diagnostic_flags": 16,
+      "baro_flags": 128,
+      "selected_baro_mmhg": 760.0
+    },
+    {
+      "native_kpa": 150,
+      "diagnostic_flags": 0,
+      "baro_flags": 0,
+      "selected_baro_mmhg": 712.0
+    },
+    {
+      "native_kpa": 150,
+      "diagnostic_flags": 0,
+      "baro_flags": 32,
+      "selected_baro_mmhg": 714.5
+    },
+    {
+      "native_kpa": 150,
+      "diagnostic_flags": 0,
+      "baro_flags": 128,
+      "selected_baro_mmhg": 770.0
+    },
+    {
+      "native_kpa": 150,
+      "diagnostic_flags": 16,
+      "baro_flags": 128,
+      "selected_baro_mmhg": 760.0
+    }
+  ],
+  "running_learning": {
+    "previous_baro_mmhg": 712.0,
+    "supplied_processed_map_mmhg": 680,
+    "pressure_loss_mmhg": 20,
+    "alpha": 0.4999999403953552,
+    "selected_baro_mmhg": 706.0
+  },
+  "map_fallback_diagnostic_sources": [
+    {
+      "dtc": "P0068",
+      "descriptor": "0x5c5c0",
+      "current_status_address": "0xffff8ea6",
+      "mask": 8,
+      "enable_address": "0x5bdb8",
+      "enable_value": 0
+    },
+    {
+      "dtc": "P0107",
+      "descriptor": "0x5c50c",
+      "current_status_address": "0xffff8e86",
+      "mask": 16,
+      "enable_address": "0x5bdaf",
+      "enable_value": 1
+    },
+    {
+      "dtc": "P0108",
+      "descriptor": "0x5c520",
+      "current_status_address": "0xffff8e86",
+      "mask": 32,
+      "enable_address": "0x5bdb0",
+      "enable_value": 1
+    }
+  ],
+  "unchanged_load_filter": 0.05999999865889549,
+  "unchanged_slow_negative_gain": 0.03999999910593033,
+  "limitations": [
+    "Native MAP, prior histories and diagnostic flags are supplied fixtures; the captures do not record ABC4 or D26C/D26F/CFD0.",
+    "The estimator is executed for supplied flags; its full learning eligibility and diagnostic-status update chain are statically traced, not dynamically replayed.",
+    "No sensor calibration, engine response, CPU deadlines, or logger sample atomicity is established."
+  ]
+}

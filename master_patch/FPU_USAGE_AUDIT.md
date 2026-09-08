@@ -8,6 +8,51 @@ lookup helper at `0x2702`: MAP, RPM and IAT each require at most one.
 This is an instruction census and dependency review, **not measured execution
 time, total CPU utilization, or a deadline guarantee**. No BIN changed.
 
+## Subsequent optimisation prototype
+
+`prototype_sd_fpu_reuse.py` reuses the same float limits/zero within call-free
+regions and moves existing independent loads between dependent instructions.
+The default builder and every BIN remain unchanged. A shorter wrapper exists
+only in an emulator byte array; that array is not checksummed or exported.
+
+| Valid low-lift path | Current | Prototype |
+|---|---:|---:|
+| Wrapper instructions | 200 | 178 |
+| Wrapper FP instructions | 101 | 88 |
+| Immediate non-divide FP dependency pairs | 42 | 13 |
+| Idle instructions including native lookups | 476 | 454 |
+| Idle FP instructions including native lookups | 194 | 181 |
+| Wrapper code plus literal-pool bytes | 536 | 492 |
+
+The six multiplications retain their operands and order. All 42 validation
+comparisons remain; native table lookups and their possible three divisions
+remain. Cached constants use caller-saved FR6/FR7/FR8 and are reloaded after
+each call. The retained caller defines FR6/FR7 before its subsequent uses and
+does not use FR8; the generic ABI checks also pass. This is not a fixed-point
+rewrite or reciprocal approximation.
+
+All eight existing SD regression groups pass for both variants, including
+lookup helpers that deliberately poison caller-saved registers, invalid
+inputs/results, changed RAM after snapshots, and stack checks. Another 518
+paired cases per input image execute the native lookup instructions and return
+**bit-identical airflow**. Baseline, original idle candidate and the user's
+current dashpot image all pass (1,554 paired cases total).
+
+This reduces valid-path FP instruction count by 12.9%, and immediate dependency
+pairs by 69.0%; neither percentage is a measured speed improvement. The whole
+idle call loses 22 of 476 instructions (4.6%). An early NaN-MAP exit instead
+grows from 33 to 38 instructions because constants are loaded before that
+check. FPSCR flags/exception delivery and interrupt interference remain outside
+the emulator's checks. No claim of faster execution on every path is made.
+
+```sh
+python3 master_patch/prototype_sd_fpu_reuse.py --output /tmp/d2wd-fpu-reuse.json
+```
+
+The later [transient-component analysis](TRANSIENT_COMPONENT_AUDIT.md) gives a
+more direct explanation for persistent fuel subtraction during recovery. The
+FPU prototype is kept separate from that calibration sensitivity experiment.
+
 ## What the processor actually waits for
 
 The [Renesas SH-2E Software Manual](https://www.renesas.com/en/document/mah/sh-2e-software-manual)
