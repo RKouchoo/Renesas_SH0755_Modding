@@ -48,9 +48,14 @@ reassessment in [GHIDRA_AUDIT.md](GHIDRA_AUDIT.md).
 
 The September 8 12:36 capture now confirms complete logging on this 10:30
 image. Steady idle is substantially improved, but the throttle blips produce
-near-stall RPM followed by a sustained lean recovery. The low-RPM VE taper
-and an additional transient pulse reduction need further work. No new BIN
-was generated from this run. See the [log review](../logs/20260908_idle_review.md).
+near-stall RPM followed by a sustained lean recovery. The subsequent
+[idle-recovery audit](IDLE_RECOVERY_AUDIT.md) traces the extra pulse reduction
+to retained signed load-change compensation, amplified by the low-RPM VE
+taper. A separate [calibration candidate](candidates/README.md), SHA-256
+`6af0d130b585abf9c9b275840ddb0b237485d84f8f8adf7b15df8462adc72433`,
+changes ten idle VE cells and checksum while retaining all code. It passes
+offline checks but needs idle-only validation. The main BIN above remains
+the logged 10:30 baseline. See the [log review](../logs/20260908_idle_review.md).
 
 The September 8 hook hardening uses saved caller RPM and single-read MAP/IAT,
 and removes only this load task's obsolete MAF-fault fallback. Cranking and
@@ -72,7 +77,8 @@ remain; the target ignores the separate voltage trim, including stored history.
 Other raw-voltage consumers and closed-loop transport dynamics remain audit
 limits; this does not establish total independence from the removed circuits.
 The complete generated logger definition has SHA-256
-`e21f5d6633605369faa013027155adeeca8583ef0f1a9486d603dbbca2e68e0b`.
+`feb5525e8fde3829450d50d78110d2507e874cdd70fc9767430cee1d6aad22c7`.
+E511 now correctly identifies the signed transient load correction at B874.
 
 The [guard execution audit](GUARD_EXECUTION_AUDIT.md) subsequently found and
 fixed a lean-confirmation gap: a zero logger fault sentinel with stale valid
@@ -277,7 +283,9 @@ and verifies provenance and checksum.
 | `D2WD610H_master_logger.xml` | Complete metric, SSM-only logger definition for ECU ID `3C5A387116`; ready artifact generated from logger v370. |
 | `D2WD610H_master_logger_ecuparams.xml` | Internal fourteen-parameter fragment used to generate the complete logger definition. |
 | `D2WD610H_idle_diagnostic_profile.xml` | First-idle capture: wideband/raw/ready, MAP/load, immediate/learned trims, pulse/latency, pump/battery and operating conditions. 43 addresses, 136-byte request. |
-| `D2WD610H_afterstart_diagnostic_profile.xml` | Separate follow-up: all six after-start terms, composed base factor/runtime, AFR, pulse and operating conditions. 43 addresses, 136-byte request; not simultaneous with the first profile. |
+| `D2WD610H_afterstart_diagnostic_profile.xml` | Separate follow-up: six retained fuel terms (including transient E511), composed base factor/runtime, AFR, pulse and operating conditions. 43 addresses, 136-byte request. |
+| `D2WD610H_idle_recovery_profile.xml` | Current recovery investigation: 19 channels including signed transient E511, base factor E123 and committed AVLS E503. 43 addresses, 136-byte request. Load separately. |
+| `IDLE_RECOVERY_AUDIT.md` / `idle_recovery_candidate.py` | Native load-change trace, recorded-input replay, and isolated ten-cell VE candidate; engine validation pending. |
 | `LOGGER_CONNECTION_AUDIT.md` | Native 43-address receive limit, RomRaider subscription-queue repair, and the successful complete 12:36 idle capture. |
 | `install_master_logger.py` | Generates a complete D2WD610H-only logger from a normal complete logger XML, retaining its DTD and applicable stock channels. |
 | `ghidra_scripts/ApplyMasterNames.java` | Reproducibly reapplies the names/comments confirmed in live Ghidra. |

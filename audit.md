@@ -1891,3 +1891,52 @@ No new ROM or calibration was produced. Further rev/flash trials remain on
 hold while the low-RPM VE shape and retained transient-duration path are
 reviewed. The evidence, limits, chart and numerical reproduction are in
 [the capture review](logs/20260908_idle_review.md).
+
+## 2026-09-08 — Signed transient correction traced; separate VE candidate
+
+The extra pulse reduction identified above now has a strong software
+attribution. Native `1E7E8` continuously computes signed load-change correction
+B874; its old after-start-only label was incorrect. Its slow falling-load
+history moves 1% per invocation. The native 24-slot crank map schedules its
+fuel task six times per 720-degree cycle, so this decay takes more time as
+RPM falls. `1DD04` carries negative B874 into both banks and all six cylinder
+durations; the normal `1CA38` selector preserves those durations.
+
+Replaying the recorded load/RPM/ECT through the native correction family,
+base-duration producer and final composer gives about 0.840 ms at 160.950 s,
+versus the logged 0.788 ms, with modeled B874=-0.514. Median absolute pulse
+error over the blip interval is 0.059 ms. This uses interpolated inputs,
+an assumed initial crank phase and neutral unlogged corrections, not a
+reconstruction of every ECU/hardware state. B874 will be logged directly
+in the new recovery capture.
+
+The low-RPM VE taper both reduces steady modeled load and provokes this
+negative transient response. The separate
+`master_patch/candidates/D2WD610H_idle_recovery_candidate.bin` holds the
+existing 1200-RPM VE in the 500/800-RPM rows at 250/350 mmHg. The 450/550/650-mmHg
+cells bridge pressure times VE to each row's unchanged 760-mmHg value. Ten
+cells plus checksum differ from the pinned 10:30 build: 34 actual bytes. A
+pressure-slope regression caught and removed an air-mass reversal in the first
+blend; modeled air mass now rises with pressure throughout. All firmware instructions
+and stock transient calibrations are retained. Main `48d63c...` is preserved
+as the logged baseline.
+
+Candidate SHA-256:
+`6af0d130b585abf9c9b275840ddb0b237485d84f8f8adf7b15df8462adc72433`;
+Subaru checksum `0x16CB75E9`. The settled 1069-RPM point conditionally predicts
+about 14.85 AFR; lower-RPM cell increases are substantially larger and remain
+unvalidated. Startup interpolation and other load-indexed decisions also
+need validation.
+
+Eight retained transient execution groups and seven candidate groups pass.
+The full master audit passes on the baseline with the new coverage. The new
+19-channel recovery profile retains all selections through RomRaider's actual
+queue/reload path and builds a checksum-valid 43-address / 136-byte request.
+E511 is now correctly named; E123 uses raw base-equivalence ratio in this
+profile, and E503 captures committed lift mode. Current logger-definition
+SHA-256 is `feb5525e8fde3829450d50d78110d2507e874cdd70fc9767430cee1d6aad22c7`.
+
+No ECU traffic, flash or engine operation was performed. The next validation
+is controlled untouched idle before repeating blips. Full evidence, exact
+changed cells, reproduction and limits are in
+[IDLE_RECOVERY_AUDIT.md](master_patch/IDLE_RECOVERY_AUDIT.md).

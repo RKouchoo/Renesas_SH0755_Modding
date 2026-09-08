@@ -91,10 +91,17 @@ See the master audit for the verified `3FD8C -> E8C4` fan route and
 | 0xFFFFBE20 / BE24 / BE00 | Primary OL table A/B cached values and selected enrichment from 22454 |
 | 0xFFFFBDFC / BE04 | Main and auxiliary primary OL ramp outputs; stock delay/eligibility gates remain |
 | 0xFFFFBDF8 | Primary OL enrichment from 22454; normal branch max(BDFC, BE04) times BE0C times BE10. Added into both banks by final composer 1DD04 |
+| 0xFFFFB874 | Signed transient load-change fuel correction, produced by 1E7E8 and added by 1DD04; E511. Its old after-start-only label was incorrect. |
+| 0xFFFFB878 / B87C | Slowly followed load / signed current-minus-followed load used by transient fueling |
+| 0xFFFFB880 | Signed fast load change from current B438 to the three-updates-old sample, with native limits/deadband |
+| 0xFFFFB884 / B888 / B890 | Fast/slow transient terms and startup gain used to compose B874 |
+| 0xFFFFB8B8..B8C4 | Four-sample conditioned-load history, updated by 1E7E8 once per 120 crank degrees in normal synchronized running |
 
 The pressure wrapper clears permission after the stock target calculation; it
 does not synthesize enrichment. See
 [the execution audit](../master_patch/PRIMARY_FUEL_EXECUTION_AUDIT.md).
+The signed load-change routine remains active after startup; see the
+[transient/recovery audit](../master_patch/IDLE_RECOVERY_AUDIT.md).
 
 ## Oxygen sensors / current master patch
 | RAM addr | Type | Meaning |

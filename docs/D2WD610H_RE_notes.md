@@ -53,9 +53,16 @@ The user confirms the 10:30 `48d63c...` BIN and physical-gauge agreement with
 RomRaider. All 16 final ECU block CRCs in the recorded FastECU flash match
 that BIN. The new run holds about 14.6 AFR before the blips, dips to 726 RPM,
 then recovers near 1069 RPM / 16.61 AFR. The low-RPM VE correction taper is
-the leading clue for the sustained lean recovery; a further transient pulse
-reduction remains unattributed. No ROM/calibration change or next engine test
-has been selected. See the [full log review](../logs/20260908_idle_review.md).
+the leading clue for the sustained lean recovery. The subsequent native
+execution trace attributes most of the transient pulse reduction to signed
+load-change correction B874, updated every 120 crank degrees in normal running.
+The old after-start-only B874 label was wrong. A separate ten-cell VE
+candidate `6af0d1...` holds the existing 1200-RPM VE in the lower idle rows at
+measured vacuum pressures. It passes offline checks and has not run on the
+engine; main `48d63c...` remains the logged baseline. The new recovery profile
+captures E511 directly plus base factor and committed lift state, within 43
+addresses. See the [recovery audit](../master_patch/IDLE_RECOVERY_AUDIT.md)
+and [full log review](../logs/20260908_idle_review.md).
 September 8 update: the SD hook now uses the caller's saved RPM and single-read
 MAP/IAT inputs; only its obsolete MAF-fault load fallback is bypassed. The stock
 6% load filter is explicitly defined but unchanged, as are VE/injector/timing

@@ -8,6 +8,7 @@ MAX_RECEIVE_INDEX = 0x89  # ROM 32D90; 32CA4 clamps C7A9 to this index.
 MAX_ADDRESSES = (MAX_RECEIVE_INDEX - 6) // 3
 IDLE_PROFILE = HERE / 'D2WD610H_idle_diagnostic_profile.xml'
 AFTERSTART_PROFILE = HERE / 'D2WD610H_afterstart_diagnostic_profile.xml'
+RECOVERY_PROFILE = HERE / 'D2WD610H_idle_recovery_profile.xml'
 IDLE_PARAMETERS = {
     'P2', 'P3', 'P4', 'P5', 'P6', 'P8', 'P10', 'P11', 'P12', 'P13',
     'P17', 'P21', 'P24', 'P47', 'E32', 'E33', 'E50', 'E51', 'E60',
@@ -17,10 +18,15 @@ AFTERSTART_PARAMETERS = {
     'P2', 'P7', 'P8', 'P11', 'P17', 'P21', 'P47', 'E33', 'E123', 'E500',
     'E507', 'E508', 'E509', 'E510', 'E511', 'E512', 'E513',
 }
+RECOVERY_PARAMETERS = (IDLE_PARAMETERS - {'P3', 'P4', 'P5', 'P6', 'P24', 'E502'}) | {
+    'E123', 'E511', 'E503',
+}
 PROFILE_SELECTIONS = {
     IDLE_PROFILE: IDLE_PARAMETERS,
     AFTERSTART_PROFILE: AFTERSTART_PARAMETERS,
+    RECOVERY_PROFILE: RECOVERY_PARAMETERS,
 }
+UNIT_OVERRIDES = {RECOVERY_PROFILE: {'E123': 'fuel-air equivalence ratio'}}
 UNITS = {
     'P2': 'C', 'P3': '%', 'P4': '%', 'P5': '%', 'P6': '%', 'P7': 'kPa',
     'P8': 'rpm', 'P10': 'degrees', 'P11': 'C', 'P12': 'g/s', 'P13': '%',
@@ -49,13 +55,14 @@ def request_sizes(address_count):
     return payload, frame
 
 
-def profile_bytes(selected):
+def profile_bytes(selected, overrides=None):
     root = ET.Element('profile', protocol='SSM')
     root.append(ET.Comment(
         ' D2WD610H: at most 43 byte addresses per request. Load one capture '
         'at a time. Inactive entries clear the other capture and old selections. '))
     params = ET.SubElement(root, 'parameters')
     for parameter_id, units in UNITS.items():
+        units = (overrides or {}).get(parameter_id, units)
         attrs = {'id': parameter_id}
         if parameter_id in selected:
             attrs.update(livedata='selected', dash='selected')
@@ -70,5 +77,5 @@ def profile_bytes(selected):
 
 if __name__ == '__main__':
     for path, selected in PROFILE_SELECTIONS.items():
-        path.write_bytes(profile_bytes(selected))
+        path.write_bytes(profile_bytes(selected, UNIT_OVERRIDES.get(path)))
         print(path)

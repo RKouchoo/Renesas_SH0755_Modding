@@ -304,8 +304,12 @@ public class ApplyMasterNames extends GhidraScript {
             "0001e5e8", "after_start_fueling_compensation_b868_update"
         );
         createOrRename(
-            "0001e7e8", "after_start_fueling_compensation_b874_update"
+            "0001e7e8", "transient_load_fuel_compensation_update"
         );
+        createOrRename("0001e9e4", "transient_load_fuel_delta_terms_update");
+        createOrRename("0001ead4", "transient_load_fuel_startup_gain_update");
+        createOrRename("0001ec62", "transient_load_fuel_history_update");
+        createOrRename("0001ca38", "injector_crank_running_duration_select");
         createOrRename("0001ee74", "closed_loop_fuel_control_bank_update");
         createOrRename("0001f0d8", "closed_loop_feedback_bank_state_update");
         createOrRename("0001f1dc", "closed_loop_short_term_correction_publish");

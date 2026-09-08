@@ -1,0 +1,94 @@
+{
+  "status": "OFFLINE CANDIDATE; engine calibration remains unvalidated",
+  "baseline_sha256": "48d63cf3b7085afc672dd809cf08f4aef2b1aaae8a880f421e656467b7aaf8f0",
+  "candidate_sha256": "6af0d130b585abf9c9b275840ddb0b237485d84f8f8adf7b15df8462adc72433",
+  "subaru_checksum": "0x16CB75E9",
+  "changed_bytes": 34,
+  "cells": [
+    {
+      "rpm": 500,
+      "map_mmhg": 250,
+      "address": "0x7E6F0",
+      "old_ve": 0.5120000243186951,
+      "new_ve": 0.9238160252571106
+    },
+    {
+      "rpm": 500,
+      "map_mmhg": 350,
+      "address": "0x7E6F4",
+      "old_ve": 0.5375999808311462,
+      "new_ve": 0.9883440136909485
+    },
+    {
+      "rpm": 500,
+      "map_mmhg": 450,
+      "address": "0x7E6F8",
+      "old_ve": 0.5631999969482422,
+      "new_ve": 0.8448526859283447
+    },
+    {
+      "rpm": 500,
+      "map_mmhg": 550,
+      "address": "0x7E6FC",
+      "old_ve": 0.5888000130653381,
+      "new_ve": 0.7535400390625
+    },
+    {
+      "rpm": 500,
+      "map_mmhg": 650,
+      "address": "0x7E700",
+      "old_ve": 0.6144000291824341,
+      "new_ve": 0.6903235912322998
+    },
+    {
+      "rpm": 800,
+      "map_mmhg": 250,
+      "address": "0x7E724",
+      "old_ve": 0.6293489933013916,
+      "new_ve": 0.9238160252571106
+    },
+    {
+      "rpm": 800,
+      "map_mmhg": 350,
+      "address": "0x7E728",
+      "old_ve": 0.6650909781455994,
+      "new_ve": 0.9883440136909485
+    },
+    {
+      "rpm": 800,
+      "map_mmhg": 450,
+      "address": "0x7E72C",
+      "old_ve": 0.6967620253562927,
+      "new_ve": 0.8885068893432617
+    },
+    {
+      "rpm": 800,
+      "map_mmhg": 550,
+      "address": "0x7E730",
+      "old_ve": 0.7190697193145752,
+      "new_ve": 0.8249741792678833
+    },
+    {
+      "rpm": 800,
+      "map_mmhg": 650,
+      "address": "0x7E734",
+      "old_ve": 0.7356780171394348,
+      "new_ve": 0.7809900045394897
+    }
+  ],
+  "changed_ranges": [
+    "0x7E6F1..0x7E6F3",
+    "0x7E6F5..0x7E6F7",
+    "0x7E6F9..0x7E6FB",
+    "0x7E6FD..0x7E6FF",
+    "0x7E701..0x7E703",
+    "0x7E725..0x7E727",
+    "0x7E729..0x7E72B",
+    "0x7E72D..0x7E72F",
+    "0x7E731..0x7E733",
+    "0x7E735..0x7E737",
+    "0x7FB88..0x7FB8B"
+  ],
+  "method": "Hold existing 1200-RPM VE at 500/800 RPM and 250/350 mmHg; join pressure*VE to unchanged 760-mmHg values through 450/550/650-mmHg cells.",
+  "limitations": "The recorded inputs are not an engine simulation. Cranking interpolation, timing/load lookups and actual fueling need validation. No stock transient correction is removed."
+}

@@ -2,8 +2,11 @@
 
 The logger repair is confirmed for the complete idle profile. The engine
 calibration still needs work: throttle blips are followed by near-stall RPM
-and a sustained lean indication at the lower recovered idle speed. No new
-ROM or calibration was generated from this capture.
+and a sustained lean indication at the lower recovered idle speed. The initial
+review below made no ROM change. The subsequent
+[native transient trace and candidate](../master_patch/IDLE_RECOVERY_AUDIT.md)
+now explain most of the extra pulse reduction and provide a separate,
+offline-tested idle VE candidate; engine validation remains pending.
 
 Source: `romraiderlog_idle_diagnostic_20260908_123651.csv`. The user reports
 the latest 10:30 BIN, several revs at the end, a tendency to stall, and the
@@ -99,9 +102,11 @@ executes wrapper opcodes with modeled lookup helpers, not the entire ECU.
 The RPM/pressure/input columns have different update times, particularly
 during a blip, so exact row-by-row equality is not expected.
 
-## Transient pulse reduction remains unresolved
+## Transient pulse reduction: initial finding, since traced to B874
 
 The low-RPM VE slope is not a complete explanation of the transient itself.
+The later [B874 replay](../master_patch/IDLE_RECOVERY_AUDIT.md) addresses the
+unattributed portion identified in this initial review.
 For example, at 160.950 s the log has 774 RPM, approximately 5.77 g/s and a
 0.7883-ms net pulse. Normalizing by airflow/RPM gives about 1.76 ms per g/rev,
 well below the roughly 3.3 seen in the stable windows. The drop is also

@@ -40,6 +40,7 @@ import test_actuator_retirement as actuator_retirement_test  # noqa: E402
 import test_stock_sensor_corrections as stock_sensor_test  # noqa: E402
 import test_wideband_fuel_guard_execution as guard_execution_test  # noqa: E402
 import test_primary_fueling_execution as primary_fueling_test  # noqa: E402
+import test_transient_fuel_execution as transient_fueling_test  # noqa: E402
 import test_sh2e_fpu as fpu_test  # noqa: E402
 import test_injector_cut_execution as injector_cut_test  # noqa: E402
 import test_injector_scheduler_execution as injector_scheduler_test  # noqa: E402
@@ -54,7 +55,7 @@ LOGGER_FRAGMENT = HERE / "D2WD610H_master_logger_ecuparams.xml"
 LOGGER_DEFINITION = HERE / "D2WD610H_master_logger.xml"
 LOGGER_PROFILE = HERE / "D2WD610H_idle_diagnostic_profile.xml"
 EXPECTED_OUTPUT_SHA256 = "48d63cf3b7085afc672dd809cf08f4aef2b1aaae8a880f421e656467b7aaf8f0"
-EXPECTED_LOGGER_SHA256 = "e21f5d6633605369faa013027155adeeca8583ef0f1a9486d603dbbca2e68e0b"
+EXPECTED_LOGGER_SHA256 = "feb5525e8fde3829450d50d78110d2507e874cdd70fc9767430cee1d6aad22c7"
 
 
 def fail(message: str) -> None:
@@ -1170,6 +1171,7 @@ def main() -> None:
     stock_sensor_test.verify_execution(image)
     guard_execution_test.verify_execution(image)
     primary_fueling_test.verify_execution(image)
+    transient_fueling_test.verify_execution(image)
     injector_cut_test.verify_execution(image)
     injector_scheduler_test.verify_execution(image)
     cut_interrupt_test.verify_execution(image)
@@ -1222,7 +1224,7 @@ def main() -> None:
     print("  fueling safety    : pressure-forced OL ON; 13.0-AFR delayed/latched cut ON")
     print("  guard execution   : cuts, native IRQ/context restore, locks and injector queues PASS")
     print("  logger            : complete D2WD610H-only SSM definition and fragment validated")
-    print("  capture profiles  : separate idle/after-start captures within native 43-address limit")
+    print("  capture profiles  : separate idle/after-start/recovery captures within native 43-address limit")
     print("  provenance        : root stock, base copy, and SRF payload remain byte-identical")
 
 

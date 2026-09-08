@@ -68,3 +68,9 @@ live link: all 22 channels populate 1,786 CSV rows, and the full 43-address
 request receives valid complete responses. The separate after-start profile
 has not been validated in a live capture. See the
 [September 8 log review](../../logs/20260908_idle_review.md).
+
+The same `ProfileReloadCheck` also passes for
+`D2WD610H_idle_recovery_profile.xml`: 19 channels, 38 view subscriptions,
+43 addresses and a checksum-valid 136-byte request. Pass that profile as an
+additional argument to the command above. Its direct transient/base-factor
+capture is not yet live-validated; see [the recovery audit](../IDLE_RECOVERY_AUDIT.md).

@@ -182,3 +182,8 @@ and a lean indication on both the physical gauge and RomRaider. Those events
 are captured successfully; they are now an engine-fueling investigation.
 See the [idle and rev-recovery review](../logs/20260908_idle_review.md).
 No additional engine run or reflash is requested by this logger retest.
+
+The later [recovery investigation](IDLE_RECOVERY_AUDIT.md) adds a separate
+19-channel profile, also 43 addresses. Its real RomRaider queue/reload/request
+check passes offline. E511 now correctly names the signed transient load
+correction; the original live-verified core profile still selects 22 channels.

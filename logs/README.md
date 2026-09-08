@@ -16,6 +16,11 @@ not generated patch artifacts and must not be treated as calibration approval.
   reports the physical gauge followed RomRaider. See
   [the numerical review and chart](20260908_idle_review.md).
 
+`20260908_transient_replay.json` contains **offline model outputs**, not new
+ECU measurements. It replays the complete capture through the retained B874
+correction and fuel composer; assumptions and the separate VE candidate are
+documented in [the recovery audit](../master_patch/IDLE_RECOVERY_AUDIT.md).
+
 The installed seller-labelled 50-4110-style controller is suspected to be a
 clone. Agreement between its display and ECU analogue input does not validate
 the measured AFR, so these files are evidence for diagnosis only.

@@ -669,10 +669,13 @@ The subsequent September 8 12:36 capture confirms complete core-profile
 logging on the user-reported 10:30 `48d63c...` image; recorded FastECU final
 block CRCs independently match that BIN. Steady idle is improved, but blips
 produce a 726-RPM minimum and later recovery near 1069 RPM / 16.61 AFR. The
-low-RPM VE taper fits the sustained lean change; an additional transient
-pulse reduction is not yet attributed. The separate after-start capture is
-not automatically the next engine test. See the
-[current log review](../logs/20260908_idle_review.md).
+low-RPM VE taper fits the sustained lean change. The later
+[recovery audit](IDLE_RECOVERY_AUDIT.md) executes the B874 family and reproduces
+most of the extra pulse reduction with signed load-change compensation.
+It corrects the old after-start-only label, confirms crank-driven update
+cadence and supplies a separate ten-cell VE candidate. The new 19-channel
+recovery capture includes B874 directly; the candidate needs idle-only engine
+validation. See the [current log review](../logs/20260908_idle_review.md).
 
 Next evidence is a single synchronized capture on the user-confirmed first-VE
 ROM with the repaired profile. In particular, compare MAP/IAT/load, E60 net

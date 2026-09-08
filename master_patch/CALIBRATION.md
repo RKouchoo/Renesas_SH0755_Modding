@@ -151,9 +151,16 @@ The complete September 8 12:36 capture on the 10:30 BIN now measures median
 MAP of 44.02 kPa before the blips and 41.32 kPa after recovery, with RPM
 falling from 1252 to 1069 and AFR rising from 14.59 to 16.61. At fixed
 41.32 kPa, the low-lift table's modeled VE falls 11.5% across those RPMs.
-That slope is a leading calibration concern; a separate transient pulse
-reduction is not yet attributed. No VE or other calibration change has been
-made from this capture. See the [log review](../logs/20260908_idle_review.md).
+That slope is a calibration concern. Subsequent native execution attributes
+most of the extra transient pulse reduction to signed load-change correction
+B874. A separate `6af0d1...` candidate changes ten low-lift VE cells: the
+500/800-RPM rows take the existing 1200-RPM VE at 250/350 mmHg. Cells at
+450/550/650 mmHg bridge pressure times VE to each row's unchanged 760-mmHg
+value, with increasing modeled air mass throughout. The main `48d63c...`
+baseline is unchanged. The candidate retains all transient logic and tables;
+its large lower-RPM changes and startup interpolation need engine validation.
+See the [recovery audit](IDLE_RECOVERY_AUDIT.md) and
+[log review](../logs/20260908_idle_review.md).
 
 The remainder of both surfaces is still an unmeasured EZ30R starting model and
 must be calibrated from controlled data. Global multiplier defaults to 1.0.

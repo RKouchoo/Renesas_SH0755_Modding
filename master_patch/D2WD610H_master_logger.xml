@@ -680,7 +680,7 @@ any damage or injury incurred as a result of these definitions. USE AT YOUR OWN 
                         <conversion units="raw additive factor" storagetype="float" expr="x" format="0.0000" gauge_min="-0.5" gauge_max="1.5" gauge_step="0.1" />
                     </conversions>
                 </parameter>
-                <parameter id="E511" name="After-Start Fuel Compensation B (D2WD610H diagnostic)*" desc="Raw after-start fueling compensation state at FFFFB874, published by the Ghidra-identified B874 update path and consumed by final fueling." target="1">
+                <parameter id="E511" name="Transient Load Fuel Correction (D2WD610H diagnostic)*" desc="Signed additive load-change correction at FFFFB874, produced by 1E7E8 and consumed by final fueling. Positive values add fuel and negative values remove fuel. It remains active after startup and updates once per 120 crank degrees; the old after-start-only label was incorrect." target="1">
                     <address length="4">0xFFB874</address>
                     <conversions>
                         <conversion units="raw additive factor" storagetype="float" expr="x" format="0.0000" gauge_min="-0.5" gauge_max="1.5" gauge_step="0.1" />

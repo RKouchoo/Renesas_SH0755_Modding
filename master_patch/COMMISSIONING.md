@@ -161,10 +161,14 @@ evidence of a complete capture. Establish this before another engine start.
 **September 8, 12:36 result:** the user restarted RomRaider and supplied a
 complete capture with all 22 channels and 1,786 rows. The logger check above
 has now passed for the core profile. Throttle blips exposed near-stall RPM
-and a sustained lean recovery on the 10:30 BIN. Keep further rev/flash trials
-on hold while the low-RPM VE taper and transient duration path are reviewed;
-the generic first-start procedure below is not a request to repeat the run.
-See the [log review](../logs/20260908_idle_review.md).
+and a sustained lean recovery on the 10:30 BIN. The follow-up now traces the
+transient reduction to B874 and supplies a separate ten-cell VE candidate,
+`candidates/D2WD610H_idle_recovery_candidate.bin` (`6af0d1...`). It is not yet
+engine-validated. Use the new 19-channel `D2WD610H_idle_recovery_profile.xml`
+for the next controlled idle-only evaluation; it logs E511 directly, E123 as
+a raw base factor and E503 as committed lift mode, within 43 addresses.
+Review steady fueling below 1200 RPM before repeating any blips. See the
+[recovery audit](IDLE_RECOVERY_AUDIT.md) for exact scope and limitations.
 
 The previous instruction to capture on the installed first-VE ROM is withdrawn
 because that firmware also hijacked fan control. Use only a corrected-code
@@ -183,7 +187,7 @@ The focused first-idle profile records:
 - total ignition timing and throttle; and
 - E60 scheduled pulse without latency, E50 latency and P21 inclusive pulse.
 
-The after-start profile captures E507 run counter, E508--E513 raw after-start
+The after-start profile captures E507 run counter, E508--E513 raw retained fuel
 terms and E123 composed base fuel factor, alongside RPM, standard P7 MAP,
 coolant/IAT, battery, pump duty, CL/OL state, external AFR and inclusive P21
 pulse width. E123's estimated AFR conversion is not measured AFR or the entire

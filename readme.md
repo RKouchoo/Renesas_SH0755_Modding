@@ -88,8 +88,10 @@ full **ignition-timing** blend/selection logic. See the notes.
 | [speed_density/D2WD610H_AVLS_speed_density_patch.xml](speed_density/D2WD610H_AVLS_speed_density_patch.xml) | Internal speed-density-definition source used by the master generator; not the current flash target. |
 | [master_patch/D2WD610H_master_patch.xml](master_patch/D2WD610H_master_patch.xml) | Current focused metric definition: active timing/KCA identities, fuel/injectors, AVLS, SD/VE, exact Omni MAP, hard-overboost protection, wideband, pressure/lean safety, and default-OFF rotational idle. Retired EBCS controls are absent. |
 | [master_patch/D2WD610H_master_logger.xml](master_patch/D2WD610H_master_logger.xml) | Complete metric SSM K-line ECU logger; the lean-out diagnostic set and D2WD610H project parameters E500--E513 are always visible. |
-| [master_patch/D2WD610H_idle_diagnostic_profile.xml](master_patch/D2WD610H_idle_diagnostic_profile.xml) | Core idle capture within the stock receiver's 43-address limit. Use this first. |
+| [master_patch/D2WD610H_idle_diagnostic_profile.xml](master_patch/D2WD610H_idle_diagnostic_profile.xml) | Core idle capture, live-verified at 12:36; within the stock receiver's 43-address limit. |
 | [master_patch/D2WD610H_afterstart_diagnostic_profile.xml](master_patch/D2WD610H_afterstart_diagnostic_profile.xml) | Separate 43-address after-start/fuel-factor capture; the two profiles are not simultaneous. |
+| [master_patch/IDLE_RECOVERY_AUDIT.md](master_patch/IDLE_RECOVERY_AUDIT.md) | Latest investigation: signed transient correction traced, ten-cell VE candidate built and tested offline; idle-only engine validation pending. |
+| [master_patch/D2WD610H_idle_recovery_profile.xml](master_patch/D2WD610H_idle_recovery_profile.xml) | 19-channel recovery capture with transient correction, base factor and committed lift state; 43 addresses. |
 | [defs/romraider_ecu_defs.xml](defs/romraider_ecu_defs.xml) | Clean upstream RomRaider metric definition set from SubaruDefs Stable; no project AVLS/boost modifications. |
 
 > Load the AVLS-only definition for the stock/AVLS-only ROM, or the focused master definition
