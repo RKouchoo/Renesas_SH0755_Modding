@@ -1814,3 +1814,28 @@ checksum 0x1923EC61. No ECU connection or flash. Controlled bench/idle logging
 with a known calibration baseline is the next validation step; actual timing,
 fuel delivery and the second-VE trial remain unvalidated. See
 master_patch/INJECTOR_SCHEDULER_EXECUTION_AUDIT.md for the detailed evidence.
+
+## 2026-09-08 — First-idle logger coverage and capture duration
+
+The pre-run profile review found room to retain both ordinary learned bank
+trims (P4/P6) alongside immediate corrections P3/P5, and to capture the repaired
+purge/fan command routes with P38/P92. These four one-byte channels are now
+selected in Data and Dashboard. The focused profile has 35 parameters, three
+switches and 83 requested SSM bytes, producing a 251-byte A8 payload within
+the 255-byte limit. Redundant E81/E105 remain explicitly deselected. Clear old
+selections in all views before loading the updated profile.
+
+The existing wideband/raw/readiness, MAP/load/RPM/temperatures, pulse/latency,
+fuel-pump duty/battery, primary/base fuel factors, six after-start terms and
+CL/OL/AVLS/switch state remain selected. Rail pressure and controller/gauge
+status need independent observation; command channels do not prove physical
+fan motion or fuel delivery. Warm feedback, cam control and boost remain
+separate capture tasks.
+
+The requested first capture is 5–10 seconds before cranking followed by a
+target of 60 seconds from engine start at untouched idle, up to 90 seconds
+only if stable. This spans the earlier roughly 30-second lean-out window;
+stop sooner for a returning lean trend, excessive richness, rough running,
+pressure loss or invalid input. There is no requirement to wait for full
+warm-up or a fan cycle. Focused profile validation and the full master verifier
+pass. No ROM, calibration or logger-definition changes.

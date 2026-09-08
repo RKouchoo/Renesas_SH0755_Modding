@@ -141,11 +141,11 @@ RomRaider keeps Data, Graph, and Dashboard selections separately. Load
 in both Data and Dashboard. Every entry includes an exact unit conversion so
 older RomRaider builds do not reject or silently ignore it. It includes E503
 to prove which AVLS VE surface is active and omits only boost-only lean-cut
-state E504/E505. P3/P5 are the immediate bank corrections; the prior profile
-incorrectly selected learned trims P4/P6. Neutral, idle, and starter switches
-are also selected for the clutch-stall diagnosis. If an old profile leaves the
+state E504/E505. P3/P5 are the immediate bank corrections; P4/P6 additionally
+capture learned trims. P38/P92 capture purge and fan commands. Neutral, idle,
+and starter switches are also selected for the clutch-stall diagnosis. If an old profile leaves the
 gauges absent, load this profile or delete the stale profile and create a new
-one. The repaired profile uses 79 distinct SSM read addresses, below the
+one. The current profile uses 83 distinct SSM read addresses, below the
 84-address request limit. E81/E105 remain defined but are explicitly deselected
 because P3/P5 already record both bank corrections. Clear unrelated selections
 in Data, Graph and Dashboard first: hidden selections also consume request
@@ -159,7 +159,7 @@ calibration selected for the comparison. The generated second-VE increase is
 still an unvalidated trial based on an AFR endpoint that was changing; do not
 treat it as the resolved tune. See the reassessment in `GHIDRA_AUDIT.md`.
 
-Log at minimum:
+The focused first-idle profile records:
 
 - E500 external-wideband AFR (raw lambda remains an alternate conversion);
 - E501 raw former-MAF ADC/input voltage;
@@ -169,21 +169,33 @@ Log at minimum:
 - E508--E513 raw after-start fueling groups/compensations;
 - MAP, barometric pressure, RPM, IAT, modeled airflow, calculated load;
 - standard P47 Fuel Pump Duty and battery voltage;
-- commanded fuel/lambda, short- and long-term correction, CL/OL state;
-- ignition timing, feedback knock, fine-learning knock, KCA, IAM;
-- AVLS requested state, throttle, injector
-  duty/pulse width, and battery voltage;
-- actual CPC request (P38, expected zero) and radiator-fan request (P92), in a
-  separate reduced-channel capture if needed to stay within the SSM limit; and
-- independently measured fuel pressure and wideband/controller status with a
-  common timestamp.
+- E84 primary OL enrichment and E123 composed base fuel factor, displayed as
+  estimated AFR; these are neither measured AFR nor the complete injector command;
+- both immediate and learned bank corrections, plus CL/OL state;
+- total ignition timing, E503 committed AVLS VE state and throttle;
+- E60 scheduled pulse without latency, E50 latency and P21 inclusive pulse;
+- actual CPC request (P38, expected zero) and radiator-fan request (P92); and
+- neutral, idle and starter switches.
 
-Add E503 for an AVLS/VE transition capture. Add E504 and E505 for positive-
-pressure lean-cut commissioning; they are not useful in the stationary
-vacuum-only lean-out test.
+Record independently measured fuel pressure and wideband/controller status with
+a common timestamp alongside the CSV. The profile cannot measure rail pressure,
+actual injector delivery or physical fan motion. Warm feedback, cam-control,
+knock and boost validation require separate captures with their own channel
+budgets. E504/E505 are for positive-pressure lean-cut commissioning and are not
+needed in this stationary vacuum-only test.
 
 E500 equal to zero means invalid input. Never treat it as an extremely rich
 sample or average it into tuning data.
+
+For this first corrected-code idle capture, record 5–10 seconds key-on before
+cranking, then aim for **60 seconds from engine start** at untouched idle. This
+extends beyond the roughly 30-second lean-out window in the earlier runs.
+Continue to at most 90 seconds only if lambda, fuel pressure and running remain
+stable; reaching full operating temperature or a fan cycle is not the aim of
+this first capture. Shut down sooner if the lean trend returns, the rich/rough
+running limits below are reached, fuel pressure falls or an input is invalid.
+Do not keep a faulting engine running to meet the requested duration. Save the
+whole CSV including startup and note which exact BIN and VE calibration ran.
 
 For a stationary full-speed fuel-pump mode test, edit a copy of the generated
 master BIN with the matching ECU definition: set `Fuel Pump Low-Speed Command`

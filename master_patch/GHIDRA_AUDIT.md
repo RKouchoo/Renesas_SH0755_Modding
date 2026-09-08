@@ -653,7 +653,10 @@ The diagnostic profile itself had a concrete defect: 85 selected parameter
 bytes plus two distinct switch bytes require 87 addresses. An SSM A8 payload
 has two prefix bytes plus three bytes per address, and its one-byte length
 allows at most 84 addresses. The profile now explicitly deselects E81/E105,
-retains the equivalent bank corrections P3/P5, and uses 79 addresses. The
+retains the equivalent bank corrections P3/P5, and initially used 79 addresses.
+The September 8 pre-run review adds P4/P6 learned trims and P38/P92 purge/fan
+commands, bringing the current profile to 83 addresses (251-byte payload).
+Those commands and both types of trims are now captured together. The
 verifier counts expanded address lengths and deduplicates shared switch/view
 addresses before checking the packet limit. E81/E105 remain available in the
 logger definition. Clear unrelated subscriptions in every logger view before

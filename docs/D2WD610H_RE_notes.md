@@ -42,7 +42,9 @@ delivery remain unmeasured.
 Current cold-idle investigation: the second VE increase is an unvalidated
 trial, not a proved repair. The latest run used the first increase, but its
 AFR was still rising. The master idle profile now fits SSM's request limit
-(79 addresses instead of 87). See the 2026-09-07 reassessment in the master
+(83 addresses instead of 87, including both learned trims and purge/fan commands).
+The first corrected-code capture targets 60 seconds of untouched idle, stopping
+earlier for a fault or returning lean/rich trend. See the 2026-09-07 reassessment in the master
 Ghidra audit for the retained load/fuel trace and next measurement.
 September 8 update: the SD hook now uses the caller's saved RPM and single-read
 MAP/IAT inputs; only its obsolete MAF-fault load fallback is bypassed. The stock

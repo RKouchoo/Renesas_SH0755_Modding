@@ -269,7 +269,7 @@ and verifies provenance and checksum.
 | `D2WD610H_master_patch.xml` | Matching self-contained metric RomRaider definition. |
 | `D2WD610H_master_logger.xml` | Complete metric, SSM-only logger definition for ECU ID `3C5A387116`; ready artifact generated from logger v370. |
 | `D2WD610H_master_logger_ecuparams.xml` | Internal fourteen-parameter fragment used to generate the complete logger definition. |
-| `D2WD610H_idle_diagnostic_profile.xml` | 79-address cold-idle profile with explicit units, bank trims, pulse/latency, MAP/load, fueling factors, AVLS state, switches and after-start terms. Redundant E81/E105 trims are explicitly deselected to fit the 84-address SSM limit. |
+| `D2WD610H_idle_diagnostic_profile.xml` | 83-address cold-idle profile with explicit units, immediate/learned bank trims, pulse/latency, MAP/load, fueling factors, AVLS state, purge/fan commands, switches and after-start terms. Redundant E81/E105 trims are explicitly deselected to fit the 84-address SSM limit. |
 | `install_master_logger.py` | Generates a complete D2WD610H-only logger from a normal complete logger XML, retaining its DTD and applicable stock channels. |
 | `ghidra_scripts/ApplyMasterNames.java` | Reproducibly reapplies the names/comments confirmed in live Ghidra. |
 

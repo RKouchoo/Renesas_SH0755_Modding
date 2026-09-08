@@ -252,6 +252,6 @@ terms alongside MAP/RPM/IAT/AFR. A targeted follow-up can substitute D114/D118,
 B90C and the two legacy voltages to test the first identified path. A separate
 targeted profile can capture B900/B904, BD04/BD08, B8F4/B8F8 and CEFC/CF00.
 Keep the
-SSM request within 84 byte addresses; the existing 79-address profile cannot
+SSM request within 84 byte addresses; the current 83-address profile cannot
 simply have all these channels appended. No live ECU traffic or flashing was
 performed during this audit.

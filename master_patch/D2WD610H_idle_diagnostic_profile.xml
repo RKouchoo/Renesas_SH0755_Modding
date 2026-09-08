@@ -3,7 +3,9 @@
     <parameters>
         <parameter id="P2" livedata="selected" dash="selected" units="C"/>
         <parameter id="P3" livedata="selected" dash="selected" units="%"/>
+        <parameter id="P4" livedata="selected" dash="selected" units="%"/>
         <parameter id="P5" livedata="selected" dash="selected" units="%"/>
+        <parameter id="P6" livedata="selected" dash="selected" units="%"/>
         <parameter id="P8" livedata="selected" dash="selected" units="rpm"/>
         <parameter id="P10" livedata="selected" dash="selected" units="degrees"/>
         <parameter id="P11" livedata="selected" dash="selected" units="C"/>
@@ -12,14 +14,17 @@
         <parameter id="P17" livedata="selected" dash="selected" units="V"/>
         <parameter id="P21" livedata="selected" dash="selected" units="ms"/>
         <parameter id="P24" livedata="selected" dash="selected" units="mmHg"/>
+        <parameter id="P38" livedata="selected" dash="selected" units="%"/>
         <parameter id="P47" livedata="selected" dash="selected" units="%"/>
+        <parameter id="P92" livedata="selected" dash="selected" units="%"/>
         <parameter id="E32" livedata="selected" dash="selected" units="g/rev"/>
         <parameter id="E33" livedata="selected" dash="selected" units="status"/>
         <parameter id="E50" livedata="selected" dash="selected" units="ms"/>
         <parameter id="E51" livedata="selected" dash="selected" units="kPa absolute"/>
         <parameter id="E60" livedata="selected" dash="selected" units="ms"/>
         <!-- Clear redundant four-byte trims; P3/P5 retain both bank corrections.
-             All selected parameters and switches use 79 distinct SSM bytes. -->
+             P4/P6 additionally retain learned trims; P38/P92 capture purge/fan commands.
+             All selected parameters and switches use 83 distinct SSM bytes. -->
         <parameter id="E81" units="%"/>
         <parameter id="E84" livedata="selected" dash="selected" units="estimated AFR"/>
         <parameter id="E105" units="%"/>

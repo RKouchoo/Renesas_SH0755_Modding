@@ -141,7 +141,7 @@ unvalidated trial: AFR was still rising at the chosen endpoint, so the ratio
 does not establish steady-state VE or the cause of the pulse-width decline.
 The earlier recommendation to diagnose on the first-VE ROM is withdrawn because
 that firmware also hijacks radiator-fan control. A future first-VE comparison
-must use corrected firmware, not the old BIN; the repaired 79-address logger
+must use corrected firmware, not the old BIN; the current 83-address logger
 profile remains applicable. Changing VE also changes calculated load and
 therefore timing/AVCS lookup positions. The example 315-mmHg idle pressure was
 not measured in the latest usable log, which lacks MAP.

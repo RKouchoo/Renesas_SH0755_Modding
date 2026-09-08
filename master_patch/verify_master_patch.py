@@ -933,8 +933,8 @@ def verify_logger_profile() -> None:
     if not selected_ids or not set(profile_parameter_ids) <= set(logger_parameters):
         fail("idle diagnostic profile refers to absent logger parameters")
     expected_standard = {
-        "P2", "P3", "P5", "P8", "P10", "P11", "P12", "P13", "P17",
-        "P21", "P24", "P47", "E32", "E33", "E50", "E51", "E60",
+        "P2", "P3", "P4", "P5", "P6", "P8", "P10", "P11", "P12", "P13", "P17",
+        "P21", "P24", "P38", "P47", "P92", "E32", "E33", "E50", "E51", "E60",
         "E84", "E123",
     }
     expected_custom = logger_definition.PARAMETER_IDS - {"E504", "E505"}
