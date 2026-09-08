@@ -211,7 +211,7 @@ class IdleAirOutputMachine(IdleAirMachine):
 class IdleAirTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
-        cls.image = IMAGE if IMAGE is not None else (ROOT / 'master_patch/candidates/D2WD610H_idle_recovery_candidate.bin').read_bytes()
+        cls.image = IMAGE if IMAGE is not None else (ROOT / 'master_patch/D2WD610H_master_patch.bin').read_bytes()
         stock = (ROOT / '2005 BLE MT.bin').read_bytes()
         for a, b in ((0x2C760, 0x2CB60), (0x2CE50, 0x2D834),
                      (0x1A4F8, 0x1A55A), (0x1A5A6, 0x1A5D4),

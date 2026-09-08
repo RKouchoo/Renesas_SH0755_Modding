@@ -2,12 +2,14 @@
 
 The master verifier treats injected flash, stock hook sites, and calibration writes
 as distinct ownership classes. A
-build fails on any overlap except the explicit replacement of boost component
-seed data by the final boost calibration.
+build fails on any overlap except the explicit replacement of boost seed data,
+the SD MAP minimum and ten low-lift VE cells by their final calibration.
 
 Current corrected master SHA-256 is
-`48d63cf3b7085afc672dd809cf08f4aef2b1aaae8a880f421e656467b7aaf8f0`
-(checksum `0x1923EC61`). The fan/purge repair adds no RAM or free-flash
+`154760a5f2fdadbf6d9221480595f58dc77c6a4eccc492f50899c815aca79e4d`
+(checksum `0x16F63B0D`). The MAP/idle-VE integration changes calibration only,
+with build marker `26090804` at `0x7FC4C`; no instructions or RAM are added.
+The fan/purge repair adds no RAM or free-flash
 allocation. The later injector-cut and scheduler-lock repairs grow two existing
 wrappers; the contiguous unallocated tail is now 3,320 bytes.
 
@@ -51,10 +53,10 @@ replacements instead require their exact pinned original bytes.
   It remains `0x0000E8C4` in the corrected build. No custom controller or guard
   is in the fan path. Older builds incorrectly composed this pointer through
   the two now-retired reservations; those images must not be run.
-- Final calibration deliberately replaces only boost target data, base duty,
-  Kp, maximum duty ratio, soft overboost, and hard overboost seed data. The
-  verifier requires this exact intersection and rejects any other calibration
-  contact with injected flash.
+- Final calibration deliberately replaces boost target data, base duty,
+  Kp, maximum duty ratio, soft/hard overboost seed data, the SD minimum at
+  `0x7DD10`, and ten declared low-lift VE cells. The verifier requires this
+  exact intersection and rejects other calibration contact with injected flash.
 - Dual-VE selection is built directly into the one speed-density wrapper. There
   is no second patch stage or shared wrapper ownership.
 - Stock literal `0x173FC` is locally redirected from `0x65168` to existing

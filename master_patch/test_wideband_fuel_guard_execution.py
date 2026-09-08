@@ -336,8 +336,9 @@ class GuardExecutionTests(unittest.TestCase):
             cpu.write(safety.LEAN_COUNTER_RAM, 7, 2)
             self.assertEqual(cpu.cut_step(), (2, 0, False) if lam <= threshold else (3, 0, True))
 
+        below_minimum = number(bits(cpu.get_float(safety.speed_density.MAP_MIN_ADDR)) - 1)
         for state, (pressure, baro) in product(range(4), (
-                (math.nan, 760), (99, 760), (1601, 760), (820, math.nan), (820, 299), (820, 851))):
+                (math.nan, 760), (below_minimum, 760), (1601, 760), (820, math.nan), (820, 299), (820, 851))):
             # Disable only added hard overboost for this test: otherwise MAP
             # 1601 correctly requests that independent cut before lean logic.
             image = bytearray(self.image)

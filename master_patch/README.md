@@ -1,5 +1,19 @@
 # D2WD610H master turbo patch
 
+**Current rolling build:** [D2WD610H_master_patch.bin](D2WD610H_master_patch.bin),
+SHA-256 `154760a5f2fdadbf6d9221480595f58dc77c6a4eccc492f50899c815aca79e4d`,
+checksum `0x16F63B0D`. The [MAP lower-bound repair](MAP_BOUNDARY_REPAIR.md)
+aligns SD's minimum with existing electrical acceptance at 10.48 kPa and carries
+forward the earlier ten-cell idle-VE correction. **The user's independent
+dashpot experiment is excluded; DBW/dashpot calibration is stock.** The full
+master verifier passes. This defect is not established as the near-stall cause.
+
+Use `build_master_patch.py` and `verify_master_patch.py` for the single current
+BIN. Fixes belong in this rolling build; Git provides version history and
+regression recovery. Do not create separate current candidates or fold in an
+independent user experiment without an explicit request. Old captures use their
+matching ROMs through pinned history, not whatever is currently at the master path.
+
 **Latest MAP investigation:** [source and barometric audit](MAP_SOURCE_AUDIT.md)
 confirms SD reads ABC4 while the supplied E51 logs record processed B2A0,
 which can be substituted from load under a diagnostic flag. The ADC converter
@@ -43,6 +57,11 @@ firmware work into one deterministic stock-to-output build:
   and
 - focused, self-contained D2WD610H RomRaider ECU and logger definitions.
 
+## Historical investigation notes
+
+The following notes describe earlier build stages and captures. Current output
+identity and workflow are above; old candidate references are replay history.
+
 The [evening opening/recovery review](../logs/20260908_dashpot_review.md)
 identifies retained tip-in pressure compensation that can suppress the
 separate supplemental pulse near atmospheric pressure. Opening timing also
@@ -51,7 +70,7 @@ groups and the full verifier pass, but these findings do not establish an
 engine repair. Minimum tip-in pulse editor units were corrected; no BIN
 threshold or other engine calibration changed in this pass.
 
-The generated baseline is `D2WD610H_master_patch.bin`, SHA-256
+The 10:30 baseline used in the 12:36 capture had SHA-256
 `48d63cf3b7085afc672dd809cf08f4aef2b1aaae8a880f421e656467b7aaf8f0`.
 It is 512 KiB, contains CALID `D2WD610H`, and has a valid Subaru additive
 checksum (`0x1923EC61`). It is a development artifact, not a vehicle-tested tune.
@@ -61,7 +80,7 @@ withdrawn: that image also used the erroneous fan hook. Any future first-VE
 comparison must use the corrected firmware, not the old BIN. See the
 reassessment in [GHIDRA_AUDIT.md](GHIDRA_AUDIT.md).
 
-The September 8 12:36 capture now confirms complete logging on this 10:30
+The September 8 12:36 capture confirms complete logging on that 10:30
 image. Steady idle is substantially improved, but the throttle blips produce
 near-stall RPM followed by a sustained lean recovery. The subsequent
 [idle-recovery audit](IDLE_RECOVERY_AUDIT.md) traces the extra pulse reduction
@@ -73,9 +92,9 @@ changes ten idle VE cells and checksum while retaining all code. The
 improved settled fueling near 970--1000 RPM / 14.1 AFR, but blips still cause
 near-stalls down to 558 RPM. Timing reaches 0 degrees during opening and
 is back at 15 degrees at the deepest trough; conditional base-D lookups closely
-match the opening drop. Recovery remains unresolved; neither BIN has been
-changed or promoted to a finished tune. The main BIN above remains the logged
-10:30 baseline. See also the [first log review](../logs/20260908_idle_review.md).
+match the opening drop. Recovery remains unresolved. The ten-cell change is
+now incorporated in the rolling master; the captured baseline remains available
+in Git history. See also the [first log review](../logs/20260908_idle_review.md).
 
 The [load/idle-air follow-up](IDLE_AIR_RECOVERY_AUDIT.md) reproduces retained
 load filtering and transient compensation with native instruction replay.

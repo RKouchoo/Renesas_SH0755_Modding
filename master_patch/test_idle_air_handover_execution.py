@@ -135,7 +135,7 @@ class HandoverTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         cls.image = IMAGE if IMAGE is not None else (
-            ROOT / 'master_patch/candidates/D2WD610H_idle_recovery_candidate.bin').read_bytes()
+            ROOT / 'master_patch/D2WD610H_master_patch.bin').read_bytes()
         stock = (ROOT / '2005 BLE MT.bin').read_bytes()
         for start, end in ((0xD390, 0xD444), (0xCE24, 0xCF58), (0xD0AC, 0xD0B0),
                            (0xFB94, 0xFBC0), (0xFBFC, 0xFC05), (0x4A2C, 0x4A3C),

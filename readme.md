@@ -1,5 +1,24 @@
 # D2WD610H — ADM/JDM EZ30R Denso ECU Reverse Engineering
 
+The single current output is
+[master_patch/D2WD610H_master_patch.bin](master_patch/D2WD610H_master_patch.bin).
+Fixes go into the rolling master sources and normal build; Git retains previous
+versions for regression analysis. Independent user experiments stay out unless
+explicitly requested.
+
+Current SHA-256: `154760a5f2fdadbf6d9221480595f58dc77c6a4eccc492f50899c815aca79e4d`.
+Subaru checksum: `0x16F63B0D`. The [MAP boundary repair](master_patch/MAP_BOUNDARY_REPAIR.md)
+and earlier ten-cell idle-VE correction are integrated. **The user's dashpot
+experiment is excluded; DBW/dashpot calibration is stock.** The complete master
+verifier passes. The cause of the logged near-stall remains unresolved.
+
+```sh
+python3 master_patch/build_master_patch.py
+python3 master_patch/verify_master_patch.py
+```
+
+Earlier firmware repair history:
+
 > **September 8 corrective build:** stock radiator-fan control is restored and
 > the misidentified electronic boost actuator is retired. The actual canister
 > purge command, modeled purge airflow and both banks' purge-fuel subtraction
@@ -8,7 +27,7 @@
 > image is statically checked, not vehicle-validated or a proved idle lean-out
 > cure. See [the master audit](master_patch/GHIDRA_AUDIT.md).
 
-Current master SHA-256:
+The 10:30 image used for the 12:36 capture had SHA-256:
 `48d63cf3b7085afc672dd809cf08f4aef2b1aaae8a880f421e656467b7aaf8f0`
 (Subaru checksum `0x1923EC61`). The retained-sensor audit adds a 20-byte repair
 to `fbc1a8...`: unity factory lambda atmospheric compensation, neutralized

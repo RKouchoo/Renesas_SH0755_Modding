@@ -11,12 +11,14 @@ Order is deliberate and deterministic:
 6. install the permanent four-stock-O2 delete / former-MAF wideband component;
 7. delete actual CPC duty/modeled flow/fuel subtraction, then install
    barometrically referenced forced-open-loop and latched lean-cut safety;
-8. apply the conservative 5 psi / 98 RON / A4TE002B-STI-injector / 6800-RPM calibration;
+8. apply the rolling calibration, including the retained idle-VE correction
+   and the MAP lower-bound repair, with 5 psi / 98 RON / STI injectors / 6800 RPM;
 9. apply the speed-density component's predictable 3200/3000-RPM AVLS policy
    and write/verify the Subaru checksum.
 
-Generated ROMs are never accepted as input.  The root stock ROM is never
-opened for writing.
+Generated ROMs are never accepted as input. The default output is the single
+current rolling master; Git retains earlier versions. The root stock ROM is
+never opened for writing.
 """
 
 from __future__ import annotations

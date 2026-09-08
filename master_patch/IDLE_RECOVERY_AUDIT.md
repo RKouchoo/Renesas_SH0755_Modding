@@ -93,7 +93,9 @@ File: [D2WD610H_idle_recovery_candidate.bin](candidates/D2WD610H_idle_recovery_c
   row. The 450/550/650-mmHg cells then bridge pressure times VE to each row's
   unchanged 760-mmHg value. Ten cells and checksum differ:
   **34 actual differing bytes**.
-- Main `D2WD610H_master_patch.bin` remains the 10:30 baseline. All machine
+- At this historical stage the main BIN remained the 10:30 baseline. The
+  rolling master now incorporates these VE cells and the
+  [MAP lower-bound repair](MAP_BOUNDARY_REPAIR.md). All machine
   code, transient tables, injector data, cut behavior and table addresses are
   byte-identical between baseline and candidate.
 

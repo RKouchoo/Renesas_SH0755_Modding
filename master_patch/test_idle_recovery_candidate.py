@@ -27,7 +27,7 @@ class IdleRecoveryTests(unittest.TestCase):
         self.assertEqual(len(self.image), 0x80000)
         self.assertEqual(candidate.master.calibration.checksum_value(self.image)[0:2],
                          (int(manifest['subaru_checksum'], 16),) * 2)
-        self.assertEqual((candidate.HERE / 'D2WD610H_master_patch.bin').read_bytes(), self.baseline)
+        self.assertEqual(candidate.master_1030(), self.baseline)
 
     def test_pressure_and_rpm_edges_preserve_baseline(self):
         for rpm in (0, 500, 734, 800, 1069, 1200, 1252, 1600, 2500, 3200):

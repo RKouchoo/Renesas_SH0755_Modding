@@ -100,7 +100,7 @@ class OverrideTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         cls.image = IMAGE if IMAGE is not None else (
-            ROOT / 'master_patch/candidates/D2WD610H_idle_recovery_candidate.bin').read_bytes()
+            ROOT / 'master_patch/D2WD610H_master_patch.bin').read_bytes()
         stock = (ROOT / '2005 BLE MT.bin').read_bytes()
         for a, b in ((0x2EFB8, 0x2F390), (0x2F684, 0x2F8C0),
                      (0x2FB08, 0x2FB20), (0x19C04, 0x19C18),

@@ -104,7 +104,7 @@ def filter_fixtures(image):
 
 
 def analyze():
-    baseline = idle.IMAGE.read_bytes()
+    baseline = idle.read_image()
     candidate = recovery.CANDIDATE.read_bytes()
     first, second = dashpot.historical_images()
     assert sha(baseline) == BASE_SHA

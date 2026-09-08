@@ -1,4 +1,12 @@
-# Idle-recovery calibration candidate
+# Historical investigation images
+
+The current output is [D2WD610H_master_patch.bin](../D2WD610H_master_patch.bin).
+The MAP repair and earlier idle-VE correction are integrated in its ordinary
+builder. The user's `D2WD610H_slight_dashpot_candidate.bin` is an independent
+experiment and is excluded from the rolling master. These saved images remain
+only for historical log analysis; see [the current repair](../MAP_BOUNDARY_REPAIR.md).
+
+## Earlier idle-recovery calibration
 
 `D2WD610H_idle_recovery_candidate.bin` is a separate research candidate for the
 September 8 near-stall/lean-recovery investigation. It holds the existing
@@ -22,6 +30,6 @@ no new BIN was produced from that review. The change remains substantial
 below 800 RPM. Original build evidence and limits are in
 [IDLE_RECOVERY_AUDIT.md](../IDLE_RECOVERY_AUDIT.md).
 
-Build from canonical stock with `python3 master_patch/idle_recovery_candidate.py`.
-The script preserves the main 10:30 `D2WD610H_master_patch.bin` as the logged
-baseline and refuses other baseline hashes.
+The historical `idle_recovery_candidate.py` recipe reads the captured 10:30
+baseline from pinned Git history and verifies the reconstructed image's hash.
+Current builds use `python3 master_patch/build_master_patch.py`.

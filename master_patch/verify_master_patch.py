@@ -57,6 +57,7 @@ import test_injector_cut_execution as injector_cut_test  # noqa: E402
 import test_injector_scheduler_execution as injector_scheduler_test  # noqa: E402
 import test_cut_interrupt_execution as cut_interrupt_test  # noqa: E402
 import test_ssm_receive_execution as ssm_receive_test  # noqa: E402
+import test_map_boundary_execution as map_boundary_test  # noqa: E402
 import logger_profiles as capture_profiles  # noqa: E402
 
 
@@ -65,7 +66,7 @@ DEFINITION = HERE / "D2WD610H_master_patch.xml"
 LOGGER_FRAGMENT = HERE / "D2WD610H_master_logger_ecuparams.xml"
 LOGGER_DEFINITION = HERE / "D2WD610H_master_logger.xml"
 LOGGER_PROFILE = HERE / "D2WD610H_idle_diagnostic_profile.xml"
-EXPECTED_OUTPUT_SHA256 = "48d63cf3b7085afc672dd809cf08f4aef2b1aaae8a880f421e656467b7aaf8f0"
+EXPECTED_OUTPUT_SHA256 = "154760a5f2fdadbf6d9221480595f58dc77c6a4eccc492f50899c815aca79e4d"
 EXPECTED_LOGGER_SHA256 = "595ab35b02e995aec3a82f017a028c7a839c9c4df6ae2fa307caf62fdd8eaff8"
 
 
@@ -168,9 +169,9 @@ def verify_layout(
     for label, (address, data) in calibration_writes.items():
         add_range(calibration_owned, address, len(data), f"calibration/{label}")
 
-    # These are deliberate tune-data replacements inside the boost component.
-    # No calibration write is allowed to touch injected executable code,
-    # descriptors, SD data, wideband data, or dual-VE data.
+    # Deliberate boost data, SD minimum and ten low-lift VE replacements.
+    # Executable code, descriptors and all other component data remain owned
+    # exclusively by their component.
     expected_component_calibration = set()
     for address, size in (
         (boost.TARGET_DATA, len(calibration.BOOST_TARGET_NATIVE) * 4),
@@ -179,6 +180,8 @@ def verify_layout(
         (boost.MAXR_ADDR, 4),
         (boost.OVERB_ADDR, 4),
         (boost.OVERB_FC_ADDR, 4),
+        (speed_density.MAP_MIN_ADDR, 4),
+        *((address, 4) for _, _, address in calibration.IDLE_VE_CELLS),
     ):
         expected_component_calibration.update(range(address, address + size))
     component_calibration_overlap = free_owned & calibration_owned
@@ -186,7 +189,7 @@ def verify_layout(
         unexpected = component_calibration_overlap - expected_component_calibration
         missing = expected_component_calibration - component_calibration_overlap
         fail(
-            "component/calibration ownership differs from the explicit boost-data "
+            "component/calibration ownership differs from the explicit boost/SD data "
             "exception: unexpected=%s missing=%s"
             % (
                 [f"0x{x:05X}" for x in sorted(unexpected)[:8]],
@@ -271,9 +274,9 @@ def verify_omni_map(image: bytes) -> None:
             f"expected 0x{master.MASTER_MAP_LOW_CEL_RAW:04X}"
         )
     if not (
-        speed_density.MAP_MIN_MMHG
+        struct.unpack_from('>f', image, speed_density.MAP_MIN_ADDR)[0]
         < max(calibration.BOOST_TARGET_NATIVE)
-        < speed_density.MAP_MAX_MMHG
+        < struct.unpack_from('>f', image, speed_density.MAP_MAX_ADDR)[0]
     ):
         fail("5 psi target is outside the speed-density MAP validity window")
 
@@ -315,13 +318,29 @@ def verify_avls_dual_ve(image: bytes) -> None:
     if low_axis[-1] != speed_density.AVLS_ENGAGE_RPM or high_axis[0] != speed_density.AVLS_RELEASE_RPM:
         fail("master dual-VE axes do not cover the real hysteresis endpoints")
 
+    # Independently reconstruct the retained idle plateau/transition from the
+    # component seed, then verify every cell on both surfaces.
+    low_values = list(struct.unpack('>' + 'f' * len(speed_density.LOW_VE_TABLE),
+                                   struct.pack('>' + 'f' * len(speed_density.LOW_VE_TABLE),
+                                               *speed_density.LOW_VE_TABLE)))
+    width = len(speed_density.MAP_AXIS)
+    donor = speed_density.LOW_RPM_AXIS.index(1200)
+    for rpm in (500, 800):
+        row = speed_density.LOW_RPM_AXIS.index(rpm)
+        anchor = 350 * low_values[donor * width + speed_density.MAP_AXIS.index(350)]
+        end = 760 * low_values[row * width + speed_density.MAP_AXIS.index(760)]
+        for pressure in (250, 350, 450, 550, 650):
+            column = speed_density.MAP_AXIS.index(pressure)
+            value = low_values[donor * width + column] if pressure <= 350 else (
+                anchor + (end - anchor) * (pressure - 350) / (760 - 350)) / pressure
+            low_values[row * width + column] = value
     for label, address, expected in (
-        ("low", speed_density.LOW_VE_DATA_ADDR, speed_density.LOW_VE_TABLE),
+        ("low", speed_density.LOW_VE_DATA_ADDR, low_values),
         ("high", speed_density.HIGH_VE_DATA_ADDR, speed_density.HIGH_VE_TABLE),
     ):
         actual = struct.unpack_from(">" + "f" * len(expected), image, address)
         if any(not math.isclose(a, b, abs_tol=1e-7) for a, b in zip(actual, expected)):
-            fail(f"master {label}-lift VE seed changed unexpectedly")
+            fail(f"master {label}-lift VE calibration differs from its current policy")
 
     for address in (speed_density.AVLS_NORMAL_PEDAL_DATA_ADDR, speed_density.AVLS_HOT_PEDAL_DATA_ADDR):
         actual = struct.unpack_from(">7f", image, address)
@@ -1222,6 +1241,7 @@ def main() -> None:
     fpu_test.verify_execution()
     stock_sensor_test.verify_execution(image)
     guard_execution_test.verify_execution(image)
+    map_boundary_test.verify_execution(image)
     primary_fueling_test.verify_execution(image)
     transient_fueling_test.verify_execution(image)
     idle_timing_test.verify_execution(image)
@@ -1271,7 +1291,9 @@ def main() -> None:
     print(f"  output SHA-256    : {output_hash}")
     print(f"  checksum          : 0x{stored:08X} (valid={stored == calculated})")
     print("  air model         : always-on MAFless committed-state dual VE speed density")
-    print("  idle VE trial     : 0.624 -> 0.985 near 1300 RPM/315 mmHg; not a verified repair")
+    print("  idle VE           : retained 500/800-RPM plateau and increasing mass transition")
+    print("  MAP lower bound   : 10.48113 kPa, aligned with existing ADC acceptance")
+    print("  DBW/dashpot       : stock calibration; independent user experiment excluded")
     print("  MAP               : Omni MAP-SUP-3BR 30..300 kPa / 0.60..4.75 V")
     print("  IAT               : provisional HT-010206 curve; assumed 1.00-kohm ECU pull-up")
     print("  wideband/O2       : P0/P1; unity lambda baro; legacy voltage adders/target terms neutralized")

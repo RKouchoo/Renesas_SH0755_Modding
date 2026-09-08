@@ -1,0 +1,445 @@
+{
+  "status": "Offline prototype only; not integrated, no BIN written, no ECU I/O.",
+  "source_sha256": "2f80b8e5cb80361cdee170655bc26aa8ed8a41bcf4cd7f7249fe3f8c8eaa1f1c",
+  "fixture_sha256": "d478e092d3b155853fc492026156f651c6114b0a1412bf1c5ee696502aa58776",
+  "fixture_checksum": "Intentionally unchanged from source; not a flash artifact.",
+  "native_execution_test_groups": 16,
+  "below_first_ve_knot": {
+    "first_adc": 3932,
+    "last_adc": 5849,
+    "all_codes_tested": 1918
+  },
+  "electrically_accepted_but_old_sd_rejected": {
+    "first_adc": 3932,
+    "last_adc": 4506,
+    "count": 575
+  },
+  "fixture_inputs": {
+    "rpm": 1500,
+    "iat_c": 25,
+    "committed_avls": 1
+  },
+  "boundary_cases": [
+    {
+      "adc_count": 3931,
+      "volts": 0.2999114990234375,
+      "converted_map_kpa": 10.4761688383002,
+      "native_electrical_classification": 2,
+      "old_airflow_g_s": 500.0,
+      "prototype_airflow_g_s": 0.0,
+      "old_fixed_fallback": true,
+      "prototype_fault_reason": 2,
+      "prototype_inhibit_word": 65535,
+      "old_native_instruction_count": 44,
+      "prototype_native_instruction_count": 168
+    },
+    {
+      "adc_count": 3932,
+      "volts": 0.29998779296875,
+      "converted_map_kpa": 10.481132622769003,
+      "native_electrical_classification": 0,
+      "old_airflow_g_s": 500.0,
+      "prototype_airflow_g_s": 3.5498499870300293,
+      "old_fixed_fallback": true,
+      "prototype_fault_reason": 0,
+      "prototype_inhibit_word": 0,
+      "old_native_instruction_count": 44,
+      "prototype_native_instruction_count": 570
+    },
+    {
+      "adc_count": 4194,
+      "volts": 0.319976806640625,
+      "converted_map_kpa": 11.781623810215997,
+      "native_electrical_classification": 0,
+      "old_airflow_g_s": 500.0,
+      "prototype_airflow_g_s": 3.990311861038208,
+      "old_fixed_fallback": true,
+      "prototype_fault_reason": 0,
+      "prototype_inhibit_word": 0,
+      "old_native_instruction_count": 44,
+      "prototype_native_instruction_count": 570
+    },
+    {
+      "adc_count": 4506,
+      "volts": 0.343780517578125,
+      "converted_map_kpa": 13.330298118089372,
+      "native_electrical_classification": 0,
+      "old_airflow_g_s": 500.0,
+      "prototype_airflow_g_s": 4.514832019805908,
+      "old_fixed_fallback": true,
+      "prototype_fault_reason": 0,
+      "prototype_inhibit_word": 0,
+      "old_native_instruction_count": 44,
+      "prototype_native_instruction_count": 570
+    },
+    {
+      "adc_count": 4507,
+      "volts": 0.3438568115234375,
+      "converted_map_kpa": 13.335261902558173,
+      "native_electrical_classification": 0,
+      "old_airflow_g_s": 4.516512870788574,
+      "prototype_airflow_g_s": 4.516512870788574,
+      "old_fixed_fallback": false,
+      "prototype_fault_reason": 0,
+      "prototype_inhibit_word": 0,
+      "old_native_instruction_count": 476,
+      "prototype_native_instruction_count": 570
+    },
+    {
+      "adc_count": 4588,
+      "volts": 0.35003662109375,
+      "converted_map_kpa": 13.737322341517396,
+      "native_electrical_classification": 0,
+      "old_airflow_g_s": 4.652686595916748,
+      "prototype_airflow_g_s": 4.652686595916748,
+      "old_fixed_fallback": false,
+      "prototype_fault_reason": 0,
+      "prototype_inhibit_word": 0,
+      "old_native_instruction_count": 476,
+      "prototype_native_instruction_count": 570
+    },
+    {
+      "adc_count": 5243,
+      "volts": 0.4000091552734375,
+      "converted_map_kpa": 16.98854624145909,
+      "native_electrical_classification": 0,
+      "old_airflow_g_s": 5.753842353820801,
+      "prototype_airflow_g_s": 5.753842353820801,
+      "old_fixed_fallback": false,
+      "prototype_fault_reason": 0,
+      "prototype_inhibit_word": 0,
+      "old_native_instruction_count": 476,
+      "prototype_native_instruction_count": 570
+    },
+    {
+      "adc_count": 5898,
+      "volts": 0.449981689453125,
+      "converted_map_kpa": 20.239772175738683,
+      "native_electrical_classification": 0,
+      "old_airflow_g_s": 6.888318061828613,
+      "prototype_airflow_g_s": 6.888318061828613,
+      "old_fixed_fallback": false,
+      "prototype_fault_reason": 0,
+      "prototype_inhibit_word": 0,
+      "old_native_instruction_count": 485,
+      "prototype_native_instruction_count": 575
+    },
+    {
+      "adc_count": 6554,
+      "volts": 0.500030517578125,
+      "converted_map_kpa": 23.495959860149178,
+      "native_electrical_classification": 0,
+      "old_airflow_g_s": 8.518251419067383,
+      "prototype_airflow_g_s": 8.518251419067383,
+      "old_fixed_fallback": false,
+      "prototype_fault_reason": 0,
+      "prototype_inhibit_word": 0,
+      "old_native_instruction_count": 485,
+      "prototype_native_instruction_count": 575
+    },
+    {
+      "adc_count": 7864,
+      "volts": 0.5999755859375,
+      "converted_map_kpa": 29.998409694370466,
+      "native_electrical_classification": 0,
+      "old_airflow_g_s": 12.205876350402832,
+      "prototype_airflow_g_s": 12.205876350402832,
+      "old_fixed_fallback": false,
+      "prototype_fault_reason": 0,
+      "prototype_inhibit_word": 0,
+      "old_native_instruction_count": 485,
+      "prototype_native_instruction_count": 575
+    },
+    {
+      "adc_count": 16000,
+      "volts": 1.220703125,
+      "converted_map_kpa": 70.3830867666947,
+      "native_electrical_classification": 0,
+      "old_airflow_g_s": 34.06548309326172,
+      "prototype_airflow_g_s": 34.06548309326172,
+      "old_fixed_fallback": false,
+      "prototype_fault_reason": 0,
+      "prototype_inhibit_word": 0,
+      "old_native_instruction_count": 467,
+      "prototype_native_instruction_count": 557
+    }
+  ],
+  "conditional_load_transient_history": [
+    {
+      "version": "current",
+      "initial_load": 0.4882350540161133,
+      "first_ten_updates": [
+        {
+          "call": 1,
+          "adc": 3932,
+          "airflow_g_s": 500.0,
+          "raw_load": 4.0,
+          "conditioned_load": 0.6989412307739258,
+          "B874": 1.8088184595108032
+        },
+        {
+          "call": 2,
+          "adc": 7864,
+          "airflow_g_s": 12.205876350402832,
+          "raw_load": 0.4882349967956543,
+          "conditioned_load": 0.6862988471984863,
+          "B874": 1.8334721326828003
+        },
+        {
+          "call": 3,
+          "adc": 7864,
+          "airflow_g_s": 12.205876350402832,
+          "raw_load": 0.4882349967956543,
+          "conditioned_load": 0.6744149923324585,
+          "B874": 1.7149245738983154
+        },
+        {
+          "call": 4,
+          "adc": 7864,
+          "airflow_g_s": 12.205876350402832,
+          "raw_load": 0.4882349967956543,
+          "conditioned_load": 0.6632441878318787,
+          "B874": -0.11374101787805557
+        },
+        {
+          "call": 5,
+          "adc": 7864,
+          "airflow_g_s": 12.205876350402832,
+          "raw_load": 0.4882349967956543,
+          "conditioned_load": 0.6527435779571533,
+          "B874": -0.10798873007297516
+        },
+        {
+          "call": 6,
+          "adc": 7864,
+          "airflow_g_s": 12.205876350402832,
+          "raw_load": 0.4882349967956543,
+          "conditioned_load": 0.6428730487823486,
+          "B874": -0.10253998637199402
+        },
+        {
+          "call": 7,
+          "adc": 7864,
+          "airflow_g_s": 12.205876350402832,
+          "raw_load": 0.4882349967956543,
+          "conditioned_load": 0.6335947513580322,
+          "B874": -0.09738045930862427
+        },
+        {
+          "call": 8,
+          "adc": 7864,
+          "airflow_g_s": 12.205876350402832,
+          "raw_load": 0.4882349967956543,
+          "conditioned_load": 0.624873161315918,
+          "B874": -0.09249559789896011
+        },
+        {
+          "call": 9,
+          "adc": 7864,
+          "airflow_g_s": 12.205876350402832,
+          "raw_load": 0.4882349967956543,
+          "conditioned_load": 0.6166748404502869,
+          "B874": -0.08787237107753754
+        },
+        {
+          "call": 10,
+          "adc": 7864,
+          "airflow_g_s": 12.205876350402832,
+          "raw_load": 0.4882349967956543,
+          "conditioned_load": 0.6089684367179871,
+          "B874": -0.08349713683128357
+        }
+      ],
+      "last_update": {
+        "call": 100,
+        "adc": 7864,
+        "airflow_g_s": 12.205876350402832,
+        "raw_load": 0.4882349967956543,
+        "conditioned_load": 0.488695353269577,
+        "B874": -0.01331638265401125
+      },
+      "maximum_conditioned_load": 0.6989412307739258,
+      "B874_range": [
+        -0.11374101787805557,
+        1.8334721326828003
+      ]
+    },
+    {
+      "version": "prototype",
+      "initial_load": 0.4882350540161133,
+      "first_ten_updates": [
+        {
+          "call": 1,
+          "adc": 3932,
+          "airflow_g_s": 3.5498499870300293,
+          "raw_load": 0.14199398458003998,
+          "conditioned_load": 0.4674605429172516,
+          "B874": -0.1424560844898224
+        },
+        {
+          "call": 2,
+          "adc": 7864,
+          "airflow_g_s": 12.205876350402832,
+          "raw_load": 0.4882349967956543,
+          "conditioned_load": 0.46870699524879456,
+          "B874": -0.1334594339132309
+        },
+        {
+          "call": 3,
+          "adc": 7864,
+          "airflow_g_s": 12.205876350402832,
+          "raw_load": 0.4882349967956543,
+          "conditioned_load": 0.4698786735534668,
+          "B874": -0.12503975629806519
+        },
+        {
+          "call": 4,
+          "adc": 7864,
+          "airflow_g_s": 12.205876350402832,
+          "raw_load": 0.4882349967956543,
+          "conditioned_load": 0.47098004817962646,
+          "B874": 0.017647523432970047
+        },
+        {
+          "call": 5,
+          "adc": 7864,
+          "airflow_g_s": 12.205876350402832,
+          "raw_load": 0.4882349967956543,
+          "conditioned_load": 0.4720153212547302,
+          "B874": 0.016680965200066566
+        },
+        {
+          "call": 6,
+          "adc": 7864,
+          "airflow_g_s": 12.205876350402832,
+          "raw_load": 0.4882349967956543,
+          "conditioned_load": 0.472988486289978,
+          "B874": -0.00976576842367649
+        },
+        {
+          "call": 7,
+          "adc": 7864,
+          "airflow_g_s": 12.205876350402832,
+          "raw_load": 0.4882349967956543,
+          "conditioned_load": 0.47390326857566833,
+          "B874": -0.009045307524502277
+        },
+        {
+          "call": 8,
+          "adc": 7864,
+          "airflow_g_s": 12.205876350402832,
+          "raw_load": 0.4882349967956543,
+          "conditioned_load": 0.4747631549835205,
+          "B874": -0.00836942344903946
+        },
+        {
+          "call": 9,
+          "adc": 7864,
+          "airflow_g_s": 12.205876350402832,
+          "raw_load": 0.4882349967956543,
+          "conditioned_load": 0.4755714535713196,
+          "B874": -0.007735428865998983
+        },
+        {
+          "call": 10,
+          "adc": 7864,
+          "airflow_g_s": 12.205876350402832,
+          "raw_load": 0.4882349967956543,
+          "conditioned_load": 0.47633126378059387,
+          "B874": -0.007140783593058586
+        }
+      ],
+      "last_update": {
+        "call": 100,
+        "adc": 7864,
+        "airflow_g_s": 12.205876350402832,
+        "raw_load": 0.4882349967956543,
+        "conditioned_load": 0.4882349967956543,
+        "B874": 0.0
+      },
+      "maximum_conditioned_load": 0.4882349967956543,
+      "B874_range": [
+        -0.1424560844898224,
+        0.017647523432970047
+      ]
+    }
+  ],
+  "code": {
+    "airflow": {
+      "address": 519680,
+      "length": 724,
+      "labels": {
+        "rpm_not_nan": 519702,
+        "running": 519712,
+        "bad_rpm": 519794,
+        "electrical": 519798,
+        "bad_electrical": 519836,
+        "pressure": 519840,
+        "bad_pressure": 519890,
+        "temperature": 519894,
+        "bad_temperature": 519948,
+        "calibration": 519952,
+        "bad_calibration": 520068,
+        "select_ve": 520072,
+        "high_lift": 520086,
+        "lookup_ve": 520088,
+        "coordinate_valid": 520102,
+        "bad_ve": 520132,
+        "ve_valid": 520136,
+        "valid_result": 520224,
+        "drop_and_fault": 520238,
+        "fault": 520240,
+        "zero": 520250,
+        "store": 520252
+      }
+    },
+    "fault_publication": {
+      "address": 520704,
+      "length": 116,
+      "labels": {
+        "counted": 520742,
+        "publish": 520756
+      }
+    },
+    "cut_composition": {
+      "address": 520960,
+      "length": 68,
+      "labels": {
+        "done": 520996
+      }
+    }
+  },
+  "new_ram": {
+    "rejected_call_count": "0xffffc85e",
+    "first_reason": "0xffffc861",
+    "first_processed_adc": "0xffffc862"
+  },
+  "fault_reasons": {
+    "1": "RPM or RPM bounds",
+    "2": "MAP electrical low",
+    "3": "MAP electrical high",
+    "4": "MAP or MAP maximum",
+    "5": "IAT or IAT bounds",
+    "6": "calibration/electrical bounds",
+    "7": "VE result",
+    "8": "IAT density result",
+    "9": "air-mass product"
+  },
+  "reset": "Only existing global state initialization, reached by task 17 / 6328 -> FEF4 -> 1055C -> 7EBA0; valid inputs, lean reset and stopped RPM do not clear SD state.",
+  "unchanged": [
+    "MAP slope/offset",
+    "ADC electrical thresholds",
+    "VE surfaces",
+    "slow-negative gain/RPM table",
+    "0.06 load filter",
+    "all saved BINs and logger XML"
+  ],
+  "limitations": [
+    "These are supplied inputs, not replay of recorded ABC4/ADC; no vehicle event is attributed to this path.",
+    "The existing approximately 0.30 V diagnostic classifier is not a validated physical lower sensor endpoint. Immediate latched injector inhibition differs from the stock debounced DTC response.",
+    "Reset dispatch is statically traced; whole hardware startup, watchdog and task reactivation are not emulated.",
+    "Native SD lookups run; retained load/transient table interpolation is mathematical. Engine, fuel pressure, exhaust delay and combustion are absent.",
+    "IRQs use native frames/dispatch with explicit scripted activation. Hardware delivery, arbitrary IRQ schedules, FP exception flags and real execution deadlines are not validated.",
+    "Production integration, logger/profile allocation, fault response suitability and full integrated verification remain before considering any flash artifact."
+  ]
+}

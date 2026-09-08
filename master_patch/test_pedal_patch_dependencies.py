@@ -71,7 +71,7 @@ class PedalDependencyTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         cls.image = IMAGE if IMAGE is not None else (
-            ROOT / 'master_patch/candidates/D2WD610H_idle_recovery_candidate.bin').read_bytes()
+            ROOT / 'master_patch/D2WD610H_master_patch.bin').read_bytes()
         cls.stock, _, cls.blobs, _ = master.build_image()
 
     def test_pedal_producers_and_dbw_calibration_remain_stock(self):

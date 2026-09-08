@@ -43,7 +43,7 @@ class DBWTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         cls.image = IMAGE if IMAGE is not None else (
-            ROOT / 'master_patch/candidates/D2WD610H_idle_recovery_candidate.bin').read_bytes()
+            ROOT / 'master_patch/D2WD610H_master_patch.bin').read_bytes()
 
     def test_visible_dbw_maps_axes_and_traced_constants_are_stock_identical(self):
         stock = (ROOT / '2005 BLE MT.bin').read_bytes()

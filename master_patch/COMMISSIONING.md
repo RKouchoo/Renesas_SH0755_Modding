@@ -1,5 +1,15 @@
 # Master-patch commissioning order
 
+The current output is the rolling `D2WD610H_master_patch.bin`, SHA-256
+`154760a5f2fdadbf6d9221480595f58dc77c6a4eccc492f50899c815aca79e4d`,
+checksum `0x16F63B0D`. It includes the MAP boundary repair and earlier idle-VE
+correction. The user's independent dashpot experiment is excluded. Full master
+verification passes; the near-stall remains unresolved. See
+[the current repair scope](MAP_BOUNDARY_REPAIR.md).
+
+The following investigation notes describe earlier stages; their candidate
+filenames and build identities are historical, not alternate current outputs.
+
 > **Evening follow-up:** dashpot experiments have not resolved sluggish pickup
 > or near-stall recovery. Native checks now identify low opening timing and
 > a stock tip-in pressure multiplier that can suppress supplemental fuel.
@@ -8,7 +18,7 @@
 > user BIN versions and records the unlogged states still needed. No new flash
 > or engine run is recommended by this pass.
 
-> **Current next step:** leave the car off and continue tracing idle-air control
+> **Earlier next step:** leave the car off and continue tracing idle-air control
 > offline. The repeat rev test on the unchanged `6af0d130...` candidate is
 > withdrawn after the user's objection that it will nearly stall again.
 > `D2WD610H_idle_air_diagnostic_profile.xml` is prepared for later use; it is
@@ -44,8 +54,9 @@ promoted as a fix. No new BIN is needed for the test-only corrections.
 
 Do not start with a flashed car and a connected turbo control valve. The static
 checks in this repository prove composition and code structure, not the wiring,
-sensors, fuel system, engine, or tune. Use a disposable ROM copy for every edit
-and keep the root stock image unchanged.
+sensors, fuel system, engine, or tune. Make fixes in the rolling master sources,
+rebuild the main BIN and use Git for version history. Keep the root stock image
+unchanged; independent user experiments are not automatically integrated.
 
 The September 8 SD hook hardening and fan/purge correction are code/definition
 work, not a demonstrated lean-out repair. Their tests do not prove timing or

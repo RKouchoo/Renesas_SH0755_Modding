@@ -47,7 +47,7 @@ class IdleTimingMachine(TransientFuelMachine):
 class IdleTimingTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
-        cls.image = IMAGE if IMAGE is not None else (ROOT / 'master_patch/candidates/D2WD610H_idle_recovery_candidate.bin').read_bytes()
+        cls.image = IMAGE if IMAGE is not None else (ROOT / 'master_patch/D2WD610H_master_patch.bin').read_bytes()
         stock = (ROOT / '2005 BLE MT.bin').read_bytes()
         for start, end in ((0x27DE8, 0x27F3E), (0x28166, 0x281D0),
                            (0x281EC, 0x281FC), (0x15192, 0x151A6),

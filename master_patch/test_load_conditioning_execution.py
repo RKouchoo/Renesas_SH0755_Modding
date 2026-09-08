@@ -93,7 +93,7 @@ class LoadConditioningMachine(TransientFuelMachine):
 class LoadConditioningTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
-        cls.image = IMAGE if IMAGE is not None else (ROOT / 'master_patch/candidates/D2WD610H_idle_recovery_candidate.bin').read_bytes()
+        cls.image = IMAGE if IMAGE is not None else (ROOT / 'master_patch/D2WD610H_master_patch.bin').read_bytes()
         stock = (ROOT / '2005 BLE MT.bin').read_bytes()
         for start, end in ((0x1753A, 0x17726), (0x1775E, 0x17788),
                            (0x2424, 0x2458), (0x24A0, 0x24E0), (0x73968, 0x739AC)):

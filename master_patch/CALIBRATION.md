@@ -1,14 +1,17 @@
-# Master-patch calibration baseline
+# Rolling master calibration
 
 This is the exact generated starting point, not a claim that the engine will
 achieve the commanded values. All pressure figures described as boost are
 relative to the firmware's fixed 760 mmHg reference unless stated otherwise.
 
-The September 8 corrected build has SHA-256
-`48d63cf3b7085afc672dd809cf08f4aef2b1aaae8a880f421e656467b7aaf8f0`
-and checksum `0x1923EC61`. It restores stock radiator-fan control and deletes
-actual CPC purge duty/modeled flow/fuel subtraction, without changing VE,
-injector, timing or AVLS calibrations. No new cam-hold policy was selected.
+The current master has SHA-256
+`154760a5f2fdadbf6d9221480595f58dc77c6a4eccc492f50899c815aca79e4d`
+and checksum `0x16F63B0D`. It incorporates the earlier ten-cell idle-VE plateau
+and the [MAP lower-bound repair](MAP_BOUNDARY_REPAIR.md). The user's independent
+dashpot experiment is excluded; DBW maps and dashpot constants are stock.
+The sensor intercept, negative transient gains and 0.06 load filter are unchanged.
+The retained firmware restores stock radiator-fan control and deletes actual
+CPC purge duty/modeled flow/fuel subtraction. No new cam-hold policy was selected.
 Earlier images, including the first-VE ROM, retain the erroneous fan hook and
 must not be run. The corrected firmware is statically tested, not
 vehicle-validated or a demonstrated lean-out cure.
@@ -45,10 +48,14 @@ for vacuum output below the published 30 kPa endpoint, but that extrapolated
 region is not guaranteed by the supplied product data and must be pressure
 tested on the actual sensor.
 
-The speed-density runtime validity window is 100 through 1600 mmHg absolute.
+The speed-density runtime validity window is 78.6149597 through 1600 mmHg
+absolute. Its minimum is the native converter result at the existing accepted
+ADC 3932, about 10.48113 kPa; this aligns the two software limits without
+claiming a newly measured physical sensor endpoint.
 The upper limit is about 213 kPa absolute, comfortably above this 5 psi
 baseline but intentionally below the sensor's electrical ceiling. An invalid
-running input selects the fixed 500 g/s high-load fail-safe value.
+running input still selects the fixed 500 g/s fallback; that remaining fault
+response is not established as safe for the engine.
 
 ## IAT sensor
 

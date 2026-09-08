@@ -11,13 +11,13 @@ import hashlib
 import json
 import statistics
 
-from analyze_20260908_idle import read_capture, LOG, IMAGE
+from analyze_20260908_idle import read_capture, LOG, read_image
 from test_transient_fuel_execution import TransientFuelMachine
 from idle_recovery_candidate import BASELINE_SHA256
 
 
 def replay():
-    image = IMAGE.read_bytes()
+    image = read_image()
     if hashlib.sha256(image).hexdigest() != BASELINE_SHA256:
         raise ValueError('This replay requires the 10:30 image used in the capture')
     _, rows = read_capture()

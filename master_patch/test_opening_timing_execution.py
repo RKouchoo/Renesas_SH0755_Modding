@@ -148,7 +148,7 @@ class OpeningTimingTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         cls.image = IMAGE if IMAGE is not None else (
-            ROOT / 'master_patch/candidates/D2WD610H_idle_recovery_candidate.bin').read_bytes()
+            ROOT / 'master_patch/D2WD610H_master_patch.bin').read_bytes()
         cls.stock = (ROOT / '2005 BLE MT.bin').read_bytes()
         for start, end in ((0x2777C, 0x27D68), (0x27DE8, 0x27F3E),
                            (0x28166, 0x287A4), (0x287DE, 0x2880C),

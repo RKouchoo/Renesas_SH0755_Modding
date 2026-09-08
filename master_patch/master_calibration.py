@@ -26,8 +26,10 @@ HERE = Path(__file__).resolve().parent
 ROOT = HERE.parent
 PATCH_DIR = ROOT / "patch"
 sys.path.insert(0, str(PATCH_DIR))
+sys.path.insert(0, str(ROOT / 'speed_density'))
 
 import patch_boost as boost  # noqa: E402
+import patch_speed_density as speed_density  # noqa: E402
 
 
 A4TE002B_INJECTOR_DONOR = (
@@ -43,6 +45,20 @@ A4TE002B_INJECTOR_DONOR_SHA256 = (
 # 32-bit word beginning at 0x7FAF4.  The stored difference is at +0x08.
 CHECKSUM_TABLE_ADDR = 0x7FB80
 CHECKSUM_TOTAL = 0x5AA5A55A
+
+# Rolling master calibration: preserve the September 8 idle-VE correction
+# and repair MAP acceptance. The user's independent DBW experiment is excluded.
+BUILD_MARKER_ADDR = 0x7FC4C
+BUILD_MARKER = 0x26090804
+SD_MAP_MIN_WORD = 0x429D3ADC  # 78.6149597168 mmHg: native converter at ADC 3932.
+IDLE_VE_RPMS = (500, 800)
+IDLE_VE_PRESSURES = (250, 350, 450, 550, 650)
+IDLE_VE_CELLS = tuple(
+    (rpm, pressure, speed_density.LOW_VE_DATA_ADDR + 4 * (
+        speed_density.LOW_RPM_AXIS.index(rpm) * len(speed_density.MAP_AXIS)
+        + speed_density.MAP_AXIS.index(pressure)))
+    for rpm in IDLE_VE_RPMS for pressure in IDLE_VE_PRESSURES
+)
 
 # Calibration table locations in D2WD610H.
 PRIMARY_OL_A_ADDR = 0x7777C
@@ -265,6 +281,10 @@ BOOST_TARGET_NATIVE = tuple(
 
 
 CALIBRATION_REGIONS = (
+    ('SD MAP Valid Minimum', speed_density.MAP_MIN_ADDR, 4),
+    *((f'Idle VE {rpm} RPM {pressure} mmHg', address, 4)
+      for rpm, pressure, address in IDLE_VE_CELLS),
+    ('Build marker', BUILD_MARKER_ADDR, 4),
     ("Primary Open Loop Load Axis A", PRIMARY_OL_A_LOAD_AXIS, PRIMARY_OL_X * 4),
     ("Primary Open Loop Load Axis B", PRIMARY_OL_B_LOAD_AXIS, PRIMARY_OL_X * 4),
     ("Primary Open Loop RPM Axis A", PRIMARY_OL_A_RPM_AXIS, PRIMARY_OL_Y * 4),
@@ -683,6 +703,34 @@ def checksum_value(image: bytes | bytearray) -> tuple[int, int, int]:
     return stored, calculated, word_sum
 
 
+def idle_ve_updates(reference: bytes) -> dict[int, bytes]:
+    """Carry forward the measured idle plateau and increasing mass transition."""
+    sd = speed_density
+    columns = len(sd.MAP_AXIS)
+    donor_row = sd.LOW_RPM_AXIS.index(1200)
+
+    def value_at(row: int, pressure: int) -> float:
+        address = sd.LOW_VE_DATA_ADDR + 4 * (row * columns + sd.MAP_AXIS.index(pressure))
+        return struct.unpack_from('>f', reference, address)[0]
+
+    updates = {}
+    for rpm, pressure, address in IDLE_VE_CELLS:
+        row = sd.LOW_RPM_AXIS.index(rpm)
+        anchor_mass = 350 * value_at(donor_row, 350)
+        exit_mass = 760 * value_at(row, 760)
+        if exit_mass <= anchor_mass:
+            raise ValueError('Idle VE transition must increase modeled air mass')
+        if pressure <= 350:
+            target = value_at(donor_row, pressure)
+        else:
+            target = (anchor_mass + (exit_mass - anchor_mass) * (pressure - 350) / 410) / pressure
+        old = value_at(row, pressure)
+        if not 0 < old < target < 1.5:
+            raise ValueError(f'Unexpected idle VE seed at {address:#x}')
+        updates[address] = f32(target)
+    return updates
+
+
 def apply_calibration(rom: bytearray, reference: bytes) -> dict[str, tuple[int, bytes]]:
     if bytes(rom) != reference:
         raise SystemExit("REFUSING: calibration input differs from the pinned component stage")
@@ -701,6 +749,14 @@ def apply_calibration(rom: bytearray, reference: bytes) -> dict[str, tuple[int, 
         rom[address:address + len(data)] = data
         owned.update(region)
         writes[label] = (address, data)
+
+    # The SD gate and existing lean-cut release share this valid-MAP minimum.
+    # The native converter/ADC boundary is executed in the master verifier.
+    write('SD MAP Valid Minimum', speed_density.MAP_MIN_ADDR, struct.pack('>I', SD_MAP_MIN_WORD))
+    idle_values = idle_ve_updates(reference)
+    for rpm, pressure, address in IDLE_VE_CELLS:
+        write(f'Idle VE {rpm} RPM {pressure} mmHg', address, idle_values[address])
+    write('Build marker', BUILD_MARKER_ADDR, struct.pack('>I', BUILD_MARKER))
 
     fuel_a, fuel_b = build_primary_open_loop(reference)
     write("Primary Open Loop Load Axis A", PRIMARY_OL_A_LOAD_AXIS, pack_floats(TUNED_FUEL_LOAD_AXIS))

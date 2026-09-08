@@ -118,7 +118,7 @@ class RequestTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         cls.image = IMAGE if IMAGE is not None else (
-            ROOT / 'master_patch/candidates/D2WD610H_idle_recovery_candidate.bin').read_bytes()
+            ROOT / 'master_patch/D2WD610H_master_patch.bin').read_bytes()
         stock = (ROOT / '2005 BLE MT.bin').read_bytes()
         for a, b in ((0x2AAAC, 0x2AD6C), (0x2AE5E, 0x2AE60),
                      (0x2B408, 0x2B7E8), (0x2B7E8, 0x2B9C8),

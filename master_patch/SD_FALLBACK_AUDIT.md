@@ -1,5 +1,11 @@
 # SD fallback, filtering and transient-fuel claims — 2026-09-08
 
+**Integrated repair:** [MAP lower-bound repair](MAP_BOUNDARY_REPAIR.md)
+aligns the minimum with the unchanged native electrical classifier. It removes
+the demonstrated mismatch in the rolling master while retaining the other fault
+paths. The original capture replay and saved-image limits below describe the
+pre-repair images; they do not establish an on-car trigger or complete cure.
+
 The fixed 500 g/s fallback is a real discontinuity worth revisiting, but it is
 not observed in the supplied captures. The strongest measured recovery lead
 remains the slow negative load-history correction. The claimed filter
@@ -154,6 +160,13 @@ would require a separately checked RAM allocation and logger change.
 
 ## Required direction for a fallback repair
 
+**Later offline implementation:** the [SD fault repair prototype](SD_FAULT_REPAIR_PROTOTYPE.md)
+now executes an in-memory repair with native boundary, latch, cut/scheduler and
+interrupt tests. It removes the fixed-fallback discontinuity for 575 counts
+accepted by the existing electrical classifier. It is not integrated firmware
+or a flash candidate; physical fault bounds and the immediate latched response
+still require resolution. The saved BINs remain unchanged.
+
 The current fallback must not be described as an established safe engine
 response. Replacing 500 with another fixed airflow, holding an old airflow
 indefinitely, or merely widening the gate does not address the entire fault
@@ -178,7 +191,9 @@ path. The intended repair needs distinct normal and fault behaviour:
    candidate. Preserve the stopped-engine zero-airflow path and prove every
    reset/clear cannot cancel another cut source.
 
-This is the repair specification, **not implemented firmware**. No guessed
-sensor limit, new RAM state, fuel-inhibit hook or logger change has been
-installed. The independent low-RPM transient calibration comparison is in
+The full fault-response specification remains **unintegrated**. The later
+prototype allocates state and hooks only in memory. The separate boundary
+portion is now in the rolling master; no new RAM state, fault-inhibit hook or
+logger change from that prototype has been installed. The
+independent low-RPM transient calibration comparison is in
 the [component audit](TRANSIENT_COMPONENT_AUDIT.md#narrower-remedy-comparison-reduce-the-low-rpm-negative-multiplier).

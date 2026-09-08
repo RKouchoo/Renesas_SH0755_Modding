@@ -310,8 +310,9 @@ class HookExecutionTests(unittest.TestCase):
             self.assertEqual(machine.calls, [])
 
     def test_invalid_sensor_inputs_fail_safe(self):
+        below_minimum = number(bits(Machine().get_float(patch.MAP_MIN_ADDR)) - 1)
         cases = [("rpm", value) for value in (math.nan, math.inf, -math.inf, -1, 7501)]
-        cases += [("map_mmhg", value) for value in (math.nan, math.inf, -math.inf, 99, 1601)]
+        cases += [("map_mmhg", value) for value in (math.nan, math.inf, -math.inf, below_minimum, 1601)]
         cases += [("iat", value) for value in (math.nan, math.inf, -math.inf, -51, 151)]
         for name, value in cases:
             with self.subTest(input=name, value=value):

@@ -94,7 +94,7 @@ class TipInTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         cls.image = IMAGE if IMAGE is not None else (
-            ROOT / 'master_patch/candidates/D2WD610H_idle_recovery_candidate.bin').read_bytes()
+            ROOT / 'master_patch/D2WD610H_master_patch.bin').read_bytes()
         cls.stock = (ROOT / '2005 BLE MT.bin').read_bytes()
         for start, end in ((0x23BAE, 0x23EE8), (0x14CE6, 0x14D52),
                            (0x14D8C, 0x14DBE), (0x2AF28, 0x2AF44),

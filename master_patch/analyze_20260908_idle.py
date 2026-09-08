@@ -21,9 +21,9 @@ ROOT = HERE.parent
 sys.path[:0] = [str(ROOT / "speed_density"), str(ROOT / "patch")]
 import patch_speed_density as sd
 import test_hook_execution as hook
+from historical_roms import master_1030 as read_image
 
 LOG = ROOT / "logs/romraiderlog_idle_diagnostic_20260908_123651.csv"
-IMAGE = HERE / "D2WD610H_master_patch.bin"
 PREFIXES = {
     "time": "Time", "rpm": "Engine Speed", "afr": "External Wideband AFR",
     "adc": "External Wideband Input ADC", "ready": "External Wideband Ready",
@@ -151,6 +151,6 @@ if __name__ == "__main__":
     parser.add_argument("--plot", type=Path, help="Optional output PNG (requires matplotlib)")
     args = parser.parse_args()
     headings, rows = read_capture()
-    print(json.dumps(summary(headings, rows, IMAGE.read_bytes()), indent=2))
+    print(json.dumps(summary(headings, rows, read_image()), indent=2))
     if args.plot:
         plot(rows, args.plot)

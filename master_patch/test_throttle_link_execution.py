@@ -121,7 +121,7 @@ class LinkTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         cls.image = IMAGE if IMAGE is not None else (
-            ROOT / 'master_patch/candidates/D2WD610H_idle_recovery_candidate.bin').read_bytes()
+            ROOT / 'master_patch/D2WD610H_master_patch.bin').read_bytes()
         stock = (ROOT / '2005 BLE MT.bin').read_bytes()
         for a, b in ((0x2FFE4, 0x30A84), (0x254C, 0x258A), (0x25BC, 0x25CA),
                      (0x2088, 0x209C), (0x4711E, 0x47138),

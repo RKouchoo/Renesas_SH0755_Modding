@@ -1,11 +1,12 @@
 #!/usr/bin/env python3
-"""Build the isolated idle-recovery research calibration.
+"""Reconstruct the historical idle-recovery calibration for log replay.
 
 The September 8 14:13 capture shows improved settled fueling but unresolved
 near-stall recovery. See logs/20260908_recovery_review.md before further use.
 
-The 10:30 master is rebuilt from canonical stock, then ten low-lift VE cells
-are changed. Nothing is written to the master BIN or stock files. No transient
+The captured 10:30 master is read from pinned Git history, then ten low-lift VE
+cells are changed. The current rolling build lives in build_master_patch.py.
+Nothing is written to the master BIN or stock files. No transient
 fueling code, calibration or cut behavior is disabled.
 """
 import hashlib
@@ -14,6 +15,7 @@ from pathlib import Path
 import struct
 
 import build_master_patch as master
+from historical_roms import master_1030
 
 HERE = Path(__file__).resolve().parent
 BASELINE_SHA256 = '48d63cf3b7085afc672dd809cf08f4aef2b1aaae8a880f421e656467b7aaf8f0'
@@ -81,15 +83,13 @@ def revise_image(baseline):
 
 
 def build_candidate():
-    _, baseline, _, _ = master.build_image()
+    baseline = master_1030()
     image, manifest = revise_image(baseline)
     return baseline, image, manifest
 
 
 if __name__ == '__main__':
     baseline, image, manifest = build_candidate()
-    if (HERE / 'D2WD610H_master_patch.bin').read_bytes() != baseline:
-        raise SystemExit('Current master BIN differs from the pinned rebuilt baseline')
     OUTPUT.parent.mkdir(parents=True, exist_ok=True)
     OUTPUT.write_bytes(image)
     OUTPUT.with_suffix('.json').write_text(json.dumps(manifest, indent=2) + '\n')

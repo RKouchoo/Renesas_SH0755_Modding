@@ -46,9 +46,14 @@ def decode(image: bytes, base: int, blob: bytes, literals: set[int]) -> list[str
 
 
 class LeanPolicy:
-    def __init__(self) -> None:
+    def __init__(self, image: bytes | None = None) -> None:
         self.state = 0
         self.counter = 0
+        self.map_minimum, self.map_maximum = (
+            struct.unpack_from('>2f', image, safety.speed_density.MAP_MIN_ADDR)
+            if image is not None else
+            (safety.speed_density.MAP_MIN_MMHG, safety.speed_density.MAP_MAX_MMHG)
+        )
 
     def step(
         self, map_mm_hg: float, baro_mm_hg: float, afr: float | None,
@@ -63,7 +68,7 @@ class LeanPolicy:
         if self.state == 3:
             valid_release_pressure = (
                 math.isfinite(delta)
-                and safety.speed_density.MAP_MIN_MMHG <= map_mm_hg <= safety.speed_density.MAP_MAX_MMHG
+                and self.map_minimum <= map_mm_hg <= self.map_maximum
                 and safety.BARO_MIN_MMHG <= baro_mm_hg <= safety.BARO_MAX_MMHG
             )
             if not valid_release_pressure or delta > reset_delta:
@@ -72,7 +77,7 @@ class LeanPolicy:
             return False
         valid_pressure = (
             math.isfinite(delta)
-            and safety.speed_density.MAP_MIN_MMHG <= map_mm_hg <= safety.speed_density.MAP_MAX_MMHG
+            and self.map_minimum <= map_mm_hg <= self.map_maximum
             and safety.BARO_MIN_MMHG <= baro_mm_hg <= safety.BARO_MAX_MMHG
             and delta >= arm_delta
         )
@@ -175,7 +180,7 @@ def verify_image(image: bytes) -> None:
     if sum(text.startswith("cmp/hs") for text in lean_decoded) != 2:
         raise AssertionError("lean wrapper lacks both unsigned delay-count comparisons")
 
-    policy = LeanPolicy()
+    policy = LeanPolicy(image)
     boost_map = 760.0 + safety.NATIVE_PER_PSI
     if policy.step(boost_map, 760.0, 15.0):
         raise AssertionError("lean policy trips when first armed")
@@ -197,6 +202,11 @@ def verify_image(image: bytes) -> None:
     release_map = 760.0 + release_delta - 0.001
     if policy.step(release_map, 760.0, 10.0) or policy.state != 0:
         raise AssertionError("lean cut does not release at its pressure boundary")
+    policy.state = 3
+    if not policy.step(policy.map_minimum - 0.001, 760.0, 10.0):
+        raise AssertionError('below-minimum MAP incorrectly releases a latched cut')
+    if policy.step(policy.map_minimum, 760.0, 10.0) or policy.state != 0:
+        raise AssertionError('valid deep-vacuum MAP does not release a latched cut')
 
 
 def main() -> None:
