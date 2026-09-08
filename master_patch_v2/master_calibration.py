@@ -28,6 +28,11 @@ PATCH_DIR = ROOT / "patch"
 sys.path.insert(0, str(PATCH_DIR))
 
 import patch_boost as boost  # noqa: E402
+import speed_density_component as speed_density  # noqa: E402
+
+BUILD_MARKER_ADDR = 0x7FC4C
+BUILD_MARKER = 0x26090804
+SD_MAP_MIN_WORD = 0x429D3ADC  # 78.6149597168 mmHg: native converter at ADC 3932 (prevents 500 g/s fallback on decel)
 
 
 # Hardcoded 550cc (Subaru 16611AA510) injector calibration in D2WD610H native units
@@ -286,6 +291,8 @@ LOW_RPM_TIMING_FLOOR = {
 
 
 CALIBRATION_REGIONS = (
+    ("SD MAP Valid Minimum", speed_density.MAP_MIN_ADDR, 4),
+    ("Build marker", BUILD_MARKER_ADDR, 4),
     ("Primary Open Loop Load Axis A", PRIMARY_OL_A_LOAD_AXIS, PRIMARY_OL_X * 4),
     ("Primary Open Loop Load Axis B", PRIMARY_OL_B_LOAD_AXIS, PRIMARY_OL_X * 4),
     ("Primary Open Loop RPM Axis A", PRIMARY_OL_A_RPM_AXIS, PRIMARY_OL_Y * 4),
@@ -709,6 +716,9 @@ def apply_calibration(rom: bytearray, reference: bytes) -> dict[str, tuple[int, 
         rom[address:address + len(data)] = data
         owned.update(region)
         writes[label] = (address, data)
+
+    write("SD MAP Valid Minimum", speed_density.MAP_MIN_ADDR, struct.pack(">I", SD_MAP_MIN_WORD))
+    write("Build marker", BUILD_MARKER_ADDR, struct.pack(">I", BUILD_MARKER))
 
     fuel_a, fuel_b = build_primary_open_loop(reference)
     write("Primary Open Loop Load Axis A", PRIMARY_OL_A_LOAD_AXIS, pack_floats(TUNED_FUEL_LOAD_AXIS))

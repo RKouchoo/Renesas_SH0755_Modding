@@ -65,18 +65,19 @@ def verify_memory_layout(
                 fail(f"Flash collision in {component}/{name} at 0x{min(overlap):05X}")
             owned_ranges.update(region)
 
-    # Boost calibration tables are written into the boost component's reservation
-    boost_cal_addrs = {
+    # Component data tables that are intentionally updated by calibration
+    allowed_component_overrides = {
         boost.TARGET_DATA,
         boost.BASE_DATA,
         boost.KP_ADDR,
         boost.MAXR_ADDR,
         boost.OVERB_ADDR,
         boost.OVERB_FC_ADDR,
+        speed_density.MAP_MIN_ADDR,
     }
 
     for name, (address, data) in calibration_writes.items():
-        if name == "Subaru checksum" or address in boost_cal_addrs:
+        if name == "Subaru checksum" or address in allowed_component_overrides:
             continue
         region = set(range(address, address + len(data)))
         overlap = owned_ranges & region
