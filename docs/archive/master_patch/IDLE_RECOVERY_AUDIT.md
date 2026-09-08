@@ -155,8 +155,8 @@ That general guidance does not validate this Subaru calibration.
   comma required the header correction documented in the follow-up.
 
 For the next controlled validation use the
-[idle recovery profile](../../../master_patch/D2WD610H_idle_recovery_profile.xml) with the updated
-[master logger definition](../../../master_patch/D2WD610H_master_logger.xml). It retains RPM, MAP,
+[idle recovery profile](../../../logger/D2WD610H_idle_recovery_profile.xml) with the updated
+[master logger definition](../../../logger/D2WD610H_master_logger.xml). It retains RPM, MAP,
 load, airflow, throttle, temperatures, pulse/latency, pump, battery, CL/OL and
 wideband/raw input, while adding **E511 signed transient correction**, **E123
 base equivalence ratio**, and **E503 committed lift mode**. E123 is a fuel

@@ -132,14 +132,14 @@ full **ignition-timing** blend/selection logic. See the notes.
 | [defs/D2WD610H_AVLS_boost_patch.xml](../../defs/D2WD610H_AVLS_boost_patch.xml) | Internal boost-definition source used by the master generator; not the current flash target. |
 | [patches/speed_density/D2WD610H_AVLS_speed_density_patch.xml](../../patches/speed_density/D2WD610H_AVLS_speed_density_patch.xml) | Internal speed-density-definition source used by the master generator; not the current flash target. |
 | [master_patch/D2WD610H_master_patch.xml](../../master_patch/D2WD610H_master_patch.xml) | Current focused metric definition: active timing/KCA identities, fuel/injectors, AVLS, SD/VE, exact Omni MAP, hard-overboost protection, wideband, pressure/lean safety, and default-OFF rotational idle. Retired EBCS controls are absent. |
-| [master_patch/D2WD610H_master_logger.xml](../../master_patch/D2WD610H_master_logger.xml) | Complete metric SSM K-line ECU logger; the lean-out diagnostic set and D2WD610H project parameters E500--E516 are always visible. |
-| [master_patch/D2WD610H_idle_diagnostic_profile.xml](../../master_patch/D2WD610H_idle_diagnostic_profile.xml) | Core idle capture, live-verified at 12:36; within the stock receiver's 43-address limit. |
-| [master_patch/D2WD610H_afterstart_diagnostic_profile.xml](../../master_patch/D2WD610H_afterstart_diagnostic_profile.xml) | Separate 43-address after-start/fuel-factor capture; the two profiles are not simultaneous. |
+| [logger/D2WD610H_master_logger.xml](../../logger/D2WD610H_master_logger.xml) | Complete metric SSM K-line ECU logger; the lean-out diagnostic set and D2WD610H project parameters E500--E516 are always visible. |
+| [logger/D2WD610H_idle_diagnostic_profile.xml](../../logger/D2WD610H_idle_diagnostic_profile.xml) | Core idle capture, live-verified at 12:36; within the stock receiver's 43-address limit. |
+| [logger/D2WD610H_afterstart_diagnostic_profile.xml](../../logger/D2WD610H_afterstart_diagnostic_profile.xml) | Separate 43-address after-start/fuel-factor capture; the two profiles are not simultaneous. |
 | [logs/20260908_recovery_review.md](../../logs/20260908_recovery_review.md) | Latest candidate capture: settled fueling improves, blips still nearly stall; timing drop closely follows base-map demand during opening. |
 | [master_patch/IDLE_RECOVERY_AUDIT.md](master_patch/IDLE_RECOVERY_AUDIT.md) | Signed transient correction trace and ten-cell VE candidate build; retained as a diagnostic calibration. |
-| [master_patch/D2WD610H_idle_recovery_profile.xml](../../master_patch/D2WD610H_idle_recovery_profile.xml) | 19-channel recovery capture with transient correction, base factor and committed lift state; 43 addresses. |
+| [logger/D2WD610H_idle_recovery_profile.xml](../../logger/D2WD610H_idle_recovery_profile.xml) | 19-channel recovery capture with transient correction, base factor and committed lift state; 43 addresses. |
 | [master_patch/IDLE_AIR_RECOVERY_AUDIT.md](master_patch/IDLE_AIR_RECOVERY_AUDIT.md) | Native load/transient and idle-air investigation; repeat rev test withdrawn, car off. |
-| [master_patch/D2WD610H_idle_air_diagnostic_profile.xml](../../master_patch/D2WD610H_idle_air_diagnostic_profile.xml) | Prepared 19-channel profile; live test deferred. Idle RPM target, combined throttle request, pedal/idle flags and fueling; 43 addresses. |
+| [logger/D2WD610H_idle_air_diagnostic_profile.xml](../../logger/D2WD610H_idle_air_diagnostic_profile.xml) | Prepared 19-channel profile; live test deferred. Idle RPM target, combined throttle request, pedal/idle flags and fueling; 43 addresses. |
 | [defs/romraider_ecu_defs.xml](../../defs/romraider_ecu_defs.xml) | Clean upstream RomRaider metric definition set from SubaruDefs Stable; no project AVLS/boost modifications. |
 
 > Load the AVLS-only definition for the stock/AVLS-only ROM, or the focused master definition

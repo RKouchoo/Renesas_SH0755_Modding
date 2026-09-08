@@ -4,13 +4,14 @@ from pathlib import Path
 import xml.etree.ElementTree as ET
 
 HERE = Path(__file__).resolve().parent
+PROFILE_DIR = HERE.parent / 'logger'
 MAX_RECEIVE_INDEX = 0x89  # ROM 32D90; 32CA4 clamps C7A9 to this index.
 MAX_ADDRESSES = (MAX_RECEIVE_INDEX - 6) // 3
-IDLE_PROFILE = HERE / 'D2WD610H_idle_diagnostic_profile.xml'
-AFTERSTART_PROFILE = HERE / 'D2WD610H_afterstart_diagnostic_profile.xml'
-RECOVERY_PROFILE = HERE / 'D2WD610H_idle_recovery_profile.xml'
-IDLE_AIR_PROFILE = HERE / 'D2WD610H_idle_air_diagnostic_profile.xml'
-MAP_SOURCE_PROFILE = HERE / 'D2WD610H_map_source_diagnostic_profile.xml'
+IDLE_PROFILE = PROFILE_DIR / 'D2WD610H_idle_diagnostic_profile.xml'
+AFTERSTART_PROFILE = PROFILE_DIR / 'D2WD610H_afterstart_diagnostic_profile.xml'
+RECOVERY_PROFILE = PROFILE_DIR / 'D2WD610H_idle_recovery_profile.xml'
+IDLE_AIR_PROFILE = PROFILE_DIR / 'D2WD610H_idle_air_diagnostic_profile.xml'
+MAP_SOURCE_PROFILE = PROFILE_DIR / 'D2WD610H_map_source_diagnostic_profile.xml'
 IDLE_PARAMETERS = {
     'P2', 'P3', 'P4', 'P5', 'P6', 'P8', 'P10', 'P11', 'P12', 'P13',
     'P17', 'P21', 'P24', 'P47', 'E32', 'E33', 'E50', 'E51', 'E60',

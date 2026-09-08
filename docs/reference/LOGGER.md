@@ -3,8 +3,8 @@
 [Reference home](README.md) · [Signal meanings](SIGNALS.md)
 
 The complete definition is
-[D2WD610H_master_logger.xml](../../master_patch/D2WD610H_master_logger.xml),
-with the [E500–E523 fragment](../../master_patch/D2WD610H_master_logger_ecuparams.xml).
+[D2WD610H_master_logger.xml](../../logger/D2WD610H_master_logger.xml),
+with the [E500–E523 fragment](../../logger/D2WD610H_master_logger_ecuparams.xml).
 The complete definition SHA-256 is
 `595ab35b02e995aec3a82f017a028c7a839c9c4df6ae2fa307caf62fdd8eaff8`.
 Their RAM addresses and storage formats remain compatible with the saved v2
@@ -25,11 +25,11 @@ no serial connection was opened during this audit.
 
 | Profile | Purpose |
 |---|---|
-| [Idle](../../master_patch/D2WD610H_idle_diagnostic_profile.xml) | General idle running signals. |
-| [After-start](../../master_patch/D2WD610H_afterstart_diagnostic_profile.xml) | Separate early-running fuel components. |
-| [Recovery](../../master_patch/D2WD610H_idle_recovery_profile.xml) | Signed transient correction, base factor and lift state. |
-| [Idle air](../../master_patch/D2WD610H_idle_air_diagnostic_profile.xml) | Effective idle request, combined throttle request, pedal and feedback flags. |
-| [MAP source](../../master_patch/D2WD610H_map_source_diagnostic_profile.xml) | ABC4, B2A0, ADC, selected baro and relevant flags together. |
+| [Idle](../../logger/D2WD610H_idle_diagnostic_profile.xml) | General idle running signals. |
+| [After-start](../../logger/D2WD610H_afterstart_diagnostic_profile.xml) | Separate early-running fuel components. |
+| [Recovery](../../logger/D2WD610H_idle_recovery_profile.xml) | Signed transient correction, base factor and lift state. |
+| [Idle air](../../logger/D2WD610H_idle_air_diagnostic_profile.xml) | Effective idle request, combined throttle request, pedal and feedback flags. |
+| [MAP source](../../logger/D2WD610H_map_source_diagnostic_profile.xml) | ABC4, B2A0, ADC, selected baro and relevant flags together. |
 
 ## Added parameter register
 

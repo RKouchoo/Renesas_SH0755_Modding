@@ -43,17 +43,18 @@ Use [D2WD610H_master_patch.xml](D2WD610H_master_patch.xml) as the ECU definition
 for this v1 image. Stock, component and v2 definitions share the factory CALID,
 so CALID alone does not identify the correct definition.
 
-[D2WD610H_master_logger.xml](D2WD610H_master_logger.xml) is the complete logger
-definition. The smaller `D2WD610H_master_logger_ecuparams.xml` is its generator
-input. The [logger reference](../docs/reference/LOGGER.md) explains the five
-diagnostic profiles, parameter identities and request limits.
+The shared definitions and capture profiles are in [logger/](../logger/README.md).
+[D2WD610H_master_logger.xml](../logger/D2WD610H_master_logger.xml) is the complete
+logger definition. The smaller `D2WD610H_master_logger_ecuparams.xml` is its
+generator input. The [logger reference](../docs/reference/LOGGER.md) explains
+the five diagnostic profiles, parameter identities and request limits.
 
 To regenerate the complete logger from the pinned upstream v370 source:
 
 ```sh
 python3 -B master_patch/install_master_logger.py \
   /path/to/logger_METRIC_EN_v370.xml \
-  master_patch/D2WD610H_master_logger.xml
+  logger/D2WD610H_master_logger.xml
 ```
 
 ## Build contracts and hardware

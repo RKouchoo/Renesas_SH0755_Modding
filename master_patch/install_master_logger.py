@@ -23,7 +23,8 @@ import xml.etree.ElementTree as ET
 
 
 HERE = Path(__file__).resolve().parent
-FRAGMENT = HERE / "D2WD610H_master_logger_ecuparams.xml"
+LOGGER_DIR = HERE.parent / "logger"
+FRAGMENT = LOGGER_DIR / "D2WD610H_master_logger_ecuparams.xml"
 ECU_ID = "3C5A387116"
 TRANSPORT_ID = "iso9141"
 MODULE_ID = "ecu"

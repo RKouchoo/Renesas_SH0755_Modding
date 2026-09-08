@@ -33,8 +33,9 @@ the optional rotational-idle component is installed with its switch off.
 
 | Location | Contents |
 |---|---|
-| [master_patch/](master_patch/README.md) | V1 integration, calibration, saved ROM, ECU/logger definitions and profiles. |
+| [master_patch/](master_patch/README.md) | V1 integration, calibration, saved ROM and ECU definition. |
 | `master_patch_v2/` | Separate v2 builder, calibration, ROM and definition. |
+| [logger/](logger/README.md) | Shared RomRaider logger definitions and capture profiles. |
 | [patches/](patches/README.md) | Shared firmware components and low-level build utilities. |
 | [tests/](tests/README.md) | Offline instruction fixtures and verifiers. |
 | [tools/](tools/README.md) | Documentation audit tools and [historical analysis/replay tools](tools/analysis/README.md). |

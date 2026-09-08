@@ -160,10 +160,12 @@ Use a fused, current-limited setup and do not backfeed an unpowered ECU.
 
 ## 3. Install logging
 
+The logger definitions and capture profiles are in [logger/](../logger/README.md).
+
 Use the complete generated definition:
 
 ```text
-master_patch/D2WD610H_master_logger.xml
+logger/D2WD610H_master_logger.xml
 ```
 
 Do not select `D2WD610H_master_logger_ecuparams.xml`; it is only the internal

@@ -41,21 +41,21 @@ no window and substitutes fresh settings without loading/saving user settings.
 ```sh
 rr_jdk=/Library/Java/JavaVirtualMachines/zulu-8.jdk/Contents/Home
 rr_check=$(mktemp -d /tmp/romraider-query-check.XXXXXX)
-rr_audit=/Users/regan/Dev/Renesas_SH0755_modding/master_patch
+rr_audit=/Users/regan/Dev/Renesas_SH0755_modding
 "$rr_jdk/bin/javac" -source 1.6 -target 1.6 \
   -cp 'build/linux/lib/RomRaider.jar:lib/common/*:lib/testing/*' \
   -d "$rr_check" \
   src/test/java/com/romraider/logger/ecu/comms/manager/QueryManagerImplTest.java \
-  "$rr_audit/romraider_query_fix/ProfileReloadCheck.java"
+  "$rr_audit/master_patch/romraider_query_fix/ProfileReloadCheck.java"
 "$rr_jdk/bin/java" \
   -cp "$rr_check:build/linux/lib/RomRaider.jar:lib/common/*:lib/testing/*" \
   org.junit.runner.JUnitCore \
   com.romraider.logger.ecu.comms.manager.QueryManagerImplTest
 "$rr_jdk/bin/java" \
   -cp "$rr_check:build/linux/lib/RomRaider.jar:lib/common/*" \
-  ProfileReloadCheck "$rr_audit/D2WD610H_master_logger.xml" \
-  "$rr_audit/D2WD610H_idle_diagnostic_profile.xml" \
-  "$rr_audit/D2WD610H_afterstart_diagnostic_profile.xml"
+  ProfileReloadCheck "$rr_audit/logger/D2WD610H_master_logger.xml" \
+  "$rr_audit/logger/D2WD610H_idle_diagnostic_profile.xml" \
+  "$rr_audit/logger/D2WD610H_afterstart_diagnostic_profile.xml"
 ```
 
 Expected: five tests pass; 22/17 channels survive reload, each producing a

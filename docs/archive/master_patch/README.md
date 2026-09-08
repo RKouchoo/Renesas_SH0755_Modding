@@ -321,7 +321,7 @@ the [RomRaider logger v370 package](https://www.romraider.com/forum/viewtopic.ph
 ```sh
 python3 master_patch/install_master_logger.py \
   /path/to/logger_METRIC_EN_v370.xml \
-  master_patch/D2WD610H_master_logger.xml
+  logger/D2WD610H_master_logger.xml
 ```
 
 The builder reads only the immutable root `2005 BLE MT.bin`, verifies its

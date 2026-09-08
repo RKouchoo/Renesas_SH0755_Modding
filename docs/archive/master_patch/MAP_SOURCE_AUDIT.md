@@ -125,8 +125,8 @@ uses directly recorded B438 and compares directly recorded B874. See
 
 ## Logger and verification
 
-The updated complete [logger definition](../../../master_patch/D2WD610H_master_logger.xml) and
-separate [MAP-source profile](../../../master_patch/D2WD610H_map_source_diagnostic_profile.xml) record
+The updated complete [logger definition](../../../logger/D2WD610H_master_logger.xml) and
+separate [MAP-source profile](../../../logger/D2WD610H_map_source_diagnostic_profile.xml) record
 both MAPs, MAP ADC voltage, selected baro, D26C/D26F/CFD0, RPM, airflow, load,
 throttle, coolant, IAT, timing, CL/OL state, AVLS, B874, net pulse and AFR:
 **19 channels / 43 addresses**. No BIN change is required. Old profiles retain

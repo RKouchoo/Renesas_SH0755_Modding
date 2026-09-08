@@ -628,8 +628,8 @@ later fault overrides and the motor's physical tracking still are not logged.
 ## Prepared profile — live test currently deferred
 
 The updated complete
-[D2WD610H_master_logger.xml](../../../master_patch/D2WD610H_master_logger.xml) and
-[D2WD610H_idle_air_diagnostic_profile.xml](../../../master_patch/D2WD610H_idle_air_diagnostic_profile.xml)
+[D2WD610H_master_logger.xml](../../../logger/D2WD610H_master_logger.xml) and
+[D2WD610H_idle_air_diagnostic_profile.xml](../../../logger/D2WD610H_idle_air_diagnostic_profile.xml)
 are prepared for a later capture. No engine run or reflash is requested now.
 The already-flashed `candidates/D2WD610H_idle_recovery_candidate.bin`, SHA-256
 `6af0d130b585abf9c9b275840ddb0b237485d84f8f8adf7b15df8462adc72433`,

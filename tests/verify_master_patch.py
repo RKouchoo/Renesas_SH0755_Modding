@@ -65,9 +65,10 @@ import logger_profiles as capture_profiles  # noqa: E402
 
 OUTPUT = HERE / "D2WD610H_master_patch.bin"
 DEFINITION = HERE / "D2WD610H_master_patch.xml"
-LOGGER_FRAGMENT = HERE / "D2WD610H_master_logger_ecuparams.xml"
-LOGGER_DEFINITION = HERE / "D2WD610H_master_logger.xml"
-LOGGER_PROFILE = HERE / "D2WD610H_idle_diagnostic_profile.xml"
+LOGGER_DIR = ROOT / "logger"
+LOGGER_FRAGMENT = LOGGER_DIR / "D2WD610H_master_logger_ecuparams.xml"
+LOGGER_DEFINITION = LOGGER_DIR / "D2WD610H_master_logger.xml"
+LOGGER_PROFILE = LOGGER_DIR / "D2WD610H_idle_diagnostic_profile.xml"
 EXPECTED_OUTPUT_SHA256 = "154760a5f2fdadbf6d9221480595f58dc77c6a4eccc492f50899c815aca79e4d"
 EXPECTED_LOGGER_SHA256 = "595ab35b02e995aec3a82f017a028c7a839c9c4df6ae2fa307caf62fdd8eaff8"
 
