@@ -9,12 +9,22 @@
 > cure. See [the master audit](master_patch/GHIDRA_AUDIT.md).
 
 Current master SHA-256:
-`5a1b3e389bdb1a6099b6ed39c3f59d53dfc1808b2d16e56f05148c127c4f48b5`
-(Subaru checksum `0xCAACD6C4`). The retained-sensor audit adds a 20-byte repair
+`aea793053fd3df4cab1efc3f15fbcee81024e6e90c0e8ba13025cb602b253b6b`
+(Subaru checksum `0x11787AA2`). The retained-sensor audit adds a 20-byte repair
 to `fbc1a8...`: unity factory lambda atmospheric compensation, neutralized
 fuel adders and target corrections dependent on removed O2 voltages, and
 checksum. VE, injector and timing calibrations are unchanged; the second idle-VE trial
 remains unvalidated. See [the retained-routine audit](master_patch/RETAINED_ROUTINE_AUDIT.md).
+The subsequent [guard execution audit](master_patch/GUARD_EXECUTION_AUDIT.md)
+adds a 17-byte correction from `5a1b3e...`: zero/negative logger lambda can no
+longer reset lean confirmation with stale valid readiness. Twelve new execution
+test groups pass, with no added flash/RAM or calibration changes.
+The later [primary-fueling execution audit](master_patch/PRIMARY_FUEL_EXECUTION_AUDIT.md)
+corrects test-interpreter rounding and executes the retained primary target,
+transition and bank/cylinder fuel composer. Further tracing found that added
+cuts could leave the injector inhibit word stale. Both cut paths now publish
+that word as well as the status flag; current `aea793...` contains the repair.
+See [the injector-cut audit](master_patch/INJECTOR_CUT_EXECUTION_AUDIT.md).
 
 ## About this ECU
 
@@ -22,7 +32,7 @@ remains unvalidated. See [the retained-routine audit](master_patch/RETAINED_ROUT
 - **Flash Size:** 512 KB (0x00000000–0x0007FFFF)
 - **Vehicle:** 2005 ADM Subaru Liberty 3.0R (EZ30R) MT (BLE Sedan)
 - **CALID:** D2WD610H · **ECU ID:** 3C5A387116
-- **Master free flash remaining:** 3,344 contiguous bytes at `0x7EDE8..0x7FAF7`
+- **Master free flash remaining:** 3,332 contiguous bytes at `0x7EDF4..0x7FAF7`
 
 ## Goals
 
@@ -55,6 +65,7 @@ full **ignition-timing** blend/selection logic. See the notes.
 | [master_patch/README.md](master_patch/README.md) | **Current integrated target** — architecture, exact hardware assumptions, deterministic builder, artifact, definition, logger, and limitations. |
 | [master_patch/GHIDRA_AUDIT.md](master_patch/GHIDRA_AUDIT.md) | Stock-ROM function evidence, injected layout, verified decisions, and unresolved physical risks for the master. |
 | [master_patch/RETAINED_ROUTINE_AUDIT.md](master_patch/RETAINED_ROUTINE_AUDIT.md) | Retained factory sensor assumptions: atmospheric lambda, O2-voltage fuel adders and feedback-target repairs, execution tests and unresolved cold-idle paths. |
+| [master_patch/GUARD_EXECUTION_AUDIT.md](master_patch/GUARD_EXECUTION_AUDIT.md) | Wideband/guard instruction execution, lean fault-sentinel fix and remaining stock-state tracing. |
 | [solenoid_subsystem.md](docs/solenoid_subsystem.md) | Historical PWM subsystem research; its former purge-output identification is superseded by the master audit. |
 | [ram_map.md](docs/ram_map.md) | Consolidated confirmed RAM variables (RPM, MAP, ECT, ignition, AVLS, purge, CL/OL, oxygen sensors, solenoids). |
 | [hardware_io_map.md](docs/hardware_io_map.md) | SH7055 memory map, ROM landmarks, identified peripheral registers, sensor channels, and key ROM data structures. |

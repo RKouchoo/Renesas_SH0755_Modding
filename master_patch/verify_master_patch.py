@@ -38,6 +38,10 @@ import purge_delete_component as purge_delete  # noqa: E402
 import test_purge_delete as purge_delete_test  # noqa: E402
 import test_actuator_retirement as actuator_retirement_test  # noqa: E402
 import test_stock_sensor_corrections as stock_sensor_test  # noqa: E402
+import test_wideband_fuel_guard_execution as guard_execution_test  # noqa: E402
+import test_primary_fueling_execution as primary_fueling_test  # noqa: E402
+import test_sh2e_fpu as fpu_test  # noqa: E402
+import test_injector_cut_execution as injector_cut_test  # noqa: E402
 
 
 OUTPUT = HERE / "D2WD610H_master_patch.bin"
@@ -45,7 +49,7 @@ DEFINITION = HERE / "D2WD610H_master_patch.xml"
 LOGGER_FRAGMENT = HERE / "D2WD610H_master_logger_ecuparams.xml"
 LOGGER_DEFINITION = HERE / "D2WD610H_master_logger.xml"
 LOGGER_PROFILE = HERE / "D2WD610H_idle_diagnostic_profile.xml"
-EXPECTED_OUTPUT_SHA256 = "5a1b3e389bdb1a6099b6ed39c3f59d53dfc1808b2d16e56f05148c127c4f48b5"
+EXPECTED_OUTPUT_SHA256 = "aea793053fd3df4cab1efc3f15fbcee81024e6e90c0e8ba13025cb602b253b6b"
 EXPECTED_LOGGER_SHA256 = "e21f5d6633605369faa013027155adeeca8583ef0f1a9486d603dbbca2e68e0b"
 
 
@@ -1144,13 +1148,14 @@ def verify_independent_boost_switches(image: bytes) -> None:
             boost.MAP_ADDR,
             boost.OVERB_FC_ADDR,
             boost.FUELCUT_FLAG,
+            boost.FUELCUT_INHIBIT_WORD,
         },
         "overboost fuel-cut wrapper",
     )
     expect(
         image,
         boost.REVWRAP_ADDR + 8,
-        bytes.fromhex("d109601088018b09"),
+        bytes.fromhex("d10a601088018b0c"),
         "independent exact-01 hard-cut branch",
     )
     if "or #128,r0" not in cut_decoded:
@@ -1211,7 +1216,11 @@ def main() -> None:
     verify_omni_map(image)
     verify_avls_dual_ve(image)
     verify_wideband(image)
+    fpu_test.verify_execution()
     stock_sensor_test.verify_execution(image)
+    guard_execution_test.verify_execution(image)
+    primary_fueling_test.verify_execution(image)
+    injector_cut_test.verify_execution(image)
     try:
         fueling_safety_verify.verify_image(image)
     except AssertionError as exc:
@@ -1258,6 +1267,7 @@ def main() -> None:
     print("  memory layout     : no component, hook, calibration, or RAM collisions")
     print("  definition        : workflow-grouped master XML; dormant timing pair and obsolete defs omitted")
     print("  fueling safety    : pressure-forced OL ON; 13.0-AFR delayed/latched cut ON")
+    print("  guard execution   : wideband, composed cuts, native inhibit word and channel gate PASS")
     print("  logger            : complete D2WD610H-only SSM definition and fragment validated")
     print("  capture profile   : SSM address budget checked, including shared switch/view bytes")
     print("  provenance        : root stock, base copy, and SRF payload remain byte-identical")

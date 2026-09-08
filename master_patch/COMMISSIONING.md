@@ -1,8 +1,8 @@
 # Master-patch commissioning order
 
 > **September 8 corrected development image:** SHA-256
-> `5a1b3e389bdb1a6099b6ed39c3f59d53dfc1808b2d16e56f05148c127c4f48b5`,
-> checksum `0xCAACD6C4`, restores `0x3FD8C -> 0xE8C4` stock fan control and
+> `aea793053fd3df4cab1efc3f15fbcee81024e6e90c0e8ba13025cb602b253b6b`,
+> checksum `0x11787AA2`, restores `0x3FD8C -> 0xE8C4` stock fan control and
 > deletes actual CPC purge duty/modeled flow/fuel subtraction. Electronic boost
 > control is removed. Do not run earlier images with the erroneous fan hook,
 > including the first-VE ROM. Static checks pass; vehicle behavior and a cure
@@ -30,10 +30,25 @@ compensation unity and neutralizes O2-voltage-dependent fuel adders, bank
 offsets and separate voltage trims in the lambda target. Main lambda feedback,
 its ordinary learned fuel corrections and all after-start enrichment remain.
 Removing a formerly active positive correction can lower delivered fuel, so do
-not assume this repair will
-richen idle or cure the observed lean-out. Compare external lambda with stock
+not assume this repair will richen idle or cure the observed lean-out. Compare external lambda with stock
 conditioned bank lambda, and capture final fuel factors and injector duration.
 See [the audit](RETAINED_ROUTINE_AUDIT.md) for exact scope and remaining paths.
+
+The later [guard execution pass](GUARD_EXECUTION_AUDIT.md) fixes a stale-ready/
+zero-lambda case that could reset lean confirmation. The 12 new instruction
+test groups pass, including preserved stock cuts, reset behavior and exact
+confirmation counts. They do not measure scheduler timing or validate controller
+fault outputs. The current image still needs the intended VE baseline and
+physical commissioning checks below before engine/load validation.
+The subsequent [primary-fueling pass](PRIMARY_FUEL_EXECUTION_AUDIT.md) executes
+the stock target/transition/composer and corrects the test FPU. It confirms
+that pressure-forced open loop preserves stock enrichment delays and can still
+select zero enrichment at low modeled load. These passing tests do not validate
+boost-entry response or the tune; this pass changes no ROM bytes.
+The later [injector-cut repair](INJECTOR_CUT_EXECUTION_AUDIT.md) does change
+the ROM: both added cuts now publish the native scheduler inhibit word, fixing
+the flag-only mismatch in `5fff8b...`. Use the current `aea793...` artifact;
+the new execution tests still do not measure queued pulses or physical delivery.
 
 ## 1. Confirm parts and harness with power off
 

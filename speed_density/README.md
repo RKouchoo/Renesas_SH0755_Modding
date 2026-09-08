@@ -86,6 +86,10 @@ exact component is included directly by `master_patch`; there is no separate AVL
 The opcode test covers the wrapper with adversarial, descriptor-based lookup
 models. It does not emulate the whole ECU, interrupt timing or hardware FP
 exceptions, and passing it does not establish the lean-out cause.
+The shared instruction model now applies SH-2E round-to-zero arithmetic,
+subnormal flushing and finite-overflow saturation; five FPU test groups run
+inside the master verifier. See the
+[primary-fueling audit](../master_patch/PRIMARY_FUEL_EXECUTION_AUDIT.md).
 
 ## Calibration model
 

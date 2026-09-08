@@ -40,6 +40,22 @@ public class ApplyMasterNames extends GhidraScript {
 
     @Override
     public void run() throws Exception {
+        // September 8 downstream cut audit: these six crank-phase channels
+        // are injector scheduling, not the previously labelled cam bank.
+        createOrRename("0001c5d4", "injector_fuel_cut_inhibit_word_build");
+        createOrRename("00026dfc", "injector_inhibit_word_read");
+        createOrRename("000263ee", "injector_phase_scheduler");
+        createOrRename("000268e8", "injector_channel_pulse_output_gate");
+        createOrRename("00026aec", "injector_schedule_inhibit_transition_update");
+        setPlateComment(toAddr("0001c5d4"),
+            "Builds B744: native global cuts publish FFFF, otherwise six channel " +
+            "fault bits. Called at the end of stock 24B24 before added master " +
+            "cuts. Both added wrappers must publish B744 as well as BF6C bit80; " +
+            "BF1C aggregation alone is insufficient. See INJECTOR_CUT_EXECUTION_AUDIT.md.");
+        setPlateComment(toAddr("000268e8"),
+            "Reads B744 via 26DFC, tests the channel mask from 4B64C, and " +
+            "returns before output handoffs when inhibited. Instruction-tested " +
+            "for all 64 six-channel masks. Hardware delivery is not emulated.");
         // September 8 retained-system audit: the old boost output was FAN,
         // not CPC purge. Keep these identities reproducible on stock.
         createOrRename("00014dcc", "throttle_position_sensor_process");
@@ -791,6 +807,27 @@ public class ApplyMasterNames extends GhidraScript {
             toAddr("0001ee74"),
             "Retained per-bank closed-loop fuel consumer. In master_patch both banks " +
             "receive the same external-wideband lambda source."
+        );
+        setPlateComment(
+            toAddr("00024bc6"),
+            "Separate stock reset writer of BF6C bit80 and BF6D bits80/40. " +
+            "Runs only when 1A256 returns 1 (B52C bit7 set). Instruction tests " +
+            "verify all 256 flag bytes remain unchanged on its running path. " +
+            "Do not remove this reset on the assumption it unconditionally " +
+            "overwrites the master lean/overboost cut."
+        );
+        setPlateComment(
+            toAddr("00022aae"),
+            "Startup call 1008A through pointer 1024C sets BE38 bit80 and " +
+            "initializes CL/OL state. Existing update-style function name " +
+            "must not be read as evidence of a periodic permission override."
+        );
+        setPlateComment(
+            toAddr("00022ac2"),
+            "State reset restores BE38 bit80 only when 1A256 reports B52C " +
+            "bit7 set. The running path is instruction-tested and preserves " +
+            "all 256 flag values, including permission cleared by master " +
+            "pressure guard. See GUARD_EXECUTION_AUDIT.md."
         );
         setPlateComment(
             toAddr("0001fb16"),

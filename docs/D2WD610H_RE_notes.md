@@ -11,13 +11,23 @@ EBCS-OFF images. Static verification does not prove this fixes the cold lean-out
 or makes the ROM vehicle-validated; see the latest master Ghidra audit.
 
 Current master SHA-256:
-`5a1b3e389bdb1a6099b6ed39c3f59d53dfc1808b2d16e56f05148c127c4f48b5`,
-checksum `0xCAACD6C4`. The fan/purge repair first produced `fbc1a8...` with a
+`aea793053fd3df4cab1efc3f15fbcee81024e6e90c0e8ba13025cb602b253b6b`,
+checksum `0x11787AA2`. The fan/purge repair first produced `fbc1a8...` with a
 436-byte difference from `0600d73a...`. The two retained-sensor passes then
 change 20 bytes from `fbc1a8...`, neutralizing atmospheric lambda correction,
 auxiliary O2-voltage fuel adders and two legacy-voltage contributions to the
 lambda targets. VE, injector and timing calibration bytes are unchanged by
 these repairs. See [the retained-routine audit](../master_patch/RETAINED_ROUTINE_AUDIT.md).
+The latest [guard execution pass](../master_patch/GUARD_EXECUTION_AUDIT.md)
+adds 17 bytes of instruction/checksum differences from `5a1b3e...`, requiring
+positive logger lambda before it can reset lean confirmation. It adds no
+allocation or calibration changes. Twelve new execution test groups now run
+in the master verifier; scheduler and physical validation remain separate.
+Further downstream execution found that those cuts left B744 stale after the
+stock limiter returned. Both wrappers now publish the native all-channel word;
+current `aea793...` differs by 169 bytes from `5fff8b...`. See
+[the injector-cut audit](../master_patch/INJECTOR_CUT_EXECUTION_AUDIT.md).
+The earlier six-channel “cam-solenoid bank” identification is corrected below.
 
 Current cold-idle investigation: the second VE increase is an unvalidated
 trial, not a proved repair. The latest run used the first increase, but its
@@ -432,9 +442,10 @@ _(underscore names only — strict naming enforcement is ON)_
 - 0x00040C94/40798/40CE6 → **cam_actuator_output_set_1/2/3**
 - 0x00022756 → **cl_ol_transition_delay_update**
 - 0x000096FC → **solenoid_pwm_channel_drive** (crank-angle-synced 6-ch PWM HW driver; AVCS/AVLS; table @0xFAE8)
-- 0x000268E8 → **solenoid_channel_output_update** (per-channel duty→count + inhibit gate)
-- 0x00026DFC → **solenoid_status_word_read** (returns solenoid inhibit word @0xFFFFB744)
-  (Note: this bank is cam/valve-timing solenoids, not purge — scheduler 0x263EE, 30°×24 phase.)
+- 0x000268E8 → **injector_channel_pulse_output_gate** (duration→count and per-channel inhibit gate)
+- 0x00026DFC → **injector_inhibit_word_read** (returns native injector inhibit word @0xFFFFB744)
+  (September 8 correction: these are six injector records shared with pulse logger 0x26F8C;
+  the earlier cam/valve-solenoid identity is retracted.)
 - 0x0003FC0A → **radiator_fan_duty_compute** (September 8 correction: CD54 is the SSM fan request, not purge)
 - 0x0003F9E4 → **radiator_fan_operating_state_update** (former purge label retracted)
 - 0x0000E8C4 → **radiator_fan_pwm_output_write** (duty ratio → ATU-II F590; period AB84)
@@ -453,9 +464,10 @@ _(underscore names only — strict naming enforcement is ON)_
 - 0x0004FB8C → **rom_checksum_accumulate** (sums flash up to free-space boundary 0x7D790) (generic 16.16 fixed-point multiply w/ saturation; PWM on-time)
 - 0x000114B0 → **slow_task_dispatcher** (~50 fn-ptr sequential caller, slow loop)
 - 0x0003F878 → **radiator_fan_mode_select** (fan mode 0-3 from ECT hysteresis; relay stages, not PWM)
-- 0x000263EE → **solenoid_phase_scheduler** (crank-angle 30°×24 scheduler for cam solenoid bank)
+- 0x000263EE → **injector_phase_scheduler** (six 0x28-byte records at BFB8; B744 cached at C0B2)
 - 0x00026320 → **solenoid_control_array_init** (inits 6 solenoid structs @0xFFFFBFB8 stride 0x28)
-- 0x0001C5D4 → **solenoid_inhibit_word_build** (builds inhibit word 0xFFFFB744 from per-ch faults)
+- 0x0001C5D4 → **injector_fuel_cut_inhibit_word_build** (FFFF for native global cut, otherwise six channel fault bits at B744)
+- 0x00026AEC → **injector_schedule_inhibit_transition_update** (applies changing inhibit masks to the phase records)
 - 0x00024570 → **solenoid_circuit_diagnostic** (sets circuit-fault byte 0xFFFFBF21)
 - 0x000182AC → **engine_load_compensation_update**
 - 0x00017984 → **airflow_load_and_vehicle_speed_processing_sequence_update**

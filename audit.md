@@ -1,5 +1,41 @@
 # D2WD610H Patch Audits
 
+## 2026-09-08 — Added cuts now publish the injector inhibit word
+
+Current master is `aea793053fd3df4cab1efc3f15fbcee81024e6e90c0e8ba13025cb602b253b6b`,
+checksum `0x11787AA2`. Continued checking first corrected a host-rounding
+error in the shared SH-2E test interpreter and executed the stock primary OL
+target, delay transition and final bank/cylinder fuel calculations. That stage
+required no ROM change; thirteen new test groups passed.
+
+Following the remaining inhibit path then found a real integration defect.
+Stock 24B24 calls 1C5D4 before returning, so added BF6C cuts occurred after B744
+was built. Actual execution reproduced BF6C cut set with B744 still zero for
+both overboost and latched lean. BF1C aggregation passing did not prove the
+scheduler received the cut. Both added paths now also publish native global-cut
+word FFFF. Stock processing still rebuilds the ordinary fault word on release.
+
+The repair changes 169 bytes from the prior `5fff8b...` image: 37 in the
+72-byte hard-cut wrapper, 128 in the 500-byte lean wrapper, and four checksum
+bytes. Calibration, hooks and stock instructions are unchanged; no new RAM.
+Remaining contiguous free flash is 3,332 bytes at 7EDF4..7FAF7. Six additional
+execution groups cover actual inhibit construction/getters, all 64 masks and
+six channel gates, both added cuts and release, independent missing-store
+negative controls and pre-mutation native-contract refusals. Existing 216
+composed-cut cases now check B744 as well as BF6C/BF1C.
+
+The full master verifier and SD execution suite pass. Five stock Ghidra names
+were corrected live and in the replay script: this phase-scheduled six-channel
+bank is injector scheduling, not the previously labelled cam-solenoid bank.
+No device output, ECU traffic, flash, commit or push was performed. Hardware
+handoffs remain modeled; whole scheduling, queued pulses, sensor/controller
+behavior and the unvalidated second-VE calibration remain release limits.
+The new defect is not a proved cause of the September 7 idle lean-out.
+
+Evidence: [primary fueling](master_patch/PRIMARY_FUEL_EXECUTION_AUDIT.md) and
+[injector-cut repair](master_patch/INJECTOR_CUT_EXECUTION_AUDIT.md).
+Earlier entries below retain their stage-specific hashes and conclusions.
+
 ## 2026-09-08 — Confirmed repairs built; VE/cam interaction remains
 
 Current master SHA-256
@@ -1645,3 +1681,52 @@ cold event. B90C reload 120 is a count, not a demonstrated 30-second timer.
 The older claim that status 7 alone excludes the BC98 family's effect was
 corrected: auxiliary CEFC/CF00 fuel terms also consume its bank offsets.
 No ECU traffic, flash, or learning reset was performed.
+
+## 2026-09-08 — Generated wideband/guard execution and fault-sentinel repair
+
+Added independent instruction execution for both wideband/inhibit hooks,
+pressure-OL wrapper, lean initializer and nested lean/overboost/rev-limiter
+chain. The stock 24B24 limiter, 24FC helper and 23FC0 aggregator execute from
+the BIN; 22454 target update and 1C5D4 solenoid-inhibit tail remain explicitly
+modeled boundaries. Normal-running/stopped paths of 24BC6/1A256 and the
+normal-running 22AC2 permission-reset path are also executed.
+
+These tests reproduced a real guard gap: ready=50 plus logger lambda=0,
+negative or negative infinity reset the lean confirmation counter as rich.
+The actual wideband invalid publisher has an intermediate ready=50/logger=0
+state because it clears logger B098 before readiness AE70. Capturing that
+instruction-produced RAM state also reproduces the defect; this is not proof
+of actual scheduler preemption or the September 7 event.
+
+The lean guard now requires positive lambda before it can clear confirmation.
+Moving its existing zero initialization keeps the wrapper at 488 bytes through
+7EDE7. Exactly 17 bytes change from 5a1b3e: 13 instruction bytes in
+7ECA4..7ECB1 and four checksum bytes. No calibration or allocation changes.
+Current master SHA-256:
+`5fff8b3776af0b56b720c360e940b193f49893b35eb64e15b3578b203b97046c`,
+checksum `0x75E22B4F`. The cumulative difference from fan/purge baseline
+fbc1a8 is 33 bytes. Stock provenance and the unvalidated second-VE trial remain
+unchanged. No ECU interaction or flash was performed.
+
+All 12 new execution groups pass and run within the full master verifier:
+2,121 ADC samples with both bank inhibits; all 256 state bytes for pressure
+and reset checks; 216 composed-cut state/switch/RPM/pressure combinations;
+all ten other aggregate cut inputs; exact delay/confirmation/release boundaries;
+fault transitions; ABI/write checks and single-instruction negative controls.
+The full verifier and all eight SD-wrapper execution groups pass.
+
+Further tracing establishes wrapper-before-aggregator order at 11B18/11B4E.
+The alternate BF6C clearer 24BC6 is B52C-bit7-gated. BE38 permission setters
+22AAE and 22AC2 are startup/state-reset paths; normal 22756/22948 flag writes
+preserve bit80. Legacy O2 readiness still reaches CF08 via 45350/453F2 and
+can gate B91A, but its normal new-setting threshold requires CEFC/CF00 >=0.09.
+With zero bank offsets, current B8FC table extrema bound that correction near
+0.014207 maximum, below the threshold. Old latched flags, computed consumers,
+and full scheduling are not thereby excluded. No further diagnostic bypass
+was justified. Repeatable stock Ghidra comments were updated in the script,
+not replayed into the live database.
+
+Exact evidence and remaining release boundaries:
+`master_patch/GUARD_EXECUTION_AUDIT.md`. The execution gap is closed for the
+listed paths; physical inputs/controller fault voltages, post-turbo feedback
+response, intended VE baseline and engine validation remain unresolved.

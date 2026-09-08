@@ -6,9 +6,10 @@ build fails on any overlap except the explicit replacement of boost component
 seed data by the final boost calibration.
 
 Current corrected master SHA-256 is
-`5a1b3e389bdb1a6099b6ed39c3f59d53dfc1808b2d16e56f05148c127c4f48b5`
-(checksum `0xCAACD6C4`). The fan/purge repair adds no RAM or free-flash
-allocation; the contiguous unallocated tail remains 3,344 bytes.
+`aea793053fd3df4cab1efc3f15fbcee81024e6e90c0e8ba13025cb602b253b6b`
+(checksum `0x11787AA2`). The fan/purge repair adds no RAM or free-flash
+allocation. The later injector-cut repair grows two existing wrappers; the
+contiguous unallocated tail is now 3,332 bytes.
 
 ## Injected flash
 
@@ -17,7 +18,7 @@ allocation; the contiguous unallocated tail remains 3,344 bytes.
 | `0x7D790..0x7D80F` | Legacy actuator descriptors/data and independent hard-cut enable; actuator data is inert. |
 | `0x7D810..0x7D8BB` | Retired actuator reservation: `RTS; NOP`, then erased bytes (172 bytes). |
 | `0x7D8BC..0x7D8C3` | Inert former throttle gate and active hard-overboost limit. |
-| `0x7D8C4..0x7D903` | Independent rev-limiter/hard-overboost fuel-cut wrapper. |
+| `0x7D8C4..0x7D90B` | Independent rev-limiter/hard-overboost fuel-cut wrapper, including injector inhibit publication (72 bytes). |
 | `0x7D91C` | Master wideband/O2 architecture signature. |
 | `0x7DB40..0x7DCEB` | Integrated default-OFF rotational-idle calibration and wrapper. |
 | `0x7DD00..0x7E18B` | Speed-density calibration, descriptors and original seed data. |
@@ -33,8 +34,8 @@ allocation; the contiguous unallocated tail remains 3,344 bytes.
 | `0x7EAC8..0x7EAEB` | Pressure-open-loop and lean-cut switches/calibration. |
 | `0x7EB20..0x7EB9B` | Stock-target-first pressure/open-loop wrapper. |
 | `0x7EBA0..0x7EBB7` | Explicit lean-state zero initializer. |
-| `0x7EC00..0x7EDE7` | Composed rev-limit/overboost/latched-lean-cut wrapper. |
-| `0x7EDE8..0x7FAF7` | Unallocated contiguous verified free flash remaining in the checksum range (3,344 bytes). |
+| `0x7EC00..0x7EDF3` | Composed rev-limit/overboost/latched-lean-cut wrapper, including injector inhibit publication (500 bytes). |
+| `0x7EDF4..0x7FAF7` | Unallocated contiguous verified free flash remaining in the checksum range (3,332 bytes). |
 
 The critical boundary is exact: the wideband component ends at `0x7E63F` and
 the speed-density component's dual-VE data segment starts at `0x7E640`. Component builders also require every destination
@@ -88,6 +89,13 @@ bank/lookup descriptors and existing data before writing. Only exact installed
 instruction replacements are normalized when checking consumer hashes.
 It adds no RAM or free-flash allocation.
 
+The earlier lean fault-sentinel stage changed instructions within
+`0x7ECA4..0x7ECB1`, retaining its then-488-byte wrapper. The subsequent
+[injector-cut repair](INJECTOR_CUT_EXECUTION_AUDIT.md) grows that wrapper to
+500 bytes and the hard-cut wrapper to 72. It intentionally shares existing
+stock `B744` with the native inhibit builder, publishing `FFFF` on an added
+global cut. No new RAM, stack frame or calibration address is introduced.
+
 The fueling-safety component reserves `0xFFFFC85C` as a 16-bit task-call counter
 and `0xFFFFC860` as an 8-bit state (`0` idle, `1` sensor delay, `2` monitoring,
 `3` cut latched). These were rear-O2 response-integrator locations. The component
@@ -103,7 +111,7 @@ The hardened SD wrapper adds no static RAM: its maximum own frame is 16 bytes
 lookup helpers gives a statically traced 28-byte additional depth at this call
 site, excluding interrupt frames and the caller's pre-existing frame. Total
 runtime stack headroom remains unmeasured. The wrapper is 16 bytes smaller than
-before; the contiguous 3,344-byte free tail is unchanged.
+before; the later cut-publication changes leave the 3,332-byte tail shown above.
 
 `python3 master_patch/verify_master_patch.py` checks all declared blob ranges,
 stock hook ranges, calibration ranges, the rotational-idle component,

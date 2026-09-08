@@ -89,7 +89,7 @@ class LeanPolicy:
                 self.state = 2
                 self.counter = 0
             return False
-        if afr is not None and math.isfinite(afr) and afr <= safety.LEAN_AFR_THRESHOLD:
+        if afr is not None and math.isfinite(afr) and 0 < afr <= safety.LEAN_AFR_THRESHOLD:
             self.counter = 0
             return False
         self.counter += 1
@@ -164,7 +164,7 @@ def verify_image(image: bytes) -> None:
             safety.wideband.WIDEBAND_LOG_LAMBDA_BANK1,
             safety.LEAN_AFR_THRESHOLD_ADDR, safety.LEAN_CONFIRM_COUNT_ADDR,
             safety.LEAN_TRANSPORT_COUNT_ADDR, safety.LEAN_RESET_DELTA_ADDR,
-            safety.FUEL_CUT_FLAG,
+            safety.FUEL_CUT_FLAG, safety.boost.FUELCUT_INHIBIT_WORD,
         },
     )
     if "or #128,r0" not in lean_decoded:

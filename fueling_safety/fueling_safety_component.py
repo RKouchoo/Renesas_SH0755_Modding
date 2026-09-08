@@ -63,7 +63,7 @@ LEAN_CONFIRM_COUNT_ADDR = 0x0007EAEA
 PRESSURE_OL_WRAPPER_ADDR = 0x0007EB20
 LEAN_STATE_INITIALIZE_ADDR = 0x0007EBA0
 LEAN_CUT_WRAPPER_ADDR = 0x0007EC00
-COMPONENT_END = 0x0007EDE7
+COMPONENT_END = 0x0007EDF3
 
 NATIVE_PER_PSI = boost.NATIVE_PER_PSI
 GASOLINE_STOICH_AFR = wideband.GASOLINE_STOICH_AFR
@@ -195,10 +195,14 @@ def build_lean_cut_wrapper() -> bytes:
     a.movl_pool(1, wideband.READY_THRESHOLD_ADDR).fmov_load(1, 1)
     a.fcmpgt(1, 0).bf("lean_sample")
     a.movl_pool(1, wideband.WIDEBAND_LOG_LAMBDA_BANK1).fmov_load(0, 1)
-    a.fcmpeq(0, 0).bf("lean_sample")
+    # Readiness and logger lambda are separate loads/stores. In particular the
+    # invalid publisher stores the zero logger sentinel before clearing ready.
+    # A stale-ready/nonpositive-lambda pair must not reset lean confirmation.
+    # This positive compare also rejects NaN; +infinity fails the rich test.
+    a.fldi0(4).fcmpgt(4, 0).bf("lean_sample")
     a.movl_pool(1, LEAN_AFR_THRESHOLD_ADDR).fmov_load(1, 1)
     a.fcmpeq(1, 1).bf("lean_sample")
-    a.fldi0(4).fcmpgt(4, 1).bf("lean_sample")
+    a.fcmpgt(4, 1).bf("lean_sample")
     a.fcmpgt(1, 0).bt("lean_sample")     # actual lambda > threshold
     a.mov_imm(0, 0).movl_pool(1, LEAN_COUNTER_RAM).movw_store(0, 1)
     a.bra("done").nop()
@@ -251,8 +255,7 @@ def build_lean_cut_wrapper() -> bytes:
     a.fcmpgt(3, 2).bf("disarm")          # release when delta <= reset
 
     a.label("set_cut")
-    a.movl_pool(1, FUEL_CUT_FLAG).movb_at(0, 1)
-    a.or_imm(0x80).movb_store(0, 1)
+    boost.emit_added_fuel_cut(a)
     a.bra("done").nop()
 
     a.label("disarm")

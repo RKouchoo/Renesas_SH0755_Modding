@@ -208,8 +208,9 @@ HIGH_RPM_AXIS = (3000.0, 3200.0, 3500.0, 4000.0, 4500.0, 5000.0,
 
 # UNVALIDATED TRIAL: these AFR endpoints were still rising. The ratio below
 # does not establish settled VE or prove the cause of the pulse-width fall.
-# Keep the first-VE ROM for the repaired diagnostic-profile capture before
-# adopting this second increase. No calibration value changed in reassessment.
+# Any first-VE comparison must be rebuilt with the current firmware repairs;
+# the old first-VE BIN has the retired fan hook and must not be reused.
+# No calibration value changed in this reassessment.
 # D2WD610H stationary idle correction derived from the 2026-09-03 and
 # 2026-09-07 runs.  The first 1.27 total factor did not sustain commanded fuel:
 # the second run still reached 18.39 AFR about 30 seconds after start while the

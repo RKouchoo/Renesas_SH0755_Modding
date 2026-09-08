@@ -1,5 +1,12 @@
 # Retained stock routines: external-wideband and cold-idle audit
 
+The later [guard execution audit](GUARD_EXECUTION_AUDIT.md) produced
+master `5fff8b...`, fixing zero-lambda/stale-readiness handling. The subsequent
+[injector-cut repair](INJECTOR_CUT_EXECUTION_AUDIT.md) produces current `aea793...`.
+The retained-sensor
+changes and `5a1b3e...` output recorded below remain the preceding audit stage;
+that later guard repair changes no sensor-correction or tuning data.
+
 2026-09-08. The user confirms the car still runs the September 7 image.
 This review changes the development master on disk, not the ECU. The missing
 saved ECU-read file referenced in the older notes prevents an independent
@@ -27,7 +34,7 @@ and four checksum bytes. Only two existing instruction words change; no new
 hook, RAM or free-flash allocation is needed. VE, injector, timing, AVCS,
 after-start and pump data are unchanged by both retained-sensor passes.
 
-Output SHA-256:
+Retained-sensor pass output SHA-256:
 `5a1b3e389bdb1a6099b6ed39c3f59d53dfc1808b2d16e56f05148c127c4f48b5`.
 Stored/calculated Subaru checksum: `0xCAACD6C4`.
 

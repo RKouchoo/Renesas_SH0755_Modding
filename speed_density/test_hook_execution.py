@@ -3,14 +3,15 @@
 
 This is deliberately independent of sh2_asm/sh2_disasm and the patch's Python
 airflow-policy model. It decodes generated machine words, branches/delay slots,
-literal loads, stack operations, FP comparisons and rounded float arithmetic.
+literal loads, stack operations, FP comparisons and SH-2E round-to-zero
+arithmetic, including denormal flushing and finite-overflow saturation.
 Stock lookup functions are NOT instruction-emulated: their descriptors and
 tables are decoded from image bytes, then linearly/bilinearly interpolated.
 The lookup models poison caller-saved registers to exercise the wrapper ABI.
 
 This checks wrapper control flow, snapshot reuse and return/stack integrity;
 it does not establish stock lookup instruction timing, ADC refresh rate, ISR
-interleaving, FPSCR exception/denormal behavior, whole-ECU scheduling or safety.
+interleaving, FPSCR exception delivery/flags, whole-ECU scheduling or safety.
 Run: python3 speed_density/test_hook_execution.py [optional-generated-ROM.bin]
 """
 
@@ -24,6 +25,7 @@ import sys
 import unittest
 
 import patch_speed_density as patch
+import sh2e_test_fpu as fpu
 
 
 IMAGE: bytes | None = None
@@ -218,7 +220,7 @@ class Machine:
         elif op & 0xF0FF == 0xF09D:
             self.fr[n] = bits(1.0)
         elif op & 0xF0FF == 0xF04D:
-            self.fr[n] ^= 0x80000000
+            self.fr[n] = fpu.negate(self.fr[n])
         elif op & 0xF00F == 0xF008:
             self.fr[n] = self.load(self.r[m], 4)
         elif op & 0xF00F == 0xF009:
@@ -232,12 +234,11 @@ class Machine:
         elif op & 0xF00F == 0xF00C:
             self.fr[n] = self.fr[m]
         elif op & 0xF00F in (0xF004, 0xF005):
-            left, right = number(self.fr[n]), number(self.fr[m])
-            self.t = left == right if (op & 15) == 4 else left > right
-        elif op & 0xF00F in (0xF000, 0xF001, 0xF002):
-            left, right = number(self.fr[n]), number(self.fr[m])
-            value = left + right if (op & 15) == 0 else left - right if (op & 15) == 1 else left * right
-            self.fr[n] = bits(value)
+            self.t = fpu.compare("eq" if (op & 15) == 4 else "gt", self.fr[n], self.fr[m])
+        elif op & 0xF00F in (0xF000, 0xF001, 0xF002, 0xF003):
+            self.fr[n] = fpu.binary(("add", "sub", "mul", "div")[op & 15], self.fr[n], self.fr[m])
+        elif op & 0xF00F == 0xF00E:
+            self.fr[n] = fpu.multiply_accumulate(self.fr[0], self.fr[m], self.fr[n])
         else:
             raise AssertionError(f"Unsupported opcode {op:04x} at {pc:#x}")
 

@@ -5,8 +5,8 @@ achieve the commanded values. All pressure figures described as boost are
 relative to the firmware's fixed 760 mmHg reference unless stated otherwise.
 
 The September 8 corrected build has SHA-256
-`5a1b3e389bdb1a6099b6ed39c3f59d53dfc1808b2d16e56f05148c127c4f48b5`
-and checksum `0xCAACD6C4`. It restores stock radiator-fan control and deletes
+`aea793053fd3df4cab1efc3f15fbcee81024e6e90c0e8ba13025cb602b253b6b`
+and checksum `0x11787AA2`. It restores stock radiator-fan control and deletes
 actual CPC purge duty/modeled flow/fuel subtraction, without changing VE,
 injector, timing or AVLS calibrations. No new cam-hold policy was selected.
 Earlier images, including the first-VE ROM, retain the erroneous fan hook and
@@ -21,6 +21,10 @@ trims BD04/BD08 from the lambda targets, including their stored baseline.
 Other target terms and main lambda feedback remain. These are fixed architecture
 changes owned by the wideband component, not VE or after-start tuning controls.
 See [RETAINED_ROUTINE_AUDIT.md](RETAINED_ROUTINE_AUDIT.md).
+The subsequent [guard execution repair](GUARD_EXECUTION_AUDIT.md) requires
+positive logger lambda before lean confirmation may reset. Its 13.0-AFR
+threshold, 50-call delay, eight-sample confirmation and all tuning data remain
+unchanged. The new instruction tests do not validate actual task cadence.
 
 ## MAP sensor
 

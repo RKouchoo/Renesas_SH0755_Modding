@@ -1,6 +1,6 @@
 # D2WD610H master-patch Ghidra audit
 
-> **Repair implemented — 2026-09-08:** the current `5a1b3e...` development image
+> **Repair implemented — 2026-09-08:** the current `aea793...` development image
 > restores stock radiator-fan control and deletes actual CPC output/purge fuel
 > subtraction. Previous images overriding fan PWM remain quarantined, including
 > `0600d73a...`. Passing tests does not establish a lean-out cure or physical
@@ -10,6 +10,18 @@
 > neutralizes factory lambda atmospheric correction, auxiliary adders, and two
 > feedback-target contributions dependent on removed stock O2 voltage channels.
 > No lean-out cure is claimed.
+
+The subsequent [guard execution audit](GUARD_EXECUTION_AUDIT.md) fixes the
+zero-lambda/stale-readiness confirmation gap. Twelve new execution groups
+cover emitted wideband/guard code and retained limiter/aggregator/reset paths.
+That report also traces the remaining voltage-diagnostic state and CL-permission
+writers, and states the modeled-callee and scheduler limits explicitly.
+Further [primary-fueling execution](PRIMARY_FUEL_EXECUTION_AUDIT.md) corrected
+the test FPU and covered stock target/transition/composer calculations. The
+subsequent [injector-cut audit](INJECTOR_CUT_EXECUTION_AUDIT.md) found and fixed
+the stale B744 word left by added cuts. It now executes 1C5D4 and the channel
+output gate as well. Current free tail is 3,332 bytes at 7EDF4; older sizes and
+image hashes below describe their respective earlier audit stages.
 
 ## Result
 
@@ -264,7 +276,7 @@ all boost, speed-density, wideband, fueling-safety, calibration, and RAM state.
 | `0x7EAC8..0x7EAEB` | Pressure/open-loop and lean-cut switches/calibration. |
 | `0x7EB20..0x7EB9B` | Pressure-forced-open-loop wrapper. |
 | `0x7EBA0..0x7EBB7` | Explicit lean-state zero initializer. |
-| `0x7EC00..0x7EDE7` | Composed latched-lean-cut wrapper. |
+| `0x7EC00..0x7EDF3` | Composed latched-lean-cut wrapper, including native injector inhibit publication. |
 
 The verifier rejects overlap, writes outside declared stock hooks/calibration
 regions, unknown injected opcodes, stale generated XML, unexpected logger RAM

@@ -22,8 +22,8 @@ firmware work into one deterministic stock-to-output build:
   delete for the removed/capped purge plumbing;
 - the former MAF ADC repurposed for the supplied seller-labelled `AEM 50-4110`
   / 30-4110-style P0/P1 0-5 V lambda signal;
-- both stock front A/F paths and both rear O2 paths removed from feedback and
-  diagnostics;
+- main stock front A/F and rear O2 processing bypassed, 18 mapped O2 DTC
+  switches disabled, and identified legacy-voltage fuel contributions neutralized;
 - the bounded per-cylinder rotational-idle timing post-processor, installed but
   default OFF;
 - a live-barometric pressure failsafe that requests open loop before boost and
@@ -37,9 +37,9 @@ firmware work into one deterministic stock-to-output build:
 - focused, self-contained D2WD610H RomRaider ECU and logger definitions.
 
 The generated baseline is `D2WD610H_master_patch.bin`, SHA-256
-`5a1b3e389bdb1a6099b6ed39c3f59d53dfc1808b2d16e56f05148c127c4f48b5`.
+`aea793053fd3df4cab1efc3f15fbcee81024e6e90c0e8ba13025cb602b253b6b`.
 It is 512 KiB, contains CALID `D2WD610H`, and has a valid Subaru additive
-checksum (`0xCAACD6C4`). It is a development artifact, not a vehicle-tested tune.
+checksum (`0x11787AA2`). It is a development artifact, not a vehicle-tested tune.
 Its second idle-VE increase is an unvalidated trial derived from a still-rising
 AFR endpoint. The old recommendation to continue running the first-VE ROM is
 withdrawn: that image also used the erroneous fan hook. Any future first-VE
@@ -66,6 +66,32 @@ Other raw-voltage consumers and closed-loop transport dynamics remain audit
 limits; this does not establish total independence from the removed circuits.
 The complete generated logger definition has SHA-256
 `e21f5d6633605369faa013027155adeeca8583ef0f1a9486d603dbbca2e68e0b`.
+
+The [guard execution audit](GUARD_EXECUTION_AUDIT.md) subsequently found and
+fixed a lean-confirmation gap: a zero logger fault sentinel with stale valid
+readiness was treated as rich. Lambda must now be positive before it can
+clear confirmation. This changes 17 bytes from `5a1b3e...`, including checksum,
+with unchanged allocations and calibration. Twelve new execution test groups
+cover the wideband hooks, nested cut wrappers, retained rev limiter/aggregator,
+stock resets, boundaries and fault handling, and run in the master verifier.
+Scheduler timing, physical controller behavior and the VE baseline remain
+validation limits.
+
+The [primary-fueling execution audit](PRIMARY_FUEL_EXECUTION_AUDIT.md) adds
+eight groups that execute the stock target, transition and final bank/cylinder
+fuel calculations, plus five FPU groups that correct a host-rounding mismatch
+in the shared test interpreter. Pressure
+forced open loop preserves the stock enrichment calculation and its delay;
+it does not guarantee a rich target when modeled load is low.
+
+Further downstream execution found a separate [injector-cut publication
+defect](INJECTOR_CUT_EXECUTION_AUDIT.md): the added cuts set the status flag
+after the stock limiter had already built the scheduler's inhibit word. Both
+now publish the stock all-channel inhibit value too. Current `aea793...`
+changes 169 bytes from `5fff8b...`, with unchanged calibration and no new RAM.
+Six new execution groups cover native word construction, downstream channel
+gates, release and negative controls; all pass. The old “cam-solenoid bank”
+identification of this six-channel scheduler is corrected to injector scheduling.
 
 `Overboost Fuel Cut Enable` remains in RomRaider, defaults ON, and retains the
 6.5 psi hard MAP cut relative to 760 mmHg. Electronic boost enable, target,
@@ -213,8 +239,15 @@ and verifies provenance and checksum.
 | `wideband_component.py` | Permanent four-stock-O2 delete and former-MAF external-wideband input firmware. |
 | `purge_delete_component.py` | Guarded in-place CPC duty, modeled-flow and bank fuel-subtraction delete; no new RAM or free-flash allocation. |
 | `test_purge_delete.py` | Executable leaf/ABI tests for zero CPC request and both bank subtraction terms, plus ownership and refusal checks. |
-| `RETAINED_ROUTINE_AUDIT.md` | Stock sensor-assumption mismatches, exact 14-byte correction, cold-idle evidence and remaining audit limits. |
+| `RETAINED_ROUTINE_AUDIT.md` | Stock sensor-assumption mismatches, fuel-adder/target repairs, cold-idle evidence and remaining audit limits. |
 | `test_stock_sensor_corrections.py` | Retained auxiliary-adder, bank-offset and lambda-target opcode execution, atmospheric lambda model, negative controls and guarded ownership. |
+| `GUARD_EXECUTION_AUDIT.md` | Lean fault-sentinel repair, generated-code execution evidence and further stock-state tracing. |
+| `test_wideband_fuel_guard_execution.py` | Executes wideband hooks, guard chain, retained limiter/aggregator and reset paths, with boundary and negative-control cases. |
+| `PRIMARY_FUEL_EXECUTION_AUDIT.md` | Corrected SH-2E arithmetic model, actual primary target/transition/composer execution and precise pressure-override limits. |
+| `INJECTOR_CUT_EXECUTION_AUDIT.md` | Added cut flags versus native injector inhibit word, repaired publication and downstream execution evidence. |
+| `test_injector_cut_execution.py` | Actual inhibit builder/getters and channel gate; native fault preservation, release, missing-store negative controls and contract refusals. |
+| `test_primary_fueling_execution.py` | Stock target and final bank/cylinder fuel calculations with actual scalar helpers, modeled table lookups, and negative controls. |
+| `../speed_density/sh2e_test_fpu.py` / `../speed_density/test_sh2e_fpu.py` | Shared interpreter value semantics, manual vectors and exact arithmetic bounds; no hardware exception delivery. |
 | `../fueling_safety/fueling_safety_component.py` | Pressure-forced-open-loop and latched lean-cut component. |
 | `../patch/patch_rotational_idle.py` | Reusable bounded rotational-idle component, integrated default OFF. |
 | `verify_master_patch.py` | Independent binary, opcode, calibration, XML, logger, and provenance audit. |

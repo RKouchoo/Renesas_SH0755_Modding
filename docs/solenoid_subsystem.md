@@ -1,5 +1,13 @@
 # D2WD610H Solenoid / PWM Output Subsystems
 
+> **Historical identifications retracted, September 8:** Section A's six
+> crank-phase channels are injector scheduling, not a cam-solenoid bank.
+> The output previously identified here as repurposable purge was radiator-fan
+> PWM. Do not use these old identities to select or repurpose an output. Current
+> evidence is in the [injector-cut audit](../master_patch/INJECTOR_CUT_EXECUTION_AUDIT.md)
+> and [fan/purge repair](../master_patch/GHIDRA_AUDIT.md).
+> The original research below is retained as history.
+
 Two independent solenoid/PWM output systems were reverse-engineered. Keeping them straight
 matters for the boost patch: the **purge** output (a free-running duty PWM) is the repurpose
 target; the **cam bank** (crank-angle-synced) is a different subsystem and must be left alone.

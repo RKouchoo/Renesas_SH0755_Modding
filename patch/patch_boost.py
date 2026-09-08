@@ -39,6 +39,7 @@ MAP_SCALING_ADDR = 0x00072810   # float32[2]: offset, multiplier (native mmHg un
 REVLIMITER     = 0x00024B24     # rev limiter (sets fuel-cut flag 0xFFFFBF6C bit0x80 by RPM)
 REVLIM_FNPTR   = 0x00011D3C     # periodic-dispatcher fn-ptr slot -> rev limiter (we repoint it)
 FUELCUT_FLAG   = 0xFFFFBF6C     # fuel-cut status byte; bit0x80 feeds the fuel-cut aggregator (0x23FC0)
+FUELCUT_INHIBIT_WORD = 0xFFFFB744  # native six-channel injector scheduler inhibit word
 
 # --- free-space layout (all 0xFF-verified free; < 0x7FAF7) ---
 # Actuator descriptors/data are inert legacy reservations, retained only for
@@ -116,10 +117,23 @@ def build_stub():
     """
     return bytes.fromhex("000b0009") + b"\xff" * (THROTTLE_GATE_ADDR - STUB_ADDR - 4)
 
+def emit_added_fuel_cut(a):
+    """Publish both native cut interfaces after the retained limiter ran.
+
+    Stock 24B24 builds B744 via 1C5D4 before returning. Setting BF6C afterward
+    alone leaves the injector scheduler's word stale. The stock global-cut
+    branch at 1C662/1C90A publishes 0xFFFF; use that same value here. The next
+    retained limiter invocation rebuilds the ordinary per-cylinder word.
+    """
+    a.movl_pool(1, FUELCUT_FLAG).movb_at(0, 1).or_imm(0x80).movb_store(0, 1)
+    a.movl_pool(1, FUELCUT_INHIBIT_WORD).mov_imm(-1, 0).movw_store(0, 1)
+
+
 def build_fuelcut_wrapper():
     """Rev-limiter wrapper: run the stock rev limiter, then set the fuel-cut flag on overboost.
        Entered void (PR = dispatcher). Runs in the rev-limiter's task slot, so the fuel-cut
-       aggregator (0x23FC0) picks up the flag the same/next cycle. No RAM state."""
+       aggregator sees the flag and the scheduler sees the inhibit word before
+       this task returns. No new RAM state."""
     a = Asm(REVWRAP_ADDR)
     a.stsl_pr()                                                    # save dispatcher PR
     a.movl_pool(2, REVLIMITER); a.jsr(2); a.nop()                  # call stock rev limiter
@@ -128,8 +142,7 @@ def build_fuelcut_wrapper():
     a.movl_pool(1, MAP_ADDR); a.fmov_load(2, 1)                    # fr2 = MAP
     a.movl_pool(1, OVERB_FC_ADDR); a.fmov_load(3, 1)               # fr3 = fuel-cut limit
     a.fcmpgt(3, 2); a.bf('skip')                                   # if MAP > limit:
-    a.movl_pool(1, FUELCUT_FLAG)                                   #   flag |= 0x80  (force fuel cut)
-    a.movb_at(0, 1); a.or_imm(0x80); a.movb_store(0, 1)
+    emit_added_fuel_cut(a)
     a.label('skip')
     a.ldsl_pr(); a.rts(); a.nop()                                  # return to dispatcher
     return a.assemble()
@@ -162,6 +175,16 @@ def apply_to_rom(rom):
     if len(rom) != 0x80000:
         raise SystemExit("REFUSING: expected a 512 KB stock-derived image, got %d bytes"
                          % len(rom))
+    # Pin the native all-channel cut value, destination and downstream reader
+    # before publishing the same word from either added cut path.
+    for address, expected in (
+        (0x1C662, "d40aa1500009"), (0x1C68C, "0000ffff"),
+        (0x1C908, "93082341"), (0x1C91C, "b744"),
+        (0x26DFC, "9377000b6031"), (0x26EEE, "b744"),
+    ):
+        data = bytes.fromhex(expected)
+        if rom[address:address + len(data)] != data:
+            raise SystemExit("REFUSING: native injector-inhibit contract changed @0x%X" % address)
     for addr in (BASE_DESC, RPM_AXIS, TARGET_DESC, STUB_ADDR, KP_ADDR):
         assert addr % 4 == 0
 

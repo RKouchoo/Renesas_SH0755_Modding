@@ -85,9 +85,16 @@ See the master audit for the verified `3FD8C -> E8C4` fan route and
 ## Closed-loop / open-loop fuel (see notes §7, task #4)
 | RAM addr | Meaning |
 |---|---|
-| 0xFFFFBE38 | CL/OL state flag byte (0x40 throttle-above, 0x20 BPW-above, 0x80 closed-loop permitted by the primary target path; master pressure safety may clear only 0x80) |
+| 0xFFFFBE38 | CL/OL state flag byte (0x40 throttle-below-threshold, 0x20 base-pulse-below-threshold, both hysteretic; 0x80 closed-loop permitted by the primary target path; master pressure safety may clear only 0x80) |
 | 0xFFFFBE2C / BE30 | CL/OL thresholds cached (throttle / BPW) |
 | 0xFFFFBE14/16/18/1A/28 | CL/OL delay counters |
+| 0xFFFFBE20 / BE24 / BE00 | Primary OL table A/B cached values and selected enrichment from 22454 |
+| 0xFFFFBDFC / BE04 | Main and auxiliary primary OL ramp outputs; stock delay/eligibility gates remain |
+| 0xFFFFBDF8 | Primary OL enrichment from 22454; normal branch max(BDFC, BE04) times BE0C times BE10. Added into both banks by final composer 1DD04 |
+
+The pressure wrapper clears permission after the stock target calculation; it
+does not synthesize enrichment. See
+[the execution audit](../master_patch/PRIMARY_FUEL_EXECUTION_AUDIT.md).
 
 ## Oxygen sensors / current master patch
 | RAM addr | Type | Meaning |
@@ -109,16 +116,18 @@ See the master audit for the verified `3FD8C -> E8C4` fan route and
 | 0xFFFFB8F4 / B8F8 | float | Per-bank lambda feedback targets from 202B8; main lambda feedback and other target terms remain after the scoped legacy-voltage repair. |
 | 0xFFFFC85C | u16 | Master lean-cut delay/confirmation counter, reclaimed only after every traced rear-O2 runtime task is bypassed |
 | 0xFFFFC860 | u8 | Master lean-cut state: 0 idle, 1 sensor delay, 2 AFR monitoring, 3 fuel-cut latched |
+| 0xFFFFCF08 / CF09 / CF0A | u8 | Retained legacy-voltage diagnostic eligibility flags from 45350/453F2; CF08 can gate B91A. Their setting path requires CEFC/CF00 >=0.09, above the bounded normal current-calibration correction. They are not a blanket deleted subsystem. |
 
 The older standalone single-front-A/F patch has different semantics and remains documented in
 [single_front_af_patch.md](single_front_af_patch.md). For the current master image, use the logger
 fragment and installation script in `master_patch`; never treat E500 = 0.0 as a real lambda.
 
-## Solenoid output subsystem (cam AVCS/AVLS bank — see solenoid_subsystem.md)
+## Injector scheduling and inhibit state
 | RAM addr | Meaning |
 |---|---|
 | 0xFFFFBFB8 | Control-struct array base (6 × 0x28 = **spans 0xFFFFBFB8–0xFFFFC0A7**, channel idx @ +0x0C). Accessed by computed base+index, so per-field addresses (e.g. 0xFFFFBFF0/BFF8) show NO xref but ARE used — do not repurpose. |
-| 0xFFFFB744 | Solenoid inhibit/fault word (16-bit; bit n = channel n) |
+| 0xFFFFB744 | Injector scheduler inhibit word (16-bit; bits 0..5 per channel, FFFF native global cut). Added overboost/lean cuts publish FFFF as well as BF6C bit80; old cam-solenoid identity is retracted. |
 | 0xFFFFBF21 | Circuit-fault byte (bits 0x80..0x04 = ch0..5) |
-| 0xFFFFD94C | Solenoid command byte (bits read by fault thunks) |
-| 0xFFFFC0A8 / C0AC / C0B0 | Solenoid init/global vars |
+| 0xFFFFD94C | Six channel inhibit-status bits read by 46EE0..46F3E; not a cam command |
+| 0xFFFFC0A8 / C0AC / C0B0 | Injector scheduling initialization/global state |
+| 0xFFFFC0B2 | Cached B744 word used by phase scheduler 263EE |
