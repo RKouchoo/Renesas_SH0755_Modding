@@ -62,7 +62,7 @@ ROOT = HERE.parent
 PATCH_DIR = ROOT / "patch"
 sys.path.insert(0, str(PATCH_DIR))
 
-from sh2_asm import Asm  # noqa: E402
+from sh2_asm import Asm  # type: ignore # noqa: E402
 
 
 STOCK = (ROOT / "2005 BLE MT.bin").resolve()

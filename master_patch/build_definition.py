@@ -349,7 +349,7 @@ AVCS_DESCRIPTIONS = {
 PREDICTABLE_AVLS_DESCRIPTIONS = {
     "AVLS High Cam Engage RPM": (
         "Predictable committed-state high-lift engagement threshold. Master "
-        "defaults to 3200 RPM. The former vehicle-speed/oil-band request tables "
+        "defaults to 3200 RPM. The former pedal/oil-band request tables "
         "are fixed unreachable and omitted; keep engage above release."
     ),
     "AVLS High Cam Release RPM": (

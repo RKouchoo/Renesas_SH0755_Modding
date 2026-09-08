@@ -1,5 +1,39 @@
 # D2WD610H Patch Audits
 
+## 2026-09-08 — current patch pedal-dependency check
+
+Followed the user's question about whether any patch mistakenly uses pedal.
+The current baseline and flashed `6af0d130...` candidate rebuild identically.
+All six added components' installed blobs have no literal in the B46C..B4CF
+pedal-state block. The 17984..18DAC pedal-processing sequence, 2AAAC..2F390
+idle/DBW code and relevant pedal/DBW calibration remain stock-identical.
+SD's adjacent B448/B458/B45C outputs were traced separately to the stock
+airflow path; they are not pedal state.
+
+Five new `test_pedal_patch_dependencies.py` groups execute added airflow,
+wideband and pressure/cut decisions with independent 0/20/100-percent pedal
+fixtures; read/write tracking finds no pedal access. Rotational idle uses
+B538 vehicle speed independently of pedal, including an in-memory enabled
+test of its dormant code. P30/P9 native getters distinguish B46C pedal from
+B53C vehicle speed; stock 1A2A2 normally copies B53C into B538 through its
+validity/fallback selection. Deliberately substituting pedal for the SD MAP
+pointer or rotational-idle speed pointer in memory exposes the wrong
+dependency, demonstrating that the checks detect that class of error.
+
+AVLS is the relevant qualification: its previously mislabelled thresholds
+really are pedal-based. Their existing 110-percent calibration still disables
+that route above the 100-percent pedal cap, preserving the intended fixed
+3200/3000-RPM policy. The retained auxiliary O2 adder also has a legitimate
+pedal selector; both selected constants were already zeroed. This does not
+support a claim that stock code never consumes pedal.
+
+All five groups and the full master verifier pass. Interpolation, the stock
+primary-target return and stock final-timing output have stated fixture
+boundaries; fixed-input isolation does not model physical engine response.
+Corrected the final stale AVLS XML description and the 2AD6C function name.
+No BIN or source capture changed and no engine test was requested. Details:
+[current pedal-dependency audit](master_patch/IDLE_AIR_RECOVERY_AUDIT.md).
+
 > September 8 current status: repeat rev testing is withdrawn; leave the car
 > off while recovery is investigated offline. Historical B46C/AVLS vehicle-speed
 > claims below are superseded: native P30 execution proves accelerator-pedal

@@ -44,6 +44,7 @@ import test_transient_fuel_execution as transient_fueling_test  # noqa: E402
 import test_idle_timing_execution as idle_timing_test  # noqa: E402
 import test_load_conditioning_execution as load_conditioning_test  # noqa: E402
 import test_idle_air_execution as idle_air_test  # noqa: E402
+import test_pedal_patch_dependencies as pedal_dependencies_test  # noqa: E402
 import test_sh2e_fpu as fpu_test  # noqa: E402
 import test_injector_cut_execution as injector_cut_test  # noqa: E402
 import test_injector_scheduler_execution as injector_scheduler_test  # noqa: E402
@@ -1187,6 +1188,7 @@ def main() -> None:
     idle_timing_test.verify_execution(image)
     load_conditioning_test.verify_execution(image)
     idle_air_test.verify_execution(image)
+    pedal_dependencies_test.verify_execution(image)
     injector_cut_test.verify_execution(image)
     injector_scheduler_test.verify_execution(image)
     cut_interrupt_test.verify_execution(image)

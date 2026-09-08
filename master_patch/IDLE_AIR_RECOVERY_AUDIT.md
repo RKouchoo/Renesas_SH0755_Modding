@@ -140,6 +140,54 @@ The standalone speed-density audit and AVLS metadata synchronization check
 also pass after the label/identifier corrections. The focused master ROM
 definition regenerates byte-identically; its hidden AVLS controls stay hidden.
 
+## Follow-up: do patches mistakenly use the pedal signal?
+
+No mistaken substitution of pedal for MAP, engine load or vehicle speed was
+found in the **current `6af0d130...` candidate**. This statement covers the
+current built components and the checks below; it is not approval of older
+BINs or a claim that retained stock logic never reads pedal position.
+
+| Current component | Signal use and evidence |
+|---|---|
+| Speed density | MAP ABC4, caller-saved RPM, IAT B3B8 and committed lift CD86. The wrapper neither reads nor writes B46C/pedal state. Its nearby B448/B458/B45C outputs are airflow state: native 17726 copies ABE4 into B448, with 172A4 and 17726 consuming the two filters. They are separate from pedal B46C/B470. |
+| Wideband/O2 delete | ADC AB06 becomes lambda/readiness outputs. Neither this decoder nor the readiness helper uses pedal. The retained auxiliary O2 adder has a legitimate pedal-release selector 18CF4, but both selected constants are zeroed, so the deletion works in either pedal state. |
+| Added pressure OL / lean and overboost cuts | Added decisions use MAP, barometric pressure, wideband readiness/lambda, switches and counters. Native limiter behavior is retained. Pedal changes do not alter these added decisions with their real inputs fixed. Stock fuel-target/CL logic can still legitimately depend on pedal. |
+| Rotational idle | Uses processed throttle B314 and **vehicle speed B538**, not pedal B46C. The current switch is zero. Enabling it only in the test's memory confirms that actual speed controls the gate independently of pedal. |
+| Purge deletion | Zeroes B6D4/B6D8/B720 and bank subtraction outputs; its generated entries contain no pedal-state input or destination. |
+| Predictable AVLS | This patch does modify **pedal-based** thresholds, previously mislabelled as speed. Both seven-point curves and both fallback thresholds remain 110 percent, above the 100-percent conditioned-pedal cap. That still disables the alternate engagement route as intended, leaving the existing 3200/3000-RPM override policy. It does not command 110-percent pedal or throttle. |
+
+The full candidate rebuild remains pinned and the code regions
+`17984..18DAC` and `2AAAC..2F390`, the pedal-conditioning calibration
+`73A2C..73B54`, and DBW/idle calibration `79500..7B000` match stock.
+The installed blobs for all six code components contain no literal address
+in the B46C..B4CF pedal-state block. Literal absence alone does not prove the
+absence of every computed address or dependency through a stock callee.
+
+Five new `test_pedal_patch_dependencies.py` groups complement that inventory:
+native P30/P9 getters distinguish pedal from vehicle speed; the actual SD,
+wideband, pressure-wrapper, lean/overboost and rotational-idle instructions
+execute with pedal 0/20/100 and independently fixed engine inputs. Access
+tracking detects no pedal-block reads or writes in these added paths. Vacuum,
+near-atmospheric/lean and hard-cut scenarios are included. In-memory negative
+controls deliberately replace the SD MAP pointer or rotational-idle speed
+pointer with B46C and demonstrate the unwanted dependency. No altered image
+is written to disk.
+
+P9 reads pre-selection speed B53C (`4B73C -> 31678`); stock `1A2A2` normally
+copies B53C to B538 at `1A336..1A33A`, with its retained validity/fallback
+gates. P30 independently reads B46C (`4B7A0 -> 3184E`). The pressure wrapper's
+stock target calculation and rotational idle's stock final timing are explicit
+fixtures in these new tests; SD interpolation is mathematical. The engine's
+physical response to pedal is deliberately outside this comparison.
+
+The five groups pass on the candidate and the complete master verifier
+passes with these checks integrated. Stock, baseline, candidate and original
+capture hashes remain unchanged. The remaining stale AVLS description in the master-definition
+generator and the misleading 2AD6C Ghidra function name are corrected; 2AD6C
+filters throttle request C2CC into C2C8 and uses pedal B46C in its limit.
+These are metadata changes, not a new firmware repair. The near-stall remains
+unresolved and the live test remains withdrawn.
+
 ## Newly traced request channels
 
 | Channel | RAM | Evidence and interpretation |

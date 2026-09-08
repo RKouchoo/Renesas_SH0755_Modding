@@ -365,7 +365,7 @@ public class ApplyMasterNames extends GhidraScript {
         createOrRename("0002a7a6", "fuel_pump_control_mode_gate_update");
         createOrRename("0002a910", "fuel_pump_control_mode_select");
         createOrRename(
-            "0002ad6c", "vehicle_speed_dependent_filter_update_2ad6c"
+            "0002ad6c", "throttle_request_filter_update_2ad6c"
         );
         createOrRename("0003191c", "fuel_pump_duty_logger_value_get");
         createOrRename("000312e0", "atmospheric_pressure_sample_trigger_state_get");

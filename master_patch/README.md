@@ -303,6 +303,7 @@ and verifies provenance and checksum.
 | `D2WD610H_idle_air_diagnostic_profile.xml` | Prepared profile; live test deferred. Idle RPM target, combined throttle request, pedal/idle flags and fuel response. 19 channels; 43 addresses. |
 | `IDLE_AIR_RECOVERY_AUDIT.md` / `test_load_conditioning_execution.py` / `replay_20260908_load_recovery.py` | Native load/transient replay and idle-air investigation; repeat rev test withdrawn. |
 | `test_idle_air_execution.py` | Native pedal-release and idle-air eligibility, pressure-demand mode, and P30 identity; seven bounded groups, no engine-response proof. |
+| `test_pedal_patch_dependencies.py` | Five groups isolate added decisions from pedal state, verify the separate speed channel and check in-memory mistaken-address negative controls. |
 | `IDLE_RECOVERY_AUDIT.md` / `idle_recovery_candidate.py` | Native load-change trace and isolated ten-cell VE candidate; settled fueling improved in first candidate capture, blip recovery unresolved. |
 | `analyze_20260908_recovery.py` / `test_idle_timing_execution.py` | Candidate log analysis, flash CRC check and native idle/base timing selection fixtures. |
 | `LOGGER_CONNECTION_AUDIT.md` | Native 43-address receive limit, RomRaider subscription-queue repair, and the successful complete 12:36 idle capture. |

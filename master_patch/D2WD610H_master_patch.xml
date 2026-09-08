@@ -1210,7 +1210,7 @@
   <table name="Advance Multiplier Step Value" storageaddress="0x78000" />
   <table type="1D" name="AVLS High Cam Engage RPM" category="05.1 - Cam Control - AVLS Switching" storagetype="float" endian="big" sizey="1" userlevel="3" storageaddress="0x7D4BC">
    <scaling units="RPM" expression="x" to_byte="x" format="#" fineincrement="50" coarseincrement="100" />
-   <description>Predictable committed-state high-lift engagement threshold. Master defaults to 3200 RPM. The former vehicle-speed/oil-band request tables are fixed unreachable and omitted; keep engage above release.</description>
+   <description>Predictable committed-state high-lift engagement threshold. Master defaults to 3200 RPM. The former pedal/oil-band request tables are fixed unreachable and omitted; keep engage above release.</description>
   </table>
   <table type="1D" name="AVLS High Cam Release RPM" category="05.1 - Cam Control - AVLS Switching" storagetype="float" endian="big" sizey="1" userlevel="3" storageaddress="0x7D4B8">
    <scaling units="RPM" expression="x" to_byte="x" format="#" fineincrement="50" coarseincrement="100" />
