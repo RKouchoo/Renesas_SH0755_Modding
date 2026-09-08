@@ -10,6 +10,8 @@ E51/P24 labels identify processed MAP and estimated atmosphere. E522 now
 correctly states that SD already bypasses the old local load-fallback getter
 at 173FC; the shared D26F diagnostic alone cannot invoke that substitution.
 This corrects the preceding audit's overly broad description. No BIN changed.
+The full master verifier and installed RomRaider offline reload/request checks
+pass; all five profiles remain within 43 addresses and produce valid checksums.
 
 ## 2026-09-08 — MAP source mismatch and barometric path verified
 

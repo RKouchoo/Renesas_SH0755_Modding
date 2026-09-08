@@ -205,7 +205,7 @@ def build_definition(source_text: str) -> tuple[str, int]:
     container = containers[0]
 
     # Accept a previously generated master file as regeneration input without
-    # duplicating the custom block. Normal upstream sources have no E500-E517.
+    # duplicating the custom block. Normal upstream sources lack this custom set.
     for parameter in list(container.findall("ecuparam")):
         if parameter.get("id") in PARAMETER_IDS:
             container.remove(parameter)
