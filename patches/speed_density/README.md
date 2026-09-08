@@ -89,7 +89,7 @@ exceptions, and passing it does not establish the lean-out cause.
 The shared instruction model now applies SH-2E round-to-zero arithmetic,
 subnormal flushing and finite-overflow saturation; five FPU test groups run
 inside the master verifier. See the
-[primary-fueling audit](../../master_patch/PRIMARY_FUEL_EXECUTION_AUDIT.md).
+[primary-fueling audit](../../docs/archive/master_patch/PRIMARY_FUEL_EXECUTION_AUDIT.md).
 
 ## Calibration model
 
@@ -163,4 +163,4 @@ retained stock load-indexed lookups.
 Static implementation, Ghidra tracing, deterministic rebuilding, opcode checks, definition checks,
 and multi-component overlap checks pass. Vehicle validation does not. Follow
 [COMMISSIONING.md](COMMISSIONING.md) before any boosted operation.
-See [GHIDRA_AUDIT.md](GHIDRA_AUDIT.md) for the merged stock-code evidence.
+See [GHIDRA_AUDIT.md](../../docs/archive/speed_density/GHIDRA_AUDIT.md) for the merged stock-code evidence.

@@ -12,7 +12,8 @@ Its JSON and PNG are derived review artifacts, not new measurements.
 - `romraiderlog_20260903_022932.csv` is the engine-off/invalid capture used to
   establish that the earlier file did not contain the reported start.
 - `romraiderlog_20260903_023334.csv` contains the cold-start lean-out event
-  analysed in `../master_patch/GHIDRA_AUDIT.md` and `../audit.md`.
+  analysed in the [master investigation](../docs/archive/master_patch/GHIDRA_AUDIT.md)
+  and [historical audit log](../docs/archive/audit.md).
 - `romraiderlog_20260908_120702.csv` and
   `romraiderlog_firstidlelog1_20260908_121839.csv` contain headings only;
   they are logger-failure evidence, not engine traces.
@@ -34,13 +35,13 @@ are derived review artifacts, not another ECU capture.
 
 `20260908_load_recovery_replay.json` contains native load-filter/B874 replay
 and in-memory alpha sensitivity on the fixed 14:13 engine trajectory. It is
-not a new log or an engine prediction. The [follow-up audit](../master_patch/IDLE_AIR_RECOVERY_AUDIT.md)
+not a new log or an engine prediction. The [follow-up audit](../docs/archive/master_patch/IDLE_AIR_RECOVERY_AUDIT.md)
 documents its limits and the new idle-air request profile for the same BIN.
 
 `20260908_transient_replay.json` contains **offline model outputs**, not new
 ECU measurements. It replays the complete capture through the retained B874
 correction and fuel composer; assumptions and the separate VE candidate are
-documented in [the recovery audit](../master_patch/IDLE_RECOVERY_AUDIT.md).
+documented in [the recovery audit](../docs/archive/master_patch/IDLE_RECOVERY_AUDIT.md).
 
 The installed seller-labelled 50-4110-style controller is suspected to be a
 clone. Agreement between its display and ECU analogue input does not validate

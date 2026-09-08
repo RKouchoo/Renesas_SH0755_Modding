@@ -138,7 +138,7 @@ include altered-lock negative controls.
 The record catches up at its phase boundary. `26F8C` exports scheduled pulse
 width from record state; it is not a physical on-time measurement. Device
 queues, intercepted helper calls and interrupt injection have explicit fixture
-boundaries in the [scheduler audit](../../master_patch/INJECTOR_SCHEDULER_EXECUTION_AUDIT.md).
+boundaries in the [scheduler audit](../archive/master_patch/INJECTOR_SCHEDULER_EXECUTION_AUDIT.md).
 
 ## Editor and logger methods
 

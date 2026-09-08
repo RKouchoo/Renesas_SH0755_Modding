@@ -7,7 +7,7 @@ relative to the firmware's fixed 760 mmHg reference unless stated otherwise.
 The current master has SHA-256
 `154760a5f2fdadbf6d9221480595f58dc77c6a4eccc492f50899c815aca79e4d`
 and checksum `0x16F63B0D`. It incorporates the earlier ten-cell idle-VE plateau
-and the [MAP lower-bound repair](MAP_BOUNDARY_REPAIR.md). The user's independent
+and the [MAP lower-bound repair](../docs/archive/master_patch/MAP_BOUNDARY_REPAIR.md). The user's independent
 dashpot experiment is excluded; DBW maps and dashpot constants are stock.
 The sensor intercept, negative transient gains and 0.06 load filter are unchanged.
 The retained firmware restores stock radiator-fan control and deletes actual
@@ -23,8 +23,8 @@ Two one-word substitutions at `0x202CC/0x202D0` exclude separate legacy voltage
 trims BD04/BD08 from the lambda targets, including their stored baseline.
 Other target terms and main lambda feedback remain. These are fixed architecture
 changes owned by the wideband component, not VE or after-start tuning controls.
-See [RETAINED_ROUTINE_AUDIT.md](RETAINED_ROUTINE_AUDIT.md).
-The subsequent [guard execution repair](GUARD_EXECUTION_AUDIT.md) requires
+See [RETAINED_ROUTINE_AUDIT.md](../docs/archive/master_patch/RETAINED_ROUTINE_AUDIT.md).
+The subsequent [guard execution repair](../docs/archive/master_patch/GUARD_EXECUTION_AUDIT.md) requires
 positive logger lambda before lean confirmation may reset. Its 13.0-AFR
 threshold, 50-call delay, eight-sample confirmation and all tuning data remain
 unchanged. The new instruction tests do not validate actual task cadence.
@@ -170,7 +170,7 @@ The [14:13 candidate capture](../logs/20260908_recovery_review.md) subsequently
 shows better settled fueling near 970--1000 RPM, but blips still cause
 near-stalls. It supports the direction of the change, not complete validation;
 no further VE or transient calibration change was made from that review.
-See the [recovery audit](IDLE_RECOVERY_AUDIT.md) and
+See the [recovery audit](../docs/archive/master_patch/IDLE_RECOVERY_AUDIT.md) and
 [log review](../logs/20260908_idle_review.md).
 
 The remainder of both surfaces is still an unmeasured EZ30R starting model and
@@ -356,7 +356,7 @@ releases at 3000 RPM. Actuation minimum is 3000 RPM. Both RPM-indexed
 pedal-position request maps and both fixed/fallback thresholds are set to
 110 percent, above the 100-percent conditioned-pedal cap. The earlier km/h
 identification was incorrect; native P30 execution proves percent (see
-[the idle-air audit](IDLE_AIR_RECOVERY_AUDIT.md)). The numerical values are
+[the idle-air audit](../docs/archive/master_patch/IDLE_AIR_RECOVERY_AUDIT.md)). The numerical values are
 unchanged, and the old pedal/oil-band request route cannot select high lift. The stock
 request/commit delay, status gates, and OSV actuation remain in place.
 

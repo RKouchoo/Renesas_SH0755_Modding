@@ -5,7 +5,7 @@ The current output is the rolling `D2WD610H_master_patch.bin`, SHA-256
 checksum `0x16F63B0D`. It includes the MAP boundary repair and earlier idle-VE
 correction. The user's independent dashpot experiment is excluded. Full master
 verification passes; the near-stall remains unresolved. See
-[the current repair scope](MAP_BOUNDARY_REPAIR.md).
+[the current repair scope](../docs/archive/master_patch/MAP_BOUNDARY_REPAIR.md).
 
 The following investigation notes describe earlier stages; their candidate
 filenames and build identities are historical, not alternate current outputs.
@@ -23,7 +23,7 @@ filenames and build identities are historical, not alternate current outputs.
 > withdrawn after the user's objection that it will nearly stall again.
 > `D2WD610H_idle_air_diagnostic_profile.xml` is prepared for later use; it is
 > not a request for another engine run now. See
-> [the load/idle-air follow-up](IDLE_AIR_RECOVERY_AUDIT.md). No further flash
+> [the load/idle-air follow-up](../docs/archive/master_patch/IDLE_AIR_RECOVERY_AUDIT.md). No further flash
 > or filter/timing change was produced. Earlier build history below is retained.
 
 The latest offline override checks narrow the normal-running possibilities:
@@ -33,11 +33,11 @@ from received status or the pedal-pair agreement monitor. Their actual
 states remain unlogged; these passing checks do not establish a near-stall
 repair. The candidate and prepared logger are unchanged.
 
-The [DBW/dashpot follow-up](IDLE_AIR_RECOVERY_AUDIT.md#dbw-tables-and-dashpot-follow-up)
+The [DBW/dashpot follow-up](../docs/archive/master_patch/IDLE_AIR_RECOVERY_AUDIT.md#dbw-tables-and-dashpot-follow-up)
 confirms both visible DBW maps/axes remain stock. Dashpot amount and decay
 remain calibration leads; increasing its shared hold threshold also delays
 idle feedback. All alternatives tested so far exist only in memory and do
-not establish a cure. The [packet trace](THROTTLE_LINK_AUDIT.md) verifies
+not establish a cure. The [packet trace](../docs/archive/master_patch/THROTTLE_LINK_AUDIT.md) verifies
 received-fault selection, without knowing the car's actual received status.
 The user's separate `D2WD610H_slight_dashpot_candidate.bin` experiment retains
 the earlier code fixes, but its six raised zero-request table cells do not
@@ -77,23 +77,23 @@ its ordinary learned fuel corrections and all after-start enrichment remain.
 Removing a formerly active positive correction can lower delivered fuel, so do
 not assume this repair will richen idle or cure the observed lean-out. Compare external lambda with stock
 conditioned bank lambda, and capture final fuel factors and injector duration.
-See [the audit](RETAINED_ROUTINE_AUDIT.md) for exact scope and remaining paths.
+See [the audit](../docs/archive/master_patch/RETAINED_ROUTINE_AUDIT.md) for exact scope and remaining paths.
 
-The later [guard execution pass](GUARD_EXECUTION_AUDIT.md) fixes a stale-ready/
+The later [guard execution pass](../docs/archive/master_patch/GUARD_EXECUTION_AUDIT.md) fixes a stale-ready/
 zero-lambda case that could reset lean confirmation. The 12 new instruction
 test groups pass, including preserved stock cuts, reset behavior and exact
 confirmation counts. They do not measure scheduler timing or validate controller
 fault outputs. The current image still needs the intended VE baseline and
 physical commissioning checks below before engine/load validation.
-The subsequent [primary-fueling pass](PRIMARY_FUEL_EXECUTION_AUDIT.md) executes
+The subsequent [primary-fueling pass](../docs/archive/master_patch/PRIMARY_FUEL_EXECUTION_AUDIT.md) executes
 the stock target/transition/composer and corrects the test FPU. It confirms
 that pressure-forced open loop preserves stock enrichment delays and can still
 select zero enrichment at low modeled load. These passing tests do not validate
 boost-entry response or the tune; this pass changes no ROM bytes.
-The later [injector-cut repair](INJECTOR_CUT_EXECUTION_AUDIT.md) does change
+The later [injector-cut repair](../docs/archive/master_patch/INJECTOR_CUT_EXECUTION_AUDIT.md) does change
 the ROM: both added cuts now publish the native scheduler inhibit word, fixing
 the flag-only mismatch in `5fff8b...`. The subsequent
-[scheduler repair](INJECTOR_SCHEDULER_EXECUTION_AUDIT.md) protects the complete
+[scheduler repair](../docs/archive/master_patch/INJECTOR_SCHEDULER_EXECUTION_AUDIT.md) protects the complete
 update against a higher-priority injector task seeing a temporary clear.
 Use the current `48d63c...` artifact. Queued-state, release and lock execution
 tests pass; interrupt timing and physical delivery remain unmeasured. A nonzero
@@ -196,7 +196,7 @@ build: pending removals can cancel channels reselected during a definition or
 profile reload. The UI and CSV header still list them, but the query manager
 does not request them. The local JAR now includes the tested queue fix; fully
 quit and reopen RomRaider to use it. Reloading the XML in the old running
-process is insufficient. See [LOGGER_CONNECTION_AUDIT.md](LOGGER_CONNECTION_AUDIT.md)
+process is insufficient. See [LOGGER_CONNECTION_AUDIT.md](../docs/archive/master_patch/LOGGER_CONNECTION_AUDIT.md)
 and the reproducible [RomRaider repair](romraider_query_fix/README.md).
 
 First record a short **key-on, engine-off** CSV and verify that it contains
@@ -213,7 +213,7 @@ engine-validated. Use the new 19-channel `D2WD610H_idle_recovery_profile.xml`
 for the next controlled idle-only evaluation; it logs E511 directly, E123 as
 a raw base factor and E503 as committed lift mode, within 43 addresses.
 Review steady fueling below 1200 RPM before repeating any blips. See the
-[recovery audit](IDLE_RECOVERY_AUDIT.md) for exact scope and limitations.
+[recovery audit](../docs/archive/master_patch/IDLE_RECOVERY_AUDIT.md) for exact scope and limitations.
 
 **September 8, 14:13 result:** the candidate was flashed and the recovery
 profile captured all 19 channels. Settled fueling improves, but blips still

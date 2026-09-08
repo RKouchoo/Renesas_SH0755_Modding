@@ -38,7 +38,7 @@ retired the actuator and guard bodies, and retained the independent
 hard-overboost cut for mechanical wastegate control. Actual CPC purge has a
 separate `1BAF0 -> B182` request path and `23054` bank fuel subtraction
 publisher. Both are explicitly zeroed in the current master. See commit
-`03eb868` and the [original trace](../../master_patch/GHIDRA_AUDIT.md).
+`03eb868` and the [original trace](../archive/master_patch/GHIDRA_AUDIT.md).
 
 Repurposing the former MAF ADC for a wideband required more than replacing
 one sensor reader. `AB06` still receives hardware samples. The patch produces

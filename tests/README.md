@@ -22,7 +22,8 @@ python3 -B tests/test_hook_execution.py master_patch/D2WD610H_master_patch.bin
 python3 -B tests/verify_romraider_toggles.py
 ```
 
-`_test_paths.py` supplies the shared component and fixture import paths. Default
+`_test_paths.py` supplies the shared component, fixture and
+[analysis-module](../tools/analysis/README.md) import paths. Default
 ROM inputs still refer to their build/artifact directories. Tests for historical
 standalone components may require their corresponding standalone ROM or an
 explicit input filename; do not substitute a different build merely because

@@ -4,7 +4,7 @@ The current output is [D2WD610H_master_patch.bin](../D2WD610H_master_patch.bin).
 The MAP repair and earlier idle-VE correction are integrated in its ordinary
 builder. The user's `D2WD610H_slight_dashpot_candidate.bin` is an independent
 experiment and is excluded from the rolling master. These saved images remain
-only for historical log analysis; see [the current repair](../MAP_BOUNDARY_REPAIR.md).
+only for historical log analysis; see [the current repair](../../docs/archive/master_patch/MAP_BOUNDARY_REPAIR.md).
 
 ## Earlier idle-recovery calibration
 
@@ -28,7 +28,7 @@ still cause near-stalls down to 558 RPM. The user confirms it stayed running
 and the final shutdown was intentional. This is not a finished calibration;
 no new BIN was produced from that review. The change remains substantial
 below 800 RPM. Original build evidence and limits are in
-[IDLE_RECOVERY_AUDIT.md](../IDLE_RECOVERY_AUDIT.md).
+[IDLE_RECOVERY_AUDIT.md](../../docs/archive/master_patch/IDLE_RECOVERY_AUDIT.md).
 
 The historical `idle_recovery_candidate.py` recipe reads the captured 10:30
 baseline from pinned Git history and verifies the reconstructed image's hash.

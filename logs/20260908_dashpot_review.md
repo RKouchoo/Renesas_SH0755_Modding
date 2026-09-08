@@ -3,7 +3,7 @@
 **MAP-source correction:** all MAP figures below are processed E51/B2A0.
 The SD input ABC4 and MAP/airflow fallback flags were not captured. Comparisons
 that feed these MAP samples into SD are proxy fixtures; see the subsequent
-[source audit](../master_patch/MAP_SOURCE_AUDIT.md). Native tip-in itself uses
+[source audit](../docs/archive/master_patch/MAP_SOURCE_AUDIT.md). Native tip-in itself uses
 B2A0, so its pressure-source identification remains unchanged.
 
 The user confirms sluggish pickup predates the dashpot experiment. Further
@@ -40,7 +40,7 @@ ending in `9E4FBB6C`. The 18:17 pre-flash comparison still read `926036A9`
 from the ECU. **All three captures above precede that later flash**; their
 names must not be used to assign them to the later BIN.
 
-[The analyzer](../master_patch/analyze_20260908_dashpot.py) reconstructs both
+[The analyzer](../tools/analysis/analyze_20260908_dashpot.py) reconstructs both
 historical images in memory, verifies their SHA-256 identities, and compares
 FastECU's custom CRC for every block. It does not rewrite the user's file.
 Both versions retain the earlier firmware, timing, tip-in, transient-fuel and

@@ -1,0 +1,2313 @@
+# D2WD610H Patch Audits
+
+> Archived investigation, retained for evidence and historical reproduction.
+> Use the [central reference](../reference/README.md) and [audited corrections](../reference/FINDINGS.md) for current conclusions.
+> Build identities, commands and recommendations below describe their original stage.
+
+This is a chronological investigation record. Later findings can retract
+earlier identities and conclusions. Use the
+[central reference](../reference/README.md) and
+[correction register](../reference/FINDINGS.md) for current evidence;
+historical build statements here do not identify the current main or v2 ROM.
+
+## 2026-09-08 — ECU/logger pressure definitions aligned
+
+Both master VE axes now link to native-MAP E518, replacing unavailable E52.
+Retained load/cranking pressure uses E51; CL/OL barometric delay uses E520.
+Axes and MAP transfer/validity displays use kPa units, matching the profile
+and avoiding RomRaider's lack of unit conversion during live highlighting.
+E51/P24 labels identify processed MAP and estimated atmosphere. E522 now
+correctly states that SD already bypasses the old local load-fallback getter
+at 173FC; the shared D26F diagnostic alone cannot invoke that substitution.
+This corrects the preceding audit's overly broad description. No BIN changed.
+The full master verifier and installed RomRaider offline reload/request checks
+pass; all five profiles remain within 43 addresses and produce valid checksums.
+
+## 2026-09-08 — MAP source mismatch and barometric path verified
+
+The [MAP-source audit](master_patch/MAP_SOURCE_AUDIT.md) establishes that SD
+reads ABC4 while the supplied E51 captures read processed B2A0. D26C/0x10
+can substitute load-derived MAP: fixed load 0.58 produces 33.588 kPa even
+with ABC4 at 15 kPa. The barometric estimator separately clamps its estimate
+to 570..770 mmHg without changing ABC4. These conditional native results
+do not prove either diagnostic was active in the car.
+
+All 65,536 ADC inputs give strictly increasing native MAP: no 33.77-kPa
+conversion floor. The earlier fallback replay is corrected to identify
+B2A0 as a proxy; it cannot establish ABC4's margin above the SD gate.
+The load/B874 component replay remains independently supported.
+New E518–E523 and a 19-channel/43-address profile expose both MAPs, ADC voltage,
+baro and diagnostic flags. Native SSM and actual offline RomRaider request
+checks pass. No BIN, intercept, slow-negative gain or 0.06 filter changed.
+
+## 2026-09-08 — low-RPM transient remedy narrowed to one table cell
+
+The [remedy comparison](master_patch/TRANSIENT_COMPONENT_AUDIT.md#narrower-remedy-comparison-reduce-the-low-rpm-negative-multiplier)
+tests the first slow-negative RPM multiplier at `76E7E`, 4.0→2.0, against
+halving the global negative gain. It gives the same −0.5334→−0.2667 result
+at 792 RPM while tapering to unchanged behaviour at 1600 RPM. All 6,639
+updates per variant and 45 direction/RPM/coolant controls preserve history,
+fast terms and positive correction. This is a diagnostic proposal at fixed
+recorded inputs, not an engine-validated fix; no BIN changed.
+
+The [fallback repair specification](master_patch/SD_FALLBACK_AUDIT.md#required-direction-for-a-fallback-repair)
+separates valid low-MAP calculation from true input faults and requires an
+explicit, logged injector-inhibit response and full scheduler verification.
+That firmware change is not yet implemented. The load filter stays at 0.06.
+
+## 2026-09-08 — fixed SD fallback checked against all five relevant captures
+
+The [fallback audit](master_patch/SD_FALLBACK_AUDIT.md) supplies 7,719 recorded
+rows to 12,928 native SD invocations, including both VE surfaces where AVLS
+was unlogged. **Correction:** MAP is B2A0 used as a proxy for unlogged ABC4.
+No proxy fixture reads the fixed fallback; minimum processed MAP 16.29 kPa
+does not prove a margin above the 13.332-kPa SD gate. Brief actual input and
+fallback events remain unresolved.
+
+A boundary fixture confirms a jump from 4.515 g/s at 100 mmHg to 500 g/s one
+float step below it. Injected fallback calls also produce large positive
+native transient corrections, so the design remains a consequential edge
+case. The retained 6% load filter behaves predictably; slow negative history
+compensation remains the strongest measured recovery lead. No BIN or logger
+changed. Reproduction: `tools/analysis/analyze_sd_fallback.py`.
+
+## 2026-09-08 — slow negative fuel term isolated; FPU prototype kept separate
+
+The [component replay](master_patch/TRANSIENT_COMPONENT_AUDIT.md) identifies
+the slow load-history term as the dominant measured fuel subtraction. At
+792 RPM it produces −0.5334 against logged B874 −0.5275, while the fast term
+is zero. A single negative-only scalar at `76030` was halved/zeroed in memory;
+the positive recovery branch and history states remain unchanged. Fixed-input
+replay is not proof of a calibration fix or physical wall-film behaviour.
+
+The separate [FPU prototype](master_patch/FPU_USAGE_AUDIT.md) reduces valid SD
+wrapper instructions 200→178, FP instructions 101→88 and immediate dependency
+pairs 42→13. Eight regression groups and 518 bit-identical paired native cases
+pass on each of three images. No default builder, BIN or logger changed.
+
+## 2026-09-08 — native FPU workload and interlocks
+
+The [FPU census](master_patch/FPU_USAGE_AUDIT.md) executes SD's stock float
+lookup helpers as well as its wrapper. No added wrapper contains FDIV; SD's
+helpers execute up to three per calculation. The idle fixture executes 476
+instructions including helpers, with 42 immediate FP dependency pairs inside
+the wrapper. The SH-2E manual specifies one extra slot for an ordinary
+immediate result dependency and 13 E1 cycles for division. This confirms an
+optimization opportunity, not a prolonged CPU freeze or a deadline guarantee.
+No BIN changed; existing engine timing/fuel findings remain open.
+
+## 2026-09-08 — evening blips, opening timing and tip-in pressure compensation
+
+Slow pickup predates dashpot changes. The 18:15 capture reaches 100% logged
+throttle / atmospheric MAP while timing falls to 0°, then timing returns to
+15° before recovery minima of 655–684 RPM. Two zero net-pulse samples in the
+largest blip have an unlogged cut source. Six new native timing groups execute
+all base producers and final composition; stock coolant-dependent minima
+account for the colder 18:01 run's 2° floor versus 0° later.
+
+Seven native tip-in groups identify an unchanged pressure multiplier that
+zeroes the separate supplemental pulse near atmospheric MAP. Increasing A/B
+pulse tables cannot overcome that zero. Retained flags/counters work in the
+fixtures; no bypass is justified. The master definition now displays the
+existing minimum as 0.186 ms instead of 0.744 ms, without changing a BIN.
+All thirteen groups and the full verifier pass.
+
+The user's filename changed from 7590b6... to 2f80b8...; recorded 18:00 and
+18:18 verifications match all 16 blocks respectively. All three evening
+captures precede the second flash. No agent-built ROM or engine test resulted.
+Evidence and limits: [evening review](../../logs/20260908_dashpot_review.md).
+
+## 2026-09-08 — throttle link, DBW tables and dashpot handover
+
+Seven new native groups cover outgoing messages, diagnostic prerequisites,
+frame validation and received-fault history through final throttle override.
+With request/fault state held fixed, repurposed sensors and synthetic airflow
+do not change the outgoing frame. Received changes require two agreeing
+accepted frames. Invalid frames leave history untouched; actual vehicle
+status is unknown. Four earlier read-counter assertions were corrected to
+use address keys, and the thirteen affected groups still pass.
+
+The user's DBW suggestion led to a complete comparison of both visible maps
+and axes: all bytes are stock-identical in both original BINs. Five further groups
+cover native map callers, zero-pedal idle-air composition and dashpot
+sensitivity. The decel hold threshold also delays feedback; a separate decay
+constant can extend the air taper without that delay in memory-only fixtures.
+Neither alternative is a validated calibration or written to a BIN.
+
+The user's separate slight-dashpot experiment changes six zero-request
+throttle-target cells, checksum and a marker, retaining the earlier code
+fixes. Native execution reads the raised targets but the zero-pedal limit
+removes their driver contribution before normal idle composition. This does
+not establish a useful dashpot repair. The user confirmed it was an experiment;
+there is no new firmware fix from this pass requiring a rebuilt BIN.
+
+The complete verifier and seven candidate-integrity groups pass. Artifacts
+and prepared logger remain unchanged; no repair or new engine test is
+established. Evidence: [throttle link](master_patch/THROTTLE_LINK_AUDIT.md)
+and [DBW/dashpot](master_patch/IDLE_AIR_RECOVERY_AUDIT.md#dbw-tables-and-dashpot-follow-up).
+
+## 2026-09-08 — final-throttle override producers narrowed
+
+Continued offline with seven native execution groups. C618's override
+requires the stopped-engine RPM qualifier (set below 200; clear at 300).
+C640's override requires ignition off and a C614 count below 375, with
+additional retained gates. The complete native SSM-62 getter confirms the
+ignition identity. Its counter resets while ignition is on and saturates
+when off; it is a shutdown window, not an after-start timer.
+
+D274/0x40 aggregates seven receive-derived bits plus pedal-pair monitor
+8134 bit 0. One-bit positive/negative cases follow the full native builder,
+including the r13 overwrite at 64B8E. A deliberately mismatched pair faults
+on count 29 and selects the retained fault request. Native ADC tests keep
+AB08/AB0A independent of wideband AB06. C5C8's obsolete cylinder-airflow
+label is corrected in Ghidra, the naming script and reverse-engineering notes.
+
+The seven groups, full master verifier and seven candidate-integrity groups
+pass. Stock, baseline, candidate, capture and complete logger hashes are
+unchanged. Received status, diagnostic enable, actual sensor agreement,
+learning and requested versus actual throttle remain unlogged. No repair is
+established and the live test remains withdrawn. See the
+[override-producer evidence](master_patch/IDLE_AIR_RECOVERY_AUDIT.md#final-request-override-producers-and-pedal-pair-fault-path).
+
+## 2026-09-08 — base air reaches the normal throttle request
+
+Continued offline after the user's capture-or-continue question; no engine
+capture or flash was requested. Six new native-execution groups cover the
+base-air/coolant calculation, air-to-plate conversion, combined request and
+final learned-offset/override selection. C45C 0/2/6 with fixed base 7 and
+decel .666 gives approximately 4.479/5.611/7.606 percent combined request.
+Extra air survives the normal route in these fixtures. Alternative selections
+and limits change the result; their real states and actuator response remain
+unknown. No fault bypass or calibration change is justified by this result.
+
+The C688 raw-input fault helper reads AB08/AB0A with unchanged stock bounds,
+independently of repurposed MAF ADC AB06. The receive-derived fault states
+remain an audit boundary. Monitor dependency selectors at 4711E are not DTC
+record indices; a disabled DTC switch alone does not establish absence of
+all raw fallback states. The six groups, seven candidate integrity groups
+and integrated full verifier pass. BINs, source log and logger are unchanged.
+See [request propagation and fault-input evidence](master_patch/IDLE_AIR_RECOVERY_AUDIT.md#base-air-request-propagation-and-fault-input-follow-up).
+
+## 2026-09-08 — nominal timer and stationary idle-air handover
+
+Native CMT1 initialization and 1024 divider calls establish an eight-tick
+task-9 activation interval. Renesas's divider specification gives a nominal
+8-ms task at the project's 40-MHz CPU clock, superseding the old 10-ms guess.
+This is not an oscillator/task-latency measurement. The historical B688
+pump-timing exclusion is corrected accordingly.
+
+Five new native test groups pin actual task order and execute release
+qualification, pressure output and stationary deceleration air. Under normal
+fixtures, feedback becomes available on released call 40 as the decel term
+falls from .666 to .066, then zero on call 48. Imposed D26C/0x10 or D272/0x80
+can prevent feedback without retaining that term, but neither state is known
+from the capture. MAF fallback D26F/0x40 instead preserves a 1.0 minimum and
+does not directly inhibit feedback here. No normal handover gap or active
+fault is proven as the near-stall cause.
+
+E517/C4D9 replaces ignition-idle E516 in the prepared idle-air selection;
+E516 remains separately available. E507's optional derived time uses x*.008
+with the clock assumption explicit. All four actual RomRaider queue/A8
+checks pass within 43 addresses. The five candidate execution groups,
+seven candidate integrity groups and integrated full master verifier pass.
+Stock, baseline, flashed candidate and original capture are unchanged.
+Leave the car off; the live rev test remains withdrawn. Evidence and limits:
+[idle-air timer/handover audit](master_patch/IDLE_AIR_RECOVERY_AUDIT.md#timer-and-stationary-deceleration-air-handover).
+
+## 2026-09-08 — current patch pedal-dependency check
+
+Followed the user's question about whether any patch mistakenly uses pedal.
+The current baseline and flashed `6af0d130...` candidate rebuild identically.
+All six added components' installed blobs have no literal in the B46C..B4CF
+pedal-state block. The 17984..18DAC pedal-processing sequence, 2AAAC..2F390
+idle/DBW code and relevant pedal/DBW calibration remain stock-identical.
+SD's adjacent B448/B458/B45C outputs were traced separately to the stock
+airflow path; they are not pedal state.
+
+Five new `test_pedal_patch_dependencies.py` groups execute added airflow,
+wideband and pressure/cut decisions with independent 0/20/100-percent pedal
+fixtures; read/write tracking finds no pedal access. Rotational idle uses
+B538 vehicle speed independently of pedal, including an in-memory enabled
+test of its dormant code. P30/P9 native getters distinguish B46C pedal from
+B53C vehicle speed; stock 1A2A2 normally copies B53C into B538 through its
+validity/fallback selection. Deliberately substituting pedal for the SD MAP
+pointer or rotational-idle speed pointer in memory exposes the wrong
+dependency, demonstrating that the checks detect that class of error.
+
+AVLS is the relevant qualification: its previously mislabelled thresholds
+really are pedal-based. Their existing 110-percent calibration still disables
+that route above the 100-percent pedal cap, preserving the intended fixed
+3200/3000-RPM policy. The retained auxiliary O2 adder also has a legitimate
+pedal selector; both selected constants were already zeroed. This does not
+support a claim that stock code never consumes pedal.
+
+All five groups and the full master verifier pass. Interpolation, the stock
+primary-target return and stock final-timing output have stated fixture
+boundaries; fixed-input isolation does not model physical engine response.
+Corrected the final stale AVLS XML description and the 2AD6C function name.
+No BIN or source capture changed and no engine test was requested. Details:
+[current pedal-dependency audit](master_patch/IDLE_AIR_RECOVERY_AUDIT.md).
+
+> September 8 current status: repeat rev testing is withdrawn; leave the car
+> off while recovery is investigated offline. Historical B46C/AVLS vehicle-speed
+> claims below are superseded: native P30 execution proves accelerator-pedal
+> percent. See [the current idle-air audit](master_patch/IDLE_AIR_RECOVERY_AUDIT.md).
+
+## 2026-09-08 — Added cuts now publish the injector inhibit word
+
+Current master is `aea793053fd3df4cab1efc3f15fbcee81024e6e90c0e8ba13025cb602b253b6b`,
+checksum `0x11787AA2`. Continued checking first corrected a host-rounding
+error in the shared SH-2E test interpreter and executed the stock primary OL
+target, delay transition and final bank/cylinder fuel calculations. That stage
+required no ROM change; thirteen new test groups passed.
+
+Following the remaining inhibit path then found a real integration defect.
+Stock 24B24 calls 1C5D4 before returning, so added BF6C cuts occurred after B744
+was built. Actual execution reproduced BF6C cut set with B744 still zero for
+both overboost and latched lean. BF1C aggregation passing did not prove the
+scheduler received the cut. Both added paths now also publish native global-cut
+word FFFF. Stock processing still rebuilds the ordinary fault word on release.
+
+The repair changes 169 bytes from the prior `5fff8b...` image: 37 in the
+72-byte hard-cut wrapper, 128 in the 500-byte lean wrapper, and four checksum
+bytes. Calibration, hooks and stock instructions are unchanged; no new RAM.
+Remaining contiguous free flash is 3,332 bytes at 7EDF4..7FAF7. Six additional
+execution groups cover actual inhibit construction/getters, all 64 masks and
+six channel gates, both added cuts and release, independent missing-store
+negative controls and pre-mutation native-contract refusals. Existing 216
+composed-cut cases now check B744 as well as BF6C/BF1C.
+
+The full master verifier and SD execution suite pass. Five stock Ghidra names
+were corrected live and in the replay script: this phase-scheduled six-channel
+bank is injector scheduling, not the previously labelled cam-solenoid bank.
+No device output, ECU traffic, flash, commit or push was performed. Hardware
+handoffs remain modeled; whole scheduling, queued pulses, sensor/controller
+behavior and the unvalidated second-VE calibration remain release limits.
+The new defect is not a proved cause of the September 7 idle lean-out.
+
+Evidence: [primary fueling](master_patch/PRIMARY_FUEL_EXECUTION_AUDIT.md) and
+[injector-cut repair](master_patch/INJECTOR_CUT_EXECUTION_AUDIT.md).
+Earlier entries below retain their stage-specific hashes and conclusions.
+
+## 2026-09-08 — Confirmed repairs built; VE/cam interaction remains
+
+Current master SHA-256
+`fbc1a8fad234dbf09934da8dda8a0eda8629965c3d162eb957c06c46a4d9848e`,
+checksum `0x503BE476`, restores stock radiator-fan control at `0x3FD8C` and
+fully retires both injected actuator allocations. EBCS controls are removed
+from definitions; independent hard overboost fuel cut remains. The new purge
+component zeros actual CPC duty/modeled airflow/mode, both banks' purge fuel
+subtraction and the two verified CPC circuit DTC switches. It owns 50 in-place
+bytes, no new RAM or free flash. The complete repair changes 436 bytes versus
+the previous `0600d73a...` image, including retirement and checksum.
+
+VE, injector and timing/cam calibrations are unchanged. **The VE/load/AVCS
+interaction is still present.** Higher VE raises modeled load and can change
+cam/base-ignition table requests; however recognised idle blends to a separate
+mostly flat 15.15625-degree target. The earlier A/D table example does not
+establish actual idle retard. No new idle cam hold or blind timing advance
+was added. The current second-VE trial is still unvalidated.
+
+Full deterministic master verification, independent fan-path/retirement
+regressions and actual-opcode purge tests pass. The stock ROM is unchanged.
+This supersedes the pre-repair hold below for the newly generated artifact,
+not for older fan-hook images. It does not establish the cold lean-out root
+cause, physical validation or readiness for load testing. No flash, commit
+or push was performed. Full evidence and precise ranges:
+[master audit](master_patch/GHIDRA_AUDIT.md#2026-09-08--fan-restoration-purge-delete-and-idle-timing-clarification).
+
+## 2026-09-08 — STOP: fan output misidentified as purge
+
+Historical pre-repair findings follow; references to the current image and
+absence of a repair refer to that earlier stage, not the new artifact above.
+
+Follow-up symptom: substantial spool at idle **and** while revving, with an
+unusual exhaust sound. The current BIN's rotational-idle OFF path calls stock
+final timing once and adds no retard/state writes; no OFF-path ABI defect was
+found. Several retained final-timing corrections were traced, including two
+zero-calibrated retard terms. No actual ignition/cam position was established
+from the sound. Details are appended to the master Ghidra audit. The fan-control
+hold remains; firmware/tune bytes were not changed by this follow-up.
+
+The current boost component overrides radiator-fan PWM, not canister purge.
+Stock SSM P92 (`0x2F -> 0x31878`) reads fan request `CD54`; P38 CPC
+(`0x32 -> 0x318E8`) reads the distinct purge duty `B6D4`. Coolant/duty tables
+corroborate the fan identity. Master replaces the fan tail pointer `0x3FD8C`
+with its boost guard; both invalid-input and default EBCS-OFF paths deliver a
+zero command to the fan writer `0xE8C4`. P92 still reports the stock request,
+not the overridden PWM. Physical fan fail-safe behavior is unverified.
+
+Do not flash/run this image pending restoration of stock fan control. Earlier
+purge ownership and EBCS-OFF safety claims are superseded. This diagnostic
+pass changes documentation/Ghidra annotations only; no corrective ROM exists yet.
+
+Actual purge output and fuel subtraction remain active, ordinarily gated by
+72 C coolant. With purge plumbing removed this requires a separate integration
+review; it does not yet explain the cold lean-out. A further coupling is
+significant: at 1300 RPM, load .49 -> .72 g/rev moves the low-lift AVCS table
+target about 4 -> 23 degrees and changes some base timing requests. These are
+calculated examples, not measured cam/timing in the run. Rotational idle is OFF.
+The user's additional turbo-spool observation makes actual timing/cam behavior
+relevant, but does not prove retard, boost, or the lean-out root cause.
+
+Full evidence, limitations and next repair boundary are recorded in
+`master_patch/GHIDRA_AUDIT.md`, retained-system audit and fan-output
+misidentification. Stock and generated BINs are unchanged in this pass.
+
+## K-line adapter startup correction — 2026-09-07
+
+Live FastECU and direct raw-serial identity tests received no local echo or ECU
+response. Investigation confirmed that adapter firmware 1.1.0 configured TX
+inversion before a Pico SDK call that cleared it, potentially holding K-line
+low at idle. Firmware 1.1.1 now selects UART and inversion atomically. Its
+build and compiled startup sequence pass inspection; BOOTSEL upload and USB
+re-enumeration succeeded. Three post-fix identity attempts still returned zero
+bytes, so the remaining fault requires electrical checks and communication is
+not yet validated. Version 1.1.2 subsequently added read-only USB status;
+upload and live reports succeeded, directly confirming TX GPIO CTRL `0x102`
+and a low TX pad at idle. Powered-car tests confirmed six bytes reach UART TX
+and the TX pad switches, but GP5 remains low in the sampled states and no UART
+RX bytes are decoded. The user confirmed R2 uses two 100-kOhm resistors in
+parallel (nominal 50 kOhm), a suitable substitution. Receive-circuit wiring and
+pull-up checks remain pending.
+Photo inspection found no conclusive assembly fault. The initial design's
+omission of a tester-side K-line pull-up is now under review: its justification
+used an AD310-era idle reading, not a standalone loaded-bus measurement.
+This change affects only adapter firmware. Detailed
+evidence is in [pico_kline_adapter/TEST_RESULTS.md](../../pico_kline_adapter/TEST_RESULTS.md).
+
+# Standalone Boost-Control Patch Audit
+
+Audit date: 2026-07-14. Target: D2WD610H, Renesas SH7055, stock image
+`2005 BLE MT.bin`.
+
+## Verdict
+
+The single patch is structurally valid and its injected SH-2E code should execute as designed,
+but binary verification is not hardware validation. It includes proportional + feed-forward
+control, a minimum-throttle driver-demand gate, soft duty shutdown, and hard fuel cut. It still
+requires the matching MAP-sensor fitment and calibration validation, PWM/polarity bench testing,
+purge-DTC handling, checksum correction, and an overboost-cut bench test before boost is applied.
+
+## Checks completed
+
+- The canonical patcher verifies the exact 512 KB root stock image by SHA-256, patches a private
+  copy, and refuses to use the stock file as output.
+- The root `2005 BLE MT.bin` remains unchanged at SHA-256
+  `ed0fe0341d97fb760c2cda3f07277f861495d32f6520e3ce8047b8b0f7bfd4ee`.
+- Free-space writes stay within the verified `0xFF` run at `0x7D790..0x7FAF7`.
+- Stock hook guards match before patching:
+  - purge output pointer `0x3FD8C`: `0x0000E8C4`
+  - rev-limiter task pointer `0x11D3C`: `0x00024B24`
+- The controller and fuel-cut wrapper disassemble to the intended SH-2E instructions.
+- Stack and `PR` save/restore paths are balanced, including early throttle/overboost exits.
+- Low/high duty clamps have the intended floating-point comparison polarity.
+- The rev-limiter wrapper runs before `fuel_cut_flag_aggregate` at `0x23FC0` in the same
+  dispatcher, allowing the forced `0xFFFFBF6C` bit `0x80` to be consumed that cycle.
+- `evap_purge_pwm_output_write` at `0xE8C4` accepts the injected `0.0..1.0` ratio and remains
+  the sole runtime writer used by the patched control path.
+- `defs/D2WD610H_AVLS_boost_patch.xml` parses and its boost-table plus runtime-switch storage
+  addresses match the current injected layout. The companion `D2WD610H_AVLS.xml` contains AVLS
+  only; both use the pruned metric RomRaider base and contain no unrelated ECU definitions.
+- No persistent scratch RAM is introduced.
+- The A2WC510N donor image is pinned at SHA-256
+  `db8827673a2383ce0ee3182d2c33f81be39fd63c3545e77b3e6bf8476488008d`. Its boost-table
+  addresses match the pinned SubaruDefs definition; Target Boost A/B and Initial WGDC A/B are
+  byte-identical pairs in that image.
+- Ghidra revalidation renamed `0x7A14` to `map_sensor_voltage_to_pressure_process` and confirmed
+  `MAP_native = voltage × multiplier + offset`. The patch copies donor floats
+  `{-414.0, 514.199951}` over guarded stock values `{-150.0, 250.0}` at `0x72810`; pressure at
+  `0xFFFFABC4` is native mmHg absolute, not kPa.
+- The 5 psi defaults are a documented reduction of the donor's full-demand curves, not a raw 3D
+  table transplant: the patch controller is RPM-only and has no integral state. See
+  [boost_donor_A2WC510N.md](../hardware/boost_donor_A2WC510N.md).
+- The generated boost artifact is `patches/core/D2WD610H_boost.bin` (512 KiB, SHA-256
+  `d4c215a3acc2a68e7daa355d56510589b8f9aa4bf573e6bc4aa4224b16ffa2bc`). Its 370 changed bytes
+  are confined to the two guarded hooks (`0x11D3C..0x11D3F`, `0x3FD8C..0x3FD8F`), MAP scaling
+  (`0x72810..0x72817`), and injected free-space region (`0x7D790..0x7D903`). The obsolete split
+  patcher and `_p1`/`_p2` images have been removed.
+
+## RomRaider runtime toggles
+
+- `Electronic Boost Control Enable` is at `0x7D80C` and defaults `00` so the actuator cannot
+  command duty. `Overboost Fuel Cut Enable` is independent at `0x7D80D` and defaults `01`.
+- The controller at `0x7D810` requires the exact value `01` before saving `PR` or evaluating any
+  boost table. `00`, erased `FF`, and all other values fail closed: the controller forces
+  `FR4 = 0.0` and tail-calls the stock PWM output stage, producing zero commanded EBCS duty.
+  Passing through stock purge duty was rejected because it could energize a solenoid physically
+  rewired for boost control.
+- The rev-limiter wrapper at `0x7D8C4` always runs the stock limiter first. With its own switch off it
+  returns immediately, bypassing only the patch's added MAP fuel cut.
+- XML parsing and byte-level simulation confirm each RomRaider switch changes only its respective
+  byte before checksum correction.
+- The definition edits a flash byte; it is not a live logger toggle. Changing state requires a
+  checksum-correct save and reflash.
+- Off is a spring-pressure fallback only after bench proof that zero commanded duty produces
+  minimum boost with the installed valve and plumbing. It does not restore the stock
+  `{-150.0, 250.0}` MAP conversion; `0x72810` remains on the donor calibration.
+
+## Throttle gating
+
+Ghidra tracing confirmed processed throttle opening at float RAM `0xFFFFB314`:
+
+- `cl_ol_transition_delay_update` at `0x22756` passes `0xFFFFB314` to the calibrated
+  “CL to OL Transition with Delay (Throttle)” lookup.
+- Its producer at `0x14DCC` performs DBW throttle-sensor processing/plausibility and was renamed
+  `throttle_position_sensor_process` in Ghidra.
+- The controller compares this value with a tunable float at `0x7D8BC`.
+- Boost duty is enabled only when `throttle > minimum`; at or below the threshold the stub
+  tail-calls the stock output stage with duty ratio `0.0`.
+- Default minimum throttle is `30.0` (about 35.7% under the donor definition's display scaling).
+  This is a commissioning value, not a validated final calibration. The gate is deliberately
+  fail-closed for equality and ordinary low-throttle operation.
+- The hard MAP overboost wrapper is independent of this gate and remains active at low throttle
+  while the patch-enable switch is on.
+
+The gate is stateless and therefore has no hysteresis. If testing shows chatter around the
+threshold, use separate enable/disable thresholds only after a safe state-storage strategy is
+proven, or gate from a confirmed existing hysteretic demand flag.
+
+## Remaining blockers
+
+1. **MAP sensor and scaling:** the patch installs the A2WC510N scaling at `0x72810`, but cannot
+   prove the physical sensor. Fit the compatible sensor and validate `0xFFFFABC4` against a
+   reference gauge. Closed-loop correction and both MAP overboost limits remain untrusted until
+   that measurement passes.
+2. **PWM frequency:** stock period calibration is `8000`, but the actual ATU-II clock/divider and
+   output frequency have not been bench measured. Scope the former purge output and adjust it for
+   the selected solenoid.
+3. **Output polarity/plumbing:** prove that commanded zero produces minimum boost and establish
+   whether increasing duty raises or lowers boost with the installed 3-port plumbing.
+4. **Purge diagnostics:** `evap_purge_flow_diagnostic` and P0458/P0459 are not neutralized by the
+   patcher and may set faults.
+5. **Controller scope:** target and feed-forward remain RPM-only. The throttle gate prevents
+   boost control at low demand, but a future 2-axis RPM×load/throttle target is preferable. The
+   target and limits are absolute-pressure values referenced to 760 mmHg; unlike the donor, the
+   patch does not apply atmospheric-pressure target compensation.
+6. **Hard-cut behavior:** the hard cut has no hysteresis and can chatter at its threshold. Prove
+   injector cut and recovery on a bench before relying on it.
+7. **Checksum:** hook edits lie inside the stock checksum region. Save with a verified
+   `subarudbw` checksum implementation before flashing.
+8. **Hardware confidence:** the purge-output identification and all patch behavior remain
+   statically/binary verified, not vehicle verified.
+
+## Required commissioning sequence
+
+1. Fit the A2WC510N-compatible MAP sensor and validate the installed donor calibration over the
+   full logged range.
+2. Override the donor-derived default to `Kp = 0`, use zero/very conservative base duty, and
+   validate throttle-gate transitions.
+3. Scope output frequency and polarity with the solenoid disconnected from boost control.
+4. Prove soft duty shutdown and hard fuel cut using simulated MAP input.
+5. Resolve purge diagnostics and verify the final checksum.
+6. Connect the solenoid with wastegate spring pressure as the mechanical fallback.
+7. Tune feed-forward first, then introduce proportional gain gradually.
+
+# Single-Front-A/F Patch Audit
+
+Audit date: 2026-07-15. Target: D2WD610H / ECU ID `3C5A387116`, Renesas SH7055,
+stock image `2005 BLE MT.bin`.
+
+## Verdict
+
+The standalone single-front-A/F patch is structurally valid. It retains the complete stock
+RH/Bank-1 front A/F processing path and mirrors its processed lambda-like, pump-current-like, and
+readiness results into the Bank-2 RAM paths. Exact runtime enable `01` also bypasses both rear
+narrowband ADC conversion and all five traced rear monitor stages. The generated image disables
+five DTC switches for the removed LH/Bank-2 front sensor and eight mapped DTC switches for the
+removed rear sensors/heaters.
+
+The former ECU-side aftermarket-wideband input remains completely retired. A post-turbo lambda
+sensor is external instrumentation and must be logged outside the ECU. Rear-O2 logger results are
+stale/undefined while the delete is enabled.
+
+This is binary verification, not vehicle validation. The retained sensor, both-bank behavior,
+exact harness variant, checksum, rear-delete behavior, and open-circuit heater outputs still require physical testing before
+the patch is used alone or enabled in the combined image.
+
+## Binary checks completed
+
+- The patcher always reads the fixed root stock image, verifies its 512 KiB length and SHA-256,
+  patches a private in-memory copy, and refuses an output path that aliases the stock file.
+- The root `2005 BLE MT.bin` remains unchanged at SHA-256
+  `ed0fe0341d97fb760c2cda3f07277f861495d32f6520e3ce8047b8b0f7bfd4ee`.
+- The generated `patches/core/D2WD610H_single_front_af.bin` is 512 KiB with SHA-256
+  `99a0b2df7f24a247307dfdde6790d464264bbbe6ae8498632735d6d98b4ae5eb`.
+- All 442 changed bytes are confined to nine guarded front/rear hooks or task pointers, 13
+  explicit removed-sensor DTC switches, and 12 injected allocations.
+- The front process hook at `0xB690` runs the complete stock
+  `front_af_sensor_pair_signal_process` through a prologue trampoline, then copies
+  `AE60->AE64`, `AE68->AE6C`, and `AE70->AE74`.
+- The stock front pump-current diagnostic task still executes. Its task-pointer wrapper refreshes
+  `AE70->AE74` only while enabled. The Bank-2 inhibit entry at `0x6500C` jumps to a selector at
+  `0x7DA20`: enabled tail-jumps to the unchanged Bank-1 helper at `0x64FD0`; disabled directly
+  reproduces the stock Bank-2 helper's `0xFFFFD26C bit 0 -> return 0/2` behavior.
+- The disabled front switches are P0051, P0052, P0151, P0152, and P0154. The disabled rear
+  switches are P0037, P0038, P0057, P0058, P0137, P0138, P0157, and P0158. Retained RH/Bank-1
+  front DTC switches remain enabled.
+- The rear process entry at `0xE0D0` is guardedly replaced with an exact-`01` selector. Enabled
+  returns before converting either raw rear channel; disabled uses a relocated prologue and
+  resumes stock at `0xE0DC`.
+- Task pointers `0x11488`, `0x1148C`, `0x11490`, `0x11494`, and `0x114A0` are guardedly
+  redirected through selectors for rear threshold, filter/delta, response integrator, response
+  ratio publication, and paired low/high-voltage diagnostics. Each returns immediately only for
+  exact `01` and otherwise tail-jumps to its original stock target.
+- Former external-wideband free space `0x7DA60..0x7DB3B` now holds only these rear-delete
+  selectors and relocated stock prologue. No aftermarket conversion or ECU logger input returned.
+- The standalone image leaves the boost allocation `0x7D790..0x7D903` byte-identical to stock.
+- The verifier regenerated every blob and hook from source, rejected all unexpected changed
+  offsets, reconstructed both overwritten stock prologues, and decoded 136 injected SH-2E
+  instructions with no unknown opcodes.
+- The shared assembler self-tests pass. The current spring-pressure switch-split boost image is
+  byte-identical to regeneration at SHA-256
+  `d4c215a3acc2a68e7daa355d56510589b8f9aa4bf573e6bc4aa4224b16ffa2bc`, and the pinned donor
+  table/default verifier also passes.
+
+## Ghidra rear-path verification
+
+- Raw RH/LH rear ADC words `0xFFFFAB20/0xFFFFAB0C` are converted by
+  `rear_o2_sensor_pair_adc_convert` at `0xE0D0` into processed floats
+  `0xFFFFB098/0xFFFFB09C`.
+- Ghidra xrefs from the processed values lead to `rear_o2_sensor_bank_voltage_select` at
+  `0xDFB4`. Its consumers are `rear_o2_sensor_pair_filter_delta_update` and two small SSM/log
+  conversion stubs at `0x31962/0x31978`; no fuel-control consumer was found.
+- The traced downstream chain is `rear_o2_sensor_monitor_threshold_update` (`0x33B12`),
+  `rear_o2_sensor_pair_filter_delta_update` (`0x33AAC`),
+  `rear_o2_sensor_response_integrator_update` (`0x33970`),
+  `rear_o2_sensor_response_ratio_update` (`0x34BE4`), then
+  `rear_o2_sensor_voltage_diagnostic_dispatch` (`0x69568`) and its low/high pair functions.
+- The initialization-only `rear_o2_sensor_response_integrator_initialize` (`0x33964`) writes
+  1.0 to both integrators. The older delete leaves it stock because all consumers are bypassed;
+  the current master fueling-safety component instead repoints its task to an explicit zeroer
+  before reclaiming those words as state.
+- Every function inspected in this pass was renamed in the live Ghidra project using underscore
+  conventions. Comments at the converter/getter and five patched stages were updated to record
+  the switch behavior and task-pointer locations.
+- The rear heater-output driver path was not hooked or electrically tri-stated. With sensors
+  disconnected, its pins can still be commanded into an open circuit; the eight mapped circuit
+  DTCs are disabled. This hardware behavior remains a bench check.
+
+## RomRaider runtime toggle
+
+- `defs/D2WD610H_AVLS_single_front_af_patch.xml` is a self-contained metric definition with XMLID
+  `D2WD610H_AVLS_SINGLE_FRONT_AF_PATCH`. It parses successfully and exposes `Single Front A/F
+  Patch Enable` at `0x7D91C` with `01`/`00` on/off states. The generated image defaults to `01`.
+- Only exact `01` enables front mirroring/Bank-2 inhibit substitution and all six rear no-op
+  selectors. `00`, erased `FF`, and all other values select stock front and rear runtime paths.
+  XML and byte-level simulation confirmed that operating this switch changes only `0x7D91C`
+  before checksum correction.
+- The definition edits a flash byte; state changes require a checksum-correct save and reflash.
+- The 13 removed-sensor DTC switches are noncontiguous static edits and are deliberately not
+  hidden behind the one-byte runtime flag. For fully stock diagnostics, re-enable all five front
+  and eight rear codes listed above in the same definition before saving/flashing.
+- Off is not a valid normal configuration after any of the three sensors is removed, because
+  stock front/rear runtime logic will again consume absent channels.
+
+## Project cleanup checks
+
+- `patches/core/patch_single_front_af.py` and `tests/verify_single_front_af.py` replace the retired
+  wideband-named patcher and verifier.
+- The retired ECU-side aftermarket analog conversion, calibration, and RAM publication remain
+  removed. The newly used `0x7DA60..0x7DB3B` blocks are rear-delete selectors only.
+- The dedicated external-sensor logger installer, logger fragment, six-table calibration
+  definition, and old generated ROM have been removed.
+- The front-A/F patch adds no sensor calibration or logger parameter. It now has a dedicated
+  RomRaider ROM definition solely so its runtime-enable byte and existing DTC switches can be
+  edited together.
+- `defs/D2WD610H.xml` remains the D2WD610H metric base;
+  `defs/D2WD610H_AVLS.xml` remains AVLS-only; and
+  `defs/D2WD610H_AVLS_boost_patch.xml` remains AVLS plus only the canonical boost-patch
+  calibrations/runtime switch. `defs/D2WD610H_AVLS_single_front_af_patch.xml` remains AVLS plus
+  only the single-front runtime switch. The combined
+  `defs/D2WD610H_AVLS_boost_single_front_af_patch.xml` contains the unchanged boost tables plus
+  both component runtime switches.
+- The reverse-engineering notes now describe `0xFFFFAB20/0xFFFFB098` and
+  `0xFFFFAB0C/0xFFFFB09C` as stock hardware/RAM paths whose conversion and monitor consumers are
+  bypassed while the single-front/rear-delete switch is enabled.
+
+## External logging boundary
+
+The post-turbo lambda sensor has no ECU electrical or firmware interface. Record it through its
+own serial or CAN logger and merge it with RomRaider data using monotonic timestamps. The
+analysis file should use lambda units and retain validity/fault fields when the external protocol
+provides them. Account for exhaust transport delay when comparing the post-turbo measurement with
+RPM, throttle, load, or boost transitions.
+
+No external lambda reading currently commands enrichment, wastegate duty shutdown, or fuel cut.
+Boost commissioning must therefore retain independent mechanical and ECU MAP-based safeguards.
+
+## Remaining blockers and commissioning order
+
+1. Confirm the car has the expected retained RH and removed LH front-sensor connector variant;
+   stop on any mismatch in connector colour, cavity numbering, or continuity.
+2. Correct and independently verify the `subarudbw` checksum.
+3. First-run the single-front image without boost. Log E91/E109, closed-loop state, both fuel
+   corrections, and all front/rear sensor DTCs.
+4. Prove the two logged front channels track through idle, steady cruise, warm-up, throttle
+   transitions, forced open loop, and a controlled retained-sensor fault.
+5. Safely isolate both rear connectors. Confirm all eight mapped rear DTCs remain inactive,
+   ignore stale rear logger values, and verify both fuel corrections remain stable. Scope the
+   disconnected heater outputs if no-command behavior is required.
+6. Validate the external post-turbo lambda stream, its status indication, and timestamp alignment
+   before using it for tuning decisions.
+7. After both standalone commissioning plans pass, rebuild and verify the combined image from the
+   canonical root stock ROM. Repeat the hardware tests with both systems enabled together.
+
+# Combined Boost + Single-Front-A/F Patch Audit
+
+Audit date: 2026-07-15. Target: D2WD610H / ECU ID `3C5A387116`, Renesas SH7055,
+stock image `2005 BLE MT.bin`.
+
+## Verdict
+
+`patches/core/patch_combined.py` produces one combined development image directly from a fresh copy of
+the canonical root stock ROM. It does not patch either generated standalone image. The generated
+ROM is the exact, non-overlapping union of the boost-control patch and the single-front-A/F plus
+rear-O2-delete patch. Its structure, changed-byte ownership, injected instructions, O2 paths, and both
+RomRaider switches are binary verified.
+
+This does not make the image vehicle-validated. The standalone front-A/F behavior must first be
+proven without boost, and the boost output/MAP/failsafe commissioning sequence must be completed
+before the combined image is flashed. The combined ROM still requires a valid `subarudbw`
+checksum.
+
+## Original SRF provenance and de-encapsulation
+
+- `base_roms/2005 BLE MT.srf` is 524,749 bytes with SHA-256
+  `05eae5322072449d90e20e20125d5333738675168d623a320735958bfc7619aa`.
+- `patches/core/extract_srf.py` parses the SRF as big-endian `INFO`, `DRMI`, `MEML`, and `MEMD` chunks;
+  it does not scan for a guessed ROM signature or use a hard-coded tail carve.
+- The single `MEMD` payload starts at file offset `0x1CD`, is exactly `0x80000` bytes, and contains
+  CALID `D2WD610H` at ROM address `0x2000`.
+- Its SHA-256 is
+  `ed0fe0341d97fb760c2cda3f07277f861495d32f6520e3ce8047b8b0f7bfd4ee`.
+- The extracted payload is byte-identical to both `base_roms/2005 BLE MT.bin` and the canonical
+  root `2005 BLE MT.bin`. The existing extracted BIN was therefore left unchanged.
+- The combined builder repeats the SRF parse and byte comparison before every output build and
+  rereads all protected stock sources afterward.
+
+## Combined binary checks completed
+
+- Generated artifact: `patches/core/D2WD610H_boost_single_front_af.bin`, 512 KiB, SHA-256
+  `71b28714106dcc1eb7adfe59738fc8c6e968b2b94ca9337158f4442f46fcc1fe`.
+- Exactly 812 bytes differ from stock: 370 owned by the boost patch plus 442 owned by the
+  single-front-A/F patch, with zero overlapping offsets.
+- Before composing the image, the builder independently applies each component to stock and
+  rejects any intersecting changed-byte ownership. It then applies both guarded change sets to a
+  separate fresh stock copy and requires the result to equal their exact union.
+- Refactoring the component scripts to expose shared `apply_to_rom` functions did not change
+  the single-front-A/F artifact. The spring-pressure switch split changes boost to SHA-256
+  `d4c215a3acc2a68e7daa355d56510589b8f9aa4bf573e6bc4aa4224b16ffa2bc`; single-front-A/F remains
+  SHA-256 `99a0b2df7f24a247307dfdde6790d464264bbbe6ae8498632735d6d98b4ae5eb`.
+- `tests/verify_combined.py` regenerates the expected image from stock, checks every byte, pins all
+  component hooks/task edits and enable-dependent branches, verifies all 13 removed-sensor DTC
+  edits, and confirms the retained Bank-1 front plus both rear-delete paths.
+- All 13 injected code spans decode as 220 known SH-2E instructions with no unknown opcodes.
+- The former external-wideband region `0x7DA60..0x7DB3B` now contains only verified rear-delete
+  selectors/trampoline. No aftermarket-wideband input or logger publication was reintroduced.
+
+## Combined RomRaider definition
+
+- `defs/D2WD610H_AVLS_boost_single_front_af_patch.xml` is self-contained and contains only the
+  pruned metric `32BITBASE` plus the D2WD610H target ROM.
+- Target XMLID: `D2WD610H_AVLS_BOOST_SINGLE_FRONT_AF_PATCH`.
+- It exposes all canonical boost calibrations, `Electronic Boost Control Enable` at `0x7D80C`,
+  `Overboost Fuel Cut Enable` at `0x7D80D`, and `Single Front A/F Patch Enable` at `0x7D91C`.
+- Defaults are `00`, `01`, and `01`, respectively. XML parsing and byte simulation verify that
+  changing any switch changes only its own one-byte address before checksum handling.
+- Both boost switches retain donor MAP scaling. Front-A/F
+  `OFF` restores stock front/rear runtime logic but does not re-enable the 13 removed-sensor DTC
+  bytes. The existing component caveats remain unchanged in the combined image.
+
+# Historical Five-Psi / 98 RON Base Turbo Map Audit
+
+Audit date: 2026-07-15. The audited standalone output is retired and no longer committed.
+
+This section records the superseded pre-master artifact. The folder and standalone output were
+later removed; the applicable calibration logic and policy checks now live in
+`master_patch/master_calibration.py` and `tests/verify_master_calibration.py`.
+
+## Verdict
+
+The base-turbo image is a reproducible, checksum-valid calibration derivative of the verified
+combined patch. It is suitable as a conservative **starting file for hardware entry and dyno
+commissioning**, not as an assumption-complete flash-and-drive tune. The fuel and ignition edits
+are structurally verified, and an OEM STI-pink injector starting calibration is now installed, but
+injector identity/condition, fuel-pressure capacity, MAF
+scaling, MAP validation, post-turbo wideband logging, and physical boost tests remain mandatory.
+
+## Build provenance and binary checks
+
+- The historical builder read the pinned root stock ROM, verified both stock BIN copies and the
+  original SRF `MEMD` payload, and reconstructs the combined patch in memory.
+- That intermediate stage must be byte-identical to
+  `patches/core/D2WD610H_boost_single_front_af.bin`, SHA-256
+  `71b28714106dcc1eb7adfe59738fc8c6e968b2b94ca9337158f4442f46fcc1fe`, before calibration is
+  allowed. No generated image is used as patch input.
+- The pinned 192-KiB A4TE002B injector donor must have CALID `A4TE002B`, SHA-256
+  `e3cc868a51476aaa25c1ffb63e8af8ba3e35ca4ace404e842f193bf117754b44`, flow raw `4900` at
+  `0x2866B`, and latency raw `{697,372,245,171,95}` at `0x28673` before calibration is allowed.
+- Output SHA-256 is
+  `e26a2c5ef25aa6585aca0bf915c7077f89392d71fbcd1f615a069c133ebc5f28`.
+- Exactly 1,141 bytes differ from the combined stage across 41 owned writes. Ownership covers the
+  paired Primary Open Loop load/RPM axes and maps, CL-to-OL delay, shared timing and KCA axes, six
+  base-timing
+  maps, two KCA maps, IAT compensation, Rev Limit A, injector scalar/deadtime, four cranking maps,
+  two tip-in maps and threshold, five AVLS tables, six boost calibration fields, and checksum.
+- The first Subaru checksum table entry remains `0x2000..0x7FAF7`; calculated/stored difference
+  `0x8CC3EF80` satisfies additive target `0x5AA5A55A`.
+- The matching combined RomRaider definition parses with all edited table addresses unchanged.
+- The canonical root/base stock ROMs, SRF, combined artifact, patch code/hooks, enable bytes, MAP
+  scaling, O2 patch, and removed-sensor DTC edits remain unchanged.
+
+## Calibration safety properties verified
+
+- Spring-only boost: base WGDC is all zero, Kp is zero, and maximum final duty ratio is zero. Both
+  patches remain enabled, retaining the hard MAP fuel-cut wrapper.
+- The target remains 5 psi from 2500 RPM through its final breakpoint rather than tapering at high
+  RPM. Because the final duty clamp is zero, it still cannot raise boost above spring pressure.
+- Soft duty shutdown is 5.5 psi and hard fuel cut is 6.5 psi relative to 760 mmHg. The limits still
+  depend completely on validating the installed donor-scaled MAP sensor and have no atmospheric
+  compensation or hard-cut hysteresis.
+- Both 14x10 Primary Open Loop maps use the exact
+  `1000, 1500, 2000, 2500, 3000, 3500, 4000, 5000, 6000, 6800` RPM grid. Each
+  stock bank is conservatively resampled from its original 3200--6800 RPM grid before the richer
+  stock-bank/new-cap comparison, so no row is merely relabelled and no cell becomes leaner than
+  the resampled source. Banks then match at each capped cell. Caps progress from lambda 0.93 at
+  0.96 g/rev
+  to 0.78 at 1.60+ g/rev, with 0.77 at 6000+ RPM. Both fuel-load axes, the closed-loop
+  compensation axis, the shared timing axis, both KCA axes, and both AVCS axes now end at
+  4.0 g/rev. Each associated surface is resampled in load; values above its stock maximum hold
+  the final stock column before the turbo fuel/timing/KCA safety policy is applied.
+- Both atmospheric CL-to-OL delay counters are zero, making the enriched Primary OL result decide
+  the transition instead of the stock delayed threshold path.
+- All six base-timing maps are capped from 1.09 g/rev / 2000 RPM up, including the two high-cam
+  paths used by earlier AVLS, and no cell is advanced. Full-load ceilings are -2 degrees at 2000,
+  4 at 3200, and 13 at 6800 RPM.
+  Positive KCA is capped at 2 degrees at 1.09 g/rev and removed at 1.22+ g/rev; no KCA cell is
+  increased.
+- The high-IAT curve reaches -10.20 degrees at 110 C. Rev Limit A is set to the requested 6800 cut /
+  6770 resume, retaining 30 RPM hysteresis and a hard limiter.
+- The A4TE002B factory injector calibration translates to D2WD raw flow `3266.667236` (552.47
+  cc/min estimated) and deadtimes 2.788/1.488/0.980/0.684/0.380 ms. The 0.4893883551 injector-scale
+  ratio is applied to all absolute cranking/tip-in IPW starting values, rounding toward richer.
+- AVLS actuation is permitted at 2500 RPM; the oil-temperature-selected vehicle-speed curves are
+  lowered and the hard high-cam engage/release points are 3200/3000 RPM with the stock 10 km/h
+  hysteresis retained.
+- Both MAF arrays remain byte-identical. The MAF Limit is already max-encoded at about 300 g/s,
+  and Engine Load Limit remains 4.0 g/rev, matching the expanded calibration axes.
+
+## Remaining flash blockers
+
+1. Confirm all six injectors are genuine/matched STI top-feed pinks, validate the OEM starting
+   scalar/deadtime with trims and start/transient tests, and prove fuel-pump/regulator differential
+   pressure at boost.
+2. Calibrate the installed MAF/housing and prove it does not reach its voltage or approximately
+   297.69 g/s table ceiling.
+3. Fit the MAP sensor matching `{-414.0, 514.199951}` and validate it against a reference over
+   vacuum and positive pressure.
+4. Complete standalone front-A/F/rear-delete tests and validate external post-turbo wideband
+   timestamps/status.
+5. Pressure-test the 45 mm wastegate and prove direct-reference spring pressure, zero-duty
+   polarity, PWM behavior, boost-creep margin, and the simulated hard-cut response.
+6. Use a load-controlled dyno, monitor fuel/oil pressure externally, and follow the current
+   `master_patch/COMMISSIONING.md`; stop rather than tuning around a failed hardware gate.
+
+The stock `axis_index_search_float` function at `0x26E0` was rechecked in live Ghidra for this
+revision and was already named to project convention. Its below-first-breakpoint return of index 0
+is the firmware evidence behind the conservative Primary Open Loop RPM-axis resampling policy.
+
+# Standalone Rotational-Idle Patch Audit
+
+Audit date: 2026-07-15. Target: D2WD610H / ECU ID `3C5A387116`, Renesas SH7055,
+stock image `2005 BLE MT.bin`.
+
+## Verdict
+
+`patches/core/patch_rotational_idle.py` produces a separate, default-OFF development image that should
+execute the intended bounded timing post-processing. It always runs the complete stock final
+timing task first, requires exact enable `01` and a warm/stationary/closed-throttle/high-vacuum
+idle window, then applies six retard-only offsets. It does not cut fuel, modify idle airflow,
+force AVLS, disable misfire detection, alter the limiter, or allocate RAM.
+
+The component follows the same guarded stock-to-ROM and `apply_to_rom()` framework as the boost
+and front-A/F components. Its allocation and changed-byte ownership are disjoint, making it ready
+for a later combined-patch integration. That integration has deliberately not been performed:
+`patch_combined.py`, the existing combined binary, and the historical calibration derivative
+remain unchanged.
+
+This verdict is static and binary only. It does not prove idle quality, sound, exhaust/turbo
+temperature, vibration, misfire behavior, checksum acceptance, or safe operation on the vehicle.
+
+## Ghidra verification and naming
+
+- Periodic task-pointer slot `0x11E30` contains stock target `0x279CC`.
+- `ign_final_timing_per_cylinder_update` at `0x279CC` combines a common timing result with six
+  correction floats at `0xFFFFCCC8..0xFFFFCCDC`, applies stock clamps, and writes six final
+  angles at `0xFFFFC0EC..0xFFFFC100`.
+- The six-output consumers were traced through the minimum check, schedule-count conversion,
+  current-cylinder selection, and logger conversion. The normal ignition logger reads the first
+  final angle at `0xFFFFC0EC`.
+- ECT `0xFFFFB3AC`, RPM `0xFFFFB544`, processed throttle `0xFFFFB314`, MAP
+  `0xFFFFABC4`, and vehicle speed `0xFFFFB538` are confirmed live float inputs. The vehicle-speed
+  identity is independently supported by its comparison with the stock 4.0-km/h idle-timing
+  threshold at ROM `0x77E1C`.
+- Every function opened in this trace was renamed in the live Ghidra project using the project's
+  underscore convention: the three idle/base timing functions, final per-cylinder update, six
+  correction-state functions, four downstream timing/logger functions, and the fixed-point
+  runtime export helper. The exact names and addresses are recorded in
+  `docs/D2WD610H_RE_notes.md`.
+
+## Binary checks completed
+
+- The builder always reads the fixed root stock ROM, requires its exact 512-KiB length and
+  SHA-256 `ed0fe0341d97fb760c2cda3f07277f861495d32f6520e3ce8047b8b0f7bfd4ee`, patches an
+  in-memory copy, and refuses an output path that aliases the stock source.
+- Generated artifact: `patches/core/D2WD610H_rotational_idle.bin`, 512 KiB, SHA-256
+  `f5ce45cb46b244e0c3973e3dfab699a3a2a13a1b296b758c96ec19f655ed7165`.
+- Exactly 404 bytes differ from stock. Ownership is limited to the guarded task pointer and the
+  dedicated enable/calibration/wrapper allocations at `0x7DB40..0x7DCEB`.
+- The enable byte is `00` in the generated image. Machine code compares it with exact `01`; all
+  other values leave the newly computed stock timing outputs unchanged.
+- Every operating boundary is inclusive: ECT 80–105 C, RPM 600–1050, throttle no greater than
+  native 1.68 (about 2%), vehicle speed no greater than 1 km/h, and MAP 150–550 mmHg absolute.
+- Each sensor and gate threshold is self-compared before its range check, so NaN values return
+  directly to stock timing. NaN offsets and non-positive/NaN maximum-retard calibration produce
+  zero offset for the affected calculation; a NaN final-timing floor retains the stock angle.
+- Default offsets are `{-6,0,-6,0,-6,0}` degrees. Positive requested offsets are forced to zero,
+  requested retard is limited by the 8-degree maximum, and the result uses a 5-degree-BTDC floor.
+  A final original-angle ceiling prevents either the floor or malformed maximum-retard data from
+  adding advance relative to the stock result.
+- `verify_rotational_idle.py` regenerates the complete expected image, verifies every float and
+  changed offset, pins the exact-enable branch, six-cylinder loop, stock-angle ceiling, and
+  balanced return, and decodes 136 injected SH-2E instructions with no unknown opcode.
+- The executable policy model exercises every gate on and outside its boundary, all non-`01`
+  enable values, positive offsets, maximum-retard limiting, the final timing floor, and the
+  no-advance ceiling.
+- Independent stock builds of boost, front-A/F, and rotational-idle components have pairwise
+  disjoint changed-byte sets. Applying all three guarded APIs in memory produces their exact
+  byte-set union and preserves every independently generated component byte.
+- The canonical root ROM was re-read after build and verification and remains unchanged.
+
+## RomRaider definition and separation
+
+- `defs/D2WD610H_AVLS_rotational_idle_patch.xml` is self-contained and contains only the pruned
+  metric `32BITBASE` plus target XMLID `D2WD610H_AVLS_ROTATIONAL_IDLE_PATCH` for internal ID
+  `D2WD610H`.
+- It exposes `Rotational Idle Patch Enable` at `0x7DB40`, ten scalar gates/limits, and the six
+  per-cylinder offsets at `0x7DB6C`. All addresses and `01`/`00` switch states parse and verify.
+- Byte simulation confirms an OFF-to-ON definition edit changes only `0x7DB40` before checksum
+  handling. This is a flash calibration switch, not a live logger control.
+- No rotational table or switch was added to the boost, front-A/F, existing combined, or base
+  turbo definitions. A later merge must add the component and its definition entries together,
+  then extend the combined exact-union verifier.
+
+## Remaining blockers and commissioning order
+
+1. Produce and independently verify a valid Subaru checksum; the standalone builder does not
+   correct it.
+2. Flash/run the standalone image with the switch OFF first. Confirm the complete stock warm idle
+   and log ECT, RPM, throttle, speed, MAP, timing, lambda, corrections, battery voltage, and all
+   six misfire counters.
+3. Test the mild defaults only while fully warm, stationary, in neutral, and without boost
+   control. Confirm cylinder-1 timing changes only inside the documented window and returns to
+   stock immediately outside it.
+4. Monitor exhaust/turbo temperature, oil pressure, lambda, RPM stability, misfire counts, and
+   vibration. Stop on any abnormal result; do not disable misfire protection to mask it.
+5. Decide from measured behavior whether a stronger effect is safe or useful. The current patch
+   supplies uneven timing only and may produce a mild or negligible audible effect.
+6. Merge the unchanged component API into the main patch only after standalone testing passes,
+   then create a matching three-switch combined definition, checksum-valid output, and complete
+   three-component regression audit.
+
+# Standalone MAFless Speed-Density Patch Audit
+
+Audit updated: 2026-07-28. Target: D2WD610H / ECU ID `3C5A387116`, Renesas SH7055,
+stock image `2005 BLE MT.bin`.
+
+## Verdict
+
+`patches/speed_density/patch_speed_density.py` now produces a separate, always-on MAFless development
+image. Periodic airflow is calculated only from MAP, RPM, a 13×17 VE surface, engine displacement,
+post-intercooler IAT density correction, and a global multiplier. The injected helper has no MAF
+fallback or runtime OFF state.
+
+Both raw MAF conversion calls and the only scheduled raw-MAF limit/filter update are removed. The
+MAF high/low input monitor and both scheduled calls to its mixed temperature-plausibility
+condition are bypassed, and D2WD610H P0102/P0103 switches are disabled. Exact zero RPM produces
+zero airflow. Any other invalid sensor, calibration, lookup, or arithmetic state produces a fixed
+500 g/s rich/high-load fail-safe instead of preserving stale MAF data. That value is a shutdown
+indication, not a validated limp mode.
+
+The component retains the guarded stock-to-ROM and `apply_to_rom()` framework. Its changed-byte
+ownership is disjoint from boost control, single-front-A/F plus rear delete, and rotational idle,
+so it remains mergeable without relocating a current component. It has not been added to
+`patch_combined.py` or the historical calibration derivative.
+
+This verdict is static. It does not establish VE accuracy, transient fueling quality, checksum
+acceptance, hardware wiring correctness, or safe vehicle operation.
+
+## Ghidra verification and naming
+
+- `sensor_processing_batch_task` at `0x6328` and `sensor_adc_processing_task` at `0x66C6` call the
+  stock raw-MAF converter at instructions `0x639C` and `0x66D8`. The MAFless image changes both
+  `jsr @r3` instructions (`430B`) to `nop` (`0009`).
+- `maf_sensor_voltage_to_airflow_process` at `0x7C30` normally reads raw ADC `0xFFFFAB06`, uses
+  the 44-point stock MAF curve, and writes `0xFFFFABE4`. The removed call means this result is no
+  longer refreshed by the sensor task in the MAFless image.
+- `periodic_airflow_sensor_task_dispatcher` at `0x107EE` contains the only computed call to
+  `maf_airflow_limit_update` at `0x107F8`. That `jsr @r2` (`420B`) becomes `nop`, preventing stale
+  raw-MAF state from propagating into the stock filter/fallback channels.
+- `mass_airflow_slow_filter_update` at `0x177BE` is deliberately retained. Its sole scheduled call
+  is at `0x114D2`; it reads final airflow `0xFFFFB420` and filters it into `0xFFFFB424`, so it is a
+  downstream consumer of the speed-density result rather than a raw-MAF source.
+- `maf_sensor_input_range_classify` at `0x7C52` classifies high/normal/low raw MAF ADC input.
+  `maf_sensor_high_input_diagnostic_update` at `0x61332` handles classification 1/P0103, while
+  `maf_sensor_low_input_diagnostic_update` at `0x613AC` handles classification 2/P0102 through
+  the common entry at `0x61328`. `diagnostic_task_list_dispatcher` calls that entry through pointer
+  `0x11804`; the patch replaces it with `sensor_processing_return_stub` at `0x66C2`. The mapped
+  central DTC switches P0102/P0103 are bytes `0x5BD57/0x5BD58`; both stock `01` bytes become `00`.
+- `diagnostic_temperature_maf_condition_flag_update` at `0x7266C` combines two temperature
+  windows, raw MAF ADC, and ADC status bits into `0xFFFFB1F8` bit 0. Its two computed calls use
+  pointers `0x1062C` and `0x1185C`; both are redirected to the same no-op return stub because the
+  condition is invalid after physical MAF removal.
+- Periodic slot `0x11D20` remains `maf_airflow_temperature_compensation_update` at `0x172A4`.
+  The retained downstream half calculates load/filter/state channels `B428..B440`, which have
+  broad ignition, fueling, trim, and diagnostic consumers.
+- Immediately before the stock `B420` store, call `0x17398` loads its helper target from literal
+  `0x1743C`. The patch changes that literal from `0x24B0` to the SD helper at `0x7E18C`, so the
+  stock task stores modeled airflow and then continues all downstream calculations.
+- MAP `0xFFFFABC4` is native mmHg absolute, RPM is float `0xFFFFB544`, IAT is degrees Celsius at
+  `0xFFFFB3B8`, and final airflow is float g/s at `0xFFFFB420`.
+- `engine_load_from_mass_airflow_calculate`, `fuel_trim_airflow_region_classify`, the closed-loop fuel
+  tables, fuel-trim modes, airflow monitors, and logger conversion routines all consume the shared
+  final-airflow channel. The patch therefore supplies the established load/fueling pipeline
+  without patching each consumer.
+- Additional inspected functions were renamed in the live project with underscore-style names,
+  including airflow initialization/filtering, fuel-control airflow-table updates, diagnostic
+  monitors, scaled logger outputs, and the three missed logger function boundaries around
+  `0x316A2..0x31790`. A final consumer pass conservatively named 39 formerly generic functions by
+  their confirmed use of `B424/B430/B438/B43C/B440/B444`; the names do not claim a narrower
+  subsystem role than the recovered data flow. The full address/name list is in
+  `docs/D2WD610H_RE_notes.md`.
+- `patches/speed_density/ghidra_scripts/ApplyMaflessNames.java` reproducibly applies all 49 late-trace
+  names, including the four function boundaries missed by auto-analysis. The final headless run
+  saved every name and the hook comments to the same stock Ghidra program.
+  `ReportMafDiagnostics.java` is the read-only reference report used to locate the raw converter,
+  classifier, diagnostic callers, and airflow channels.
+
+## Runtime design and calibration
+
+- The helper at `0x7E18C` allocates no RAM and is called inside the retained task immediately
+  before its final B420 store. It mirrors the same modeled value into `B448/B458/B45C`, keeping
+  the former raw-MAF state coherent for the next task cycle without reading the sensor.
+- Model:
+  `airflow_g/s = VE × MAP_mmHg × RPM × displacement_L × 1.3203052e-5 × IAT_correction × global`.
+- Defaults are 2.999 L, 1.0 global multiplier, 500 g/s normal cap, 13 MAP columns, 17 RPM rows,
+  and a ten-point `293.15 / (IAT_C + 273.15)` density curve.
+- Default validity windows are MAP 100–1600 mmHg absolute, RPM 0–7500, and IAT -50–150 °C.
+  Boundaries are inclusive. NaN and infinity are rejected with self-comparison, range checks, and
+  a fixed maximum-finite-float constant. RPM is prechecked first, so exact zero publishes zero
+  even while other sensor/calibration data is uninitialized; a non-finite RPM uses the fail-safe.
+- A fixed, non-definition-exposed 500 g/s fault value is stored at `0x7DD00`. The configurable
+  normal maximum remains at `0x7DD0C`; invalid calibration cannot turn the fixed fault output into
+  MAF fallback.
+- Stock MAF curve bytes remain physically present in the ROM because erasing unused calibration
+  data has no runtime benefit. They are unreachable from the patched periodic airflow path and are
+  removed from the generated MAFless RomRaider definition.
+- MAP scaling is intentionally outside this standalone component. Removing the MAF/IAT assembly
+  requires a separately wired, fast post-intercooler IAT sensor on the verified stock IAT circuit.
+
+## Binary and definition checks completed
+
+- The builder requires the canonical 512-KiB root stock SHA-256
+  `ed0fe0341d97fb760c2cda3f07277f861495d32f6520e3ce8047b8b0f7bfd4ee`, patches an in-memory
+  copy, refuses stock-alias output, and rechecks the root file after writing.
+- Generated image: `patches/speed_density/D2WD610H_speed_density.bin`, SHA-256
+  `548fc5353338248c683098507aed79a6c5f377bb2462b65a091a2f02b0899467`.
+- Exactly 1,695 bytes differ from stock. Ownership is limited to the final-airflow helper pointer,
+  two raw-MAF calls, the raw-MAF limit/filter call, three MAF-dependent diagnostic-task pointers,
+  two MAF DTC bytes, and dedicated allocation `0x7DD00..0x7E39B`. The helper is 528 bytes.
+- The verifier deterministically rebuilds the whole image and checks the retained task pointer,
+  exact `0x17398` helper-call/delay-slot/`B420` store sequence, final-airflow helper hook, both
+  MAF-call NOPs, raw limit/filter NOP, diagnostic-task bypasses, DTC bytes, fixed fault value,
+  descriptors, monotonic axes, constants, normal samples, cap, zero-RPM behavior, every
+  invalid-input/calibration class, opcodes, code/pool boundary, balanced return, synthetic-state
+  literals, and allocated bytes.
+- The helper literal pool is required to contain MAP/RPM/IAT, table helpers, descriptors,
+  final/synthetic airflow RAM, and the fault constant. The verifier separately rejects the stock
+  task address `0x172A4` in that pool, preventing accidental recursion.
+- Independent boost, single-front/rear-delete, rotational-idle, and MAFless speed-density builds
+  have pairwise-disjoint changed-byte sets. Applying all four APIs in memory produces the exact
+  union and preserves each independently generated byte.
+- `build_definition.py` derives a two-ROM-file definition from metric
+  `defs/D2WD610H_AVLS.xml`, removes inherited MAF limit/scaling/compensation and P0102/P0103
+  entries, and emits target XMLID `D2WD610H_AVLS_SPEED_DENSITY_ONLY` for internal ID `D2WD610H`.
+  It exposes only the relevant speed-density scalars, gates, VE surface, and IAT curve.
+- The canonical root stock ROM remains unchanged.
+
+## Remaining blockers and commissioning order
+
+1. Produce and independently validate the required Subaru checksum on a disposable working copy.
+2. Fit and verify the post-intercooler IAT circuit using the correct vehicle wiring diagram.
+3. Pressure-calibrate the installed MAP sensor through vacuum and beyond the intended 5 psi range.
+4. Confirm injector identity/latency/scaling, base pressure, and fuel-pressure differential.
+5. First-start with no path into boost and immediate high-rate MAP/RPM/IAT/airflow/load/lambda/
+   fuel-pressure logging. Shut down if running airflow pins near the 500 g/s fault value.
+6. Calibrate idle and vacuum VE cells on a load-controlled dyno before atmospheric or boosted
+   operation. Use the time-aligned external wideband; there is no retained MAF reference or
+   in-ROM fallback.
+7. Complete transient, restart, heat-soak, altitude, AVLS-transition, fuel-pressure, injector-duty,
+   knock, and 5 psi wastegate validation before considering integration.
+8. Merge only after standalone testing, then extend the combined definition, checksum workflow,
+   and exact-union audit. This was the status at the standalone audit date; the later integrated
+   master audit below now supersedes that merge-status statement.
+
+# Integrated Master Patch Audit
+
+Audit date: 2026-08-22. Target: D2WD610H / ECU ID `3C5A387116`, Renesas SH7055,
+canonical stock `2005 BLE MT.bin`.
+
+## Verdict
+
+`master_patch/build_master_patch.py` now creates the requested single integrated development
+image directly from canonical stock. It includes always-on MAFless speed density, exact Omni
+Power MAP-SUP-3BR scaling, EVAP-output boost control and safeties, a former-MAF input calibrated
+for the supplied seller-labelled 50-4110/30-4110-style P0/P1 output, logical removal of both
+stock front A/F and both rear O2 paths, STI-pink factory
+donor injector data, a base VE surface, and the conservative 5 psi / 98 RON / early-AVLS /
+6800-RPM calibration. It also includes the bounded retard-only rotational-idle component with its
+RomRaider switch default OFF, plus pressure-forced open loop and delayed/latched lean fuel cut.
+
+The binary, free-space ownership, injected opcodes, hooks, sensor policy, fuel/timing/injector/
+AVLS calibration, definition, logger fragment, checksum, and stock/SRF provenance pass static
+verification. This is not a vehicle-tested result. It must not be treated as safe to flash or
+enter boost solely because the automated audit passes.
+
+## Artifact and provenance
+
+- Input SHA-256: `ed0fe0341d97fb760c2cda3f07277f861495d32f6520e3ce8047b8b0f7bfd4ee`.
+- Output: `master_patch/D2WD610H_master_patch.bin`, 512 KiB, CALID `D2WD610H`.
+- Output SHA-256: `3e5a18d495e567e121f6692f0f8939b8a4dc8bf22f479186c56f66b82cf993a2`.
+- Subaru additive checksum: `0xB0B76582`, verified.
+- The root stock BIN, `base_roms` copy, and original SRF `MEMD` payload are byte-identical.
+- The builder refuses generated inputs and protected-source output aliases; every component is
+  reconstructed on an in-memory copy of root stock.
+- Exactly 5,989 bytes differ from stock, all inside declared hooks, diagnostic switches,
+  calibration regions, and verified free flash. Rotational idle owns `0x7DB40..0x7DCEB` and
+  task pointer `0x11E30`; the master verifier proves this is disjoint from every other component.
+
+## Live Ghidra revalidation
+
+- `map_sensor_voltage_to_pressure_process` at `0x7A14` confirms offset-then-multiplier floats at
+  `0x72810` and native absolute-mmHg output at `0xFFFFABC4`.
+- `map_sensor_raw_adc_range_classify` at `0x7A56` confirms the separate raw limits at
+  `0x7B284/0x7B286`.
+- `injector_battery_voltage_latency_lookup` at `0x98CC` confirms descriptor `0x608D8`, voltage
+  axis `0x7B304`, and latency data `0x7B318`.
+- `injector_flow_scaling_factor_update` at `0x1E0C8` confirms D2WD flow scalar `0x76014`.
+- `ign_avcs_tracking_blend_factor_update` at `0x28354` builds and clamps factor `k` at
+  `0xFFFFC17C` as summed measured left/right intake AVCS divided by summed commanded AVCS.
+  This corrects the earlier IAM/advance-multiplier interpretation. `ign_base_timing_map_blend`
+  at `0x28418` calculates each reachable pair as AVCS-tracking-ratio-1.0 endpoint `* k` plus
+  ratio-0.0 endpoint `* (1-k)`.
+- `ign_base_timing_select` at `0x284B8` confirms `0x78AA0/0x78E34` as the normal-cam pair and
+  `0x78CD0/0x79064` as the AVLS-high-cam pair. The two other legacy surfaces require the callback
+  at `0x27088`, renamed `constant_zero_return`, to return one; its exact body always returns zero.
+- `knock_correction_advance_max_select` at `0x3EB68` confirms KCA A normal cam and KCA B AVLS
+  high cam.
+- `intake_avcs_target_by_avls_mode_update` at `0x353B0` confirms descriptor `0x60C34` / data
+  `0x7C5B0` (legacy AVCS A) is selected in committed AVLS mode 1, low lift; descriptor `0x60C50`
+  / data `0x7C764` (legacy AVCS B) is selected in mode 3, high lift. These are mode targets, not
+  left/right-bank maps, and the ECU selects rather than blends them.
+- `avls_threshold_curve_selector_state_update` at `0x3FFDA` and
+  `avls_curve_selector_oil_temp_band_latches_update` at `0x400EE` show how the internal curve
+  selector is formed. `engine_oil_temperature_sensor_process` at `0xF474` converts ADC AB12
+  through descriptor `0x60950` (axis `0x7B748`, data `0x7B7C4`) to `0xFFFFB124` in degrees C;
+  the table spans -40..150 C and P0197/P0198 identify the channel. Function `0x47000`, renamed
+  `engine_oil_temperature_fallback_select`, publishes valid B124 or the stock 70 C fallback to
+  `0xFFFFCF94`. Hysteretic 13/15 and 113/115 C bands select cold/fallback state 1, normal state 2,
+  or hot state 3 subject to runtime/delay gates.
+- `vehicle_speed_conditioned_source_update` at `0x188F4` starts with proven vehicle-speed signal
+  `0xFFFFB538`, keeps its km/h units, caps it at 100.0, and writes `0xFFFFB4C0`. Functions
+  `vehicle_speed_conditioned_filter_update` at `0x18A68` and
+  `vehicle_speed_conditioned_snapshot_copy` at `0x18AEA` publish B4C8 then AVLS compare signal
+  `0xFFFFB46C`. Therefore the `0x7D67C/0x7D6B4` AVLS tables are RPM-versus-vehicle-speed
+  boundaries, and `0x7D480/0x7D484` are 10 km/h hysteresis values; none is engine load.
+- Genuine table load is separate: the retained stock airflow task writes B420 in g/s, calculates
+  raw B428 as `airflow_g_s * 60 / RPM`, and conditions it into B438 in g/rev. AVCS, ignition,
+  fuel, and knock consumers use B438. The speed-density helper supplies B420 in g/s and retains
+  this stock normalization, so calculated-load scaling remains correct.
+- `tests/verify_speed_density.py` now pins the exact stock load instruction sequence at
+  `0x1753C`, the 60.0 g/s-to-g/rev factor at `0x1761C`, the 4.0 g/rev limit at `0x17620`, and
+  representative SD-to-load model samples. The standalone and master rebuilds retain all of them.
+- Every D2WD610H-derived definition now inherits the corrected km/h AVLS curve/hysteresis names,
+  the 13/15 and 113/115 degree-C selector table, and the 31-point engine-oil-temperature scaling
+  from `defs/D2WD610H_AVLS.xml`; `defs/sync_avls_metadata.py --check` and XML parsing pass.
+- `front_af_sensor_pair_signal_process` at `0xB690`,
+  `front_af_sensor_lambda_condition_filter` at `0x18DAC`, and
+  `closed_loop_fuel_control_bank_update` at `0x1EE74` confirm the lambda/readiness values consumed
+  by stock closed-loop control.
+- Static rear-path xrefs confirm B098/B09C belonged to rear monitoring/logging rather than a
+  direct fuel consumer, allowing them to become explicit external-wideband logger mirrors.
+- Every function opened during this pass was renamed using the existing underscore convention.
+  The full list/evidence is in `master_patch/GHIDRA_AUDIT.md` and
+  `docs/D2WD610H_RE_notes.md`; `ApplyMasterNames.java` makes it reproducible.
+
+## MAP and speed density
+
+- The exact supplied Omni endpoints are 0.60 V at 30 kPa and 4.75 V at 300 kPa. The resulting
+  native transfer is approximately `487.991938 mmHg/V - 67.776658 mmHg`.
+- The low raw-input threshold is 0.30 V and the stock high threshold remains approximately
+  4.921 V. Output below the published 30-kPa endpoint is extrapolated and must be physically
+  characterized before road use.
+- The always-on 13x17 VE model uses MAP/RPM, 2.999 L displacement, a ten-point IAT-density curve,
+  and the retained stock downstream load/fueling pipeline. It has no MAF fallback.
+- Exact zero RPM returns zero airflow. Any other invalid input/calibration/arithmetic condition
+  selects fixed 500 g/s as a shutdown-indicating rich/high-load fail-safe.
+- Raw MAF conversion/filter paths, MAF diagnostic tasks, and P0102/P0103 switches are bypassed,
+  while AB06 remains live as a shared ADC channel for the new wideband input.
+
+## External-wideband input and four-stock-O2 removal
+
+- The supplied controller's P0/P1 table is `gasoline AFR = 2*V + 10` and
+  `lambda = (2*V + 10)/14.64`; P2/P3 are unsupported. Firmware accepts 0.50..4.50 V
+  inclusive as an 11..19 gasoline-AFR plausibility window.
+- Valid lambda is copied to both stock bank feedback values and both logger mirrors; readiness is
+  50.0. Invalid input publishes a 0.0 logger sentinel/readiness, inhibits both closed-loop bank
+  paths, and forces electronic boost duty to zero.
+- The original front conversion entry, both bank-inhibit helpers, front pump-diagnostic pointer,
+  rear conversion entry, five rear monitor-task pointers, and 18 mapped front/rear O2 DTC
+  switches are checked byte-for-byte by the verifier.
+- The four-wire controller is single-ended: white alone connects to B3-3/B136-23. Red uses a
+  separate switched 10-18 V supply through a 10 A fuse; black carries gauge/heater current to a
+  clean power/engine ground; blue is unused serial output. B3-2/B136-31 must not be connected to
+  black. B3-4/B136-13 plus B3-5/B136-35 remain the post-intercooler IAT circuit.
+- The supplied instruction sheet is not identical to genuine AEM 30-4110 documentation and no
+  separate analog ground or dedicated fault output is present. In-range voltage/readiness cannot
+  prove sensor health; cold, warmed-free-air, disconnected-sensor, and installed ground-offset
+  measurements remain mandatory commissioning evidence.
+- Both front and both rear factory sensor connectors must be physically disconnected and sealed.
+  Their heater drivers are not electrically forced off by the firmware.
+- One post-turbo sensor feeds both banks and cannot identify bank-specific mixture imbalance;
+  exhaust transport delay and ground offset remain serious commissioning risks.
+
+## Base calibration and safeties
+
+- STI-pink scalar/deadtime data is translated from a SHA-pinned factory A4TE002B ROM. It displays
+  as an estimated 552.47 cc/min, not a bench-flow guarantee for injectors marketed as 565 cc/min.
+- Both Primary Open Loop maps use a corrected 1000--6800 RPM axis. Their load axes, the
+  closed-loop compensation axis, and all timing/KCA/AVCS load axes extend to 4.0 g/rev with the
+  associated surfaces resampled from their stock load coordinates. High-load fuel is capped rich,
+  all six timing surfaces are only held or retarded, high-load positive KCA is
+  removed, and high-IAT retard is increased.
+- AVLS minimum/release/engage are 2500/3000/3200 RPM. Below the hard crossover, the tuned
+  oil-temperature-selected vehicle-speed curves are 100/100/25/20/15/10/5 km/h for normal oil
+  temperature and 100/100/60/35/20/10/0 km/h for hot oil; hysteresis is 10 km/h. Rev cut/resume
+  is 6800/6770 RPM.
+- The target reaches 5 psi, but base WGDC, Kp, and final max duty are all zero. The generated
+  baseline therefore relies only on the 5 psi mechanical spring.
+- Throttle at/below native 30.0, rejected external-wideband voltage, MAP/RPM/IAT outside the SD
+  windows, RPM
+  below the first 1500-RPM boost-axis point, a 500 g/s SD fault sentinel, or MAP over 5.5 psi
+  commands zero EBCS duty. MAP over 6.5 psi uses the verified stock fuel-cut aggregation path.
+  Boost thresholds are relative to a fixed 760 mmHg, not barometrically compensated.
+- None of these software checks can reduce boost below the physical spring or stop boost creep.
+
+## Definition, logger, and verification
+
+- `master_patch/D2WD610H_master_patch.xml` is self-contained and contains only metric base
+  templates plus D2WD610H target tables relevant to the master architecture. Stock MAF/O2,
+  diagnostic/readiness, fuel-temperature, and dormant timing B/E tuning entries are removed.
+- Active timing maps are named by both Ghidra-proven cam role and their exact intake-AVCS
+  tracking-ratio endpoint (1.0 or 0.0); the two KCA maps are named by normal/high-cam role. The
+  legacy AVCS A/B targets are named by AVLS low/high-lift selection. The XML also exposes AVLS,
+  SD, Omni MAP, injectors/fuel, active timing, boost, external-wideband transfer/range, and retained engine
+  controls.
+- All D2WD610H images retain the factory CALID. RomRaider must therefore be configured with the
+  master XML alone for this image; selecting a standalone/legacy definition can make the same
+  binary appear with anonymous A--F names and an incomplete table set.
+- `D2WD610H_master_logger.xml` is the complete generated metric SSM K-line ECU logger artifact. It
+  filters the upstream global catalogue to 63 H6-MT standard parameters, 46 relevant
+  switches, and 35 useful stock extended parameters. Nine high-resolution stock channels
+  required for the lean-out capture and all project channels E500--E513 are unconditional
+  direct-address SSM parameters; the other 26 extended channels remain restricted to ECU ID
+  `3C5A387116`. This keeps the entire diagnostic set visible on Data, Graph, and Dashboard
+  before ECU identification; the prior ECU-ID-gated form could disappear whenever
+  initialization had not completed. E507 is the stock engine-run counter and E508--E513 are
+  the six raw after-start fueling outputs identified in the Ghidra audit.
+  TCU/DCCD, diesel/common-rail/DPF, removed stock-O2/MAF, and
+  unrelated-model dashboard entries are omitted. `D2WD610H_master_logger_ecuparams.xml`
+  is builder input only, not a selectable complete definition. The verifier checks the
+  complete document, embedded DTD, focused parameter sets, generated-file hash, and
+  equality of all fourteen project entries with the fragment.
+- Run `python3 tests/verify_master_patch.py` from the repository root. A pass means the
+  checked development baseline matches this audit; it does not approve a later RomRaider edit.
+
+## Remaining physical work
+
+Follow `master_patch/WIRING.md` and `master_patch/COMMISSIONING.md`. In particular, continuity-
+check the actual market harness, bench-sweep both analog inputs, validate the Omni through vacuum
+and positive pressure, compare ECU lambda with the controller gauge and an independent reference, verify
+injectors/fuel pressure, scope the purge output and EBCS polarity/frequency, calibrate VE in
+vacuum before boost, simulate all gates/cuts without deliberately overboosting, and complete
+spring-only load-dyno validation. Stop on invalid airflow, sensor disagreement, lean mixture,
+knock, fuel-pressure loss, or boost creep.
+
+# Committed-state AVLS dual-VE and master integration audit
+
+Audit date: 2026-08-21. This section supersedes the earlier single-13x17-VE and
+vehicle-speed-selected AVLS descriptions for the current master image.
+
+## Result
+
+- The speed-density airflow wrapper now selects two VE surfaces from the
+  Ghidra-verified committed AVLS byte `0xFFFFCD86`. Mode 3 selects high lift;
+  all other values select low lift. Requested byte `0xFFFFCD87` is not used for
+  fueling selection.
+- The low-lift surface is 13x9 and exposes only 0..3200 RPM. The high-lift
+  surface is 13x11 and exposes only 3000..7500 RPM. Their 3000..3200 overlap is
+  the actual hysteresis region, selected by committed state.
+- Both seed surfaces are resampled from the same conservative original VE model
+  and agree in their overlap. This avoids deliberately introducing a fueling
+  discontinuity, but it is not measured VE data.
+- Both RPM-indexed AVLS speed-request maps and both fixed/fallback thresholds are
+  110 km/h. Because the conditioned source is capped at 100 km/h, the old
+  vehicle-speed/oil-band high-lift request is unreachable. High lift engages at
+  3200 RPM and releases at 3000 RPM; actuation minimum is 3000 RPM.
+- The stock request/commit sequencing, status checks, and OSV actuation gates
+  remain. Continuous AVCS effect on VE also remains and must be tuned within
+  each lift surface.
+
+## Ghidra evidence and naming
+
+- `FUN_000024b0` was inspected and renamed `float_minimum_select`.
+- `FUN_0003fdbc` was inspected and renamed `avls_control_sequence_update`.
+- Existing named functions `avls_cam_mode_state_machine` (`0x40168`),
+  `avls_mode_commit_copy` (`0x405B2`), `avls_osv_actuation_gate` (`0x405CC`),
+  `intake_avcs_target_by_avls_mode_update` (`0x353B0`), and the airflow hook at
+  `0x172A4` were rechecked. The sequence calls the state machine, commits the
+  requested mode, then runs the actuation gate.
+- The merged `patches/speed_density/ghidra_scripts/ApplyMaflessNames.java` and master
+  naming script reproduce these names/comments.
+
+## Artifacts and verification
+
+- The standalone SD/VE regression image remains reproducible but is no longer committed; the
+  master is the only generated flash target retained in Git.
+- Master: `master_patch/D2WD610H_master_patch.bin`, SHA-256
+  `3e5a18d495e567e121f6692f0f8939b8a4dc8bf22f479186c56f66b82cf993a2`,
+  checksum `0xB0B76582`.
+- The retained component input and generated master XML use the project's RomRaider SH float-endianness
+  convention and omit the obsolete full-range VE entry and inoperative
+  variable AVLS controls. The legacy single-VE bytes remain inert in flash but
+  cannot be referenced by the new wrapper.
+- The component and master verifiers rebuild from immutable stock, audit
+  hooks/opcodes/descriptors/axes/calibration/XML, validate checksum and pinned hash, and confirm
+  root stock/base/SRF provenance.
+- Master free-space ownership is collision-checked byte-for-byte across boost,
+  the speed-density core and its dual-VE segment, and wideband/O2 removal. The
+  wideband reservation ends exactly at `0x7E63F`; the SD dual-VE segment begins
+  at the adjacent `0x7E640`. Calibration
+  ownership is independently checked, with only the six explicit boost tune-data
+  regions permitted to overlap their component seed data. No calibration may
+  enter injected code, descriptors, speed-density, wideband, or dual-VE data.
+- Master logger parameter E503 exposes committed AVLS state so tuning samples
+  can be assigned to the correct VE table.
+
+Static verification passes; bench ECU, harness, AVLS actuation, fueling,
+transition, and dyno validation remain required.
+
+## Component consolidation
+
+The dual-VE selector, tables, predictable AVLS calibration, definition, checksum
+handling, Ghidra naming, and verifier are now part of `speed_density` itself.
+`master_patch` calls only that one SD/VE component. The former `avls_ve` package
+and duplicate ROM/XML artifacts were removed. This reorganization is byte-neutral
+for the master ROM and retains its pinned hash and checksum.
+
+# Pressure-forced open loop and lean-cut audit
+
+Audit date: 2026-08-22.
+
+The current master adds `fueling_safety` after boost, speed density, and the
+former-MAF wideband/O2-delete component. Live stock Ghidra inspection renamed
+and traced `primary_open_loop_fueling_target_update` (`0x22454`), the CL/OL
+transition helpers at `0x22756`, `0x22948`, `0x22AAE`, and `0x22AC2`, the stock
+rev limiter/fuel-cut aggregation at `0x24B24`/`0x23FC0`, and the live barometric
+source writer at `0x47DB2`.
+
+The pressure wrapper at `0x7EB20` occupies stock task pointer `0x11D78`. It calls
+the complete stock primary-target routine before clearing only the verified
+closed-loop-permission bit `0x80` in `0xFFFFBE38` when MAP reaches live barometric
+pressure minus the default 0.5-psi margin. The comparison uses native absolute
+MAP `0xFFFFABC4` and native absolute atmospheric pressure `0xFFFFCFBC`; it does
+not use a fixed sea-level assumption.
+
+The lean wrapper at `0x7EC00` occupies the composed rev-limit task pointer
+`0x11D3C`. It first calls the existing stock-limiter/hard-overboost wrapper at
+`0x7D8C4`, then may add `0xFFFFBF6C` bit `0x80`. Default policy arms above +0.5
+psi gauge, waits 50 task calls, requires eight consecutive invalid/not-ready or
+leaner-than-13.0-AFR samples, latches the cut, and releases only below -0.5 psi
+gauge. AFR is ignored while latched to avoid self-induced cut chatter.
+
+State/counter RAM `0xFFFFC860`/`0xFFFFC85C` is reclaimed from the deleted rear-O2
+response integrator only after guarded confirmation that every traced rear-O2
+runtime task pointer is the stock return stub. Because the stock initialization
+task writes float 1.0, task pointer `0x1055C` is separately redirected to an
+explicit zero initializer at `0x7EBA0`. The component has its own opcode,
+literal-pool, boundary, exact-count, latch, and release-policy verifier. The
+master verifier additionally audits flash/hook ownership, XML controls, logger
+addresses, fresh-build identity, checksum, and pinned hash. These checks are
+static; sensor transport delay and cut behavior still require controlled
+physical validation.
+
+# Rotational-idle master merge and repository consolidation
+
+Audit date: 2026-08-22.
+
+`master_patch/build_master_patch.py` now calls the guarded rotational-idle component after boost
+and Omni MAP scaling and before speed density. Periodic pointer `0x11E30` is owned by the wrapper
+at `0x7DB90`; that wrapper calls the complete stock
+`ign_final_timing_per_cylinder_update` (`0x279CC`) first, then post-processes the six final angles
+only when the exact enable byte and every warm/stationary/closed-throttle/high-vacuum gate pass.
+The generated master keeps `0x7DB40 = 00`, so the feature is installed but inactive by default.
+
+The verifier independently composes the rotational blobs, requires the wrapper to end at
+`0x7DCEB`, decodes its stock call, exact-`01` comparison, six-element loop, and final-angle store,
+and executes the standalone policy model. It additionally checks that rotational flash, hook,
+calibration, and RAM ownership do not collide with boost, speed density/dual VE, wideband/O2
+removal, fueling safety, or the final checksum. The focused RomRaider definition exposes the
+enable byte, ten scalar gates/limits, and six per-cylinder offsets at their exact master addresses.
+
+Repository cleanup makes `master_patch/D2WD610H_master_patch.bin` and its matching XML the only
+committed generated tuning target. Reproducible standalone boost, front-A/F, rotational-idle,
+speed-density, old combined, and pre-master calibration BINs were removed, along with their obsolete
+single-purpose XML outputs. Source component builders/verifiers and the two XML inputs actually
+used by the master definition generator remain. Python caches, macOS metadata, temporary workshop
+manual extracts, and Ghidra lock files were removed and are now ignored. The immutable root stock
+ROM, its `base_roms` copy, original SRF, Ghidra project database, engineering documentation, and
+current master artifacts remain tracked.
+
+The remaining historical calibration packaging was subsequently removed. Its required
+calibration/checksum implementation was reduced to `master_patch/master_calibration.py`; the
+independent policy functions used by the master verifier moved to
+`tests/verify_master_calibration.py`. Redundant pre-master AVLS writes, the standalone
+builder/output verifier, and duplicated/outdated calibration, manifest, and commissioning files
+were not carried forward. The master continues to source predictable AVLS exclusively from the
+speed-density component. A before/after rebuild retained the exact master SHA-256 and checksum.
+
+# Haltech HT-010206 IAT base calibration
+
+Audit updated: 2026-09-04. This section supersedes the 2026-08-29 2.49 kOhm
+working assumption and earlier master artifact hashes.
+
+The master tune now replaces the stock 30-point IAT voltage axis at `0x72960`
+and temperature data at `0x729D8`. The unchanged D2WD610H descriptor at
+`0x609B8` is `(30, axis 0x72960, data 0x729D8)`. Haltech's eight published
+HT-010206 voltage/temperature points assume a 1.00 kOhm pull-up to 5 V. Each
+published voltage is converted back to thermistor resistance and then through
+the user-reported 1.00 kOhm D2WD610H pull-up. Because the reference and assumed
+ECU pull-ups are equal, the exact published knots remain 0.450000 V at 120 C,
+0.780000 V at 100 C, 0.970000 V at 90 C, 1.580000 V at 70 C, 2.450000 V at
+50 C, 3.430000 V at 30 C, 4.210000 V at 10 C, and 4.660000 V at -10 C.
+
+The remaining normal-range entries use log-resistance versus inverse-Kelvin
+interpolation. The -20, -30, and -40 C tail is extrapolated from Haltech's
+published -10..10 C segment. Both the RomRaider definition and commissioning
+documentation label the curve provisional because the 1.00 kOhm resistance has
+not been established from a D2WD610H primary source or an installed-circuit
+measurement. A 1.00 kOhm test load should produce 50.0% of the unloaded input
+voltage if the new assumption is correct. Logged IAT must also be checked
+against a trusted temperature reference before VE tuning or boost.
+
+The sensor transfer is distinct from the injected speed-density density curve:
+the former converts ADC voltage to degrees C, while the latter applies
+`293.15 / (IAT_C + 273.15)` to modeled airflow. No density compensation was
+altered to hide sensor-transfer error. No function was opened in Ghidra for
+this table-only calibration change; the existing named IAT processing path and
+verified descriptor layout were retained unchanged.
+
+The then-current 2026-09-04 master build changed 6,444 bytes from canonical stock, had SHA-256
+`0390ff9d856c66f58e0c44db9c8a4024e26072b905540ef30a116fffca9b9f86`, and
+had valid Subaru additive checksum `0xBEB878AA`. It is superseded by the
+2026-09-06 bounded idle-VE correction documented below. The independent verifier checks
+all 30 float32 knots, monotonicity, all eight published-point conversions,
+descriptor identity, XML warning text, collision ownership, deterministic
+rebuild identity, checksum, and immutable stock/base/SRF provenance.
+
+# Closed-loop feedback lean-out investigation
+
+Audit date: 2026-09-03. No firmware bytes were changed in this investigation.
+
+The master external-wideband hook correctly converts the former MAF ADC with
+the stock-proven `5/65536` volts/count scale and publishes AEM gasoline AFR as
+`(2*V + 10)`, or lambda `(2*V + 10)/14.64`. Ghidra confirms that the stock front
+sensor path uses lambda above 1.0 as lean and below 1.0 as rich, so the basic
+transfer and feedback polarity are correct.
+
+The control dynamics are not yet correct for the installed location. The hook
+duplicates one post-turbo AEM measurement into both front-bank feedback words
+and asserts sensor readiness for any 0.50--4.50 V input. The retained stock
+code then conditions those values and applies a 21-sample lambda history/delay
+model originally calibrated for the two pre-turbo front sensors. The final fuel
+multiplier consumes both the resulting short-term corrections and persistent
+learned trims. A downpipe sensor has extra turbine/exhaust transport delay, so
+the unchanged stock response model can hunt or overshoot and can teach an
+incorrect long-term trim.
+
+The first RomRaider CSV supplied was engine-off, but the later
+`romraiderlog_20260903_023334.csv` contains the reported start. RPM becomes
+nonzero at 5.009 seconds. The external-wideband channel becomes valid at 11.062
+seconds and initially reads 17.11 AFR. Most importantly, CL/OL status is 7 for
+every running sample; the D2WD logger definition identifies 7 as open loop due
+to insufficient coolant temperature, consistent with the logged 31--32 C.
+Closed-loop correction therefore did not cause this particular event.
+
+AFR recovers to about 14.5 at 15.4 seconds, fluctuates mostly between 14.5 and
+15.6 until 31.5 seconds, then rises through 16.1 and 18.6. At 36.153 seconds the
+raw input exceeds the configured 4.50-V/19-AFR plausibility limit, so the patch
+correctly publishes zero AFR and zero readiness. RPM, modeled airflow/load,
+battery voltage, and coolant remain broadly stable during that transition.
+The raw ADC, converted ECU AFR, and gauge behavior agree, which rules out the
+ECU transfer function as the explanation.
+
+The evidence instead points to time-dependent open-loop delivered fueling.
+After-start enrichment decay can mask an under-fuelled base VE/injector model;
+a fuel-pump duty transition or falling rail pressure can produce the same
+pattern. At 18.6 AFR versus a 14.7 target, the apparent deficit is approximately
+27 percent, too large to correct blindly before measuring pressure. Exhaust
+leakage or misfire can also make a wideband indicate very lean without the
+corresponding commanded-fuel deficit. The false cold IAT reading cannot directly
+explain the trend because the SD calculation adds fuel for colder indicated air.
+
+Do not run the engine under load. The next stationary test should measure rail
+pressure continuously from key-on prime through at least 40 seconds and log
+fuel-pump duty. Limit the RomRaider selection to RPM, MAP, IAT, modeled
+airflow/load, injector pulse width and latency, battery voltage, fuel-pump duty,
+AEM AFR/raw/ready, primary/final fueling multipliers, short-term corrections,
+learned trims, roughness counters, and CL/OL status. Those channels separate
+after-start/base-calibration error from falling fuel pressure and misfire.
+
+The post-turbo closed-loop controller remains a separate warm-engine design risk
+because its stock transport-delay model is unchanged, but it did not produce
+this cold open-loop lean-out. Resolve the open-loop delivered-fuel fault before
+changing feedback strategy. Ghidra names/comments for every function opened in
+this trace were updated and made reproducible in
+`master_patch/ghidra_scripts/ApplyMasterNames.java`.
+
+Follow-up on 2026-09-03: resetting ECU learning produced the same behavior and
+measured rail pressure did not fall during the event. This removes stored fuel
+trim and fuel-pressure collapse as the leading explanations. The primary
+software hypothesis is now stock after-start enrichment decaying and exposing
+an under-fuelled steady-state SD/injector model. Remaining physical alternatives
+are injector latency/flow mismatch at the short idle pulse width, an exhaust
+leak ahead of the downpipe sensor, or combustion misfire causing oxygen-rich
+exhaust. The next capture must retain injector pulse width/latency, Primary Open
+Loop Map Enrichment, Final Fueling Base, MAP, roughness counters, and CL/OL
+status; wideband alone cannot separate commanded under-fuelling from misfire.
+
+Fuel-pump-control clarification: the 2005 Legacy/Liberty H6 is not a simple
+relay-only pump circuit when the original rear harness and module remain. Subaru
+training material identifies a separate fuel-pump control unit and three ECM
+commands (33, 67, and 100 percent duty). Related Subaru logic selects the
+33-percent low-speed mode after approximately 30 seconds of warm idle. The
+observed sustained lean ramp begins about 26.8 seconds after engine start, so
+P47 was selected as a specific test target even though static rail pressure
+appeared stable. Log standard parameter P47 Fuel Pump Duty and measure voltage
+directly across the pump positive and negative terminals; measuring pump
+positive to chassis alone misses the controller's modulated ground. Also verify
+the upgraded pump's current demand is within the original module/wiring limits.
+If the pump has been genuinely relay-hardwired around the control unit, P47 may
+still change but cannot alter pump voltage.
+
+Public-source cross-check (2026-09-03): Subaru technical-training material
+explicitly identifies the Legacy H6 fuel-pump control unit and its 33/67/100%
+modes. The same training volume documents a 30-second post-start 100%-to-33%
+transition for Subaru's related turbo fuel system. A subsequent direct D2WD610H
+Ghidra trace supersedes the earlier inference: `fuel_pump_control_state_update`
+reads engine-run counter `0xFFFFB688` and compares it with big-endian u16
+`0x794DA = 3750`. **September 9 audit correction:** the traced nominal cadence
+is 8 ms, giving 30.0 seconds, not the previously stated 37.5 seconds. The
+34.813-second capture therefore cannot exclude this gate on duration alone.
+The lean trend was already visible around 26.8 seconds, but B688 and P47 were
+not captured, so the timing comparison does not establish the gate's actual
+state or a causal link to the lean-out. The clock period is still a target
+hardware assumption. See [central findings](../reference/FINDINGS.md). COBB also
+documents a tunable "Fuel Pump Duty Post-Start High Level" duration and advises
+comparing pressure at 100% and 33% duty after pump-system modifications. A 2004
+Liberty GT owner separately reported an upgraded DW65c struggling specifically
+when its controller dropped to roughly 30%, with a concurrent system-voltage
+dip. This is a close platform anecdote, not proof of the EZ30 fault. Conversely,
+fuel-system guidance notes that duty alone should not change mixture when the
+regulator maintains the correct differential pressure. Sources:
+[Subaru technical training](https://manuals.plus/m/a76e3d12d6a4062e483dcbc5345464274a33e0c18b6980e4c202e6e853e44992),
+[COBB technical bulletin](https://cobbtuning.atlassian.net/wiki/spaces/PRS/pages/2630156289/Tech%2BBulletin%2B-%2BFuel%2BPump%2BDuty%2BPost-Start%2BHigh%2BLevel%2BActivation%2BMax.%2BEngine%2BRun%2BTime),
+[Liberty/DW65c report](https://www.subyclub.com/topic/12585-installed-dw65c-but-fuel-starvation-issue/),
+and [HP Academy fuel-system discussion](https://www.hpacademy.com/forum/pdm-installation-and-configuration/show/fuel-pump-upgrade-rewiring-and-dual-voltage-issue/).
+
+The same B688 audit found other overlapping but independent stock behavior.
+After-start enrichment groups A and B use coolant-dependent delay/decay paths
+and feed final fueling directly. Group C has a verified 5000-count residual
+gate (approximately 50 seconds). Separate 2500-count gates at about 25 seconds
+belong to ignition-minimum and diagnostic-monitor logic. The closed-loop
+feedback counter capped at 31 is a scheduler-call counter, not a 31-second
+timer, and CL/OL status stayed open loop in the supplied capture. These results
+are documented in `master_patch/GHIDRA_AUDIT.md`; no ROM bytes were changed.
+
+# Neutral-switch DTC regression check
+
+Audit date: 2026-09-03. No firmware bytes were changed by this check.
+
+The D2WD610H definition maps P0851 Neutral Switch Input Low to flash byte
+`0x5BD6C` and P0852 Neutral Switch Input High to `0x5BD70`. Both bytes are
+`0x01` in canonical stock and remain `0x01` in
+`master_patch/D2WD610H_master_patch.bin`; the surrounding `0x5BD60..0x5BD7F`
+region is also stock-identical. The only master changes in the nearby DTC block
+are `0x5BD57` and `0x5BD58`, deliberately changed from `0x01` to `0x00` to
+disable P0102/P0103 after the MAF input was repurposed.
+
+No master component references the neutral-position input or hooks its input or
+diagnostic path. The default-off rotational-idle component gates on processed
+vehicle speed `0xFFFFB538`, not on the neutral switch. The master verifier again
+passed its complete changed-byte ownership, hook, calibration, RAM-collision,
+deterministic-build, checksum, and provenance audit. On present evidence, a
+neutral-switch DTC is therefore not caused by an accidental master-patch write.
+Capture the exact code and log standard switch S4 Neutral Position Switch while
+moving the gearbox between neutral and a selected gear; if S4 never changes,
+diagnose the gearbox switch, connector, harness continuity, and ECU input rather
+than suppressing the DTC.
+
+# Fuel-pump control definitions
+
+Audit date: 2026-09-03. The generated master ROM remains unchanged by this
+definitions-only addition.
+
+Live canonical-stock Ghidra tracing confirms that standard SSM address `0x3B`
+dispatches through pointer slot `0x4B7E8` to
+`fuel_pump_duty_logger_value_get @ 0x3191C`, which reads float RAM
+`0xFFFFC298` for P47. `fuel_pump_pwm_command_output_update @ 0x2A53A` is the
+runtime producer: it selects 0, 33.3, 66.7, or 100.0 percent, stores the same
+reported value at `0xFFFFC298`, divides by 100, and calls
+`fuel_pump_pwm_output_write @ 0xDEAA`. The three nonzero literals have isolated
+data xrefs within this pump chain: high at `0x2A5FC`, medium at `0x2A60C`, and
+low at `0x2A610`.
+
+`master_patch/D2WD610H_master_patch.xml` now exposes the low and medium values
+under `02.8 - Fueling - Fuel Pump Control`, retaining stock defaults. The
+100.0 literal is also the common PWM divisor and is intentionally left fixed.
+A stationary full-speed diagnostic should be made only in a copy of the
+generated master BIN: set both reduced commands to 100.0 and log P47 from before
+cranking through at least 45 seconds while measuring voltage across both pump
+terminals, rail-pressure differential, AFR and battery voltage. The zero/off
+command remains untouched. Restore 33.3/66.7/100.0 afterward unless continuous
+full-speed operation and current/heat/regulator capacity have been validated.
+The unresolved mode timers and threshold surfaces are deliberately not exposed.
+
+# Master logger visibility repair
+
+Audit date: 2026-09-04. No firmware bytes were changed by this logger-only
+repair; the simultaneously rebuilt ROM change is solely the separately audited
+1.00 kOhm IAT calibration.
+
+The prior complete logger placed E500--E506 inside `<ecuparams>`, each gated by
+ECU ID `3C5A387116`. RomRaider's own `LoggerDefinitionHandler` adds an
+`ecuparam` only when initialization has returned an exact matching ECU ID. As a
+result, a disconnected logger or incomplete initialization removed every
+master channel from all three parameter panes. XML parsing alone did not catch
+this runtime visibility condition.
+
+The generated D2WD610H-only logger now converts all fourteen E500--E513 fragment
+records to unconditional direct-address `<parameter>` entries. It also converts
+the nine stock high-resolution channels needed for the lean-out investigation
+(`E32`, `E33`, `E50`, `E51`, `E60`, `E81`, `E84`, `E105`, and `E123`) to direct
+entries because this is a D2WD610H-only artifact. The other 26 stock extended
+parameters remain correctly ID-gated. The generator also retains only
+the SSM `iso9141` K-line ECU transport, removing unused CAN/TCU module records
+and their duplicate XML IDs. The complete output now passes its embedded DTD
+with `xmllint`.
+
+A compatibility test using RomRaider's compiled Java classes parsed the checked
+logger with no ECU initialization and exposed 86 parameters, including every
+one of the 23 always-visible project/high-resolution diagnostic channels.
+Repeating with ECU ID `3C5A387116` exposed every required channel again. The
+RomRaider logger loads every parsed ECU parameter into the Data, Graph, and
+Dashboard parameter models. The master verifier additionally requires the
+fourteen generated project records and nine diagnostic stock records to be
+direct parameters, requires the exact K-line/ECU transport, compares every
+project entry with its source fragment, and pins complete logger SHA-256
+`e21f5d6633605369faa013027155adeeca8583ef0f1a9486d603dbbca2e68e0b`.
+
+# First low-lift idle VE correction (superseded)
+
+Audit date: 2026-09-06.
+
+Static D2WD610H analysis established that the reported cold lean-out is not a
+new closed-loop command or a 30-second lean timer. At approximately 31 C, the
+unchanged stock group-A after-start initializer can add 0.294 fuel. Applying
+that value to the eventual 18.6-AFR result predicts `18.6 / 1.294 = 14.37 AFR`,
+which accounts for the approximately 14.4 AFR seen immediately after starting:
+stock after-start enrichment was temporarily concealing the steady-state model
+error.
+
+The original mathematical low-lift VE seed interpolated to approximately
+0.624 at 1300 RPM and 315 mmHg absolute MAP. A 14.7 target versus the observed
+18.6 AFR requires approximately `18.6 / 14.7 = 1.265` more modeled fuel. The
+speed-density component initially applied a 0.27 peak correction through separate
+RPM and MAP taper weights. At the observed site this produces VE 0.789 and a
+1.2654 effective multiplier. It never reduces a VE cell, is zero in every row
+from 2500 RPM upward, is zero from 1150 mmHg upward, and leaves the complete
+high-lift VE surface, global airflow multiplier, injector data, stock
+after-start tables, and executable code unchanged.
+
+The installed injector marking was identified as Subaru `16611AA510`. Parts
+catalog application data associates it with the same early JDM STI generation
+as the pinned A4TE002B factory donor and cross-references Denso
+`195500-3910`; the existing 552.47-cc/min display value and donor dead-time
+curve are therefore retained. A separate Subaru-ROM-derived reference lists
+the exact injector at 550 cc/min with a latency formula that evaluates to 0.68
+ms at 14 V, independently matching the donor's 0.684-ms point. Reference
+support:
+[PartSouq application](https://partsouq.com/shop/product/16611AA510-subaru-injector-sub-assy/13976061),
+[Nengun application list](https://www.nengun.com/oem/subaru/16611aa510),
+[projectLAMBDA Subaru injector calibration](https://lambdatuning.com/2016/10/27/ej251-tuning-part-1-engine-size-fuel-type-and-injectors/).
+All six physical injectors should still have the same marking.
+
+Relative to the preceding checked master artifact, only 124 bytes changed,
+all inside the low-lift VE data allocation `0x7E6B8..0x7E88B` or checksum word
+`0x7FB88..0x7FB8B`. No high-lift, hook, safety, timing, boost, sensor, or
+injector byte changed. That intermediate master was SHA-256
+`7d81124d372fff0c79df6a58b2b26563d2bb71ed85431c5416bbd5ba6fbf3198`
+with valid Subaru checksum `0xBBC99ED4`. Both the standalone speed-density and
+complete master verifiers pass, including the bounded-correction policy,
+memory ownership, deterministic build, definition, logger, checksum, and
+immutable stock/base/SRF provenance checks.
+
+This is a data-driven stationary correction, not a declaration that the full
+VE map is tuned. Since the unchanged stock enrichment is no longer masking the
+base error, the first seconds may be visibly richer; applying the decoded 0.294
+group-A value to a corrected 14.7-AFR base gives an upper-bound estimate of
+`14.7 / 1.294 = 11.36 AFR`, not a target. Revalidate from a cold stationary
+start through complete after-start decay. Stop if AFR remains below 12 after
+enrichment should have decayed, the engine fouls or misfires, or AFR still
+trends lean. Do not enter load or boost on this first validation.
+
+## Second stationary idle VE correction
+
+Audit date: 2026-09-07.
+
+The second stationary run still recorded 18.39 AFR about 30 seconds after
+engine start with the first 1.27 low-lift correction installed. The ECU stayed
+in open-loop status 7 and both short-term corrections remained zero. The user
+also observed injector pulse width fall while AFR rose, although that channel
+was not present in the saved CSV. Ghidra reconfirmed that stock after-start
+states feed `final_fueling_multiplier_compose @ 0x1DD04`, conditioned load and
+the injector scalar feed `injector_flow_scaling_factor_update @ 0x1E0C8`, and
+the per-cylinder output path publishes pulse width from
+`injector_per_cylinder_base_pulse_width_update @ 0x26F8C`. The newly inspected
+functions were named in Ghidra and added to the reproducible master naming
+script. No stock after-start or executable byte was changed.
+
+The measured residual correction is `18.39 / 14.70 = 1.2517`. Combined with
+the first 1.27 factor, the low-lift idle correction is now a 1.59 total factor,
+raising the original approximately 0.624 VE at 1300 RPM/315 mmHg to about
+0.985. The existing taper remains zero from 2500 RPM and 1150 mmHg upward, and
+high-lift VE, injector data, after-start calibration, timing, boost and sensor
+logic remain unchanged.
+
+Relative to the prior checked master image, only 124 bytes changed, all within
+the low-lift VE allocation `0x7E6B8..0x7E88B` or checksum word
+`0x7FB88..0x7FB8B`. The rebuilt master has SHA-256
+`745cd7365c71e0cffad1f905d845c00547f3ed1893f779b631a56bed48735a71`
+and valid Subaru checksum `0xB89A8BFA`. This remains a stationary
+commissioning correction, not authority for load or boost testing.
+
+## 2026-09-07 — Pico K-line read/logging and FastECU test-write correction
+
+The standalone LM393/BF469 adapter now completes a native FastECU full ROM read
+after the added 940-ohm pull-up, and the minimal RomRaider RPM profile works.
+The former large profile requested 89 distinct SSM byte addresses, exceeding
+the 84-address packet limit; hidden subscriptions in other views also counted.
+Four independent sets of all 16 ECU block CRCs match the saved full read.
+See [the chronological evidence](../../pico_kline_adapter/TEST_RESULTS.md).
+
+Test Write still failed with a valid `7F 21 06` negative response from the
+installed 350nm flash initialization backend, before erase/programming.
+Prepared a separately named SH7055 180nm kernel, with reserved microcode RAM,
+relocated buffers/stack, fixed early-error cleanup and flash address bounds.
+Actual SH-2 big-endian build and 39 protected/invalid compiled-path tests pass;
+the native host also has reply validation, exact dedicated-kernel identity
+checks, a bounded upload checksum and honest test-write/voltage reporting.
+The kernel's 11.2 V field is a fixed placeholder, not a battery measurement.
+
+The host was rebuilt and the new kernel installed only on the Mac, in a
+separate D2WD610H TEST profile. Generic `sti04` and its kernel remain unchanged.
+The new kernel has not run in the ECU; no ECU erase/write was performed for
+this work. [Build artifacts, source, checks and next test](../../pico_kline_adapter/fastecu/README.md).
+The master ROM and root stock ROM were not modified during this adapter fix.
+
+## 2026-09-07 — Lean-out reassessment and diagnostic profile repair
+
+The user confirmed the September 7 capture used the first VE increase. The
+second 1.59-factor increase remains a trial artifact: AFR was still rising
+from 16.60 at about +25 seconds to 18.39 at +30 seconds. Neither this endpoint
+nor the earlier run proves settled VE. Earlier causal claims that after-start
+decay established an under-estimated VE model are withdrawn; the pulse-width
+fall was observed live, but no pulse, MAP, latency or final fuel factors were
+recorded in that CSV. Increased synthetic airflow is not an independent
+measurement of physical airflow.
+
+The stock Ghidra recheck found no injector scalar/latency conversion mistake
+or hidden 30-second gate in the retained load path. The normal load
+compensation is 1.0; the ECT-override timer threshold is zero. The master
+scalar gives 1.617 ms base fuel at 0.495 g/rev before other modifiers. An
+earlier written estimate of 2.43 ms used the four-cylinder donor raw scalar;
+the H6 ROM translation itself did not have that error. Function `0x26F8C`
+was renamed `injector_scheduled_pulse_width_channels_publish`: it publishes
+scheduled durations and latency, rather than calculating cylinder correction
+factors. E60 excludes latency; P21 includes it. Names/comments are reproducible
+through `master_patch/ghidra_scripts/ApplyMasterNames.java`.
+
+The current master diagnostic profile exceeded the SSM A8 request budget:
+85 parameter bytes plus two unique switch bytes = 87 addresses, versus the
+84-address maximum. Explicitly deselecting redundant E81/E105 trim channels,
+while retaining P3/P5, reduces it to 79 addresses. The master verifier now
+counts the expanded byte ranges and shared switches/views against the actual
+one-byte packet-length limit. The complete logger definition is unchanged;
+these channels remain available. Clear unrelated subscriptions from every
+logger view before loading the profile and confirm the saved CSV header.
+
+No stock or patched ROM bytes were changed by this reassessment. Continue the
+focused command-path diagnosis on the first-VE ROM before adopting the second
+increase. Account for MAP/IAT/load, scheduled pulse/latency, primary/base fuel
+factors and after-start terms; calibrate settled fueling before cold-start
+enrichment if those terms explain the decline. A remaining unexplained
+command loss requires tracing its producing code, not another blind VE ratio.
+Details: `master_patch/GHIDRA_AUDIT.md`, reassessment section.
+
+## 2026-09-07 — Source of the logged 720-mmHg atmospheric value
+
+Stock and master selector `0x737D9 = 0` choose a MAP-based stored atmospheric
+estimate at `0xFFFF8E04`. P24 reads that estimate; the control source selector
+publishes it at `0xFFFFCFBC`. The alternate pressure-sensor channel exists in
+the code but is not selected by this calibration. The estimate has gated MAP
+sampling/learning, holds its previous value otherwise, and uses unchanged
+stock 570..770-mmHg bounds with a 760 initializer/fallback.
+
+P24 rounds the estimate to whole kPa. Its returned byte 96 displays as 720
+mmHg under RomRaider's `x*7.5` conversion. This explains the recorded field's
+meaning; it does not independently validate local atmospheric pressure or
+provide the missing idle manifold pressure. The VE calculation reads native
+MAP directly, not this atmospheric estimate. New function names/comments
+were recorded in Ghidra and the master naming script; ROM bytes are unchanged.
+See the atmospheric-source follow-up in `master_patch/GHIDRA_AUDIT.md`.
+
+## 2026-09-08 — Live MAP timing and speed-density CPU review
+
+Ghidra confirms the sensor task collects ADC results before converting MAP.
+The normal module-0 scan includes MAP in each 4/8/12-channel group. The MAP
+converter's unchanged Q8 coefficient is 256/256, so it passes each new ADC
+value directly; SD reads its live absolute-pressure output, not stored baro.
+This establishes the source/filter behavior, not end-to-end sample latency.
+
+SD executes two bounded stock lookups and fixed arithmetic. Independent manual
+instruction accounting estimates roughly 530--540 instructions including the
+lookup helpers on the longest valid paths, not measured cycles or runtime.
+No runaway loop or concrete overload defect was found. Whole-master CPU
+headroom, task deadlines and worst-case sensor age remain unmeasured, so this
+does not certify timing or explain the lean-out. Function names/comments were
+updated and made reproducible; stock and master BIN hashes are unchanged.
+Details: `master_patch/GHIDRA_AUDIT.md`, live MAP/CPU section.
+
+## 2026-09-08 — SD hook contract and retained-load assumptions
+
+Independent stock-assembly/current-master checks found the hook placement,
+FR0 return, caller-live registers, balanced stack and MAP/RPM table layout
+correct. Every invocation of the retained airflow task reaches the hook;
+the original MAF intermediate work occurs before it. Both binary verifiers pass.
+
+Three limits were made explicit: the retained B428->B42C filter uses alpha
+0.06 (not unity); diagnostic/cranking/signal-timeout branches can substitute
+load or initialize airflow; and the wrapper's repeated input reads need not
+match the caller's earlier saved RPM if producers can preempt the task.
+The MAP-linear diagnostic fallback is driven by P0102/P0103/P0101 status;
+their switch bytes are all zero in master, with P0101 already zero in stock.
+No activation of these alternatives was established in the user's run.
+
+The hook's mechanical assumptions hold up, but they do not prove immediate
+fuel response, coherent sampling or a complete explanation of the lean-out.
+New Ghidra names/comments are reproducible in the master naming script.
+No stock or master ROM bytes changed; detailed evidence and limits are in the
+SD hook recheck section of `master_patch/GHIDRA_AUDIT.md`.
+
+## 2026-09-08 — Targeted SD hook fix built
+
+Implemented stable per-invocation MAP/IAT captures and reused the caller's
+saved RPM for the SD numerator and retained load divisor. All exits preserve
+caller registers/stack; there is no interrupt masking or new static RAM.
+Redirected only local literal `0x173FC` to verified constant-zero helper
+`0x27088`, bypassing the obsolete MAF-fault load substitution in that task.
+Global diagnostics, cranking/ECT and engine-timeout protections remain.
+
+The load filter is explicitly defined as `Speed Density Load Filter Response`
+under master Load Calculation, still at its stock 6% per update. No evidence
+justified silently removing it. All calibration bytes, including the existing
+unvalidated second-VE trial, are unchanged; this is not a proved lean-out cure
+or a calibration-identical comparison with the first-VE ROM on the car.
+
+Rebuilt master hash is `0600d73aeffb7e6566275644776d787b142d76f4aab55331bca52a6a2a3df9ab`,
+checksum `0xB33060BB`. The 464-byte difference from the preceding master is
+confined to wrapper/pointer/checksum. Wrapper size falls from 552 to 536 bytes;
+contiguous free flash remains 3,344 bytes. The root stock hash is unchanged.
+Both full binary verifiers and eight actual-wrapper opcode test groups pass,
+including adversarial sensor/register cases and a negative-control mutation.
+Tests model the lookup callees and do not prove ECU timing or physical fueling.
+Definitions, commissioning notes, memory map and repeatable Ghidra annotations
+are updated. Full evidence: `master_patch/GHIDRA_AUDIT.md` implementation section.
+
+## 2026-09-08 — Retained factory-sensor assumptions, scoped repair
+
+The user confirms the ECU is still on the September 7 image. That image is
+not cleared by tests of the later fan/purge/SD repairs. The earlier saved
+`1ebbc91` baseline is available, but the separately documented ECU readback
+file is absent from its recorded path; exact installed bytes were not asserted.
+
+Live stock assembly and SSM dispatch identify legacy O2 voltage channels
+ABCC/ABD0, still produced from raw AB22/AB0E. The retained auxiliary routine
+49B20 combines these disconnected-circuit values with synthetic lambda and
+can add 0.25 to each bank's final fueling terms D114/D118. Its two constants
+76384/76388 now contain zero. The ordinary feedback controller is retained.
+Factory lambda conditioner 18DAC also still applied its barometric coefficient
+to external lambda. Its four Q15 coefficients at 73E08 now equal unity.
+
+These corrections change exactly ten data bytes and four checksum bytes from
+the preceding fbc1a8 master. No executable, VE, injector, timing, AVCS,
+after-start or pump bytes change. New master SHA-256:
+`89ce82dd995b2676e7ff6e58f2f787b637603d9cc3d80d157d8b014cced116c8`,
+checksum `0x0E62FFBA`. The second-VE trial remains unvalidated.
+
+The full verifier passes. New tests execute retained 49B20 instructions across
+192 gate/input combinations, with helper results enumerated, both-bank and ABI
+checks, and restored-constant negative controls. The atmospheric check models
+the pinned Q15 descriptor and arithmetic. This is not whole-ECU validation.
+No live traffic or flashing was performed. Removing the positive adder can
+lower fueling if it previously activated; this is not a claimed lean-out cure.
+Other raw-voltage consumers, actual injector/fuel factors and cam behavior
+remain unresolved. See `master_patch/RETAINED_ROUTINE_AUDIT.md` for evidence,
+source attribution, exact ownership, and next discriminating measurements.
+
+## 2026-09-08 — Retained voltage corrections still reached fuel targets
+
+Continued stock-assembly tracing found two further dependencies on the removed
+front-O2 voltage circuits. 20564 uses snapshots BC64/BC68 to publish B900/B904:
+under its gates, voltage below 0.2978515625 V selects -0.04. This offset feeds
+both lambda target 202B8 and the independent CEFC/CF00 reciprocal correction.
+The 760F0 constant now equals zero, matching its already-zero alternate 760F4.
+
+219C6/21F0C separately turn filtered raw voltages into BD04/BD08 trims. Even
+when inactive, that loop republishes the stored 8200/8208 baseline. Replacing
+the two BD04/BD08 loads at 202CC/202D0 with FLDI0 FR4 excludes this input at
+the lambda-target consumer. Other target terms, clamps, main external-lambda
+feedback, its delay filter and ordinary learned trims remain. The legacy loop
+and its diagnostic/learning effects remain an audit boundary, not a claimed
+complete four-circuit runtime deletion.
+
+The new change is exactly ten bytes from 89ce82: six actual instruction/data
+bytes plus four checksum bytes. Current master SHA-256:
+`5a1b3e389bdb1a6099b6ed39c3f59d53dfc1808b2d16e56f05148c127c4f48b5`,
+checksum `0xCAACD6C4`. Both retained-sensor passes together change 20 bytes
+from fbc1a8. No new free flash/RAM, VE, injector, timing, after-start or pump
+calibration changes. Root stock remains unchanged and the second VE trial
+remains unvalidated.
+
+Tests execute 20564 in 486 bank/gate/voltage combinations and 202B8 in 312
+bank/trim/other-input combinations, including the original clamp instructions.
+They restore the old constant and each original load as negative controls,
+check ABI/output writes, and prove the patched target does not read voltage
+trim even if stale/NaN. The existing 192 auxiliary-adder cases also pass.
+The voltage lookup remains a descriptor-derived model; upstream scheduling
+and whole-ECU behavior are not emulated. Full master verification and all eight
+SD-wrapper execution groups pass. Exact evidence and remaining mode/diagnostic
+paths are in `master_patch/RETAINED_ROUTINE_AUDIT.md`.
+
+These warm/history-gated paths are not established causes of the September 7
+cold event. B90C reload 120 is a count, not a demonstrated 30-second timer.
+The older claim that status 7 alone excludes the BC98 family's effect was
+corrected: auxiliary CEFC/CF00 fuel terms also consume its bank offsets.
+No ECU traffic, flash, or learning reset was performed.
+
+## 2026-09-08 — Generated wideband/guard execution and fault-sentinel repair
+
+Added independent instruction execution for both wideband/inhibit hooks,
+pressure-OL wrapper, lean initializer and nested lean/overboost/rev-limiter
+chain. The stock 24B24 limiter, 24FC helper and 23FC0 aggregator execute from
+the BIN; 22454 target update and 1C5D4 solenoid-inhibit tail remain explicitly
+modeled boundaries. Normal-running/stopped paths of 24BC6/1A256 and the
+normal-running 22AC2 permission-reset path are also executed.
+
+These tests reproduced a real guard gap: ready=50 plus logger lambda=0,
+negative or negative infinity reset the lean confirmation counter as rich.
+The actual wideband invalid publisher has an intermediate ready=50/logger=0
+state because it clears logger B098 before readiness AE70. Capturing that
+instruction-produced RAM state also reproduces the defect; this is not proof
+of actual scheduler preemption or the September 7 event.
+
+The lean guard now requires positive lambda before it can clear confirmation.
+Moving its existing zero initialization keeps the wrapper at 488 bytes through
+7EDE7. Exactly 17 bytes change from 5a1b3e: 13 instruction bytes in
+7ECA4..7ECB1 and four checksum bytes. No calibration or allocation changes.
+Current master SHA-256:
+`5fff8b3776af0b56b720c360e940b193f49893b35eb64e15b3578b203b97046c`,
+checksum `0x75E22B4F`. The cumulative difference from fan/purge baseline
+fbc1a8 is 33 bytes. Stock provenance and the unvalidated second-VE trial remain
+unchanged. No ECU interaction or flash was performed.
+
+All 12 new execution groups pass and run within the full master verifier:
+2,121 ADC samples with both bank inhibits; all 256 state bytes for pressure
+and reset checks; 216 composed-cut state/switch/RPM/pressure combinations;
+all ten other aggregate cut inputs; exact delay/confirmation/release boundaries;
+fault transitions; ABI/write checks and single-instruction negative controls.
+The full verifier and all eight SD-wrapper execution groups pass.
+
+Further tracing establishes wrapper-before-aggregator order at 11B18/11B4E.
+The alternate BF6C clearer 24BC6 is B52C-bit7-gated. BE38 permission setters
+22AAE and 22AC2 are startup/state-reset paths; normal 22756/22948 flag writes
+preserve bit80. Legacy O2 readiness still reaches CF08 via 45350/453F2 and
+can gate B91A, but its normal new-setting threshold requires CEFC/CF00 >=0.09.
+With zero bank offsets, current B8FC table extrema bound that correction near
+0.014207 maximum, below the threshold. Old latched flags, computed consumers,
+and full scheduling are not thereby excluded. No further diagnostic bypass
+was justified. Repeatable stock Ghidra comments were updated in the script,
+not replayed into the live database.
+
+Exact evidence and remaining release boundaries:
+`master_patch/GUARD_EXECUTION_AUDIT.md`. The execution gap is closed for the
+listed paths; physical inputs/controller fault voltages, post-turbo feedback
+response, intended VE baseline and engine validation remain unresolved.
+
+## 2026-09-08 — Injector queue execution and cut-update scheduler lock
+
+Continuing downstream execution found a second integration defect after the
+B744 publication repair. In the prior aea793 image, a continuing added cut
+briefly published BF6C=0/B744=0 while the stock limiter ran, then reasserted
+both before returning. Return-state-only checks passed despite this interval.
+Native task 5 (6938 -> 11958 -> 263EE) has priority 4; task 6 (696C -> 11AD0,
+including cut slot 11B18) has priority 2. The native activation path permits
+the higher-priority task to dispatch when the mask/kernel restrictions allow.
+Replaying the unprotected zero word through actual scheduler instructions
+releases previously inhibited records and reaches all six enqueue callbacks.
+The exact IRQ arrival time and occurrence on the car are not established.
+
+Both added wrappers now use the existing 3AF4(0x10)/3B08 critical-section pair.
+The outer lean update remains protected through the nested stock/overboost
+call and every release/disabled/fault exit. The inner unlock preserves the
+outer mask; the standalone overboost wrapper protects itself. All 16 incoming
+mask values are restored, with no lowering of an existing higher mask.
+No static RAM or calibration changes. Each wrapper adds one four-byte saved
+mask slot. Hardware interrupts above IMASK 1 remain enabled.
+
+Current SHA-256:
+48d63cf3b7085afc672dd809cf08f4aef2b1aaae8a880f421e656467b7aaf8f0,
+checksum 0x1923EC61. Exactly 543 bytes differ from aea793: 75 in the now-88-byte
+hard-cut wrapper, 464 in the now-512-byte lean wrapper, and four checksum bytes.
+The larger difference reflects relocated instructions/literals. Free contiguous
+flash is 3,320 bytes at 7EE00..7FAF7. Architecture signature 7D91C, stock code,
+all tuning and hook addresses remain unchanged. Root stock provenance is intact.
+
+Twelve new execution groups cover 1,728 cut-transition fixtures (10,368 record
+decisions), all channel masks, phase equality/wrap, native queued cancellation,
+release windows, startup/resync/mode transitions, pulse logging and 768
+wrapper/mask/state/pressure/enable cases. Removing either required lock exposes
+the temporary release even though the final word remains FFFF. Removing three
+native gate/cache instructions also exposes output; eight damaged native lock
+contracts are refused before mutation. Native 26958 now executes instead of
+being modeled: it only marks activity at C0B0.
+
+Native 26AEC can defer a cut transition for a pulse already handed to the timer;
+263EE applies the cached word at its next record phase boundary. 26F8C logs
+per-record state, not B744 or physical injector on-time, so some nonzero widths
+can persist briefly after a global cut. This behavior is preserved and tested.
+
+Full master verification, eight SD execution groups, standalone stock-to-boost
+lock/cut execution and single-front-A/F isolation checks pass. IRQ/context-switch
+timing, dynamic timer effects, actual injector delivery and the second-VE trial
+remain unvalidated. No ECU traffic or flashing occurred. Full evidence and
+explicit mathematical/device boundaries are in
+master_patch/INJECTOR_SCHEDULER_EXECUTION_AUDIT.md.
+
+## 2026-09-08 — Native IRQ/context return execution
+
+The next pass checks whether the scheduler lock also prevents a task switch at
+IRQ exit. Native 3454 loads the interrupted task's saved SR at 3482, extracts
+IMASK at 3486, and combines it with nesting/dispatch restrictions before the
+3492 return gate. A nonzero saved mask defers task dispatch while higher-level
+IRQ bodies can still run and queue work.
+
+New test_cut_interrupt_execution.py executes the native 33F4/340C/3454 IRQ
+frames, 3A28 activation, priority queues, 34C8 and 3DC8 context saves, 3930
+dispatch, 3998/399C restores and 3F2C task completion. Eight groups with 82
+fixtures cover all unmasked/masked IRQ-return contexts through IMASK 14,
+nested IRQs, both cuts interrupted during the temporary stock clear, wrapper/
+unlock boundary arrivals and higher caller masks held until a later unlock.
+The injected task executes actual 263EE. Full IRQ register state and the
+wrappers' callee-saved registers, stack and return address are restored.
+
+Removing either wrapper lock or the IRQ saved-mask gate reproduces all six
+enqueue requests during the temporary release, despite final B744=FFFF.
+Four deliberately damaged context restores are also detected. The new model
+accounts for the native synchronous frame's unused R0 slot and RTE-based return
+without treating it as an ordinary RTS. These were test-model corrections,
+not stock-ROM defects.
+
+IRQ arrival/frame creation and handler body, the rest of the task payload,
+debug callback and existing device/math boundaries remain explicit fixtures.
+This is not cycle-accurate peripheral execution or a stack-headroom proof.
+All eight groups and the full master verifier pass. No ROM or tuning changes:
+SHA-256 remains 48d63cf3b7085afc672dd809cf08f4aef2b1aaae8a880f421e656467b7aaf8f0,
+checksum 0x1923EC61. No ECU connection or flash. Controlled bench/idle logging
+with a known calibration baseline is the next validation step; actual timing,
+fuel delivery and the second-VE trial remain unvalidated. See
+master_patch/INJECTOR_SCHEDULER_EXECUTION_AUDIT.md for the detailed evidence.
+
+## 2026-09-08 — First-idle logger coverage and capture duration
+
+The pre-run profile review found room to retain both ordinary learned bank
+trims (P4/P6) alongside immediate corrections P3/P5, and to capture the repaired
+purge/fan command routes with P38/P92. These four one-byte channels are now
+selected in Data and Dashboard. The focused profile has 35 parameters, three
+switches and 83 requested SSM bytes, producing a 251-byte A8 payload within
+the 255-byte limit. Redundant E81/E105 remain explicitly deselected. Clear old
+selections in all views before loading the updated profile.
+
+The existing wideband/raw/readiness, MAP/load/RPM/temperatures, pulse/latency,
+fuel-pump duty/battery, primary/base fuel factors, six after-start terms and
+CL/OL/AVLS/switch state remain selected. Rail pressure and controller/gauge
+status need independent observation; command channels do not prove physical
+fan motion or fuel delivery. Warm feedback, cam control and boost remain
+separate capture tasks.
+
+The requested first capture is 5–10 seconds before cranking followed by a
+target of 60 seconds from engine start at untouched idle, up to 90 seconds
+only if stable. This spans the earlier roughly 30-second lean-out window;
+stop sooner for a returning lean trend, excessive richness, rough running,
+pressure loss or invalid input. There is no requirement to wait for full
+warm-up or a fan cycle. Focused profile validation and the full master verifier
+pass. No ROM, calibration or logger-definition changes.
+
+## 2026-09-08 — Native SSM limit, host selection repair and complete idle log
+
+The 83-address profile approval in the preceding entry was wrong: the
+one-byte SSM length field is not this ROM's limiting constraint. Native
+receive routine `32CA4` saturates its index at 137, permitting at most 43
+requested byte addresses. A 44-address request cannot reach checksum/header
+validation. Executed native receive tests cover valid 43-address frames,
+oversized 44/79/81/83/84-address requests and malformed frames. The supplied
+idle and after-start profiles now each request 43 addresses, as separate
+captures. The full master verifier passes without changing the BIN.
+
+The first two September 8 CSVs contain only headings. A separate RomRaider
+subscription bug allowed queued removals to discard immediately reselected
+channels after ECU identification/profile reload, despite ticked UI entries.
+The local `QueryManagerImpl` now cancels the opposing pending action per
+subscription. Five offline regression cases reproduce three failures on the
+original JAR and all pass on the repaired JAR. Both real XML profiles survive
+the reload sequence and produce 136-byte, checksum-valid A8 requests using
+RomRaider's own builder. Only `QueryManagerImpl.class` changes in the installed
+JAR; the original is backed up and the source fix is retained.
+
+The user's subsequent restart and
+`logs/romraiderlog_idle_diagnostic_20260908_123651.csv` establish live success:
+1,786 rows over 185.698 seconds, all 22 channels populated, and 101--108 ms
+sample intervals. The serial log contains the full 43-address request and
+2,295 subsequent complete 49-byte replies with valid checksums. This verifies
+the core profile; the separate after-start profile remains offline-tested.
+See [the logger audit](master_patch/LOGGER_CONNECTION_AUDIT.md) and
+[reproducible host repair](../../master_patch/romraider_query_fix/README.md).
+
+The user identifies the 10:30 BIN and confirms that the physical gauge
+followed RomRaider during the lean throttle-blip recovery. The on-disk
+`48d63cf3b7085afc672dd809cf08f4aef2b1aaae8a880f421e656467b7aaf8f0`
+image is timestamped 10:30:49. All 16 final ECU CRCs recorded by FastECU at
+11:58:47--11:58:51 match independently calculated block CRCs from that image.
+This supports the reported flash identity without performing a new ECU read.
+
+The engine holds roughly 14.6 AFR before the blips, crosses the earlier
+30-second problem window, then dips to 726 RPM during the blips and recovers
+near 1069 RPM / 16.61 AFR. At fixed 41.32 kPa, the low-lift VE table falls
+11.5% from 1252 to 1069 RPM. The before/after pulse-to-load ratio stays
+approximately constant, making that taper a leading clue for the sustained
+lean recovery. It does not explain the full transient: net pulse per unit of
+load briefly falls further, and the intermediate composition/cut states were
+not recorded. Most zero-AFR samples during the blips coincide with ADC input
+above the accepted 4.5-V window, rather than missing logger responses.
+
+No new ROM or calibration was produced. Further rev/flash trials remain on
+hold while the low-RPM VE shape and retained transient-duration path are
+reviewed. The evidence, limits, chart and numerical reproduction are in
+[the capture review](../../logs/20260908_idle_review.md).
+
+## 2026-09-08 — Signed transient correction traced; separate VE candidate
+
+The extra pulse reduction identified above now has a strong software
+attribution. Native `1E7E8` continuously computes signed load-change correction
+B874; its old after-start-only label was incorrect. Its slow falling-load
+history moves 1% per invocation. The native 24-slot crank map schedules its
+fuel task six times per 720-degree cycle, so this decay takes more time as
+RPM falls. `1DD04` carries negative B874 into both banks and all six cylinder
+durations; the normal `1CA38` selector preserves those durations.
+
+Replaying the recorded load/RPM/ECT through the native correction family,
+base-duration producer and final composer gives about 0.840 ms at 160.950 s,
+versus the logged 0.788 ms, with modeled B874=-0.514. Median absolute pulse
+error over the blip interval is 0.059 ms. This uses interpolated inputs,
+an assumed initial crank phase and neutral unlogged corrections, not a
+reconstruction of every ECU/hardware state. B874 will be logged directly
+in the new recovery capture.
+
+The low-RPM VE taper both reduces steady modeled load and provokes this
+negative transient response. The separate
+`master_patch/candidates/D2WD610H_idle_recovery_candidate.bin` holds the
+existing 1200-RPM VE in the 500/800-RPM rows at 250/350 mmHg. The 450/550/650-mmHg
+cells bridge pressure times VE to each row's unchanged 760-mmHg value. Ten
+cells plus checksum differ from the pinned 10:30 build: 34 actual bytes. A
+pressure-slope regression caught and removed an air-mass reversal in the first
+blend; modeled air mass now rises with pressure throughout. All firmware instructions
+and stock transient calibrations are retained. Main `48d63c...` is preserved
+as the logged baseline.
+
+Candidate SHA-256:
+`6af0d130b585abf9c9b275840ddb0b237485d84f8f8adf7b15df8462adc72433`;
+Subaru checksum `0x16CB75E9`. The settled 1069-RPM point conditionally predicts
+about 14.85 AFR; lower-RPM cell increases are substantially larger and remain
+unvalidated. Startup interpolation and other load-indexed decisions also
+need validation.
+
+Eight retained transient execution groups and seven candidate groups pass.
+The full master audit passes on the baseline with the new coverage. The new
+19-channel recovery profile retains all selections through RomRaider's actual
+queue/reload path and builds a checksum-valid 43-address / 136-byte request.
+E511 is now correctly named; E123 uses raw base-equivalence ratio in this
+profile, and E503 captures committed lift mode. Current logger-definition
+SHA-256 is `feb5525e8fde3829450d50d78110d2507e874cdd70fc9767430cee1d6aad22c7`.
+
+No ECU traffic, flash or engine operation was performed. The next validation
+is controlled untouched idle before repeating blips. Full evidence, exact
+changed cells, reproduction and limits are in
+[IDLE_RECOVERY_AUDIT.md](master_patch/IDLE_RECOVERY_AUDIT.md).
+
+## 2026-09-08 — 14:13 candidate capture: settled fueling improves, recovery unresolved
+
+The new log contains 2,510 complete samples across 19 channels and 260.974 s.
+Its final recorded ECU block CRCs independently match the `6af0d130...`
+candidate. The user confirms it stayed running through the blips but nearly
+stalled, and that the final shutdown was intentional key-off.
+
+Settled fueling near 970--1000 RPM is about 14.1 AFR, versus 16.61 during
+the previous capture's settled recovery. Different coolant temperatures and
+blip amplitudes prevent an exact controlled comparison. The new run still
+dips to 558 RPM, so the candidate has not solved rev recovery.
+
+The signed correction is now directly measured: B874 reaches -0.6097 with
+B7DC=0.40 and net pulse 0.763 ms after closure. At the deepest trough it has
+already become positive; AFR reads 13.60 and timing is 15 degrees. Conditioned
+load also lags the recovering SD airflow, partly offset by positive transient
+enrichment. No blind filter, transient, VE or timing change was applied.
+
+Opening timing reaches 0 degrees. Conditional base-D lookups plus its cold
+lower bound closely match these values. Five native idle-timing test groups
+confirm the retained idle/base selection, including direct endpoint switching
+at stationary low RPM. Actual cam blend and knock corrections remain unlogged.
+
+A comma in E503's units split the unquoted CSV header; it did not remove
+measurements. The original CSV is preserved and the analysis handles that
+exact header in memory. E503/E504 units now use semicolons, E511's gauge range
+covers the observed negatives, and the logger/profile checks pass. Complete
+logger SHA-256 is now
+`df6179c00a01dcf06a0f4be33e5c03efe7192359589b69627695dc1ec2097257`.
+
+The full master audit and seven candidate groups pass; both BINs are unchanged.
+The candidate manifest now records its observed research status. Full evidence,
+numerical results, chart and next investigation limits are in
+[20260908_recovery_review.md](../../logs/20260908_recovery_review.md).
+
+## 2026-09-08 — coupled load replay and next idle-air capture
+
+The user's follow-up asks what to do next. Native `1753A..1770A` execution
+confirms the retained 6% load filter, with four new groups integrated into
+the master audit. Combined with native B874 at the traced task cadence, the
+14:13 replay has median load error 0.0037 g/rev and median net-pulse error
+0.0101 ms. Recorded-load B874 mean error is 0.0122; individual blip windows
+are 0.0175--0.0258. Rounded/asynchronous inputs and fixture boundaries remain.
+In-memory 20%/100% sensitivity increases fuel at the recorded 558-RPM trough
+but also enlarges correction extrema elsewhere; no filter/VE/timing edit
+or new BIN was made.
+
+Traced effective idle RPM target C468 through 2BD5C/2C2D8/2C510 and combined
+relative throttle request C2B8 through 2AC16/2AB06. C2B8 precedes learned-offset
+and fault selection into C2B4; E57/C3D0 alone omits the combined idle path.
+New E514--E516 record C468, C2B8 and B2BC idle/throttle flags. With P30 pedal
+and existing fuel/air/RPM channels, the new idle-air profile fits 19 channels
+and 43 addresses. Actual RomRaider reload/A8 construction passes all four
+profiles, and the full master audit passes. Both original BIN hashes and
+the capture hash remain unchanged.
+
+The capture was proposed on the already-flashed `6af0d130...` candidate and updated
+complete logger SHA-256
+`3ff3a49fb332551c411a635ddcac49d04fea5f3ee1c308d917fa0145b8d5925e`.
+No ECU traffic, flash or engine operation was performed. Exact evidence,
+limits and the subsequent withdrawal of that live test are in
+[IDLE_AIR_RECOVERY_AUDIT.md](master_patch/IDLE_AIR_RECOVERY_AUDIT.md).
+
+## 2026-09-08 — repeat test withdrawn; native pedal and idle-air trace
+
+The user correctly objects that another rev test on unchanged firmware will
+likely reproduce the near-stall. That proposal is withdrawn. No new flash,
+engine run or ECU connection is requested or performed.
+
+Native P30 dispatch `4B6FC+4*29 -> 4B7A0 -> 3184E` proves B46C is conditioned
+accelerator-pedal percent, correcting earlier notes and AVLS metadata. B538
+vehicle speed is a gate input to 188F4; the output minimum reads B470 in the
+call delay slot. Corrected XML labels, builder identifiers and Ghidra names
+preserve addresses and all numerical calibration. AVLS's 110-percent bounds
+still exceed the 100-percent pedal cap; the 3200/3000 RPM policy is unchanged.
+
+Seven native execution groups cover the P30 source and clamp, three-call
+pedal release qualification, separate 38-call air-feedback qualification,
+independence from the ignition-idle flag, inhibiting inputs and correction
+clearing, active pressure-demand response, inactive-state retention and an
+in-memory alternate-mode negative control. Under the tested running inputs,
+one pedal/air update pair per task reaches eligibility on the 40th call after
+pedal release. The physical time base and actual unlogged gate inputs are
+not established. These tests join the master verifier.
+
+Active idle feedback uses MAP pressure, with stock mode bytes selecting the
+pressure-demand and correction paths. The idle/throttle code and relevant
+calibration remain stock-identical. The old log lacks pedal, feedback flags,
+effective idle target and combined throttle request, so this does not prove
+the delay caused its dip. No verified near-stall repair or new BIN results
+from this trace. Full boundaries and remaining work are in
+[IDLE_AIR_RECOVERY_AUDIT.md](master_patch/IDLE_AIR_RECOVERY_AUDIT.md).
+
+## 2026-09-08 — primary-issue leads and native idle-air output limits
+
+The pedal correction changed identification, not ECU behavior. Rechecked
+the 14:13 recovery order: five consecutive 0.60-ms net-pulse samples extend
+down to 792 RPM; throttle and fuel increase before the 558-RPM trough.
+The trough has 13.60 AFR and 15-degree timing. This supports investigating
+release-to-idle air delivery together with the retained fuel transient, but
+does not prove a lean stall or justify removing that compensation. Timing
+has already recovered during several closing dips.
+
+Four new bounded native groups extend the idle-air suite to eleven. They
+execute the B54C RPM-delta producer and the pressure/output chain through
+2D1FC, including eligibility/update-boundary retention, the CA64-selected
+6.0 correction ceiling and base-air headroom. The native chain requests
+positive air under eligible underspeed fixtures. Actual flags, base terms,
+controller history, scheduling and engine/actuator response are not recovered
+from the old capture. No calibration fix is established.
+
+All eleven groups pass on the candidate and the integrated master verifier
+passes. Stock, 10:30 baseline, already-flashed candidate and original capture
+hashes remain unchanged. The live test remains withdrawn. Detailed sample
+order, native addresses, fixture values and limits are recorded in
+[IDLE_AIR_RECOVERY_AUDIT.md](master_patch/IDLE_AIR_RECOVERY_AUDIT.md).

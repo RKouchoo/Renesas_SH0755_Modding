@@ -12,7 +12,7 @@ their ROM/definition artifacts remain in `master_patch/` and `master_patch_v2/`.
 | [purge_delete](purge_delete/purge_delete_component.py) | Actual CPC purge output, modeled airflow and bank fuel-subtraction removal. |
 
 Offline verification and execution fixtures are in [tests](../tests/README.md).
-The developing [central reference](../docs/reference/README.md) records the
+The [central reference](../docs/reference/README.md) records the
 architecture, verified addresses, historical corrections and remaining questions.
 
 This directory move changes file organization only. It does not change the

@@ -20,8 +20,9 @@ See [findings](FINDINGS.md) before relying on an older address label.
 | [Findings and open evidence](FINDINGS.md) | Corrections, conditional defects and missing evidence. |
 | [Complete address index](ADDRESS_INDEX.md) | Inventoried address candidates, source claims, checks and review status. |
 | [Ghidra updates](GHIDRA.md) | MCP changes, readback verification and server limitations. |
-| [Document retirement register](DOCUMENT_REGISTER.md) | Replacements to review before old documents are removed. |
+| [Document disposition register](DOCUMENT_REGISTER.md) | Completed cleanup: original documents, archive locations and retained specialist references. |
 | [Audit status](AUDIT_STATUS.md) | Scope, verification and remaining limits. |
+| [Repository cleanup](REPOSITORY_CLEANUP.md) | Post-audit file moves, preserved artifacts and verification. |
 
 ## The runtime path
 
@@ -55,6 +56,13 @@ plausible physical explanation or no-xref result is not a verified fact.
 The [evidence directory](evidence/) retains the machine-readable audit.
 
 Shared components are in [patches](../../patches/README.md); offline checks are
-in [tests](../../tests/README.md). V2 retains its layout and behavior; only
-component references changed. The K-line adapter and the user's independent
-dashpot experiment were preserved.
+in [tests](../../tests/README.md), and capture/replay tools are in
+[tools/analysis](../../tools/analysis/README.md). Superseded investigations are
+in the [archive](../archive/README.md). The audit index reproduces the source
+text at its reviewed Git revision and maps links to these current locations.
+
+V1 and v2 contain different fixes; the [image comparison](IMAGES.md) records
+the missing v2 load-fallback bypass and v2's timing/tip-in corrections. A ROM
+combining those fixes has not been generated. This cleanup changed no runtime
+source, calibration or ROM; v2, the K-line adapter, the Ghidra project and the
+user's independent dashpot image were preserved.

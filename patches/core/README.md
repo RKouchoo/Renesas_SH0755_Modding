@@ -8,7 +8,7 @@
 > lean-out cure; see `master_patch/GHIDRA_AUDIT.md`.
 
 This directory contains the audited component builders used by the focused
-[`master_patch`](../../master_patch/README.md). The master is the only generated flash target kept in
+[`master_patch`](../../docs/archive/master_patch/README.md). The master is the only generated flash target kept in
 the repository. Standalone component ROMs can still be generated locally for binary testing, but
 they are ignored and must never be stacked or treated as current tuning images.
 
@@ -65,7 +65,7 @@ The wrapper cannot add advance. Retard is capped at 8 degrees, final timing has 
 floor, and the original stock angle remains the final ceiling. Invalid gate data exits to stock.
 The component occupies `0x7DB40..0x7DCEB`; the master verifier proves it does not collide with the
 boost, speed-density, wideband, fueling-safety, calibration, hook, or RAM allocations. Full policy
-and commissioning notes are in [rotational_idle_patch.md](../../docs/rotational_idle_patch.md).
+and commissioning notes are in [rotational_idle_patch.md](ROTATIONAL_IDLE.md).
 
 ## Definitions and generated artifacts
 

@@ -3,7 +3,7 @@
 The September 8 capture had all 22 idle headings but no samples. RomRaider
 polled only channels manually reselected after connection. Its pending query
 queues applied removals after additions, losing selections during a
-definition/profile reload. See [the connection audit](../LOGGER_CONNECTION_AUDIT.md).
+definition/profile reload. See [the connection audit](../../docs/archive/master_patch/LOGGER_CONNECTION_AUDIT.md).
 
 `query-selection.patch` contains the minimal `QueryManagerImpl` change and
 five JUnit regression cases. It is already applied to the local source at
@@ -80,9 +80,9 @@ The prepared `D2WD610H_idle_air_diagnostic_profile.xml` also passes this check:
 19 channels, 38 subscriptions, 43 addresses and a valid 136-byte request.
 Pass it as a further argument, using the updated complete master logger.
 Its new idle target and combined throttle request are offline-validated only;
-the live repeat-rev proposal is withdrawn. See [the ongoing offline investigation](../IDLE_AIR_RECOVERY_AUDIT.md).
+the live repeat-rev proposal is withdrawn. See [the ongoing offline investigation](../../docs/archive/master_patch/IDLE_AIR_RECOVERY_AUDIT.md).
 
 The newer `D2WD610H_map_source_diagnostic_profile.xml` passes the same offline
 check with the E518–E523 definition: 19 channels, 38 subscriptions, 43 addresses,
 136-byte request and valid checksum. Existing four profiles also still pass.
-No connection was opened. See [the MAP-source audit](../MAP_SOURCE_AUDIT.md).
+No connection was opened. See [the MAP-source audit](../../docs/archive/master_patch/MAP_SOURCE_AUDIT.md).

@@ -54,6 +54,11 @@ selects `max(B2A0 * 0.00264 - 0.0851, 0)` instead of the SD-derived load path.
 Main bypasses the getter locally. V2 does not, despite sharing main's SD
 sensor snapshots and low-pressure boundary.
 
+Main's bypass was already present in commit `ead14bb` on September 8; it was
+not added during the documentation audit. V2's timing and MAP-pressure tip-in
+corrections are separate fixes missing from main. A combined ROM retaining
+those corrections and adding the local bypass to v2 has not been generated.
+
 Eight bounded cases execute each saved image's getter and retained
 `1753A–1770A` load body. At 1500 RPM, initial load 0.5, ECT 45 C and processed
 MAP 250 mmHg:

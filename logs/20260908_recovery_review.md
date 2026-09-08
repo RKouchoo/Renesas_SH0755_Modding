@@ -158,7 +158,7 @@ the five added idle-timing execution groups. This is offline code/format
 validation, not engine calibration approval.
 
 ```sh
-python3 master_patch/analyze_20260908_recovery.py
+python3 tools/analysis/analyze_20260908_recovery.py
 python3 master_patch/test_idle_timing_execution.py
 python3 master_patch/verify_master_patch.py
 ```
@@ -167,7 +167,7 @@ Numerical results: [20260908_recovery_review.json](20260908_recovery_review.json
 Plot: [20260908_recovery_review.png](20260908_recovery_review.png).
 The plot can be regenerated with `--plot` when matplotlib is installed.
 
-The subsequent [load/idle-air follow-up](../master_patch/IDLE_AIR_RECOVERY_AUDIT.md)
+The subsequent [load/idle-air follow-up](../docs/archive/master_patch/IDLE_AIR_RECOVERY_AUDIT.md)
 replays the stock load filter and B874 together, retains this BIN, and supplies
 a new focused request-channel profile for the next capture. Its logger hash
 supersedes the header-repair-stage hash above.

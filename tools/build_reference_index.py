@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Build the evidence index and retirement register without certifying labels.
+"""Build the evidence index and document register without certifying labels.
 
 Structural observations are deliberately separate from reviewed meanings.
 The generated JSON retains all original claims, including contradictions.
@@ -77,6 +77,8 @@ def replacement(path):
         return "Keep capture provenance unchanged", "LOGGER.md"
     if path.startswith("patches/") and path.endswith("README.md"):
         return "Keep component contract", "IMAGES.md"
+    if path == "docs/rotational_idle_patch.md":
+        return "Keep component guide", "PATCH_STORY.md"
     if "WIRING" in path or "direct_attach" in path or "boost_donor" in path:
         return "Keep specialist source; physical limits apply", "MEMORY_AND_IO.md"
     if "romraider_query_fix" in path:
@@ -195,6 +197,7 @@ def main():
     counts = Counter(row["structural_class"] for row in rows)
     semantics = Counter(row["semantic_review"]["status"] for row in rows)
     output = {"stock_sha256": inventory["stock_sha256"], "baseline_commit": inventory["baseline_commit"],
+              "reviewed_commit": inventory["reviewed_commit"],
               "documents": inventory["documents"],
               "structural_counts": dict(counts), "semantic_counts": dict(semantics),
               "addresses": rows, "limits": inventory["limits"] + captures["limits"] + fixtures["limits"]}
@@ -206,8 +209,11 @@ def main():
           "Every candidate has saved-byte/region checks and available MCP/fixture evidence in "
           "[address_audit.json](evidence/address_audit.json). The original claims and line numbers are retained. "
           "[reviewed_addresses.json](evidence/reviewed_addresses.json) holds the separately reviewed meanings.", "",
+          "Source line numbers refer to the pinned Git revision shown, before the documentation cleanup. "
+          "Links open the current retained copy; the [document register](DOCUMENT_REGISTER.md) records original "
+          "and current locations. This frozen index does not imply that later changes were audited.", "",
           "Claims removed or rewritten during this audit are retained from commit `2d95301` with that revision's "
-          "line numbers. Other source locations refer to the hashed working-tree document. The JSON records "
+          f"line numbers. Other claims refer to the audited source at `{inventory['reviewed_commit'][:7]}`. The JSON records "
           "the distinction and matching main/v2 XML address declarations; those declarations do not by themselves verify runtime use.", "",
           "**Unresolved means unresolved.** A routine entry, descriptor-shaped record, literal match or fixture "
           "access does not certify every historical description. No-xref results do not establish unused RAM. "
@@ -237,24 +243,35 @@ def main():
             meaning = review.get("meaning", row["ghidra_function_entry"] or "Meaning unresolved")
             source = row["claims"][0]
             link = "../../" + source["document"]
-            revision = " at " + source["source_revision"] if source["source_revision"] != "working_tree" else ""
+            revision = " at " + source["source_revision"][:7]
             md.append(f"| `{row['address']}` | {escaped(evidence)} | {escaped(meaning)} — "
                       f"{review['status'].replace('_',' ')} | [{escaped(source['document'])}]({link}) "
                       f"line {source['line']}{revision} |")
     (REF / "ADDRESS_INDEX.md").write_text("\n".join(md) + "\n")
-    register = ["# Document retirement register", "", "[Reference home](README.md)", "",
-                "**No document is approved for deletion.** The user must review the central replacement first. "
-                "This register covers the original 44 Markdown documents outside the excluded adapter. "
-                "Detailed execution proofs, wiring, source provenance and historical captures may remain useful even "
-                "after their summary moves here. Any later removal must first check code links and retained unique evidence.", "",
-                "Paths reflect the repository cleanup. Old component roots map to `patches/core`, "
-                "`patches/speed_density`, `patches/fueling_safety` and `patches/wideband_o2`. The adapter tree is "
-                "excluded and unchanged. V2 had no tracked Markdown documents at this baseline.", "",
-                "| Existing document | Central destination | Proposed disposition | User review |", "|---|---|---|---|"]
+    archived = sum(doc["current_path"].startswith("docs/archive/") for doc in inventory["documents"])
+    register = ["# Document disposition register", "", "[Reference home](README.md) · [Archive](../archive/README.md)", "",
+                "The user requested post-audit cleanup on September 9, 2026. This register covers all "
+                f"{len(inventory['documents'])} original Markdown documents outside the excluded adapter: "
+                f"**{archived} archived, {len(inventory['documents']) - archived} retained as operational, component, "
+                "hardware or capture references.** Unique investigation evidence was preserved. The two old "
+                "project overviews are archived and have been replaced with concise current guides.", "",
+                "The central pages hold current conclusions. Archived pages describe historical stages and may "
+                "contain superseded claims or commands. Their banners link back to the audited corrections. "
+                "The adapter and v2 trees remain unchanged by this cleanup; a compatibility page preserves the "
+                "adapter's original logger-audit link.", "",
+                f"Audited source text is pinned to `{inventory['reviewed_commit'][:7]}` with superseded claims from "
+                f"`{inventory['baseline_commit']}`. [document_locations.json](document_locations.json) maps "
+                "the later moves; the inventory retains the original source hashes/line numbers separately "
+                "from the current file hashes.", "",
+                "| Original document | Present location | Central destination | Disposition |", "|---|---|---|---|"]
     for doc in inventory["documents"]:
         path = doc["current_path"]
-        disposition, destination = replacement(path)
-        register.append(f"| [{path}](../../{path}) | [{destination}]({destination}) | {disposition} | Pending; retain |")
+        disposition, destination = replacement(doc["reviewed_path"])
+        if path.startswith("docs/archive/"):
+            disposition = "Archived; historical evidence retained"
+        else:
+            disposition = disposition.replace("Keep ", "Retained: ")
+        register.append(f"| `{doc['original_path']}` | [{path}](../../{path}) | [{destination}]({destination}) | {disposition} |")
     register += ["", "The machine-readable inventory preserves each document's content hash and every extracted claim. "
                  "Historical errors are retained as history with retractions; central pages supply the corrected current "
                  "interpretation. Preservation does not mean those old claims remain valid."]

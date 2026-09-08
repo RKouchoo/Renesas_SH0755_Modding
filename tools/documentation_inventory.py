@@ -18,6 +18,8 @@ ROOT = Path(__file__).resolve().parent.parent
 REFERENCE = ROOT / "docs/reference"
 SNAPSHOT = REFERENCE / "evidence/ghidra_snapshot.json"
 BASELINE = "2d95301"
+LOCATIONS = json.loads((REFERENCE / "document_locations.json").read_text())
+REVIEWED_COMMIT = LOCATIONS["reviewed_commit"]
 MOVES = {
     "patch": "patches/core",
     "speed_density": "patches/speed_density",
@@ -28,11 +30,17 @@ EXPLICIT = re.compile(r"\b(?:0[xX][0-9a-fA-F]{4,8}|[fF]{4}[0-9a-fA-F]{4})\b")
 SHORT = re.compile(r"(?<![\w])(?:[0-9a-fA-F]{4,5}|[fF]{2}[0-9a-fA-F]{4})(?![\w])")
 
 
-def current_path(name: str) -> Path:
+def reviewed_path(name: str) -> Path:
+    """Location of a baseline document when the completed audit was committed."""
     path = Path(name)
     if path.parts[0] in MOVES:
         return Path(MOVES[path.parts[0]]).joinpath(*path.parts[1:])
     return path
+
+
+def current_path(name: str) -> Path:
+    path = reviewed_path(name)
+    return Path(LOCATIONS["moves"].get(str(path), str(path)))
 
 
 def address_tokens(line: str, function_addresses=()):
@@ -106,7 +114,11 @@ def main() -> None:
         ):
             continue
         path = current_path(old)
-        raw = (ROOT / path).read_bytes()
+        source_path = reviewed_path(old)
+        raw = subprocess.check_output(
+            ["git", "show", f"{REVIEWED_COMMIT}:{source_path}"], cwd=ROOT
+        )
+        current_raw = (ROOT / path).read_bytes()
         lines = raw.decode("utf-8").splitlines()
         baseline_raw = subprocess.check_output(
             ["git", "show", f"{BASELINE}:{old}"], cwd=ROOT
@@ -114,10 +126,12 @@ def main() -> None:
         documents.append({
             "original_path": old, "current_path": str(path),
             "sha256": hashlib.sha256(raw).hexdigest(), "lines": len(lines),
+            "reviewed_path": str(source_path), "reviewed_commit": REVIEWED_COMMIT,
+            "current_sha256": hashlib.sha256(current_raw).hexdigest(),
             "baseline_sha256": hashlib.sha256(baseline_raw).hexdigest(),
         })
         current_claims = set()
-        for revision, source_lines in (("working_tree", lines),
+        for revision, source_lines in ((REVIEWED_COMMIT, lines),
                                        (BASELINE, baseline_raw.decode("utf-8").splitlines())):
             section = ""
             for number, line in enumerate(source_lines, 1):
@@ -130,7 +144,7 @@ def main() -> None:
                     if key in seen or (revision == BASELINE and identity in current_claims):
                         continue
                     seen.add(key)
-                    if revision == "working_tree":
+                    if revision == REVIEWED_COMMIT:
                         current_claims.add(identity)
                     claims[address].append({
                         "document": str(path), "line": number, "section": section,
@@ -148,8 +162,8 @@ def main() -> None:
         if short >= 0x8000 and (short | 0xFFFF0000) in claims:
             literal16[short | 0xFFFF0000].append(f"{offset:08X}")
 
-    reviewed_path = REFERENCE / "evidence/reviewed_addresses.json"
-    reviewed = json.loads(reviewed_path.read_text()) if reviewed_path.exists() else {}
+    reviewed_ledger_path = REFERENCE / "evidence/reviewed_addresses.json"
+    reviewed = json.loads(reviewed_ledger_path.read_text()) if reviewed_ledger_path.exists() else {}
     records = []
     for address, occurrences in sorted(claims.items()):
         key = f"{address:08X}"
@@ -169,6 +183,7 @@ def main() -> None:
     output.write_text(json.dumps({
         "stock_sha256": snapshot["stock_sha256"],
         "baseline_commit": BASELINE,
+        "reviewed_commit": REVIEWED_COMMIT,
         "documents": documents,
         "addresses": records,
         "limits": [
@@ -177,7 +192,8 @@ def main() -> None:
             "Literal matches are candidates, not executable cross-references.",
             "Existing Ghidra symbols may themselves reflect a historical misidentification.",
             "Every occurrence remains linked to its source; contradictions must be resolved per image and context.",
-            "Claims changed or removed during this audit are retained from the pinned baseline with baseline line numbers; other source locations refer to the working-tree document hash.",
+            "The completed audit is frozen to its reviewed Git commit and the original baseline. Line numbers and source hashes refer to those revisions, not the reorganized working-tree pages. Current locations and file hashes are recorded separately.",
+            "Regenerating this inventory reproduces the completed review; it does not claim to audit new documentation or firmware changes.",
         ],
     }, indent=2) + "\n")
     print(f"Inventoried {len(documents)} documents, {len(records)} address candidates, "

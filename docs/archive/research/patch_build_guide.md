@@ -1,0 +1,210 @@
+# Boost-Control Patch — Build and Commissioning Guide
+
+> Archived investigation, retained for evidence and historical reproduction.
+> Use the [central reference](../../reference/README.md) and [audited corrections](../../reference/FINDINGS.md) for current conclusions.
+> Build identities, commands and recommendations below describe their original stage.
+
+> Current status: this boost component is composed by `master_patch`. The old standalone and
+> boost-plus-single-front generated ROMs are no longer committed; commands below that build a
+> standalone image produce ignored local regression artifacts only.
+
+The reverse engineering behind this patch is recorded in
+[boost_repurpose_notes.md](boost_repurpose_notes.md),
+[boost_donor_A2WC510N.md](../../hardware/boost_donor_A2WC510N.md),
+[solenoid_subsystem.md](solenoid_subsystem.md), and [ram_map.md](ram_map.md).
+
+## Objective
+
+The single boost-control patch repurposes the EVAP purge PWM output (ATU-II register
+`0xFFFFF590`) as a wastegate-solenoid driver. It implements stateless proportional +
+feed-forward boost control with throttle gating and independent soft/hard MAP limits.
+
+## Preserve the stock ROM
+
+The repository-root `2005 BLE MT.bin` is the canonical stock image used by Ghidra. Never write
+patches into it and never replace it with a generated ROM.
+
+`patches/core/patch_boost.py` enforces this workflow:
+
+1. It reads only the fixed root stock path.
+2. It verifies SHA-256 `ed0fe0341d97fb760c2cda3f07277f861495d32f6520e3ce8047b8b0f7bfd4ee`.
+3. It makes a private in-memory copy.
+4. It applies all tables, code, and hooks to that copy.
+5. It writes `patches/core/D2WD610H_boost.bin` by default.
+6. It refuses any output path that aliases the stock file.
+7. It rereads the stock file after the build and fails if its bytes changed.
+
+Build from the repository root:
+
+```sh
+python3 patches/core/patch_boost.py
+```
+
+To create a disposable comparison build, supply only a different output path:
+
+```sh
+python3 patches/core/patch_boost.py /tmp/D2WD610H_boost_test.bin
+```
+
+There is no configurable input and no patch-stacking workflow.
+
+The original ECU read is `base_roms/2005 BLE MT.srf`. Run:
+
+```sh
+python3 patches/core/extract_srf.py
+```
+
+The extractor parses the SRF chunk table and verifies that its `MEMD` payload at offset `0x1CD`
+is exactly 512 KiB and byte-identical to both stock BIN copies. It leaves an already-identical
+`base_roms/2005 BLE MT.bin` untouched and refuses to overwrite a differing file.
+
+For the current integrated image, use:
+
+```sh
+python3 master_patch/build_master_patch.py
+python3 master_patch/build_definition.py
+python3 tests/verify_master_patch.py
+python3 tests/verify_romraider_toggles.py
+```
+
+This writes the committed master ROM from a fresh root-stock copy, proves component ownership and
+non-overlap, and regenerates its focused RomRaider definition. The master uses the former MAF input
+for the external wideband, removes all four stock O2 paths, adds MAFless speed density and fueling
+safeties, and includes rotational idle default OFF.
+
+The conservative 5 psi / 98 RON calibration is applied directly by the master build through
+`master_patch/master_calibration.py`; there is no separate base-map artifact. It uses the 5 psi
+wastegate spring with zero electronic duty. Read the master calibration and commissioning
+documents before use. The pinned A4TE002B factory calibration supplies the STI-pink injector starting
+values, but injector identity/condition, MAP/IAT/wideband wiring, fuel-system capacity, and physical tests
+remain intentional flash blockers.
+
+## Controller behavior
+
+The tail-call pointer at `0x3FD8C` in `evap_purge_duty_compute` normally points to
+`evap_purge_pwm_output_write` at `0xE8C4`. The patch points it to the injected controller at
+`0x7D810`; that controller checks the runtime-enable byte, computes a duty ratio when enabled,
+and tail-calls the original output stage.
+
+```text
+base   = BaseDuty[rpm]
+target = TargetBoost[rpm]
+error  = target - MAP(0xFFFFABC4)
+ratio  = clamp(base + Kp * error, 0, MaxRatio)
+
+if throttle(0xFFFFB314) <= MinThrottle:
+    ratio = 0
+if MAP > SoftOverboost:
+    ratio = 0
+
+write ratio through output stage 0xE8C4
+```
+
+`Electronic Boost Control Enable` writes `01`/`00` at `0x7D80C` and defaults OFF. Only exact
+`01` permits actuator duty; every other value forces `FR4 = 0.0` before the stock PWM stage.
+`Overboost Fuel Cut Enable` independently writes `01`/`00` at `0x7D80D` and defaults ON. Only
+exact `01` permits the added MAP fuel cut; every other value leaves only the stock RPM limiter. It
+does not replay stock purge duty because that could energize a physically repurposed EBCS. The
+required commissioning assumption is that zero duty produces the minimum-boost/wastegate-spring
+state; prove that plumbing and polarity on a bench.
+
+The switch changes runtime control flow only. It does not restore the stock MAP conversion at
+`0x72810`, so the fitted sensor must remain compatible with the donor calibration while this ROM
+is installed. RomRaider edits the flash image; this is not a live logger toggle, so every state
+change requires a checksum-correct save and reflash.
+
+The controller reads RPM, processed throttle, MAP, and flash calibrations. It has no persistent
+RAM state. A RAM audit found no word that can be proven free from direct and computed access, so
+the integral term is intentionally omitted rather than risk corrupting another subsystem.
+
+The generated default `Kp` is `0.0005 ratio/mmHg`, copied from the near-zero slope of the donor's
+Turbo Dynamics Proportional table. For first hardware commissioning, set it to zero in RomRaider;
+that disables proportional correction while leaving throttle gating, clamps, and hard fuel cut
+installed. Restore or tune gain only after MAP and feed-forward duty are proven.
+
+The target, base duty, maximum duty, throttle gate, and two boost limits are documented in
+[boost_donor_A2WC510N.md](../../hardware/boost_donor_A2WC510N.md). The default target peaks at 5 psi relative to
+the 760 mmHg sea-level reference; the patch does not implement atmospheric target compensation.
+
+## Hard overboost protection
+
+The patch also changes the rev-limiter task pointer at `0x11D3C` from the stock limiter at
+`0x24B24` to a wrapper at `0x7D8C4`. The wrapper runs the stock limiter first, checks the runtime
+enable, then compares MAP with the hard limit at `0x7D8C0`. Above the limit it sets
+`0xFFFFBF6C` bit `0x80`; the factory
+fuel-cut aggregator at `0x23FC0` propagates that request to injector cut.
+
+This is separate from the soft limit at `0x7D808`, which commands zero solenoid duty. Neither
+limit has hysteresis, so threshold and recovery behavior must be proven on a bench.
+
+## Hardware and calibration prerequisites
+
+- Fit the MAP sensor compatible with the A2WC510N donor. The patcher automatically replaces the
+  stock `{-150.0, 250.0}` floats at `0x72810` with donor values
+  `{-414.0, 514.199951}`.
+- Validate `0xFFFFABC4` against a reference gauge across the full operating range. It stores
+  native mmHg absolute; the RomRaider patch tables display psi relative to 760 mmHg.
+- Wire the selected EBCS to the former purge-solenoid output.
+- Verify that zero commanded duty produces minimum boost with the installed plumbing.
+- Measure the actual PWM frequency and confirm it suits the solenoid; the stock period
+  calibration alone does not prove the output frequency.
+- Handle `evap_purge_flow_diagnostic` and P0458/P0459 if they trigger.
+
+## Injected layout
+
+The populated region remains inside the verified `0xFF` free run at `0x7D790..0x7FAF7`.
+
+| Block | Address |
+|---|---:|
+| Base-duty descriptor | `0x7D790` |
+| Shared RPM axis, float[8] | `0x7D7A4` |
+| Base-duty data, uint8[8] | `0x7D7C4` |
+| Target descriptor | `0x7D7CC` |
+| Target data, float[8] | `0x7D7E0` |
+| Kp | `0x7D800` |
+| Maximum duty ratio | `0x7D804` |
+| Soft overboost limit | `0x7D808` |
+| Electronic boost-control enable | `0x7D80C` (default `00`) |
+| Hard-overboost fuel-cut enable | `0x7D80D` (default `01`) |
+| Controller | `0x7D810` |
+| Minimum throttle | `0x7D8BC` |
+| Hard overboost limit | `0x7D8C0` |
+| Fuel-cut wrapper | `0x7D8C4` |
+
+The donor MAP scaling is an in-place calibration change at `0x72810`, outside the injected
+free-space block.
+
+These addresses must remain synchronized with
+[D2WD610H_AVLS_boost_patch.xml](../../../defs/D2WD610H_AVLS_boost_patch.xml).
+
+## Toolchain
+
+- `patches/core/patch_boost.py`: guarded patch builder.
+- `patches/core/sh2_asm.py`: minimal two-pass SH-2E assembler.
+- `patches/core/sh2_disasm.py`: injected-code disassembler.
+- `tests/verify_regions.py`: flash/RAM region audit.
+- `tests/verify_boost_donor.py`: donor-table and generated-default verifier.
+- `tests/verify_romraider_toggles.py`: XML/switch-address/default-byte verifier for standalone and
+  combined patch definitions.
+- RomRaider/EcuFlash: calibration editing and a verified `subarudbw` checksum save before
+  flashing.
+
+## Commissioning checklist
+
+- [ ] Root stock-ROM hash still matches the known project stock image.
+- [ ] Generated ROM is exactly 512 KiB and differs only at the documented MAP scaling, injected
+      tables/code, and two hooks.
+- [ ] A2WC510N-compatible MAP sensor is fitted and the patched `0x72810` conversion is validated
+      against a reference.
+- [ ] Output pin, polarity, solenoid plumbing, and PWM frequency are bench verified.
+- [ ] RomRaider `OFF` is bench-proven to produce zero measured output duty and the mechanical
+      minimum-boost state; `ON` restores commanded duty.
+- [ ] With `Kp = 0` and conservative base duty, throttle gating is logged and confirmed.
+- [ ] Soft duty shutdown is proven with simulated MAP.
+- [ ] Hard injector cut and recovery are proven with simulated MAP.
+- [ ] Purge diagnostics are resolved.
+- [ ] Final ROM checksum is valid.
+- [ ] Initial running uses wastegate spring pressure as the mechanical fallback.
+
+The current implementation is binary-verified but not vehicle-validated. Do not apply boost
+until every safety-critical item above has been demonstrated on the actual hardware.

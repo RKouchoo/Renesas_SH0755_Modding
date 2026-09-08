@@ -94,11 +94,11 @@ It adds no RAM or free-flash allocation.
 
 The earlier lean fault-sentinel stage changed instructions within
 `0x7ECA4..0x7ECB1`, retaining its then-488-byte wrapper. The subsequent
-[injector-cut repair](INJECTOR_CUT_EXECUTION_AUDIT.md) grows that wrapper to
+[injector-cut repair](../docs/archive/master_patch/INJECTOR_CUT_EXECUTION_AUDIT.md) grows that wrapper to
 500 bytes and the hard-cut wrapper to 72. It intentionally shares existing
 stock `B744` with the native inhibit builder, publishing `FFFF` on an added
 global cut. That publication repair adds no RAM, stack frame or calibration address.
-The subsequent [scheduler repair](INJECTOR_SCHEDULER_EXECUTION_AUDIT.md) grows
+The subsequent [scheduler repair](../docs/archive/master_patch/INJECTOR_SCHEDULER_EXECUTION_AUDIT.md) grows
 the wrappers to 512 and 88 bytes. It adds one four-byte saved-mask slot to each
 wrapper, eight bytes for the composed path, and no static RAM. The native
 `3AF4/3B08` lock/unlock code and the signature at `7D91C` remain unchanged.

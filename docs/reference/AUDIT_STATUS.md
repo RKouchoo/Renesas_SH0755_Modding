@@ -10,8 +10,8 @@ server, saved images, source builders and offline instruction fixtures.
 
 Shared components are grouped under `patches/`. Thirty-seven existing Python
 test/verifier/helper files moved into `tests/`, alongside one new import-path
-helper. `master_patch/` retains its builder, calibration, normal artifacts,
-profiles and historical analyses. Its former verifier path remains a small
+helper. `master_patch/` retains its builder, calibration, normal artifacts and
+profiles. Its former verifier path remains a small
 compatibility entry point for existing workflows.
 
 V2 has only five Python files with component/path reference changes. Its
@@ -21,11 +21,20 @@ independent dashpot BIN are unchanged. Comparing the 2,884-file protection
 manifest found no unexpected differences; permitted differences were those
 five v2 source files and Ghidra project database files.
 
-No old document was deleted. The
-[retirement register](DOCUMENT_REGISTER.md) covers all 44 original documents
-outside the excluded adapter, each retained pending user review. Old hardware
-notes now point to the corrected reference. Changed or removed claims are
-also retained from the pinned Git baseline in the evidence inventory.
+The completed audit was committed as `46bfc52`. After the user requested
+cleanup, 27 historical documents moved into `docs/archive/`, two specialist
+sources into `docs/hardware/`, and the rotational-idle guide alongside its
+component. Seventeen analysis/helper scripts moved from `master_patch/` into
+`tools/analysis/`. Concise project/build guides replace the two archived
+overviews. The [disposition register](DOCUMENT_REGISTER.md) covers all 44
+original documents; unique investigation evidence was retained.
+
+The source inventory now reads the exact audited document text from `46bfc52`,
+plus superseded claims from `2d95301`, while separately recording current
+locations and hashes. The same 1,187 candidates and 3,000 claims are retained.
+This makes the completed audit reproducible after moves and later edits.
+See [cleanup verification](REPOSITORY_CLEANUP.md) for the subsequent checks;
+the audit results below retain their original scope and counts.
 
 ## Address review coverage
 

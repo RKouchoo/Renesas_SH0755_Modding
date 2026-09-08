@@ -1,0 +1,270 @@
+{
+  "date": "2026-09-09",
+  "baseline_commit": "46bfc52e9a25e59ec1c520a48a94544521349e4f",
+  "scope": "Repository organization and reproducible documentation provenance; no firmware or calibration change.",
+  "archived_documents": 27,
+  "relocated_specialist_guides": 3,
+  "moved_analysis_modules": 17,
+  "main_verifier": {
+    "exit_code": 0,
+    "output": [
+      "  SH-2E FPU: 5 execution/value test groups passed",
+      "  MAP lower boundary: 6 execution/integrity groups passed",
+      "  Primary fueling: 8 execution test groups passed",
+      "  Transient fuel: 8 execution test groups passed",
+      "  Idle timing: 5 execution test groups passed",
+      "  Opening timing: 6 execution test groups passed",
+      "  Throttle tip-in: 7 execution test groups passed",
+      "  Load conditioning: 4 execution test groups passed",
+      "  Idle air: 11 execution test groups passed",
+      "  Idle handover: 5 execution test groups passed",
+      "  Idle request: 6 execution test groups passed",
+      "  Idle overrides: 7 execution test groups passed",
+      "  Throttle link: 7 execution test groups passed",
+      "  DBW tables: 5 execution test groups passed",
+      "  Pedal dependencies: 5 execution/integrity groups passed",
+      "  Injector cut: 6 execution test groups passed",
+      "  Injector scheduler: 12 execution test groups passed",
+      "  Cut IRQ/context: 8 execution test groups passed",
+      "  SSM receive: 3 execution test groups passed",
+      "  D2WD610H_idle_diagnostic_profile.xml: 43/43 SSM addresses, 136-byte request (131-byte payload)",
+      "  D2WD610H_afterstart_diagnostic_profile.xml: 43/43 SSM addresses, 136-byte request (131-byte payload)",
+      "  D2WD610H_idle_recovery_profile.xml: 43/43 SSM addresses, 136-byte request (131-byte payload)",
+      "  D2WD610H_idle_air_diagnostic_profile.xml: 43/43 SSM addresses, 136-byte request (131-byte payload)",
+      "  D2WD610H_map_source_diagnostic_profile.xml: 43/43 SSM addresses, 136-byte request (131-byte payload)",
+      "master patch audit PASS",
+      "  stock SHA-256     : ed0fe0341d97fb760c2cda3f07277f861495d32f6520e3ce8047b8b0f7bfd4ee",
+      "  output SHA-256    : 154760a5f2fdadbf6d9221480595f58dc77c6a4eccc492f50899c815aca79e4d",
+      "  checksum          : 0x16F63B0D (valid=True)",
+      "  air model         : always-on MAFless committed-state dual VE speed density",
+      "  idle VE           : retained 500/800-RPM plateau and increasing mass transition",
+      "  MAP lower bound   : 10.48113 kPa, aligned with existing ADC acceptance",
+      "  DBW/dashpot       : stock calibration; independent user experiment excluded",
+      "  MAP               : Omni MAP-SUP-3BR 30..300 kPa / 0.60..4.75 V",
+      "  IAT               : provisional HT-010206 curve; assumed 1.00-kohm ECU pull-up",
+      "  wideband/O2       : P0/P1; unity lambda baro; legacy voltage adders/target terms neutralized",
+      "  boost             : electronic actuator retired; independent hard cut ON",
+      "  fan / purge       : stock fan command retained; CPC duty/flow/bank subtraction zero",
+      "  load axes         : all eight active axes extend to 4.0 g/rev",
+      "  primary OL        : exact 1000..6800 RPM axes; conservative resample verified",
+      "  injectors         : 16611AA510; pinned A4TE002B JDM-STI flow/deadtime translation",
+      "  timing/AVLS       : dual VE; fixed 3200/3000 lift switch; cam timing endpoints identified",
+      "  rotational idle   : bounded retard-only component installed, default OFF",
+      "  memory layout     : no component, hook, calibration, or RAM collisions",
+      "  definition        : workflow-grouped master XML; dormant timing pair and obsolete defs omitted",
+      "  fueling safety    : pressure-forced OL ON; 13.0-AFR delayed/latched cut ON",
+      "  guard execution   : cuts, native IRQ/context restore, locks and injector queues PASS",
+      "  logger            : complete D2WD610H-only SSM definition and fragment validated",
+      "  capture profiles  : all five profiles, including MAP-source, within native 43-address limit",
+      "  provenance        : root stock, base copy, and SRF payload remain byte-identical"
+    ]
+  },
+  "v2_verifier": {
+    "exit_code": 0,
+    "scope": "Three existing checksum/layout/definition checks; not equivalent to main execution coverage.",
+    "output": [
+      "Verifying D2WD610H master patch v2...",
+      "  [1/3] Subaru Checksum       : 0xECD02DF7 (VALID)",
+      "  [2/3] Memory Layout & Safety: NO COLLISIONS (6 components, 6253 changed bytes)",
+      "  [3/3] RomRaider XML Def     : VALID (D2WD610H target, verified table addresses)",
+      "",
+      "ALL 3 ESSENTIAL CHECKS PASSED.",
+      "ROM SHA-256: 2fe5f9cc7f960bff1efd784bb29e6c984ccbc025f1d8029c920fd52a3ce25ac9",
+      "Ready for vehicle flashing: D2WD610H_master_patch_v2.bin"
+    ]
+  },
+  "prototype_verifier": {
+    "exit_code": 0,
+    "tests": 16,
+    "output": [
+      "test_cut_composition_preserves_other_cut_reasons_and_all_entry_masks (__main__.RepairTests.test_cut_composition_preserves_other_cut_reasons_and_all_entry_masks) ... ok",
+      "test_electrical_and_numeric_faults_publish_both_cut_interfaces (__main__.RepairTests.test_electrical_and_numeric_faults_publish_both_cut_interfaces) ... ok",
+      "test_every_accepted_adc_code_below_first_ve_knot_is_continuous (__main__.RepairTests.test_every_accepted_adc_code_below_first_ve_knot_is_continuous) ... ok",
+      "test_fault_inhibits_all_six_native_scheduler_channels (__main__.RepairTests.test_fault_inhibits_all_six_native_scheduler_channels) ... ok",
+      "test_first_fault_latches_count_saturates_and_valid_input_stays_inhibited (__main__.RepairTests.test_first_fault_latches_count_saturates_and_valid_input_stays_inhibited) ... ok",
+      "test_initializer_is_reached_from_initial_activation_task_17 (__main__.RepairTests.test_initializer_is_reached_from_initial_activation_task_17) ... ok",
+      "test_invalid_calibration_and_lookup_results_are_distinguished (__main__.RepairTests.test_invalid_calibration_and_lookup_results_are_distinguished) ... ok",
+      "test_irq_between_fault_flag_and_word_stores_sees_completed_publication (__main__.RepairTests.test_irq_between_fault_flag_and_word_stores_sees_completed_publication) ... ok",
+      "test_irq_cannot_dispatch_through_the_stock_limiters_temporary_clear (__main__.RepairTests.test_irq_cannot_dispatch_through_the_stock_limiters_temporary_clear) ... ok",
+      "test_lean_cut_retains_its_release_rule_but_cannot_release_sd_fault (__main__.RepairTests.test_lean_cut_retains_its_release_rule_but_cannot_release_sd_fault) ... ok",
+      "test_normal_domain_is_bit_identical_with_native_lookups (__main__.RepairTests.test_normal_domain_is_bit_identical_with_native_lookups) ... ok",
+      "test_old_100_mmhg_discontinuity_is_removed (__main__.RepairTests.test_old_100_mmhg_discontinuity_is_removed) ... ok",
+      "test_removing_outer_lock_exposes_temporary_release_negative_control (__main__.RepairTests.test_removing_outer_lock_exposes_temporary_release_negative_control) ... ok",
+      "test_snapshot_lock_defers_irq_activated_task_until_all_inputs_are_read (__main__.RepairTests.test_snapshot_lock_defers_irq_activated_task_until_all_inputs_are_read) ... ok",
+      "test_stopped_rpm_does_not_create_a_fault_or_release_a_latch (__main__.RepairTests.test_stopped_rpm_does_not_create_a_fault_or_release_a_latch) ... ok",
+      "test_user_image_and_frozen_calibrations_are_unchanged (__main__.RepairTests.test_user_image_and_frozen_calibrations_are_unchanged) ... ok",
+      "",
+      "----------------------------------------------------------------------",
+      "Ran 16 tests in 2.455s",
+      "",
+      "OK"
+    ]
+  },
+  "image_contracts": {
+    "status": "PASS",
+    "saved_images": 3,
+    "load_fallback_cases": 8
+  },
+  "analysis_imports": [
+    {
+      "module": "_analysis_paths",
+      "returncode": 0
+    },
+    {
+      "module": "analyze_20260908_dashpot",
+      "returncode": 0
+    },
+    {
+      "module": "analyze_20260908_idle",
+      "returncode": 0
+    },
+    {
+      "module": "analyze_20260908_recovery",
+      "returncode": 0
+    },
+    {
+      "module": "analyze_sd_fallback",
+      "returncode": 0
+    },
+    {
+      "module": "analyze_transient_components",
+      "returncode": 0
+    },
+    {
+      "module": "audit_fpu_usage",
+      "returncode": 0
+    },
+    {
+      "module": "audit_map_intercept",
+      "returncode": 0
+    },
+    {
+      "module": "audit_map_sources",
+      "returncode": 0
+    },
+    {
+      "module": "audit_sd_fault_repair_prototype",
+      "returncode": 0
+    },
+    {
+      "module": "compare_transient_remedies",
+      "returncode": 0
+    },
+    {
+      "module": "historical_roms",
+      "returncode": 0
+    },
+    {
+      "module": "idle_recovery_candidate",
+      "returncode": 0
+    },
+    {
+      "module": "prototype_sd_fault_repair",
+      "returncode": 0
+    },
+    {
+      "module": "prototype_sd_fpu_reuse",
+      "returncode": 0
+    },
+    {
+      "module": "replay_20260908_load_recovery",
+      "returncode": 0
+    },
+    {
+      "module": "replay_20260908_transient",
+      "returncode": 0
+    }
+  ],
+  "analysis_cli_help": [
+    {
+      "script": "analyze_20260908_dashpot.py",
+      "returncode": 0
+    },
+    {
+      "script": "analyze_20260908_idle.py",
+      "returncode": 0
+    },
+    {
+      "script": "analyze_20260908_recovery.py",
+      "returncode": 0
+    },
+    {
+      "script": "analyze_sd_fallback.py",
+      "returncode": 0
+    },
+    {
+      "script": "analyze_transient_components.py",
+      "returncode": 0
+    },
+    {
+      "script": "audit_fpu_usage.py",
+      "returncode": 0
+    },
+    {
+      "script": "audit_map_intercept.py",
+      "returncode": 0
+    },
+    {
+      "script": "audit_map_sources.py",
+      "returncode": 0
+    },
+    {
+      "script": "audit_sd_fault_repair_prototype.py",
+      "returncode": 0
+    },
+    {
+      "script": "compare_transient_remedies.py",
+      "returncode": 0
+    },
+    {
+      "script": "prototype_sd_fpu_reuse.py",
+      "returncode": 0
+    },
+    {
+      "script": "replay_20260908_load_recovery.py",
+      "returncode": 0
+    }
+  ],
+  "preservation": {
+    "protected_tracked_files": 196,
+    "unexpected_changes": [],
+    "unmapped_missing_files": [],
+    "original_documents": 44,
+    "address_candidates": 1187,
+    "source_claims": 3000,
+    "source_claims_and_meanings_preserved": true
+  },
+  "documentation_regeneration": {
+    "identical_on_regeneration": true,
+    "outputs": {
+      "docs/reference/evidence/documentation_inventory.json": "eb3100f44bee29450a4ee51e01139cf2bc49faf9f5a3b6a641220e087cb3e86b",
+      "docs/reference/evidence/address_audit.json": "d73bbf410e00e824848910c45f0309682a1f73c70197e56915af7675a8c058e9",
+      "docs/reference/ADDRESS_INDEX.md": "ed1f0f5b583892b6b3467dff11db1f9a48bff34e5c04b6e979b31cf128ef4a0d",
+      "docs/reference/DOCUMENT_REGISTER.md": "2dba08ad26a29216c33c6a2f7dbb9203a79c2d89c2662a51a3062575b1d58f35"
+    }
+  },
+  "documentation_links": {
+    "markdown_files": 67,
+    "local_links": 1814,
+    "broken_links": [],
+    "scope": "Project Markdown outside the excluded adapter, ignored tmp and local_only folders."
+  },
+  "adapter_logger_link_preserved": true,
+  "python_syntax": {
+    "parsed_files": 86,
+    "status": "PASS"
+  },
+  "strict_json": {
+    "files": 14,
+    "status": "PASS"
+  },
+  "complete_diff_whitespace_check": "PASS, including new/moved files using a temporary index; actual staging area unchanged.",
+  "rename_detection": {
+    "renames": 43,
+    "entries": 85
+  },
+  "saved_rom_sha256": {
+    "master_patch/D2WD610H_master_patch.bin": "154760a5f2fdadbf6d9221480595f58dc77c6a4eccc492f50899c815aca79e4d",
+    "master_patch_v2/D2WD610H_master_patch_v2.bin": "2fe5f9cc7f960bff1efd784bb29e6c984ccbc025f1d8029c920fd52a3ce25ac9"
+  }
+}

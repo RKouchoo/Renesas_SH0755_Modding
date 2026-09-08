@@ -4,7 +4,7 @@ The logger repair is confirmed for the complete idle profile. The engine
 calibration still needs work: throttle blips are followed by near-stall RPM
 and a sustained lean indication at the lower recovered idle speed. The initial
 review below made no ROM change. The subsequent
-[native transient trace and candidate](../master_patch/IDLE_RECOVERY_AUDIT.md)
+[native transient trace and candidate](../docs/archive/master_patch/IDLE_RECOVERY_AUDIT.md)
 now explain most of the extra pulse reduction and provide a separate,
 offline-tested idle VE candidate; engine validation remains pending.
 
@@ -35,7 +35,7 @@ identity; it is not a fresh ECU read performed during this analysis.
 
 The earlier 120702 and 121839 files contain only headings. They cannot be
 used as engine traces. The native 43-address limit and RomRaider subscription
-fix are documented in [the logger audit](../master_patch/LOGGER_CONNECTION_AUDIT.md).
+fix are documented in [the logger audit](../docs/archive/master_patch/LOGGER_CONNECTION_AUDIT.md).
 
 ## What the engine trace shows
 
@@ -105,7 +105,7 @@ during a blip, so exact row-by-row equality is not expected.
 ## Transient pulse reduction: initial finding, since traced to B874
 
 The low-RPM VE slope is not a complete explanation of the transient itself.
-The later [B874 replay](../master_patch/IDLE_RECOVERY_AUDIT.md) addresses the
+The later [B874 replay](../docs/archive/master_patch/IDLE_RECOVERY_AUDIT.md) addresses the
 unattributed portion identified in this initial review.
 For example, at 160.950 s the log has 774 RPM, approximately 5.77 g/s and a
 0.7883-ms net pulse. Normalizing by airflow/RPM gives about 1.76 ms per g/rev,
@@ -159,7 +159,7 @@ The separate after-start profile is not automatically the next requested run.
 Reproduce the numerical summary without external packages:
 
 ```sh
-python3 master_patch/analyze_20260908_idle.py
+python3 tools/analysis/analyze_20260908_idle.py
 ```
 
 For the chart, use a Python environment with matplotlib and add
