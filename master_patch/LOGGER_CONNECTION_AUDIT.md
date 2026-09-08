@@ -187,3 +187,39 @@ The later [recovery investigation](IDLE_RECOVERY_AUDIT.md) adds a separate
 19-channel profile, also 43 addresses. Its real RomRaider queue/reload/request
 check passes offline. E511 now correctly names the signed transient load
 correction; the original live-verified core profile still selects 22 channels.
+
+## September 8, 14:13 — recovery capture and CSV units-label repair
+
+The new recovery capture contains all 19 channels and 2,510 rows. Its apparent
+header/row width mismatch is one unquoted comma inside the E503 units label,
+not missing response data. RomRaider's header writer concatenates units without
+CSV escaping. E503 and E504 units now use semicolons in the definition and all
+three profiles; E511's gauge minimum now covers the observed negative values.
+Addresses, conversion expressions and selections are unchanged. A new profile
+check fails the old header and passes the repaired one. The actual RomRaider
+queue/A8 builder still retains every selection within 43 addresses.
+
+Complete logger SHA-256 at this header-repair stage:
+`df6179c00a01dcf06a0f4be33e5c03efe7192359589b69627695dc1ec2097257`.
+The source CSV is preserved, with the exact label normalized only in the
+[read-only analysis](../logs/20260908_recovery_review.md). The engine's near-stall
+recovery remains unresolved; this formatting repair changes no fueling.
+
+## September 8 — idle-air request capture
+
+E514/C468 records the effective idle RPM target, E515/C2B8 the combined
+relative throttle request before learned offset/fault overrides, and
+E516/B2BC the raw throttle/idle flags. P30 adds accelerator pedal position.
+The new `D2WD610H_idle_air_diagnostic_profile.xml` selects 19 channels and
+exactly 43 addresses. All four profiles clear each other's selections and
+pass the actual RomRaider queue/reload/A8 builder, preserving 38 subscriptions
+for this profile with a checksum-valid 136-byte request. The complete logger
+regenerates identically and the full master audit passes. No JAR change or
+ECU traffic was needed.
+
+Current complete logger SHA-256:
+`3ff3a49fb332551c411a635ddcac49d04fea5f3ee1c308d917fa0145b8d5925e`.
+The profile is prepared for later use; the repeat rev test is withdrawn.
+Leave the car off while the offline investigation continues. E516/B2BC alone
+does not prove idle-air feedback is enabled. See
+[the native load replay and request-channel evidence](IDLE_AIR_RECOVERY_AUDIT.md).

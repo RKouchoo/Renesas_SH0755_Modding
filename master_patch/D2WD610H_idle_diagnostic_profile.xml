@@ -16,6 +16,7 @@
         <parameter id="P17" livedata="selected" dash="selected" units="V" />
         <parameter id="P21" livedata="selected" dash="selected" units="ms" />
         <parameter id="P24" livedata="selected" dash="selected" units="mmHg" />
+        <parameter id="P30" units="%" />
         <parameter id="P38" units="%" />
         <parameter id="P47" livedata="selected" dash="selected" units="%" />
         <parameter id="P92" units="%" />
@@ -31,8 +32,8 @@
         <parameter id="E500" livedata="selected" dash="selected" units="estimated AFR (14.64 stoich)" />
         <parameter id="E501" livedata="selected" dash="selected" units="ADC counts" />
         <parameter id="E502" livedata="selected" dash="selected" units="ready metric" />
-        <parameter id="E503" units="AVLS mode (1 low, 3 high)" />
-        <parameter id="E504" units="state (0 idle, 1 delay, 2 monitor, 3 cut)" />
+        <parameter id="E503" units="AVLS mode (1 low; 3 high)" />
+        <parameter id="E504" units="state (0 idle; 1 delay; 2 monitor; 3 cut)" />
         <parameter id="E505" units="task calls" />
         <parameter id="E506" units="raw flags" />
         <parameter id="E507" units="task calls" />
@@ -42,6 +43,9 @@
         <parameter id="E511" units="raw additive factor" />
         <parameter id="E512" units="raw additive factor" />
         <parameter id="E513" units="raw additive factor" />
+        <parameter id="E514" units="rpm" />
+        <parameter id="E515" units="%" />
+        <parameter id="E516" units="raw flags" />
     </parameters>
     <switches>
         <switch id="S4" />

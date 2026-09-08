@@ -63,22 +63,22 @@ reproducible without importing a modified ROM into the stock analysis project.
 | `0x3EB68` | `knock_correction_advance_max_select` | KCA A normal-cam versus B AVLS-high-cam selection. |
 | `0x3FFDA` | `avls_threshold_curve_selector_state_update` | Publishes internal AVLS curve-selector state 1/2/3. |
 | `0x400EE` | `avls_curve_selector_oil_temp_band_latches_update` | Builds engine-oil-temperature selector latches at 13/15 and 113/115 degrees C. |
-| `0x40168` | `avls_cam_mode_state_machine` | Compares conditioned vehicle speed with the oil-temperature-selected RPM-versus-speed boundary. |
+| `0x40168` | `avls_cam_mode_state_machine` | Compares conditioned pedal percent with the oil-temperature-selected RPM-versus-pedal boundary. |
 | `0x3FDBC` | `avls_control_sequence_update` | Runs AVLS request selection/state machine, committed-mode copy, then OSV actuation. |
 | `0x405B2` | `avls_mode_commit_copy` | Copies requested mode `0xFFFFCD87` to committed mode `0xFFFFCD86`. |
 | `0x405CC` | `avls_osv_actuation_gate` | Retained stock status/timing gate for lift-solenoid actuation. |
 | `0xF474` | `engine_oil_temperature_sensor_process` | Converts ADC AB12 through descriptor 0x60950 to B124 in degrees C. |
 | `0x3253C` | `engine_oil_temperature_logger_convert` | Logger conversion entry for B124. |
 | `0x47000` | `engine_oil_temperature_fallback_select` | Publishes valid B124 or the stock 70 C fallback to CF94. |
-| `0x17984` | `airflow_load_and_vehicle_speed_processing_sequence_update` | Orchestrates the distinct load and vehicle-speed chains. |
+| `0x17984` | `airflow_load_and_pedal_processing_sequence_update` | Orchestrates the load and accelerator-pedal chains. |
 | `0x179EE` | `airflow_load_filter_state_initialize` | Initializes airflow/load filter state. |
 | `0x17A24` | `airflow_load_filter_state_requires_initialization` | Checks that filter state before the processing sequence. |
-| `0x18438` | `vehicle_speed_conditioning_status_flags_update` | Status input for the speed conditioner. |
-| `0x184CC` | `vehicle_speed_conditioning_coefficient_set_a_update` | Produces B4A4/B4A8/B4AC coefficients. |
-| `0x1873C` | `vehicle_speed_conditioning_coefficient_set_b_update` | Produces B4B0/B4B4/B4B8 coefficients. |
-| `0x188F4` | `vehicle_speed_conditioned_source_update` | Conditions B538 km/h into B4C0 and caps it at 100.0. |
-| `0x18A68` | `vehicle_speed_conditioned_filter_update` | Filters B4C0 into B4C8 without changing units. |
-| `0x18AEA` | `vehicle_speed_conditioned_snapshot_copy` | Copies B4C8 to AVLS compare signal B46C. |
+| `0x18438` | `pedal_conditioning_status_flags_update` | Status input for the pedal conditioner. |
+| `0x184CC` | `pedal_conditioning_coefficient_set_a_update` | Produces B4A4/B4A8/B4AC coefficients. |
+| `0x1873C` | `pedal_conditioning_coefficient_set_b_update` | Produces B4B0/B4B4/B4B8 coefficients. |
+| `0x188F4` | `pedal_conditioned_source_update` | Conditions B470 pedal percent into B4C0 with a 100-percent cap; B538 is a gate input. |
+| `0x18A68` | `pedal_conditioned_filter_update` | Filters B4C0 into B4C8 without changing units. |
+| `0x18AEA` | `pedal_conditioned_snapshot_copy` | Copies B4C8 to AVLS compare signal B46C. |
 | `0x7A14` | `map_sensor_voltage_to_pressure_process` | `MAP = voltage*multiplier + offset`; writes native absolute mmHg to `0xFFFFABC4`. |
 | `0x7A56` | `map_sensor_raw_adc_range_classify` | Raw `0xFFFFABC8` compared with thresholds at `0x7B284/0x7B286`. |
 | `0x78AC` | `analog_sensor_abac_range_classify` | Neighboring analog range path separated from MAP. |
@@ -158,10 +158,11 @@ same final-column target above the stock 2.00 g/rev limit.
 
 AVLS makes the lift decision before AVCS A/B selection. In the master baseline,
 the high-lift engage threshold is 3200 RPM, the release threshold is 3000 RPM,
-and the actuation minimum is 3000 RPM. Both RPM-indexed speed boundaries and
-both fixed/fallback thresholds are calibrated to 110 km/h. The conditioned
-speed source is capped at 100 km/h by `vehicle_speed_conditioned_source_update`,
-so the old vehicle-speed request route is unreachable. The requested mode is
+and the actuation minimum is 3000 RPM. Both RPM-indexed pedal boundaries and
+both fixed/fallback thresholds are calibrated to 110 percent. The conditioned
+pedal source is capped at 100 percent by `pedal_conditioned_source_update`,
+so the old pedal-based request route is unreachable. The earlier vehicle-speed
+identification was incorrect; native P30 proof is in [the idle-air audit](IDLE_AIR_RECOVERY_AUDIT.md). The requested mode is
 written at `0xFFFFCD87`; `avls_control_sequence_update` then calls
 `avls_mode_commit_copy` before the retained OSV actuation gate. The dual-VE
 wrapper selects from committed mode `0xFFFFCD86`, not the earlier request.
@@ -1246,9 +1247,11 @@ Further stock Ghidra tracing establishes:
 - `ign_idle_timing_blend_factor_update @ 0x27DE8` writes `C134` using RPM,
   vehicle speed and the debounced throttle-idle flag `B2BC bit 1`, read by
   `runtime_b2bc_bit1_is_set @ 0x15192`. There is no load input to this blend
-  calculation. Stationary recognised idle ramps toward `C134 = 0` (idle
-  target); leaving the condition ramps toward `1` (base timing), using the
-  stock 0.008-per-call calibration. `throttle_position_sensor_process @
+  calculation. Stationary recognised idle selects `C134 = 0` (idle target)
+  and leaving the condition selects `1` (base timing) when starting at an
+  endpoint; intermediate blends use the stock 0.008-per-call step. The
+  endpoint behavior was confirmed in the later native idle-timing tests.
+  `throttle_position_sensor_process @
   0x14DCC` produces the idle flag, using the threshold at `0x737DC`.
 - `ign_idle_timing_target_update @ 0x27F3E` publishes `C138`. The stationary
   idle maps at `0x7828F/0x78298` are flat **15.15625 degrees** over 400..2000
@@ -1287,3 +1290,20 @@ establish the scoped software repairs, not fan polarity, physical plumbing,
 actual cam/ignition behavior or a cure for the cold lean-out. The ordinary
 72 C purge gate in stock remains evidence against attributing the cold event
 solely to purge subtraction. No ECU was flashed or engine run by this work.
+
+## September 8, 14:13 capture — idle/base timing endpoint behavior
+
+The [candidate capture review](../logs/20260908_recovery_review.md) records
+opening timing dips to 0 degrees and return to 15 degrees at the deepest
+558-RPM trough. Low base-D table values, with the coolant-dependent lower
+bound at `5FC18`, closely match the opening drop under the explicit assumptions
+of normal timing-RPM input and AVCS tracking factor zero. These internal
+states and knock corrections were not logged, so this is conditional evidence.
+
+Five new `test_idle_timing_execution.py` groups execute `27DE8` and `28166`,
+their scalar helpers and the native idle-flag getter, with explicit upstream
+base-value boundaries. At stationary low RPM, an endpoint C134 switches
+directly to 0/1 with the idle flag; only intermediate states use the 0.008 step.
+The earlier universal-ramp description is corrected above and in the naming
+script. The tests are included in the passing master audit. Timing code/tables
+and both BINs remain unchanged; rev recovery is still unresolved.

@@ -53,9 +53,23 @@ near-stall RPM followed by a sustained lean recovery. The subsequent
 to retained signed load-change compensation, amplified by the low-RPM VE
 taper. A separate [calibration candidate](candidates/README.md), SHA-256
 `6af0d130b585abf9c9b275840ddb0b237485d84f8f8adf7b15df8462adc72433`,
-changes ten idle VE cells and checksum while retaining all code. It passes
-offline checks but needs idle-only validation. The main BIN above remains
-the logged 10:30 baseline. See the [log review](../logs/20260908_idle_review.md).
+changes ten idle VE cells and checksum while retaining all code. The
+[14:13 candidate capture](../logs/20260908_recovery_review.md) now shows
+improved settled fueling near 970--1000 RPM / 14.1 AFR, but blips still cause
+near-stalls down to 558 RPM. Timing reaches 0 degrees during opening and
+is back at 15 degrees at the deepest trough; conditional base-D lookups closely
+match the opening drop. Recovery remains unresolved; neither BIN has been
+changed or promoted to a finished tune. The main BIN above remains the logged
+10:30 baseline. See also the [first log review](../logs/20260908_idle_review.md).
+
+The [load/idle-air follow-up](IDLE_AIR_RECOVERY_AUDIT.md) reproduces retained
+load filtering and transient compensation with native instruction replay.
+Faster filtering has mixed fuel effects; no further ROM change was made.
+The new 19-channel `D2WD610H_idle_air_diagnostic_profile.xml` adds effective
+idle RPM target, combined throttle request, pedal position and idle flags
+within 43 addresses. **The repeat rev test is withdrawn:** the unchanged
+candidate is still expected to nearly stall. The next work is offline
+idle-air tracing; leave the car off for now.
 
 The September 8 hook hardening uses saved caller RPM and single-read MAP/IAT,
 and removes only this load task's obsolete MAF-fault fallback. Cranking and
@@ -77,8 +91,9 @@ remain; the target ignores the separate voltage trim, including stored history.
 Other raw-voltage consumers and closed-loop transport dynamics remain audit
 limits; this does not establish total independence from the removed circuits.
 The complete generated logger definition has SHA-256
-`feb5525e8fde3829450d50d78110d2507e874cdd70fc9767430cee1d6aad22c7`.
+`3ff3a49fb332551c411a635ddcac49d04fea5f3ee1c308d917fa0145b8d5925e`.
 E511 now correctly identifies the signed transient load correction at B874.
+E503/E504 units use semicolons to prevent RomRaider splitting CSV headers.
 
 The [guard execution audit](GUARD_EXECUTION_AUDIT.md) subsequently found and
 fixed a lean-confirmation gap: a zero logger fault sentinel with stale valid
@@ -199,7 +214,7 @@ reduces the upstream global catalogue to 63 H6-MT standard parameters, 46
 relevant switches, and 35 useful stock extended parameters. Nine stock
 high-resolution channels required for the lean-out capture are converted to
 unconditional direct SSM-address entries; the other 26 remain restricted to ECU
-ID `3C5A387116`. Project parameters E500--E513 are also unconditional. The
+ID `3C5A387116`. Project parameters E500--E516 are also unconditional. The
 complete diagnostic set therefore remains visible in Data, Graph, and Dashboard
 before RomRaider completes ECU identification. TCU/DCCD, diesel/common-rail/DPF,
 removed stock-O2/MAF, and unrelated-model dashboard entries are omitted. The
@@ -281,11 +296,15 @@ and verifies provenance and checksum.
 | `build_definition.py` | Generates the focused D2WD610H RomRaider definition. |
 | `D2WD610H_master_patch.xml` | Matching self-contained metric RomRaider definition. |
 | `D2WD610H_master_logger.xml` | Complete metric, SSM-only logger definition for ECU ID `3C5A387116`; ready artifact generated from logger v370. |
-| `D2WD610H_master_logger_ecuparams.xml` | Internal fourteen-parameter fragment used to generate the complete logger definition. |
+| `D2WD610H_master_logger_ecuparams.xml` | Internal seventeen-parameter fragment used to generate the complete logger definition. |
 | `D2WD610H_idle_diagnostic_profile.xml` | First-idle capture: wideband/raw/ready, MAP/load, immediate/learned trims, pulse/latency, pump/battery and operating conditions. 43 addresses, 136-byte request. |
 | `D2WD610H_afterstart_diagnostic_profile.xml` | Separate follow-up: six retained fuel terms (including transient E511), composed base factor/runtime, AFR, pulse and operating conditions. 43 addresses, 136-byte request. |
-| `D2WD610H_idle_recovery_profile.xml` | Current recovery investigation: 19 channels including signed transient E511, base factor E123 and committed AVLS E503. 43 addresses, 136-byte request. Load separately. |
-| `IDLE_RECOVERY_AUDIT.md` / `idle_recovery_candidate.py` | Native load-change trace, recorded-input replay, and isolated ten-cell VE candidate; engine validation pending. |
+| `D2WD610H_idle_recovery_profile.xml` | Previous recovery capture: 19 channels including signed transient E511, base factor E123 and committed AVLS E503. 43 addresses, 136-byte request. Load separately. |
+| `D2WD610H_idle_air_diagnostic_profile.xml` | Prepared profile; live test deferred. Idle RPM target, combined throttle request, pedal/idle flags and fuel response. 19 channels; 43 addresses. |
+| `IDLE_AIR_RECOVERY_AUDIT.md` / `test_load_conditioning_execution.py` / `replay_20260908_load_recovery.py` | Native load/transient replay and idle-air investigation; repeat rev test withdrawn. |
+| `test_idle_air_execution.py` | Native pedal-release and idle-air eligibility, pressure-demand mode, and P30 identity; seven bounded groups, no engine-response proof. |
+| `IDLE_RECOVERY_AUDIT.md` / `idle_recovery_candidate.py` | Native load-change trace and isolated ten-cell VE candidate; settled fueling improved in first candidate capture, blip recovery unresolved. |
+| `analyze_20260908_recovery.py` / `test_idle_timing_execution.py` | Candidate log analysis, flash CRC check and native idle/base timing selection fixtures. |
 | `LOGGER_CONNECTION_AUDIT.md` | Native 43-address receive limit, RomRaider subscription-queue repair, and the successful complete 12:36 idle capture. |
 | `install_master_logger.py` | Generates a complete D2WD610H-only logger from a normal complete logger XML, retaining its DTD and applicable stock channels. |
 | `ghidra_scripts/ApplyMasterNames.java` | Reproducibly reapplies the names/comments confirmed in live Ghidra. |

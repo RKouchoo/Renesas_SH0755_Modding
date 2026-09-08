@@ -25,10 +25,10 @@ REMOVED_MAF_TABLES = {
 }
 
 HIDDEN_AVLS_TABLES = {
-    "AVLS Vehicle Speed Threshold (Normal Oil Temperature)",
-    "AVLS Vehicle Speed Threshold (High Oil Temperature)",
-    "AVLS Vehicle Speed Hysteresis (Normal Oil Temperature)",
-    "AVLS Vehicle Speed Hysteresis (High Oil Temperature)",
+    "AVLS Accelerator Pedal Threshold (Normal Oil Temperature)",
+    "AVLS Accelerator Pedal Threshold (High Oil Temperature)",
+    "AVLS Accelerator Pedal Hysteresis (Normal Oil Temperature)",
+    "AVLS Accelerator Pedal Hysteresis (High Oil Temperature)",
     "AVLS Oil Temperature Selector Thresholds",
     "AVLS Actuation Minimum RPM",
 }
@@ -210,7 +210,7 @@ def render_definition() -> str:
         text,
         "AVLS High Cam Engage RPM",
         "Predictable high-lift engagement threshold. Default 3200 RPM. The "
-        "vehicle-speed request path is fixed unreachable in this patch; keep "
+        "pedal-based request path is fixed unreachable in this patch; keep "
         "this value above the release threshold.",
     )
     text = replace_target_description(

@@ -58,11 +58,17 @@ execution trace attributes most of the transient pulse reduction to signed
 load-change correction B874, updated every 120 crank degrees in normal running.
 The old after-start-only B874 label was wrong. A separate ten-cell VE
 candidate `6af0d1...` holds the existing 1200-RPM VE in the lower idle rows at
-measured vacuum pressures. It passes offline checks and has not run on the
-engine; main `48d63c...` remains the logged baseline. The new recovery profile
-captures E511 directly plus base factor and committed lift state, within 43
-addresses. See the [recovery audit](../master_patch/IDLE_RECOVERY_AUDIT.md)
-and [full log review](../logs/20260908_idle_review.md).
+measured vacuum pressures. The [14:13 capture](../logs/20260908_recovery_review.md)
+matches the candidate's final flash CRCs and shows settled idle near 970--1000
+RPM / 14.1 AFR, but blips still dip to 558 RPM. The user confirms intentional
+key-off at the end. B874 is measured down to -0.6097 during recovery; timing
+briefly reaches 0 degrees during opening and is back at 15 at the deepest trough.
+Conditional D-map lookups closely match the opening drop. Neither BIN was
+changed by that review; main `48d63c...` remains the logged baseline. The
+19-channel recovery profile captures E511, base factor and committed lift
+within 43 addresses. E503/E504 units now avoid unquoted CSV-header commas.
+See the [build/trace audit](../master_patch/IDLE_RECOVERY_AUDIT.md) and
+[first capture review](../logs/20260908_idle_review.md).
 September 8 update: the SD hook now uses the caller's saved RPM and single-read
 MAP/IAT inputs; only its obsolete MAF-fault load fallback is bypassed. The stock
 6% load filter is explicitly defined but unchanged, as are VE/injector/timing
@@ -200,7 +206,9 @@ Verified: Base Timing A data 0x78AA0 → slot 0x60114 → desc 0x60108 → consu
   per-cylinder corrections still apply. The load-indexed idle correction at
   `0x782AC` is effectively flat zero (two raw-57 entries, 0.0390625 degrees).
   The 4-km/h threshold selects idle target tables, not idle versus base mode.
-  No actual retard or cam transition has been demonstrated in the supplied run.
+  The later 14:13 capture measures timing falling briefly to 0 degrees during
+  opening, with 15 degrees at the deepest RPM trough; conditional base-D
+  lookups closely match. Actual AVCS tracking/cam motion was not logged.
   The corrective build does not alter these timing tables or add an idle cam hold.
 - `ign_final_timing_per_cylinder_update` adds a common timing sum to six per-cylinder correction
   floats at **0xFFFFCCC8..0xFFFFCCDC**, then applies the stock clamps and publishes six final
@@ -253,17 +261,19 @@ operating state 0xFFFFCD9C (curve selector: 2=curve 1, 3=curve 2), mode timer 0x
 (mask 0x04 = RPM>4000 latch, mask 0x10 = engine running),
 status latch 0xFFFFCD8F, threshold caches 0xFFFFCD94/0xFFFFCD98, defer flag 0xFFFFCD9D.
 
-**Switchover is a vehicle-speed-vs-RPM boundary, not an engine-load map:**
+**Switchover uses accelerator-pedal percent versus RPM.** The earlier
+vehicle-speed identification was incorrect; see the native P30 evidence in
+[the September 8 idle-air audit](../master_patch/IDLE_AIR_RECOVERY_AUDIT.md).
 
 | Item | ROM addr | Value |
 |---|---|---|
-| Normal-oil-temperature speed data (7×float) | **0x7D67C** | 100,100,30,28,25,15,5 km/h |
+| Normal-oil-temperature pedal data (7×float) | **0x7D67C** | 100,100,30,28,25,15,5 percent |
 | Table 1 X axis (RPM, 7×float) | 0x7D660 | 1600,2000,2400,2800,3200,3600,4000 |
-| High-oil-temperature speed data (7×float) | **0x7D6B4** | 100,100,90,50,30,10,0 km/h |
+| High-oil-temperature pedal data (7×float) | **0x7D6B4** | 100,100,90,50,30,10,0 percent |
 | Table 2 X axis (RPM, 7×float) | 0x7D698 | 2000,2050,2400,2800,3200,3600,4000 |
 | Hard high-cam engage RPM | **0x7D4BC** | float 4000.0 |
 | Hard release RPM (hysteresis) | **0x7D4B8** | float 3800.0 |
-| Vehicle-speed hysteresis offsets | 0x7D480/0x7D484 | 10.0 / 10.0 km/h |
+| Pedal hysteresis offsets | 0x7D480/0x7D484 | 10.0 / 10.0 percentage points |
 | Oil-temperature selector bands | 0x7D488..0x7D494 | 13/15 and 113/115 degrees C |
 | Actuation RPM gate | 0x7D4AC | 3000.0 |
 | Engine-run RPM gate | 0x7D4A8/0x7D4A4 | 512.0 / 510.0 |
@@ -283,16 +293,16 @@ fault/startup paths substitute the stock 70 degrees C value at 0x73B88/0x73B8C.
 and clears below 113. Subject to runtime-status and delay gates,
 `avls_threshold_curve_selector_state_update` publishes selector state 1 for cold/fallback,
 state 2 for the normal oil-temperature band, or state 3 for the hot band. State 1 uses fixed
-15 km/h fallback boundaries; state 2 selects the normal-temperature curve and state 3 selects
+15-percent pedal fallback boundaries; state 2 selects the normal-temperature curve and state 3 selects
 the high-temperature curve.
 
 Descriptors: table 1 = **0x60F58**, table 2 = **0x60F64** (compact 0xC float type).
-RPM input is float @ **0xFFFFB544**. The curve path compares conditioned vehicle speed
-**0xFFFFB46C** in km/h: selector state **0xFFFFCD9C == 2** chooses the normal-temperature curve;
+RPM input is float @ **0xFFFFB544**. The curve path compares conditioned accelerator pedal
+**0xFFFFB46C** in percent: selector state **0xFFFFCD9C == 2** chooses the normal-temperature curve;
 state **3** chooses the high-temperature curve. From low lift, high lift is requested at
-`speed >= curve + 10 km/h`; from high lift, low lift is requested at `speed < curve`. Thus the
+`pedal >= curve + 10 percentage points`; from high lift, low lift is requested at `pedal < curve`. Thus the
 two tables are oil-temperature-selected curves, **not** engage/release counterparts. State 1
-uses fixed 15 km/h thresholds at 0x7D4B0/0x7D4B4.
+uses fixed 15-percent pedal thresholds at 0x7D4B0/0x7D4B4.
 
 The genuine table load signal is separate. `maf_airflow_temperature_compensation_update` writes
 mass airflow **0xFFFFB420** in g/s, calculates raw load **0xFFFFB428** as
@@ -334,10 +344,10 @@ data registers (datasheet) instead of descending the call tree.
 | RAM addr | Meaning | Evidence |
 |---|---|---|
 | **0xFFFFB544** | Engine RPM (float) | compared vs 4000/3800/512/510 rpm consts; input to switch tables; used across ign+AVLS |
-| **0xFFFFB538** | Vehicle speed (float, km/h) | `ign_idle_timing_target_update` compares it with stock 4.0-km/h idle-timing threshold @0x77E1C; also consumed by AVLS logic |
+| **0xFFFFB538** | Vehicle speed (float, km/h) | `ign_idle_timing_target_update` compares it with stock 4.0-km/h idle-timing threshold @0x77E1C; gate input to pedal conditioning |
 | **0xFFFFB3B8** | Intake-air temperature (float, degrees C) | written by `intake_air_temperature_update` @0x16D1C; passed into stock MAF-IAT compensation descriptor 0x5EB88 |
 | **0xFFFFB420** | Final post-compensation mass airflow (float, g/s) | written at 0x1739E in `maf_airflow_temperature_compensation_update`; broad fuel/load consumer xrefs include 0x1B800 and 0x216EA |
-| **0xFFFFB46C** | Conditioned AVLS vehicle-speed signal in km/h (snapshot of filtered 0xFFFFB4C8) | compared against oil-temperature-selected curves in 0x40168 |
+| **0xFFFFB46C** | Conditioned accelerator-pedal signal in percent (snapshot of 0xFFFFB4C8; P30 getter 3184E) | compared against oil-temperature-selected curves in 0x40168 |
 | **0xFFFFB124** | Converted engine-oil temperature in degrees C | ADC AB12 through descriptor 0x60950 in 0xF474 |
 | **0xFFFFCF94** | Validated engine-oil temperature, or 70 C fallback | selector latches at 13/15 and 113/115 C in 0x400EE |
 | 0xFFFFC17C | Ignition AVCS-tracking blend factor k (float 0..1) | written 0x28354 |
@@ -498,21 +508,21 @@ _(underscore names only — strict naming enforcement is ON)_
 - 0x0001C5D4 → **injector_fuel_cut_inhibit_word_build** (FFFF for native global cut, otherwise six channel fault bits at B744)
 - 0x00026AEC → **injector_schedule_inhibit_transition_update** (applies changing inhibit masks to the phase records)
 - 0x00024570 → **solenoid_circuit_diagnostic** (sets circuit-fault byte 0xFFFFBF21)
-- 0x000182AC → **engine_load_compensation_update**
-- 0x00017984 → **airflow_load_and_vehicle_speed_processing_sequence_update**
+- 0x000182AC → **accelerator_pedal_compensation_update**
+- 0x00017984 → **airflow_load_and_pedal_processing_sequence_update**
 - 0x000179EE → **airflow_load_filter_state_initialize**
 - 0x00017A24 → **airflow_load_filter_state_requires_initialization**
-- 0x00018A68 → **vehicle_speed_conditioned_filter_update** (B4C0 → filtered km/h @0xFFFFB4C8)
+- 0x00018A68 → **pedal_conditioned_filter_update** (B4C0 → conditioned pedal percent @0xFFFFB4C8)
 - 0x00009FEC → **float_3d_table_consumer_update**
 - 0x0000C5C8 → **cylinder_airflow_pair_update**
 - 0x00017B2A → **airflow_bank_charge_update**
 - 0x00017C40 → **airflow_bank_charge_diagnostic_update**
-- 0x000180C6 → **engine_load_from_airflow_calculate**
-- 0x000181EA → **engine_load_limit_update**
-- 0x00018438 → **vehicle_speed_conditioning_status_flags_update**
-- 0x000184CC → **vehicle_speed_conditioning_coefficient_set_a_update**
-- 0x0001873C → **vehicle_speed_conditioning_coefficient_set_b_update**
-- 0x000188F4 → **vehicle_speed_conditioned_source_update** (B538 km/h → B4C0)
+- 0x000180C6 → **accelerator_pedal_pair_normalize**
+- 0x000181EA → **accelerator_pedal_pair_select**
+- 0x00018438 → **pedal_conditioning_status_flags_update**
+- 0x000184CC → **pedal_conditioning_coefficient_set_a_update**
+- 0x0001873C → **pedal_conditioning_coefficient_set_b_update**
+- 0x000188F4 → **pedal_conditioned_source_update** (B470 pedal percent → B4C0; B538 is a condition input)
 - 0x0001B15E → **fuel_system_monitor_enable_update**
 - 0x000216EA → **fueling_airflow_input_update**
 - 0x000098CC → **injector_battery_voltage_latency_lookup** (descriptor 0x608D8; voltage
@@ -537,7 +547,7 @@ _(underscore names only — strict naming enforcement is ON)_
 - 0x000405CC → **avls_osv_actuation_gate** (retained timing/status gate for lift actuation)
 - 0x0003FFDA → **avls_threshold_curve_selector_state_update**
 - 0x000400EE → **avls_curve_selector_oil_temp_band_latches_update**
-- 0x00018AEA → **vehicle_speed_conditioned_snapshot_copy** (B4C8 → AVLS km/h compare B46C)
+- 0x00018AEA → **pedal_conditioned_snapshot_copy** (B4C8 → pedal percent B46C, shared by AVLS and P30)
 - 0x0000F474 → **engine_oil_temperature_sensor_process** (AB12 → B124 degrees C)
 - 0x0003253C → **engine_oil_temperature_logger_convert**
 - 0x00047000 → **engine_oil_temperature_fallback_select** (B124 or 70 C → CF94)
@@ -785,8 +795,8 @@ and 0x1B81E.
   `0xFFFFCD86`: mode 3 selects a 13x11 high-lift table covering 3000..7500 RPM and all other
   modes select a 13x9 low-lift table covering 0..3200 RPM. Both are cloned/resampled from the
   same conservative seed. The 3000..3200 overlap is real hysteresis coverage. All table-driven
-  and fixed/fallback vehicle-speed request thresholds are 110 km/h, above the verified 100-km/h
-  conditioner cap, leaving a predictable 3200-RPM engage / 3000-RPM release policy. The stock
+  and fixed/fallback pedal request thresholds are 110 percent, above the verified 100-percent
+  conditioner cap (units corrected September 8), leaving a predictable 3200-RPM engage / 3000-RPM release policy. The stock
   request/commit/actuation sequence remains. The focused XML omits controls made inoperative by
   this policy and E503 logs the committed state used by the VE selector.
 - 2026-08-22: the pressure/lean safety trace renamed
@@ -824,3 +834,28 @@ and 0x1B81E.
   This is a 14-byte correction including checksum, not a proved cold lean-out
   cure or complete elimination of every raw-voltage consumer. Evidence and
   executable regression scope: [retained-routine audit](../master_patch/RETAINED_ROUTINE_AUDIT.md).
+
+- **2026-09-08 load/idle-air follow-up:** native `1753A..1770A` confirms raw
+  load B428 -> 6% filtered B42C -> normal conditioned B438. Task 11AD0 invokes
+  172A4 before 1E7E8 on the usual six-updates-per-cycle route. Coupled replay
+  reproduces the observed load/transient pattern; faster alpha has mixed
+  fuel effects and no new BIN was made. Effective idle RPM target is
+  **FFFFC468**, published at 2C70E after C460 -> C4E8 -> C46C/C478 selection.
+  Combined relative throttle request is **FFFFC2B8**, published by 2AB06 after
+  C2C4; it precedes learned-offset/fault selection into C2B4 in 2AAAC.
+  **FFFFB2BC bit 1** is recognized idle, returned by 15192. E514--E516 and
+  the new 43-address idle-air profile log these request boundaries; E57/C3D0
+  alone is only the earlier torque-map output. See
+  [native replay and request trace](../master_patch/IDLE_AIR_RECOVERY_AUDIT.md).
+
+- **2026-09-08 pedal/air-gate correction:** B46C is accelerator-pedal percent,
+  proven by native P30 getter 3184E through SSM slot 4B7A0. B538 was mistaken
+  for the conditioned output of 188F4; its final minimum actually reads B470
+  in the delay slot. AVLS XML units, builder identifiers and Ghidra names are
+  corrected without changing calibration or either BIN. Native 18B14 and
+  2C760 execution proves separate pedal-release and air-feedback qualifiers;
+  B2BC bit 1 describes ignition idle and does not prove air feedback is active.
+  Seven new execution groups and the full master audit pass. The unchanged
+  candidate still has unresolved recovery; repeat rev testing is withdrawn
+  and the car should remain off during offline investigation. Actual internal
+  gate states and the physical delay were not recorded.

@@ -1,5 +1,10 @@
 # D2WD610H Patch Audits
 
+> September 8 current status: repeat rev testing is withdrawn; leave the car
+> off while recovery is investigated offline. Historical B46C/AVLS vehicle-speed
+> claims below are superseded: native P30 execution proves accelerator-pedal
+> percent. See [the current idle-air audit](master_patch/IDLE_AIR_RECOVERY_AUDIT.md).
+
 ## 2026-09-08 — Added cuts now publish the injector inhibit word
 
 Current master is `aea793053fd3df4cab1efc3f15fbcee81024e6e90c0e8ba13025cb602b253b6b`,
@@ -1940,3 +1945,96 @@ No ECU traffic, flash or engine operation was performed. The next validation
 is controlled untouched idle before repeating blips. Full evidence, exact
 changed cells, reproduction and limits are in
 [IDLE_RECOVERY_AUDIT.md](master_patch/IDLE_RECOVERY_AUDIT.md).
+
+## 2026-09-08 — 14:13 candidate capture: settled fueling improves, recovery unresolved
+
+The new log contains 2,510 complete samples across 19 channels and 260.974 s.
+Its final recorded ECU block CRCs independently match the `6af0d130...`
+candidate. The user confirms it stayed running through the blips but nearly
+stalled, and that the final shutdown was intentional key-off.
+
+Settled fueling near 970--1000 RPM is about 14.1 AFR, versus 16.61 during
+the previous capture's settled recovery. Different coolant temperatures and
+blip amplitudes prevent an exact controlled comparison. The new run still
+dips to 558 RPM, so the candidate has not solved rev recovery.
+
+The signed correction is now directly measured: B874 reaches -0.6097 with
+B7DC=0.40 and net pulse 0.763 ms after closure. At the deepest trough it has
+already become positive; AFR reads 13.60 and timing is 15 degrees. Conditioned
+load also lags the recovering SD airflow, partly offset by positive transient
+enrichment. No blind filter, transient, VE or timing change was applied.
+
+Opening timing reaches 0 degrees. Conditional base-D lookups plus its cold
+lower bound closely match these values. Five native idle-timing test groups
+confirm the retained idle/base selection, including direct endpoint switching
+at stationary low RPM. Actual cam blend and knock corrections remain unlogged.
+
+A comma in E503's units split the unquoted CSV header; it did not remove
+measurements. The original CSV is preserved and the analysis handles that
+exact header in memory. E503/E504 units now use semicolons, E511's gauge range
+covers the observed negatives, and the logger/profile checks pass. Complete
+logger SHA-256 is now
+`df6179c00a01dcf06a0f4be33e5c03efe7192359589b69627695dc1ec2097257`.
+
+The full master audit and seven candidate groups pass; both BINs are unchanged.
+The candidate manifest now records its observed research status. Full evidence,
+numerical results, chart and next investigation limits are in
+[20260908_recovery_review.md](logs/20260908_recovery_review.md).
+
+## 2026-09-08 — coupled load replay and next idle-air capture
+
+The user's follow-up asks what to do next. Native `1753A..1770A` execution
+confirms the retained 6% load filter, with four new groups integrated into
+the master audit. Combined with native B874 at the traced task cadence, the
+14:13 replay has median load error 0.0037 g/rev and median net-pulse error
+0.0101 ms. Recorded-load B874 mean error is 0.0122; individual blip windows
+are 0.0175--0.0258. Rounded/asynchronous inputs and fixture boundaries remain.
+In-memory 20%/100% sensitivity increases fuel at the recorded 558-RPM trough
+but also enlarges correction extrema elsewhere; no filter/VE/timing edit
+or new BIN was made.
+
+Traced effective idle RPM target C468 through 2BD5C/2C2D8/2C510 and combined
+relative throttle request C2B8 through 2AC16/2AB06. C2B8 precedes learned-offset
+and fault selection into C2B4; E57/C3D0 alone omits the combined idle path.
+New E514--E516 record C468, C2B8 and B2BC idle/throttle flags. With P30 pedal
+and existing fuel/air/RPM channels, the new idle-air profile fits 19 channels
+and 43 addresses. Actual RomRaider reload/A8 construction passes all four
+profiles, and the full master audit passes. Both original BIN hashes and
+the capture hash remain unchanged.
+
+The capture was proposed on the already-flashed `6af0d130...` candidate and updated
+complete logger SHA-256
+`3ff3a49fb332551c411a635ddcac49d04fea5f3ee1c308d917fa0145b8d5925e`.
+No ECU traffic, flash or engine operation was performed. Exact evidence,
+limits and the subsequent withdrawal of that live test are in
+[IDLE_AIR_RECOVERY_AUDIT.md](master_patch/IDLE_AIR_RECOVERY_AUDIT.md).
+
+## 2026-09-08 — repeat test withdrawn; native pedal and idle-air trace
+
+The user correctly objects that another rev test on unchanged firmware will
+likely reproduce the near-stall. That proposal is withdrawn. No new flash,
+engine run or ECU connection is requested or performed.
+
+Native P30 dispatch `4B6FC+4*29 -> 4B7A0 -> 3184E` proves B46C is conditioned
+accelerator-pedal percent, correcting earlier notes and AVLS metadata. B538
+vehicle speed is a gate input to 188F4; the output minimum reads B470 in the
+call delay slot. Corrected XML labels, builder identifiers and Ghidra names
+preserve addresses and all numerical calibration. AVLS's 110-percent bounds
+still exceed the 100-percent pedal cap; the 3200/3000 RPM policy is unchanged.
+
+Seven native execution groups cover the P30 source and clamp, three-call
+pedal release qualification, separate 38-call air-feedback qualification,
+independence from the ignition-idle flag, inhibiting inputs and correction
+clearing, active pressure-demand response, inactive-state retention and an
+in-memory alternate-mode negative control. Under the tested running inputs,
+one pedal/air update pair per task reaches eligibility on the 40th call after
+pedal release. The physical time base and actual unlogged gate inputs are
+not established. These tests join the master verifier.
+
+Active idle feedback uses MAP pressure, with stock mode bytes selecting the
+pressure-demand and correction paths. The idle/throttle code and relevant
+calibration remain stock-identical. The old log lacks pedal, feedback flags,
+effective idle target and combined throttle request, so this does not prove
+the delay caused its dip. No verified near-stall repair or new BIN results
+from this trace. Full boundaries and remaining work are in
+[IDLE_AIR_RECOVERY_AUDIT.md](master_patch/IDLE_AIR_RECOVERY_AUDIT.md).

@@ -1,5 +1,13 @@
 # Master-patch commissioning order
 
+> **Current next step:** leave the car off and continue tracing idle-air control
+> offline. The repeat rev test on the unchanged `6af0d130...` candidate is
+> withdrawn after the user's objection that it will nearly stall again.
+> `D2WD610H_idle_air_diagnostic_profile.xml` is prepared for later use; it is
+> not a request for another engine run now. See
+> [the load/idle-air follow-up](IDLE_AIR_RECOVERY_AUDIT.md). No further flash
+> or filter/timing change was produced. Earlier build history below is retained.
+
 > **September 8 corrected development image:** SHA-256
 > `48d63cf3b7085afc672dd809cf08f4aef2b1aaae8a880f421e656467b7aaf8f0`,
 > checksum `0x1923EC61`, restores `0x3FD8C -> 0xE8C4` stock fan control and
@@ -122,7 +130,7 @@ master_patch/D2WD610H_master_logger.xml
 ```
 
 Do not select `D2WD610H_master_logger_ecuparams.xml`; it is only the internal
-fourteen-parameter fragment. To regenerate the complete file from another normal
+seventeen-parameter fragment. To regenerate the complete file from another normal
 logger release without modifying the source file:
 
 ```sh
@@ -130,7 +138,7 @@ python3 master_patch/install_master_logger.py /path/to/logger.xml
 ```
 
 Fully exit RomRaider after selecting a different logger definition, then start
-it again. E500--E513 and the nine high-resolution stock channels used by the
+it again. E500--E516 and the nine high-resolution stock channels used by the
 lean-out test are unconditional in this D2WD610H-only logger and must be
 listed in the Data, Graph, and Dashboard parameter panes even before connecting
 to the ECU. If they are absent, RomRaider is using another file or a stale
@@ -169,6 +177,15 @@ for the next controlled idle-only evaluation; it logs E511 directly, E123 as
 a raw base factor and E503 as committed lift mode, within 43 addresses.
 Review steady fueling below 1200 RPM before repeating any blips. See the
 [recovery audit](IDLE_RECOVERY_AUDIT.md) for exact scope and limitations.
+
+**September 8, 14:13 result:** the candidate was flashed and the recovery
+profile captured all 19 channels. Settled fueling improves, but blips still
+cause near-stalls down to 558 RPM. The user confirms intentional key-off.
+No additional rev trial or new BIN is prescribed by this review; recovery
+remains unresolved. Use the [latest evidence](../logs/20260908_recovery_review.md)
+instead of repeating the initial validation instructions above. The logger
+definition and profiles now fix the AVLS units-label CSV comma; reload them
+together before a future capture.
 
 The previous instruction to capture on the installed first-VE ROM is withdrawn
 because that firmware also hijacked fan control. Use only a corrected-code

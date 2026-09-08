@@ -73,4 +73,11 @@ The same `ProfileReloadCheck` also passes for
 `D2WD610H_idle_recovery_profile.xml`: 19 channels, 38 view subscriptions,
 43 addresses and a checksum-valid 136-byte request. Pass that profile as an
 additional argument to the command above. Its direct transient/base-factor
-capture is not yet live-validated; see [the recovery audit](../IDLE_RECOVERY_AUDIT.md).
+capture subsequently populated all 19 channels in the 14:13 run; see
+[the candidate log review](../../logs/20260908_recovery_review.md).
+
+The prepared `D2WD610H_idle_air_diagnostic_profile.xml` also passes this check:
+19 channels, 38 subscriptions, 43 addresses and a valid 136-byte request.
+Pass it as a further argument, using the updated complete master logger.
+Its new idle target and combined throttle request are offline-validated only;
+the live repeat-rev proposal is withdrawn. See [the ongoing offline investigation](../IDLE_AIR_RECOVERY_AUDIT.md).

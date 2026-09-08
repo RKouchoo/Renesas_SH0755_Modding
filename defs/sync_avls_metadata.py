@@ -23,7 +23,7 @@ OIL_TABLE = "Engine Oil Temperature Sensor Scaling"
 FUEL_TABLE = "Fuel Temp Sensor Scaling"
 AVLS_MARKER = "<!-- D2WD610H AVLS tables -->"
 OLD_AVLS_NAME = "AVLS Switchover Load Threshold 1"
-NEW_AVLS_NAME = "AVLS Vehicle Speed Threshold (Normal Oil Temperature)"
+NEW_AVLS_NAME = "AVLS Accelerator Pedal Threshold (Normal Oil Temperature)"
 TABLE_TAGS = re.compile(r"</?table\b[^>]*>")
 
 

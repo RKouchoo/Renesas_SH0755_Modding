@@ -1,5 +1,8 @@
 #!/usr/bin/env python3
-"""Build a separate, untested-on-engine idle-recovery calibration candidate.
+"""Build the isolated idle-recovery research calibration.
+
+The September 8 14:13 capture shows improved settled fueling but unresolved
+near-stall recovery. See logs/20260908_recovery_review.md before further use.
 
 The 10:30 master is rebuilt from canonical stock, then ten low-lift VE cells
 are changed. Nothing is written to the master BIN or stock files. No transient
@@ -68,7 +71,7 @@ def revise_image(baseline):
     assert master.calibration.checksum_value(image)[:2] == (checksum, checksum)
     assert hashlib.sha256(image).hexdigest() == CANDIDATE_SHA256
     return bytes(image), dict(
-        status='OFFLINE CANDIDATE; engine calibration remains unvalidated',
+        status='RESEARCH CANDIDATE; 14:13 capture improves settled fueling but rev recovery remains unresolved',
         baseline_sha256=BASELINE_SHA256,
         candidate_sha256=hashlib.sha256(image).hexdigest(),
         subaru_checksum=f'0x{checksum:08X}', changed_bytes=len(changed), cells=cells,

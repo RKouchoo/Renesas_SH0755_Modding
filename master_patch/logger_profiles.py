@@ -9,6 +9,7 @@ MAX_ADDRESSES = (MAX_RECEIVE_INDEX - 6) // 3
 IDLE_PROFILE = HERE / 'D2WD610H_idle_diagnostic_profile.xml'
 AFTERSTART_PROFILE = HERE / 'D2WD610H_afterstart_diagnostic_profile.xml'
 RECOVERY_PROFILE = HERE / 'D2WD610H_idle_recovery_profile.xml'
+IDLE_AIR_PROFILE = HERE / 'D2WD610H_idle_air_diagnostic_profile.xml'
 IDLE_PARAMETERS = {
     'P2', 'P3', 'P4', 'P5', 'P6', 'P8', 'P10', 'P11', 'P12', 'P13',
     'P17', 'P21', 'P24', 'P47', 'E32', 'E33', 'E50', 'E51', 'E60',
@@ -21,24 +22,31 @@ AFTERSTART_PARAMETERS = {
 RECOVERY_PARAMETERS = (IDLE_PARAMETERS - {'P3', 'P4', 'P5', 'P6', 'P24', 'E502'}) | {
     'E123', 'E511', 'E503',
 }
+IDLE_AIR_PARAMETERS = {
+    'P2', 'P7', 'P8', 'P10', 'P11', 'P12', 'P13', 'P17', 'P30',
+    'E32', 'E33', 'E60', 'E123', 'E500', 'E501', 'E511', 'E514', 'E515', 'E516',
+}
 PROFILE_SELECTIONS = {
     IDLE_PROFILE: IDLE_PARAMETERS,
     AFTERSTART_PROFILE: AFTERSTART_PARAMETERS,
     RECOVERY_PROFILE: RECOVERY_PARAMETERS,
+    IDLE_AIR_PROFILE: IDLE_AIR_PARAMETERS,
 }
-UNIT_OVERRIDES = {RECOVERY_PROFILE: {'E123': 'fuel-air equivalence ratio'}}
+UNIT_OVERRIDES = {path: {'E123': 'fuel-air equivalence ratio'}
+                  for path in (RECOVERY_PROFILE, IDLE_AIR_PROFILE)}
 UNITS = {
     'P2': 'C', 'P3': '%', 'P4': '%', 'P5': '%', 'P6': '%', 'P7': 'kPa',
     'P8': 'rpm', 'P10': 'degrees', 'P11': 'C', 'P12': 'g/s', 'P13': '%',
-    'P17': 'V', 'P21': 'ms', 'P24': 'mmHg', 'P38': '%', 'P47': '%', 'P92': '%',
+    'P17': 'V', 'P21': 'ms', 'P24': 'mmHg', 'P30': '%', 'P38': '%', 'P47': '%', 'P92': '%',
     'E32': 'g/rev', 'E33': 'status', 'E50': 'ms', 'E51': 'kPa absolute',
     'E60': 'ms', 'E81': '%', 'E84': 'estimated AFR', 'E105': '%',
     'E123': 'estimated AFR', 'E500': 'estimated AFR (14.64 stoich)',
     'E501': 'ADC counts', 'E502': 'ready metric',
-    'E503': 'AVLS mode (1 low, 3 high)',
-    'E504': 'state (0 idle, 1 delay, 2 monitor, 3 cut)',
+    'E503': 'AVLS mode (1 low; 3 high)',
+    'E504': 'state (0 idle; 1 delay; 2 monitor; 3 cut)',
     'E505': 'task calls', 'E506': 'raw flags', 'E507': 'task calls',
     **{f'E{i}': 'raw additive factor' for i in range(508, 514)},
+    'E514': 'rpm', 'E515': '%', 'E516': 'raw flags',
 }
 SWITCHES = {'S4', 'S5', 'S11'}
 

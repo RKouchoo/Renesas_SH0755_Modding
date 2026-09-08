@@ -1766,7 +1766,7 @@
   <!-- D2WD610H AVLS tables -->
   <table type="1D" name="AVLS High Cam Engage RPM" category="AVLS" storagetype="float" endian="big" sizey="1" userlevel="3" storageaddress="0x7D4BC">
    <scaling units="RPM" expression="x" to_byte="x" format="#" fineincrement="50" coarseincrement="100" />
-   <description>Predictable high-lift engagement threshold. Default 3200 RPM. The vehicle-speed request path is fixed unreachable in this patch; keep this value above the release threshold.</description>
+   <description>Predictable high-lift engagement threshold. Default 3200 RPM. The pedal-based request path is fixed unreachable in this patch; keep this value above the release threshold.</description>
   </table>
   <table type="1D" name="AVLS High Cam Release RPM" category="AVLS" storagetype="float" endian="big" sizey="1" userlevel="3" storageaddress="0x7D4B8">
    <scaling units="RPM" expression="x" to_byte="x" format="#" fineincrement="50" coarseincrement="100" />

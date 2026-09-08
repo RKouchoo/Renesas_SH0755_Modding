@@ -56,7 +56,7 @@ Committed AVLS mode `0xFFFFCD86 == 3` selects high lift; all other values select
 low lift. Low-lift VE covers 0..3200 RPM and high-lift VE covers 3000..7500 RPM.
 The overlap reflects the real 3200-RPM engage / 3000-RPM release hysteresis and
 is resolved by committed state, not RPM alone. The patch also makes all stock
-vehicle-speed AVLS request paths unreachable so the switchover is predictable.
+pedal-based AVLS request paths unreachable so the switchover is predictable.
 
 There is deliberately no stock-MAF fallback or runtime OFF switch. Exact zero RPM writes zero
 airflow. Any other invalid input, calibration, table result, or arithmetic state writes a fixed

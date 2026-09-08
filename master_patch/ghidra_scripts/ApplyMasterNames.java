@@ -136,7 +136,8 @@ public class ApplyMasterNames extends GhidraScript {
             toAddr("00027de8"),
             "Idle/base timing blend C134 uses RPM, speed and debounced throttle " +
             "idle flag B2BC bit1, not load directly. Stationary recognized idle " +
-            "ramps toward0 (idle target), base toward1. A/D table lookups alone " +
+            "selects0 (idle target), off-idle1 from either endpoint; intermediate " +
+            "blends move0.008 per call. A/D table lookups alone " +
             "do not establish actual idle ignition retard."
         );
         setPlateComment(
@@ -252,26 +253,26 @@ public class ApplyMasterNames extends GhidraScript {
         createOrRename("0001785c", "airflow_state_coolant_initialization");
         createOrRename("00011ad0", "periodic_engine_control_task_dispatcher");
         createOrRename(
-            "00017984", "airflow_load_and_vehicle_speed_processing_sequence_update"
+            "00017984", "airflow_load_and_pedal_processing_sequence_update"
         );
         createOrRename("000179ee", "airflow_load_filter_state_initialize");
         createOrRename(
             "00017a24", "airflow_load_filter_state_requires_initialization"
         );
         createOrRename("00017b2a", "airflow_bank_charge_update");
-        createOrRename("000180c6", "engine_load_from_airflow_calculate");
-        createOrRename("000181ea", "engine_load_limit_update");
-        createOrRename("000182ac", "engine_load_compensation_update");
-        createOrRename("00018438", "vehicle_speed_conditioning_status_flags_update");
+        createOrRename("000180c6", "accelerator_pedal_pair_normalize");
+        createOrRename("000181ea", "accelerator_pedal_pair_select");
+        createOrRename("000182ac", "accelerator_pedal_compensation_update");
+        createOrRename("00018438", "pedal_conditioning_status_flags_update");
         createOrRename(
-            "000184cc", "vehicle_speed_conditioning_coefficient_set_a_update"
+            "000184cc", "pedal_conditioning_coefficient_set_a_update"
         );
         createOrRename(
-            "0001873c", "vehicle_speed_conditioning_coefficient_set_b_update"
+            "0001873c", "pedal_conditioning_coefficient_set_b_update"
         );
-        createOrRename("000188f4", "vehicle_speed_conditioned_source_update");
-        createOrRename("00018a68", "vehicle_speed_conditioned_filter_update");
-        createOrRename("00018aea", "vehicle_speed_conditioned_snapshot_copy");
+        createOrRename("000188f4", "pedal_conditioned_source_update");
+        createOrRename("00018a68", "pedal_conditioned_filter_update");
+        createOrRename("00018aea", "pedal_conditioned_snapshot_copy");
         createOrRename("00018dac", "front_af_sensor_lambda_condition_filter");
         createOrRename("00018fdc", "front_af_sensor_closed_loop_status_pair_update");
         createOrRename(
@@ -630,10 +631,11 @@ public class ApplyMasterNames extends GhidraScript {
         setPlateComment(
             toAddr("00040168"),
             "AVLS lift-mode state machine. Selector state 2 uses RPM-versus-" +
-            "vehicle-speed descriptor 0x60F58; state 3 uses 0x60F64. The " +
-            "compared 0xFFFFB46C signal is conditioned vehicle speed in km/h, " +
-            "not engine load. Low lift requests high at curve + 10 km/h; high " +
-            "lift releases below the raw curve. State 1 uses fixed 15 km/h " +
+            "pedal descriptor 0x60F58; state 3 uses 0x60F64. The compared " +
+            "0xFFFFB46C signal is conditioned accelerator pedal percent, proven " +
+            "by P30 dispatch 4B7A0->3184E. Low lift requests high at curve + " +
+            "10 percentage points; high lift releases below the raw curve. " +
+            "State 1 uses fixed 15-percent " +
             "thresholds. Stock hard-RPM override is 4000/3800 RPM."
         );
         setPlateComment(
@@ -695,25 +697,42 @@ public class ApplyMasterNames extends GhidraScript {
         );
         setPlateComment(
             toAddr("00017984"),
-            "Runs the stock airflow/load pipeline and, separately, vehicle-speed " +
-            "conditioning. The final chain publishes B4C0, B4C8, then AVLS speed " +
-            "snapshot B46C. Speed density changes upstream airflow, not this speed " +
-            "chain."
+            "Runs stock airflow/load and accelerator-pedal processing. The " +
+            "pedal chain publishes B4C0, B4C8, then B46C used by P30, AVLS and " +
+            "the idle-air pedal-release qualification. Earlier vehicle-speed " +
+            "names were incorrect; see IDLE_AIR_RECOVERY_AUDIT.md."
         );
         setPlateComment(
             toAddr("000188f4"),
-            "Conditions vehicle speed 0xFFFFB538 in native km/h, caps it at " +
-            "100.0, and publishes 0xFFFFB4C0. No engine-load conversion occurs."
+            "Conditions accelerator-pedal B470 with a 100-percent upper bound " +
+            "into B4C0. Vehicle speed B538 is a gate input, not the quantity " +
+            "copied to the output: final min call18A20 takes B470 in its delay " +
+            "slot. P30 getter3184E confirms final B46C is pedal percent."
         );
         setPlateComment(
             toAddr("00018a68"),
-            "Filters conditioned vehicle speed 0xFFFFB4C0 into 0xFFFFB4C8; " +
-            "units remain km/h."
+            "Conditions pedal B4C0 into B4C8 with retained release shaping; " +
+            "units remain accelerator-pedal percent."
         );
         setPlateComment(
             toAddr("00018aea"),
-            "Copies filtered vehicle speed 0xFFFFB4C8 to AVLS compare signal " +
-            "0xFFFFB46C; units remain km/h."
+            "Copies conditioned pedal B4C8 to B46C in percent. P30 SSM " +
+            "address29 selects4B7A0->3184E and divides B46C by100/255. " +
+            "B46C also feeds AVLS and18B14 pedal-release flags B484."
+        );
+        setPlateComment(
+            toAddr("00018b14"),
+            "Pedal-release qualifier: near-zero B46C sets B483 bit2; B4CC " +
+            "counts to u16@73802=3 before B484 bit7. Pedal opening clears " +
+            "qualification. Native coverage in test_idle_air_execution.py."
+        );
+        setPlateComment(
+            toAddr("0002c760"),
+            "Idle-air feedback eligibility has separate pedal, switch, " +
+            "startup and fault gates. B484 qualifies C510 against38 calls; " +
+            "C4D9 bit3 permits feedback. C4D6 is a cycling update counter. " +
+            "B2BC ignition-idle does not establish air-feedback permission. " +
+            "Native fixtures do not prove the recorded near-stall cause."
         );
         setPlateComment(
             toAddr("00007a14"),

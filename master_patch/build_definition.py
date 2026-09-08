@@ -207,10 +207,10 @@ TABLE_CATEGORY_OVERRIDES = {
 }
 
 HIDDEN_AVLS_NAMES = {
-    "AVLS Vehicle Speed Threshold (Normal Oil Temperature)",
-    "AVLS Vehicle Speed Threshold (High Oil Temperature)",
-    "AVLS Vehicle Speed Hysteresis (Normal Oil Temperature)",
-    "AVLS Vehicle Speed Hysteresis (High Oil Temperature)",
+    "AVLS Accelerator Pedal Threshold (Normal Oil Temperature)",
+    "AVLS Accelerator Pedal Threshold (High Oil Temperature)",
+    "AVLS Accelerator Pedal Hysteresis (Normal Oil Temperature)",
+    "AVLS Accelerator Pedal Hysteresis (High Oil Temperature)",
     "AVLS Oil Temperature Selector Thresholds",
     "AVLS Actuation Minimum RPM",
 }

@@ -159,6 +159,10 @@ B874. A separate `6af0d1...` candidate changes ten low-lift VE cells: the
 value, with increasing modeled air mass throughout. The main `48d63c...`
 baseline is unchanged. The candidate retains all transient logic and tables;
 its large lower-RPM changes and startup interpolation need engine validation.
+The [14:13 candidate capture](../logs/20260908_recovery_review.md) subsequently
+shows better settled fueling near 970--1000 RPM, but blips still cause
+near-stalls. It supports the direction of the change, not complete validation;
+no further VE or transient calibration change was made from that review.
 See the [recovery audit](IDLE_RECOVERY_AUDIT.md) and
 [log review](../logs/20260908_idle_review.md).
 
@@ -342,13 +346,15 @@ up. High-IAT compensation reaches approximately -10.2 degrees at 110 C.
 
 The master baseline makes AVLS predictable: high lift engages at 3200 RPM and
 releases at 3000 RPM. Actuation minimum is 3000 RPM. Both RPM-indexed
-vehicle-speed request maps and both fixed/fallback thresholds are set to
-110 km/h, above the Ghidra-verified 100 km/h conditioned-speed cap. Therefore
-the old vehicle-speed/oil-band request route cannot select high lift. The stock
+pedal-position request maps and both fixed/fallback thresholds are set to
+110 percent, above the 100-percent conditioned-pedal cap. The earlier km/h
+identification was incorrect; native P30 execution proves percent (see
+[the idle-air audit](IDLE_AIR_RECOVERY_AUDIT.md)). The numerical values are
+unchanged, and the old pedal/oil-band request route cannot select high lift. The stock
 request/commit delay, status gates, and OSV actuation remain in place.
 
 The master definition exposes only the 3200/3000 engage/release pair and omits
-the now-inoperative speed curves, speed hysteresis, oil-band selector thresholds,
+the now-inoperative pedal curves, pedal hysteresis, oil-band selector thresholds,
 and actuation-minimum calibration. Committed state—not requested state—is the
 authority for VE, AVCS-target, ignition, and KCA table selection. Continuous
 intake AVCS angle can still alter VE inside either lift map; the patch does not

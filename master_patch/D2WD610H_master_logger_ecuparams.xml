@@ -36,7 +36,7 @@
       <address length="1">0xFFCD86</address>
     </ecu>
     <conversions>
-      <conversion units="AVLS mode (1 low, 3 high)" storagetype="uint8" expr="x" format="0" gauge_min="0" gauge_max="3" gauge_step="1" />
+      <conversion units="AVLS mode (1 low; 3 high)" storagetype="uint8" expr="x" format="0" gauge_min="0" gauge_max="3" gauge_step="1" />
     </conversions>
   </ecuparam>
   <ecuparam id="E504" name="Lean Fuel Cut State (D2WD610H master)*" desc="Latched lean-protection state at FFFFC860: 0 disarmed, 1 post-turbo sensor delay, 2 monitoring AFR, 3 fuel-cut latched. State 3 releases only after MAP falls below the configured barometric reset pressure." target="1">
@@ -44,7 +44,7 @@
       <address length="1">0xFFC860</address>
     </ecu>
     <conversions>
-      <conversion units="state (0 idle, 1 delay, 2 monitor, 3 cut)" storagetype="uint8" expr="x" format="0" gauge_min="0" gauge_max="3" gauge_step="1" />
+      <conversion units="state (0 idle; 1 delay; 2 monitor; 3 cut)" storagetype="uint8" expr="x" format="0" gauge_min="0" gauge_max="3" gauge_step="1" />
     </conversions>
   </ecuparam>
   <ecuparam id="E505" name="Lean Fuel Cut Counter (D2WD610H master)*" desc="Current post-turbo transport-delay or consecutive-lean confirmation count at FFFFC85C. Counts periodic task calls, not milliseconds; log it to calibrate the installed sensor delay." target="1">
@@ -101,7 +101,7 @@
       <address length="4">0xFFB874</address>
     </ecu>
     <conversions>
-      <conversion units="raw additive factor" storagetype="float" expr="x" format="0.0000" gauge_min="-0.5" gauge_max="1.5" gauge_step="0.1" />
+      <conversion units="raw additive factor" storagetype="float" expr="x" format="0.0000" gauge_min="-1.0" gauge_max="1.5" gauge_step="0.1" />
     </conversions>
   </ecuparam>
   <ecuparam id="E512" name="After-Start Fuel Group C (D2WD610H diagnostic)*" desc="Raw group-C after-start fueling output at FFFFBE40. Its Ghidra-identified residual path uses the engine-run counter and a 5000-call calibration before the residual state decays; final fueling consumes this output." target="1">
@@ -118,6 +118,30 @@
     </ecu>
     <conversions>
       <conversion units="raw additive factor" storagetype="float" expr="x" format="0.0000" gauge_min="-0.5" gauge_max="1.5" gauge_step="0.1" />
+    </conversions>
+  </ecuparam>
+  <ecuparam id="E514" name="Effective Idle Speed Target (D2WD610H diagnostic)*" desc="RPM target at FFFFC468 published by 2C510 after the coolant-selected C460 target passes through 2C2D8 and the C4E8/C46C/C478 limits. Consumed by the stock idle control routines. This is the requested speed and does not indicate whether idle control is active." target="1">
+    <ecu id="3C5A387116">
+      <address length="4">0xFFC468</address>
+    </ecu>
+    <conversions>
+      <conversion units="rpm" storagetype="float" expr="x" format="0.0" gauge_min="0" gauge_max="2500" gauge_step="250" />
+    </conversions>
+  </ecuparam>
+  <ecuparam id="E515" name="Combined Throttle Request (D2WD610H diagnostic)*" desc="Combined plate request at FFFFC2B8 from 2AB06 including the idle path through C2C4. Scaled from the native 84-degree range to percent. This precedes the learned offset and fault overrides in 2AAAC that publish C2B4; it is not motor duty or proof of actual plate tracking. E57/C3D0 is the earlier torque-map request and omits this combined idle path." target="1">
+    <ecu id="3C5A387116">
+      <address length="4">0xFFC2B8</address>
+    </ecu>
+    <conversions>
+      <conversion units="%" storagetype="float" expr="x/.84" format="0.00" gauge_min="0" gauge_max="100" gauge_step="10" />
+    </conversions>
+  </ecuparam>
+  <ecuparam id="E516" name="Throttle and Idle Flags (D2WD610H diagnostic)*" desc="Raw FFFFB2BC flags from throttle processing at 14DCC. Bit 1 (mask 2) is the recognized-idle flag returned by 15192 and used by the idle/base ignition selector. Other bits retain their native meanings; decode offline without treating the whole byte as a boolean." target="1">
+    <ecu id="3C5A387116">
+      <address length="1">0xFFB2BC</address>
+    </ecu>
+    <conversions>
+      <conversion units="raw flags" storagetype="uint8" expr="x" format="0" gauge_min="0" gauge_max="255" gauge_step="16" />
     </conversions>
   </ecuparam>
 </ecuparams>

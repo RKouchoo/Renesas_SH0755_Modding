@@ -1,0 +1,1658 @@
+{
+  "log_sha256": "7b5c3fda47a64d97ee0761333bff9b1b53516d4239565681049159b2bef6d855",
+  "candidate_sha256": "6af0d130b585abf9c9b275840ddb0b237485d84f8f8adf7b15df8462adc72433",
+  "samples": 2510,
+  "channels": 19,
+  "header_repair": "One unquoted comma in the AVLS units label normalized in memory; source CSV unchanged.",
+  "duration_seconds": 260.974,
+  "interval_ms_min_median_max": [
+    100.99999999999909,
+    103.9999999999992,
+    106.99999999999932
+  ],
+  "flash_identity": {
+    "available": true,
+    "path": "/Users/regan/.config/FastECU/0.1.0-beta.5/syslogs/log_fastecu_2026-09-08_14h10m06s.txt",
+    "matches_candidate": true,
+    "blocks": [
+      {
+        "block": 0,
+        "start": 0,
+        "length": 4096,
+        "crc": "0xC133D601"
+      },
+      {
+        "block": 1,
+        "start": 4096,
+        "length": 4096,
+        "crc": "0x840A76BF"
+      },
+      {
+        "block": 2,
+        "start": 8192,
+        "length": 4096,
+        "crc": "0xF1C48D21"
+      },
+      {
+        "block": 3,
+        "start": 12288,
+        "length": 4096,
+        "crc": "0xB56C5182"
+      },
+      {
+        "block": 4,
+        "start": 16384,
+        "length": 4096,
+        "crc": "0xCD616FA9"
+      },
+      {
+        "block": 5,
+        "start": 20480,
+        "length": 4096,
+        "crc": "0xAC3913AC"
+      },
+      {
+        "block": 6,
+        "start": 24576,
+        "length": 4096,
+        "crc": "0xBB1A48A4"
+      },
+      {
+        "block": 7,
+        "start": 28672,
+        "length": 4096,
+        "crc": "0x999FB0E5"
+      },
+      {
+        "block": 8,
+        "start": 32768,
+        "length": 32768,
+        "crc": "0xF49252F3"
+      },
+      {
+        "block": 9,
+        "start": 65536,
+        "length": 65536,
+        "crc": "0x8D7C92A9"
+      },
+      {
+        "block": 10,
+        "start": 131072,
+        "length": 65536,
+        "crc": "0xFFE4BF89"
+      },
+      {
+        "block": 11,
+        "start": 196608,
+        "length": 65536,
+        "crc": "0xCF8D8B68"
+      },
+      {
+        "block": 12,
+        "start": 262144,
+        "length": 65536,
+        "crc": "0xC3E145D2"
+      },
+      {
+        "block": 13,
+        "start": 327680,
+        "length": 65536,
+        "crc": "0xA4CBA2FB"
+      },
+      {
+        "block": 14,
+        "start": 393216,
+        "length": 65536,
+        "crc": "0xFFBC5EC1"
+      },
+      {
+        "block": 15,
+        "start": 458752,
+        "length": 65536,
+        "crc": "0xAC3F8F09"
+      }
+    ]
+  },
+  "fuel_states": [
+    7.0
+  ],
+  "lift_states": [
+    1.0
+  ],
+  "windows": [
+    {
+      "seconds": [
+        100,
+        130
+      ],
+      "samples": 288,
+      "rpm": {
+        "min": 1245.0,
+        "median": 1262.0,
+        "max": 1277.0
+      },
+      "afr": {
+        "min": 14.34,
+        "median": 14.61,
+        "max": 15.17
+      },
+      "timing": {
+        "min": 15.0,
+        "median": 15.0,
+        "max": 15.0
+      },
+      "transient": {
+        "min": 0.0,
+        "median": 0.0,
+        "max": 0.0
+      },
+      "factor": {
+        "min": 1.01,
+        "median": 1.01,
+        "max": 1.01
+      },
+      "pulse": {
+        "min": 2.3392,
+        "median": 2.3733,
+        "max": 2.4158
+      },
+      "load": {
+        "min": 0.71,
+        "median": 0.72,
+        "max": 0.73
+      },
+      "map": {
+        "min": 41.37,
+        "median": 41.95,
+        "max": 42.61
+      },
+      "airflow": {
+        "min": 14.61,
+        "median": 15.065000000000001,
+        "max": 15.45
+      },
+      "throttle": {
+        "min": 9.02,
+        "median": 9.02,
+        "max": 9.02
+      },
+      "coolant": {
+        "min": 35.0,
+        "median": 36.0,
+        "max": 38.0
+      },
+      "iat": {
+        "min": 25.0,
+        "median": 25.0,
+        "max": 25.0
+      },
+      "battery": {
+        "min": 14.16,
+        "median": 14.32,
+        "max": 14.48
+      },
+      "pump": {
+        "min": 33.33,
+        "median": 33.33,
+        "max": 33.33
+      },
+      "invalid_afr_samples": 0
+    },
+    {
+      "seconds": [
+        140,
+        148
+      ],
+      "samples": 77,
+      "rpm": {
+        "min": 1218.0,
+        "median": 1230.0,
+        "max": 1243.0
+      },
+      "afr": {
+        "min": 14.34,
+        "median": 14.61,
+        "max": 15.11
+      },
+      "timing": {
+        "min": 15.0,
+        "median": 15.0,
+        "max": 15.0
+      },
+      "transient": {
+        "min": 0.0,
+        "median": 0.0,
+        "max": 0.0
+      },
+      "factor": {
+        "min": 1.01,
+        "median": 1.01,
+        "max": 1.01
+      },
+      "pulse": {
+        "min": 2.287,
+        "median": 2.304,
+        "max": 2.3108
+      },
+      "load": {
+        "min": 0.69,
+        "median": 0.7,
+        "max": 0.7
+      },
+      "map": {
+        "min": 40.81,
+        "median": 41.08,
+        "max": 41.32
+      },
+      "airflow": {
+        "min": 14.05,
+        "median": 14.27,
+        "max": 14.47
+      },
+      "throttle": {
+        "min": 8.63,
+        "median": 8.63,
+        "max": 8.63
+      },
+      "coolant": {
+        "min": 39.0,
+        "median": 39.0,
+        "max": 39.0
+      },
+      "iat": {
+        "min": 25.0,
+        "median": 25.0,
+        "max": 25.0
+      },
+      "battery": {
+        "min": 14.16,
+        "median": 14.32,
+        "max": 14.4
+      },
+      "pump": {
+        "min": 33.33,
+        "median": 33.33,
+        "max": 33.33
+      },
+      "invalid_afr_samples": 0
+    },
+    {
+      "seconds": [
+        154,
+        159
+      ],
+      "samples": 48,
+      "rpm": {
+        "min": 920.0,
+        "median": 996.0,
+        "max": 1089.0
+      },
+      "afr": {
+        "min": 14.12,
+        "median": 14.59,
+        "max": 14.63
+      },
+      "timing": {
+        "min": 15.0,
+        "median": 15.0,
+        "max": 15.0
+      },
+      "transient": {
+        "min": -0.0347,
+        "median": -0.0149,
+        "max": 0.0282
+      },
+      "factor": {
+        "min": 0.98,
+        "median": 1.0,
+        "max": 1.04
+      },
+      "pulse": {
+        "min": 2.169,
+        "median": 2.31575,
+        "max": 2.5867
+      },
+      "load": {
+        "min": 0.68,
+        "median": 0.71,
+        "max": 0.77
+      },
+      "map": {
+        "min": 40.36,
+        "median": 41.79,
+        "max": 44.17
+      },
+      "airflow": {
+        "min": 10.79,
+        "median": 11.780000000000001,
+        "max": 12.42
+      },
+      "throttle": {
+        "min": 6.67,
+        "median": 7.45,
+        "max": 7.84
+      },
+      "coolant": {
+        "min": 40.0,
+        "median": 40.0,
+        "max": 40.0
+      },
+      "iat": {
+        "min": 26.0,
+        "median": 26.0,
+        "max": 26.0
+      },
+      "battery": {
+        "min": 14.16,
+        "median": 14.32,
+        "max": 14.4
+      },
+      "pump": {
+        "min": 33.33,
+        "median": 33.33,
+        "max": 33.33
+      },
+      "invalid_afr_samples": 0
+    },
+    {
+      "seconds": [
+        200,
+        210
+      ],
+      "samples": 96,
+      "rpm": {
+        "min": 991.0,
+        "median": 1003.0,
+        "max": 1019.0
+      },
+      "afr": {
+        "min": 13.89,
+        "median": 14.13,
+        "max": 14.63
+      },
+      "timing": {
+        "min": 15.0,
+        "median": 15.0,
+        "max": 15.0
+      },
+      "transient": {
+        "min": -0.0224,
+        "median": 0.0,
+        "max": 0.0
+      },
+      "factor": {
+        "min": 0.99,
+        "median": 1.01,
+        "max": 1.01
+      },
+      "pulse": {
+        "min": 2.1898,
+        "median": 2.2662500000000003,
+        "max": 2.2742
+      },
+      "load": {
+        "min": 0.67,
+        "median": 0.69,
+        "max": 0.69
+      },
+      "map": {
+        "min": 40.36,
+        "median": 41.0,
+        "max": 41.16
+      },
+      "airflow": {
+        "min": 11.29,
+        "median": 11.45,
+        "max": 11.58
+      },
+      "throttle": {
+        "min": 7.06,
+        "median": 7.06,
+        "max": 7.06
+      },
+      "coolant": {
+        "min": 43.0,
+        "median": 43.0,
+        "max": 44.0
+      },
+      "iat": {
+        "min": 26.0,
+        "median": 26.0,
+        "max": 26.0
+      },
+      "battery": {
+        "min": 14.0,
+        "median": 14.32,
+        "max": 14.4
+      },
+      "pump": {
+        "min": 33.33,
+        "median": 33.33,
+        "max": 33.33
+      },
+      "invalid_afr_samples": 0
+    },
+    {
+      "seconds": [
+        221,
+        234
+      ],
+      "samples": 125,
+      "rpm": {
+        "min": 956.0,
+        "median": 976.0,
+        "max": 990.0
+      },
+      "afr": {
+        "min": 13.88,
+        "median": 14.13,
+        "max": 14.4
+      },
+      "timing": {
+        "min": 15.0,
+        "median": 15.0,
+        "max": 15.0
+      },
+      "transient": {
+        "min": -0.0124,
+        "median": 0.0,
+        "max": 0.0
+      },
+      "factor": {
+        "min": 1.0,
+        "median": 1.01,
+        "max": 1.01
+      },
+      "pulse": {
+        "min": 2.1997,
+        "median": 2.2465,
+        "max": 2.2865
+      },
+      "load": {
+        "min": 0.67,
+        "median": 0.68,
+        "max": 0.69
+      },
+      "map": {
+        "min": 40.33,
+        "median": 40.68,
+        "max": 41.32
+      },
+      "airflow": {
+        "min": 10.9,
+        "median": 11.06,
+        "max": 11.21
+      },
+      "throttle": {
+        "min": 6.67,
+        "median": 7.06,
+        "max": 7.06
+      },
+      "coolant": {
+        "min": 44.0,
+        "median": 45.0,
+        "max": 45.0
+      },
+      "iat": {
+        "min": 26.0,
+        "median": 26.0,
+        "max": 26.0
+      },
+      "battery": {
+        "min": 14.0,
+        "median": 14.24,
+        "max": 14.4
+      },
+      "pump": {
+        "min": 33.33,
+        "median": 33.33,
+        "max": 33.33
+      },
+      "invalid_afr_samples": 0
+    },
+    {
+      "seconds": [
+        253,
+        256
+      ],
+      "samples": 29,
+      "rpm": {
+        "min": 949.0,
+        "median": 966.0,
+        "max": 980.0
+      },
+      "afr": {
+        "min": 13.58,
+        "median": 14.12,
+        "max": 14.38
+      },
+      "timing": {
+        "min": 15.0,
+        "median": 15.0,
+        "max": 15.0
+      },
+      "transient": {
+        "min": 0.0,
+        "median": 0.0,
+        "max": 0.0037
+      },
+      "factor": {
+        "min": 1.01,
+        "median": 1.01,
+        "max": 1.01
+      },
+      "pulse": {
+        "min": 2.238,
+        "median": 2.2492,
+        "max": 2.2895
+      },
+      "load": {
+        "min": 0.68,
+        "median": 0.68,
+        "max": 0.69
+      },
+      "map": {
+        "min": 40.44,
+        "median": 40.68,
+        "max": 41.47
+      },
+      "airflow": {
+        "min": 10.8,
+        "median": 10.95,
+        "max": 11.29
+      },
+      "throttle": {
+        "min": 6.67,
+        "median": 6.67,
+        "max": 7.06
+      },
+      "coolant": {
+        "min": 47.0,
+        "median": 47.0,
+        "max": 47.0
+      },
+      "iat": {
+        "min": 26.0,
+        "median": 26.0,
+        "max": 26.0
+      },
+      "battery": {
+        "min": 14.08,
+        "median": 14.24,
+        "max": 14.4
+      },
+      "pump": {
+        "min": 33.33,
+        "median": 33.33,
+        "max": 33.33
+      },
+      "invalid_afr_samples": 0
+    }
+  ],
+  "event_windows": [
+    {
+      "seconds": [
+        159.8,
+        167
+      ],
+      "samples": 69,
+      "rpm": {
+        "min": 702.0,
+        "median": 998.0,
+        "max": 1468.0
+      },
+      "afr": {
+        "min": 12.59,
+        "median": 14.13,
+        "max": 16.6
+      },
+      "timing": {
+        "min": 12.0,
+        "median": 15.0,
+        "max": 15.5
+      },
+      "transient": {
+        "min": -0.3647,
+        "median": 0.0,
+        "max": 0.4918
+      },
+      "factor": {
+        "min": 0.65,
+        "median": 1.01,
+        "max": 1.58
+      },
+      "pulse": {
+        "min": 1.1713,
+        "median": 2.3898,
+        "max": 4.7083
+      },
+      "load": {
+        "min": 0.56,
+        "median": 0.72,
+        "max": 1.02
+      },
+      "map": {
+        "min": 30.83,
+        "median": 42.43,
+        "max": 85.0
+      },
+      "airflow": {
+        "min": 7.49,
+        "median": 11.95,
+        "max": 29.54
+      },
+      "throttle": {
+        "min": 5.1,
+        "median": 7.06,
+        "max": 25.88
+      },
+      "coolant": {
+        "min": 40.0,
+        "median": 40.0,
+        "max": 41.0
+      },
+      "iat": {
+        "min": 26.0,
+        "median": 26.0,
+        "max": 26.0
+      },
+      "battery": {
+        "min": 14.16,
+        "median": 14.32,
+        "max": 14.56
+      },
+      "pump": {
+        "min": 33.33,
+        "median": 33.33,
+        "max": 33.33
+      },
+      "invalid_afr_samples": 0
+    },
+    {
+      "seconds": [
+        177.5,
+        186
+      ],
+      "samples": 82,
+      "rpm": {
+        "min": 602.0,
+        "median": 999.0,
+        "max": 1989.0
+      },
+      "afr": {
+        "min": 13.37,
+        "median": 14.614999999999998,
+        "max": 17.15
+      },
+      "timing": {
+        "min": 13.5,
+        "median": 15.0,
+        "max": 28.0
+      },
+      "transient": {
+        "min": -0.3691,
+        "median": 0.0189,
+        "max": 0.5011
+      },
+      "factor": {
+        "min": 0.65,
+        "median": 1.03,
+        "max": 1.51
+      },
+      "pulse": {
+        "min": 0.616,
+        "median": 2.41865,
+        "max": 3.1433
+      },
+      "load": {
+        "min": 0.29,
+        "median": 0.71,
+        "max": 0.89
+      },
+      "map": {
+        "min": 18.28,
+        "median": 42.43,
+        "max": 51.64
+      },
+      "airflow": {
+        "min": 4.45,
+        "median": 11.815000000000001,
+        "max": 24.21
+      },
+      "throttle": {
+        "min": 4.71,
+        "median": 7.06,
+        "max": 12.16
+      },
+      "coolant": {
+        "min": 41.0,
+        "median": 42.0,
+        "max": 42.0
+      },
+      "iat": {
+        "min": 26.0,
+        "median": 26.0,
+        "max": 26.0
+      },
+      "battery": {
+        "min": 14.08,
+        "median": 14.32,
+        "max": 14.48
+      },
+      "pump": {
+        "min": 33.33,
+        "median": 33.33,
+        "max": 33.33
+      },
+      "invalid_afr_samples": 0
+    },
+    {
+      "seconds": [
+        187.4,
+        191.3
+      ],
+      "samples": 38,
+      "rpm": {
+        "min": 671.0,
+        "median": 917.0,
+        "max": 1814.0
+      },
+      "afr": {
+        "min": 12.59,
+        "median": 13.614999999999998,
+        "max": 18.62
+      },
+      "timing": {
+        "min": 0.0,
+        "median": 15.0,
+        "max": 15.5
+      },
+      "transient": {
+        "min": -0.5648,
+        "median": 0.03875,
+        "max": 0.5906
+      },
+      "factor": {
+        "min": 0.44,
+        "median": 1.0750000000000002,
+        "max": 1.71
+      },
+      "pulse": {
+        "min": 0.7768,
+        "median": 2.44465,
+        "max": 7.0507
+      },
+      "load": {
+        "min": 0.54,
+        "median": 0.735,
+        "max": 1.49
+      },
+      "map": {
+        "min": 30.12,
+        "median": 43.025,
+        "max": 94.84
+      },
+      "airflow": {
+        "min": 7.53,
+        "median": 10.934999999999999,
+        "max": 47.27
+      },
+      "throttle": {
+        "min": 4.71,
+        "median": 6.67,
+        "max": 88.24
+      },
+      "coolant": {
+        "min": 42.0,
+        "median": 43.0,
+        "max": 43.0
+      },
+      "iat": {
+        "min": 26.0,
+        "median": 26.0,
+        "max": 26.0
+      },
+      "battery": {
+        "min": 14.08,
+        "median": 14.32,
+        "max": 14.48
+      },
+      "pump": {
+        "min": 33.33,
+        "median": 33.33,
+        "max": 66.67
+      },
+      "invalid_afr_samples": 0
+    },
+    {
+      "seconds": [
+        191.3,
+        197
+      ],
+      "samples": 54,
+      "rpm": {
+        "min": 708.0,
+        "median": 911.0,
+        "max": 1863.0
+      },
+      "afr": {
+        "min": 12.12,
+        "median": 13.59,
+        "max": 18.62
+      },
+      "timing": {
+        "min": 0.0,
+        "median": 15.0,
+        "max": 15.0
+      },
+      "transient": {
+        "min": -0.6097,
+        "median": 0.01235,
+        "max": 0.5049
+      },
+      "factor": {
+        "min": 0.4,
+        "median": 1.03,
+        "max": 1.64
+      },
+      "pulse": {
+        "min": 0.7047,
+        "median": 2.41875,
+        "max": 7.666
+      },
+      "load": {
+        "min": 0.54,
+        "median": 0.72,
+        "max": 1.54
+      },
+      "map": {
+        "min": 30.75,
+        "median": 42.63,
+        "max": 95.32
+      },
+      "airflow": {
+        "min": 7.49,
+        "median": 11.07,
+        "max": 47.01
+      },
+      "throttle": {
+        "min": 4.71,
+        "median": 6.67,
+        "max": 100.0
+      },
+      "coolant": {
+        "min": 43.0,
+        "median": 43.0,
+        "max": 43.0
+      },
+      "iat": {
+        "min": 26.0,
+        "median": 26.0,
+        "max": 26.0
+      },
+      "battery": {
+        "min": 14.08,
+        "median": 14.32,
+        "max": 14.4
+      },
+      "pump": {
+        "min": 33.33,
+        "median": 33.33,
+        "max": 66.67
+      },
+      "invalid_afr_samples": 0
+    },
+    {
+      "seconds": [
+        215,
+        220
+      ],
+      "samples": 48,
+      "rpm": {
+        "min": 673.0,
+        "median": 902.0,
+        "max": 1704.0
+      },
+      "afr": {
+        "min": 12.11,
+        "median": 13.6,
+        "max": 16.36
+      },
+      "timing": {
+        "min": 0.0,
+        "median": 15.0,
+        "max": 15.5
+      },
+      "transient": {
+        "min": -0.5545,
+        "median": 0.00755,
+        "max": 0.5136
+      },
+      "factor": {
+        "min": 0.46,
+        "median": 1.02,
+        "max": 1.6
+      },
+      "pulse": {
+        "min": 0.8173,
+        "median": 2.35585,
+        "max": 6.865
+      },
+      "load": {
+        "min": 0.55,
+        "median": 0.71,
+        "max": 1.41
+      },
+      "map": {
+        "min": 30.36,
+        "median": 42.19,
+        "max": 90.87
+      },
+      "airflow": {
+        "min": 7.24,
+        "median": 10.535,
+        "max": 41.36
+      },
+      "throttle": {
+        "min": 4.31,
+        "median": 6.27,
+        "max": 31.76
+      },
+      "coolant": {
+        "min": 44.0,
+        "median": 44.0,
+        "max": 44.0
+      },
+      "iat": {
+        "min": 26.0,
+        "median": 26.0,
+        "max": 26.0
+      },
+      "battery": {
+        "min": 14.0,
+        "median": 14.24,
+        "max": 14.48
+      },
+      "pump": {
+        "min": 33.33,
+        "median": 33.33,
+        "max": 66.67
+      },
+      "invalid_afr_samples": 2
+    },
+    {
+      "seconds": [
+        234.8,
+        239.5
+      ],
+      "samples": 45,
+      "rpm": {
+        "min": 607.0,
+        "median": 852.0,
+        "max": 1452.0
+      },
+      "afr": {
+        "min": 12.16,
+        "median": 13.16,
+        "max": 18.94
+      },
+      "timing": {
+        "min": 5.0,
+        "median": 15.0,
+        "max": 15.0
+      },
+      "transient": {
+        "min": -0.3946,
+        "median": 0.0531,
+        "max": 0.5452
+      },
+      "factor": {
+        "min": 0.62,
+        "median": 1.08,
+        "max": 1.56
+      },
+      "pulse": {
+        "min": 1.1262,
+        "median": 2.4708,
+        "max": 5.0682
+      },
+      "load": {
+        "min": 0.55,
+        "median": 0.7,
+        "max": 1.1
+      },
+      "map": {
+        "min": 30.44,
+        "median": 42.11,
+        "max": 95.16
+      },
+      "airflow": {
+        "min": 6.65,
+        "median": 10.12,
+        "max": 28.37
+      },
+      "throttle": {
+        "min": 4.31,
+        "median": 6.27,
+        "max": 47.06
+      },
+      "coolant": {
+        "min": 45.0,
+        "median": 45.0,
+        "max": 46.0
+      },
+      "iat": {
+        "min": 26.0,
+        "median": 26.0,
+        "max": 26.0
+      },
+      "battery": {
+        "min": 13.92,
+        "median": 14.24,
+        "max": 14.48
+      },
+      "pump": {
+        "min": 33.33,
+        "median": 33.33,
+        "max": 33.33
+      },
+      "invalid_afr_samples": 0
+    },
+    {
+      "seconds": [
+        239.5,
+        245
+      ],
+      "samples": 53,
+      "rpm": {
+        "min": 838.0,
+        "median": 932.0,
+        "max": 1304.0
+      },
+      "afr": {
+        "min": 13.12,
+        "median": 14.12,
+        "max": 15.15
+      },
+      "timing": {
+        "min": 11.5,
+        "median": 15.0,
+        "max": 17.0
+      },
+      "transient": {
+        "min": -0.0867,
+        "median": -0.0076,
+        "max": 0.0746
+      },
+      "factor": {
+        "min": 0.92,
+        "median": 1.0,
+        "max": 1.09
+      },
+      "pulse": {
+        "min": 2.0307,
+        "median": 2.3353,
+        "max": 2.7485
+      },
+      "load": {
+        "min": 0.66,
+        "median": 0.71,
+        "max": 0.8
+      },
+      "map": {
+        "min": 37.82,
+        "median": 41.79,
+        "max": 48.07
+      },
+      "airflow": {
+        "min": 9.44,
+        "median": 10.92,
+        "max": 15.37
+      },
+      "throttle": {
+        "min": 5.1,
+        "median": 6.67,
+        "max": 8.63
+      },
+      "coolant": {
+        "min": 46.0,
+        "median": 46.0,
+        "max": 46.0
+      },
+      "iat": {
+        "min": 26.0,
+        "median": 26.0,
+        "max": 26.0
+      },
+      "battery": {
+        "min": 14.0,
+        "median": 14.24,
+        "max": 14.4
+      },
+      "pump": {
+        "min": 33.33,
+        "median": 33.33,
+        "max": 33.33
+      },
+      "invalid_afr_samples": 0
+    },
+    {
+      "seconds": [
+        245.8,
+        253
+      ],
+      "samples": 69,
+      "rpm": {
+        "min": 558.0,
+        "median": 955.0,
+        "max": 1990.0
+      },
+      "afr": {
+        "min": 13.12,
+        "median": 14.15,
+        "max": 16.62
+      },
+      "timing": {
+        "min": 12.0,
+        "median": 15.0,
+        "max": 27.5
+      },
+      "transient": {
+        "min": -0.5275,
+        "median": 0.0366,
+        "max": 0.5125
+      },
+      "factor": {
+        "min": 0.48,
+        "median": 1.05,
+        "max": 1.52
+      },
+      "pulse": {
+        "min": 0.6,
+        "median": 2.413,
+        "max": 3.5017
+      },
+      "load": {
+        "min": 0.26,
+        "median": 0.7,
+        "max": 0.94
+      },
+      "map": {
+        "min": 16.29,
+        "median": 42.19,
+        "max": 52.43
+      },
+      "airflow": {
+        "min": 3.61,
+        "median": 11.01,
+        "max": 26.37
+      },
+      "throttle": {
+        "min": 3.92,
+        "median": 6.67,
+        "max": 12.55
+      },
+      "coolant": {
+        "min": 46.0,
+        "median": 46.0,
+        "max": 47.0
+      },
+      "iat": {
+        "min": 26.0,
+        "median": 26.0,
+        "max": 26.0
+      },
+      "battery": {
+        "min": 13.44,
+        "median": 14.24,
+        "max": 14.48
+      },
+      "pump": {
+        "min": 33.33,
+        "median": 33.33,
+        "max": 33.33
+      },
+      "invalid_afr_samples": 0
+    }
+  ],
+  "recovery_min_rpm": {
+    "time": 249.124,
+    "battery": 13.44,
+    "state": 7.0,
+    "coolant": 46.0,
+    "load": 0.47,
+    "rpm": 558.0,
+    "afr": 13.6,
+    "adc": 23424.0,
+    "latency": 0.7113,
+    "total_pulse": 3.07,
+    "pulse": 2.3405,
+    "pump": 33.33,
+    "timing": 15.0,
+    "iat": 26.0,
+    "map": 44.97,
+    "airflow": 7.0,
+    "throttle": 5.88,
+    "lift": 1.0,
+    "factor": 1.52,
+    "transient": 0.5111,
+    "volts": 1.787109375,
+    "flow_derived_load": 0.7526881720430108
+  },
+  "recovery_min_transient": {
+    "time": 192.959,
+    "battery": 14.24,
+    "state": 7.0,
+    "coolant": 43.0,
+    "load": 0.54,
+    "rpm": 837.0,
+    "afr": 13.15,
+    "adc": 20480.0,
+    "latency": 0.6502,
+    "total_pulse": 1.28,
+    "pulse": 0.763,
+    "pump": 33.33,
+    "timing": 15.0,
+    "iat": 26.0,
+    "map": 34.09,
+    "airflow": 7.49,
+    "throttle": 6.27,
+    "lift": 1.0,
+    "factor": 0.4,
+    "transient": -0.6097,
+    "volts": 1.5625,
+    "flow_derived_load": 0.5369175627240144
+  },
+  "minimum_pulse_samples": 5,
+  "invalid_afr_samples": 2,
+  "invalid_afr_with_adc_above_4_5V": 2,
+  "invalid_afr_with_adc_below_0_5V": 0,
+  "quantized_factor_pulse_check_median_error_ms": 0.009833332749999979,
+  "conditional_timing_points": [
+    {
+      "time": 187.864,
+      "battery": 14.08,
+      "state": 7.0,
+      "coolant": 42.0,
+      "load": 1.11,
+      "rpm": 1345.0,
+      "afr": 14.15,
+      "adc": 26944.0,
+      "latency": 0.643,
+      "total_pulse": 6.91,
+      "pulse": 6.2497,
+      "pump": 33.33,
+      "timing": 0.5,
+      "iat": 26.0,
+      "map": 94.84,
+      "airflow": 34.28,
+      "throttle": 88.24,
+      "lift": 1.0,
+      "factor": 1.71,
+      "transient": 0.5906,
+      "volts": 2.0556640625,
+      "flow_derived_load": 1.5292193308550188,
+      "modeled_A": 7.930289496653941,
+      "modeled_D": 0.3693292277504425,
+      "modeled_D_with_base_floor": 0.3693292277504425
+    },
+    {
+      "time": 187.969,
+      "battery": 14.4,
+      "state": 7.0,
+      "coolant": 42.0,
+      "load": 1.35,
+      "rpm": 1532.0,
+      "afr": 14.59,
+      "adc": 27136.0,
+      "latency": 0.6408,
+      "total_pulse": 7.68,
+      "pulse": 7.0507,
+      "pump": 66.67,
+      "timing": 0.0,
+      "iat": 26.0,
+      "map": 94.84,
+      "airflow": 41.17,
+      "throttle": 85.1,
+      "lift": 1.0,
+      "factor": 1.62,
+      "transient": 0.4005,
+      "volts": 2.0703125,
+      "flow_derived_load": 1.612402088772846,
+      "modeled_A": 3.592187228364167,
+      "modeled_D": -2.050586151730127,
+      "modeled_D_with_base_floor": 0.0390625
+    },
+    {
+      "time": 188.072,
+      "battery": 14.24,
+      "state": 7.0,
+      "coolant": 42.0,
+      "load": 1.49,
+      "rpm": 1726.0,
+      "afr": 16.6,
+      "adc": 30208.0,
+      "latency": 0.643,
+      "total_pulse": 7.68,
+      "pulse": 6.9935,
+      "pump": 66.67,
+      "timing": 0.0,
+      "iat": 26.0,
+      "map": 73.16,
+      "airflow": 47.27,
+      "throttle": 14.51,
+      "lift": 1.0,
+      "factor": 1.56,
+      "transient": 0.3034,
+      "volts": 2.3046875,
+      "flow_derived_load": 1.6432213209733488,
+      "modeled_A": -0.10411138640016782,
+      "modeled_D": -3.3327734856121127,
+      "modeled_D_with_base_floor": 0.0390625
+    },
+    {
+      "time": 188.176,
+      "battery": 14.24,
+      "state": 7.0,
+      "coolant": 42.0,
+      "load": 1.33,
+      "rpm": 1814.0,
+      "afr": 18.62,
+      "adc": 43264.0,
+      "latency": 0.643,
+      "total_pulse": 4.35,
+      "pulse": 3.878,
+      "pump": 33.33,
+      "timing": 15.0,
+      "iat": 26.0,
+      "map": 47.19,
+      "airflow": 31.78,
+      "throttle": 5.88,
+      "lift": 1.0,
+      "factor": 1.12,
+      "transient": -0.0747,
+      "volts": 3.30078125,
+      "flow_derived_load": 1.0511576626240353,
+      "modeled_A": 2.7147460252434423,
+      "modeled_D": 0.07187494087652013,
+      "modeled_D_with_base_floor": 0.07187494087652013
+    },
+    {
+      "time": 188.904,
+      "battery": 14.32,
+      "state": 7.0,
+      "coolant": 42.0,
+      "load": 0.54,
+      "rpm": 848.0,
+      "afr": 13.13,
+      "adc": 20544.0,
+      "latency": 0.6335,
+      "total_pulse": 1.54,
+      "pulse": 0.7768,
+      "pump": 33.33,
+      "timing": 15.0,
+      "iat": 26.0,
+      "map": 32.47,
+      "airflow": 7.6,
+      "throttle": 5.1,
+      "lift": 1.0,
+      "factor": 0.44,
+      "transient": -0.5648,
+      "volts": 1.5673828125,
+      "flow_derived_load": 0.5377358490566038,
+      "modeled_A": 16.0337500321865,
+      "modeled_D": 15.552812583148459,
+      "modeled_D_with_base_floor": 15.552812583148459
+    },
+    {
+      "time": 215.531,
+      "battery": 14.24,
+      "state": 7.0,
+      "coolant": 44.0,
+      "load": 1.06,
+      "rpm": 1258.0,
+      "afr": 14.14,
+      "adc": 27072.0,
+      "latency": 0.6525,
+      "total_pulse": 6.4,
+      "pulse": 5.7058,
+      "pump": 33.33,
+      "timing": 1.5,
+      "iat": 26.0,
+      "map": 90.74,
+      "airflow": 30.71,
+      "throttle": 31.37,
+      "lift": 1.0,
+      "factor": 1.6,
+      "transient": 0.5136,
+      "volts": 2.0654296875,
+      "flow_derived_load": 1.4647058823529413,
+      "modeled_A": 8.355544782319054,
+      "modeled_D": 0.6541627307880813,
+      "modeled_D_with_base_floor": 0.6541627307880813
+    },
+    {
+      "time": 215.635,
+      "battery": 14.32,
+      "state": 7.0,
+      "coolant": 44.0,
+      "load": 1.26,
+      "rpm": 1419.0,
+      "afr": 14.12,
+      "adc": 27072.0,
+      "latency": 0.6382,
+      "total_pulse": 7.17,
+      "pulse": 6.6005,
+      "pump": 33.33,
+      "timing": 0.0,
+      "iat": 26.0,
+      "map": 90.87,
+      "airflow": 35.24,
+      "throttle": 31.76,
+      "lift": 1.0,
+      "factor": 1.58,
+      "transient": 0.3975,
+      "volts": 2.0654296875,
+      "flow_derived_load": 1.4900634249471458,
+      "modeled_A": 4.441211434205517,
+      "modeled_D": -1.9353511801195356,
+      "modeled_D_with_base_floor": 0.0390625
+    },
+    {
+      "time": 216.571,
+      "battery": 14.32,
+      "state": 7.0,
+      "coolant": 44.0,
+      "load": 0.56,
+      "rpm": 836.0,
+      "afr": 13.13,
+      "adc": 20608.0,
+      "latency": 0.6455,
+      "total_pulse": 1.54,
+      "pulse": 0.8173,
+      "pump": 33.33,
+      "timing": 15.0,
+      "iat": 26.0,
+      "map": 32.15,
+      "airflow": 7.24,
+      "throttle": 4.71,
+      "lift": 1.0,
+      "factor": 0.46,
+      "transient": -0.5545,
+      "volts": 1.572265625,
+      "flow_derived_load": 0.5196172248803829,
+      "modeled_A": 15.665312627851982,
+      "modeled_D": 15.093437623009104,
+      "modeled_D_with_base_floor": 15.093437623009104
+    },
+    {
+      "time": 246.729,
+      "battery": 14.24,
+      "state": 7.0,
+      "coolant": 46.0,
+      "load": 0.91,
+      "rpm": 1582.0,
+      "afr": 15.13,
+      "adc": 33664.0,
+      "latency": 0.6573,
+      "total_pulse": 4.1,
+      "pulse": 3.4398,
+      "pump": 33.33,
+      "timing": 12.5,
+      "iat": 26.0,
+      "map": 52.2,
+      "airflow": 25.07,
+      "throttle": 12.55,
+      "lift": 1.0,
+      "factor": 1.16,
+      "transient": 0.108,
+      "volts": 2.568359375,
+      "flow_derived_load": 0.9508217446270544,
+      "modeled_A": 18.293944815775504,
+      "modeled_D": 12.450705430360165,
+      "modeled_D_with_base_floor": 12.450705430360165
+    },
+    {
+      "time": 246.834,
+      "battery": 14.24,
+      "state": 7.0,
+      "coolant": 46.0,
+      "load": 0.94,
+      "rpm": 1650.0,
+      "afr": 15.4,
+      "adc": 33792.0,
+      "latency": 0.662,
+      "total_pulse": 4.1,
+      "pulse": 3.5017,
+      "pump": 33.33,
+      "timing": 12.0,
+      "iat": 26.0,
+      "map": 51.56,
+      "airflow": 26.37,
+      "throttle": 12.55,
+      "lift": 1.0,
+      "factor": 1.15,
+      "transient": 0.0827,
+      "volts": 2.578125,
+      "flow_derived_load": 0.9589090909090909,
+      "modeled_A": 18.242562589553835,
+      "modeled_D": 12.211913333919162,
+      "modeled_D_with_base_floor": 12.211913333919162
+    },
+    {
+      "time": 249.124,
+      "battery": 13.44,
+      "state": 7.0,
+      "coolant": 46.0,
+      "load": 0.47,
+      "rpm": 558.0,
+      "afr": 13.6,
+      "adc": 23424.0,
+      "latency": 0.7113,
+      "total_pulse": 3.07,
+      "pulse": 2.3405,
+      "pump": 33.33,
+      "timing": 15.0,
+      "iat": 26.0,
+      "map": 44.97,
+      "airflow": 7.0,
+      "throttle": 5.88,
+      "lift": 1.0,
+      "factor": 1.52,
+      "transient": 0.5111,
+      "volts": 1.787109375,
+      "flow_derived_load": 0.7526881720430108,
+      "modeled_A": 15.000859319427995,
+      "modeled_D": 11.019062151983466,
+      "modeled_D_with_base_floor": 11.019062151983466
+    }
+  ],
+  "sd_wrapper_opcode_replays": [
+    {
+      "seconds": 145.006,
+      "logged_g_s": 14.29,
+      "replayed_g_s": 14.282204627990723,
+      "replayed_raw_load": 0.6966929086824742,
+      "logged_conditioned_load": 0.7
+    },
+    {
+      "seconds": 154.468,
+      "logged_g_s": 11.16,
+      "replayed_g_s": 11.07292652130127,
+      "replayed_raw_load": 0.703042953733414,
+      "logged_conditioned_load": 0.73
+    },
+    {
+      "seconds": 187.864,
+      "logged_g_s": 34.28,
+      "replayed_g_s": 38.24549102783203,
+      "replayed_raw_load": 1.7061185588623955,
+      "logged_conditioned_load": 1.11
+    },
+    {
+      "seconds": 188.904,
+      "logged_g_s": 7.6,
+      "replayed_g_s": 7.233339309692383,
+      "replayed_raw_load": 0.5117928756857818,
+      "logged_conditioned_load": 0.54
+    },
+    {
+      "seconds": 189.423,
+      "logged_g_s": 8.5,
+      "replayed_g_s": 8.412592887878418,
+      "replayed_raw_load": 0.7522437753691581,
+      "logged_conditioned_load": 0.63
+    },
+    {
+      "seconds": 200.034,
+      "logged_g_s": 11.48,
+      "replayed_g_s": 11.446229934692383,
+      "replayed_raw_load": 0.6772917121119754,
+      "logged_conditioned_load": 0.68
+    },
+    {
+      "seconds": 215.635,
+      "logged_g_s": 35.24,
+      "replayed_g_s": 39.697879791259766,
+      "replayed_raw_load": 1.6785572850426962,
+      "logged_conditioned_load": 1.26
+    },
+    {
+      "seconds": 216.571,
+      "logged_g_s": 7.24,
+      "replayed_g_s": 6.993201732635498,
+      "replayed_raw_load": 0.5019044305719257,
+      "logged_conditioned_load": 0.56
+    },
+    {
+      "seconds": 217.195,
+      "logged_g_s": 8.6,
+      "replayed_g_s": 8.584943771362305,
+      "replayed_raw_load": 0.7653738874914388,
+      "logged_conditioned_load": 0.65
+    },
+    {
+      "seconds": 248.604,
+      "logged_g_s": 3.61,
+      "replayed_g_s": 3.5913233757019043,
+      "replayed_raw_load": 0.2720699527046897,
+      "logged_conditioned_load": 0.26
+    },
+    {
+      "seconds": 249.124,
+      "logged_g_s": 7.0,
+      "replayed_g_s": 7.164660930633545,
+      "replayed_raw_load": 0.7703936484552198,
+      "logged_conditioned_load": 0.47
+    },
+    {
+      "seconds": 252.971,
+      "logged_g_s": 11.06,
+      "replayed_g_s": 11.069808006286621,
+      "replayed_raw_load": 0.68052098399303,
+      "logged_conditioned_load": 0.69
+    }
+  ],
+  "user_observation": "Engine stayed running but nearly stalled during blips; user confirms intentional key-off at the end.",
+  "assumptions": "Base D comparison assumes normal timing-RPM input follows logged RPM, AVCS tracking blend k=0 and off-idle selection; these were not logged. C130 is not final spark. CSV channels and exhaust AFR are not synchronized physical events. Intentional end-of-run shutdown is excluded from recovery windows. Different temperatures/blip amplitudes prevent a controlled before/after attribution."
+}

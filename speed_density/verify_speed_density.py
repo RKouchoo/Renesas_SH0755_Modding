@@ -623,12 +623,12 @@ def main(argv: list[str] | None = None) -> None:
     if not all(math.isfinite(value) and value > 0 for value in patch.IAT_DENSITY_CORRECTION):
         raise SystemExit("FAIL: IAT correction contains an invalid default")
 
-    for address in (patch.AVLS_NORMAL_SPEED_DATA_ADDR, patch.AVLS_HOT_SPEED_DATA_ADDR):
-        if struct.unpack_from(">7f", image, address) != patch.AVLS_SPEED_DISABLED:
-            raise SystemExit("FAIL: vehicle-speed AVLS request remains active")
-    for address in (patch.AVLS_FIXED_SPEED_A_ADDR, patch.AVLS_FIXED_SPEED_B_ADDR):
-        if struct.unpack_from(">f", image, address)[0] != patch.AVLS_SPEED_DISABLED_VALUE:
-            raise SystemExit("FAIL: fixed/fallback AVLS speed request remains active")
+    for address in (patch.AVLS_NORMAL_PEDAL_DATA_ADDR, patch.AVLS_HOT_PEDAL_DATA_ADDR):
+        if struct.unpack_from(">7f", image, address) != patch.AVLS_PEDAL_DISABLED:
+            raise SystemExit("FAIL: pedal-based AVLS request remains active")
+    for address in (patch.AVLS_FIXED_PEDAL_A_ADDR, patch.AVLS_FIXED_PEDAL_B_ADDR):
+        if struct.unpack_from(">f", image, address)[0] != patch.AVLS_PEDAL_DISABLED_VALUE:
+            raise SystemExit("FAIL: fixed/fallback AVLS pedal request remains active")
     if tuple(
         struct.unpack_from(">f", image, address)[0]
         for address in (

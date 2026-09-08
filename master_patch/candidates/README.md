@@ -1,6 +1,6 @@
 # Idle-recovery calibration candidate
 
-`D2WD610H_idle_recovery_candidate.bin` is a separate offline candidate for the
+`D2WD610H_idle_recovery_candidate.bin` is a separate research candidate for the
 September 8 near-stall/lean-recovery investigation. It holds the existing
 1200-RPM VE in the lower idle rows at the measured vacuum pressures. Ten
 VE cells and the Subaru checksum differ from the 10:30 image; stock transient
@@ -14,9 +14,13 @@ cells bridge modeled air mass back to each row's unchanged 760-mmHg value.
 Checks include the slope between pressure knots, so rising pressure cannot
 reduce modeled air mass through this transition. There are 34 changed bytes.
 
-This candidate has passed offline checks but has not run on the engine. The
-calibration change is substantial below 800 RPM. Read the evidence, limits
-and next idle-only measurement in [IDLE_RECOVERY_AUDIT.md](../IDLE_RECOVERY_AUDIT.md).
+The [September 8 14:13 capture](../../logs/20260908_recovery_review.md) now
+matches this candidate's flash CRCs. Settled fueling improves, but rev blips
+still cause near-stalls down to 558 RPM. The user confirms it stayed running
+and the final shutdown was intentional. This is not a finished calibration;
+no new BIN was produced from that review. The change remains substantial
+below 800 RPM. Original build evidence and limits are in
+[IDLE_RECOVERY_AUDIT.md](../IDLE_RECOVERY_AUDIT.md).
 
 Build from canonical stock with `python3 master_patch/idle_recovery_candidate.py`.
 The script preserves the main 10:30 `D2WD610H_master_patch.bin` as the logged

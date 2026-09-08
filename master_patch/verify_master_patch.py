@@ -41,6 +41,9 @@ import test_stock_sensor_corrections as stock_sensor_test  # noqa: E402
 import test_wideband_fuel_guard_execution as guard_execution_test  # noqa: E402
 import test_primary_fueling_execution as primary_fueling_test  # noqa: E402
 import test_transient_fuel_execution as transient_fueling_test  # noqa: E402
+import test_idle_timing_execution as idle_timing_test  # noqa: E402
+import test_load_conditioning_execution as load_conditioning_test  # noqa: E402
+import test_idle_air_execution as idle_air_test  # noqa: E402
 import test_sh2e_fpu as fpu_test  # noqa: E402
 import test_injector_cut_execution as injector_cut_test  # noqa: E402
 import test_injector_scheduler_execution as injector_scheduler_test  # noqa: E402
@@ -55,7 +58,7 @@ LOGGER_FRAGMENT = HERE / "D2WD610H_master_logger_ecuparams.xml"
 LOGGER_DEFINITION = HERE / "D2WD610H_master_logger.xml"
 LOGGER_PROFILE = HERE / "D2WD610H_idle_diagnostic_profile.xml"
 EXPECTED_OUTPUT_SHA256 = "48d63cf3b7085afc672dd809cf08f4aef2b1aaae8a880f421e656467b7aaf8f0"
-EXPECTED_LOGGER_SHA256 = "feb5525e8fde3829450d50d78110d2507e874cdd70fc9767430cee1d6aad22c7"
+EXPECTED_LOGGER_SHA256 = "3ff3a49fb332551c411a635ddcac49d04fea5f3ee1c308d917fa0145b8d5925e"
 
 
 def fail(message: str) -> None:
@@ -312,13 +315,13 @@ def verify_avls_dual_ve(image: bytes) -> None:
         if any(not math.isclose(a, b, abs_tol=1e-7) for a, b in zip(actual, expected)):
             fail(f"master {label}-lift VE seed changed unexpectedly")
 
-    for address in (speed_density.AVLS_NORMAL_SPEED_DATA_ADDR, speed_density.AVLS_HOT_SPEED_DATA_ADDR):
+    for address in (speed_density.AVLS_NORMAL_PEDAL_DATA_ADDR, speed_density.AVLS_HOT_PEDAL_DATA_ADDR):
         actual = struct.unpack_from(">7f", image, address)
-        if actual != speed_density.AVLS_SPEED_DISABLED:
-            fail(f"master retains a vehicle-speed AVLS request at 0x{address:05X}")
-    for address in (speed_density.AVLS_FIXED_SPEED_A_ADDR, speed_density.AVLS_FIXED_SPEED_B_ADDR):
-        if struct.unpack_from(">f", image, address)[0] != speed_density.AVLS_SPEED_DISABLED_VALUE:
-            fail(f"master retains a fixed/fallback speed request at 0x{address:05X}")
+        if actual != speed_density.AVLS_PEDAL_DISABLED:
+            fail(f"master retains a pedal-based AVLS request at 0x{address:05X}")
+    for address in (speed_density.AVLS_FIXED_PEDAL_A_ADDR, speed_density.AVLS_FIXED_PEDAL_B_ADDR):
+        if struct.unpack_from(">f", image, address)[0] != speed_density.AVLS_PEDAL_DISABLED_VALUE:
+            fail(f"master retains a fixed/fallback pedal request at 0x{address:05X}")
     actual_rpm_policy = tuple(
         struct.unpack_from(">f", image, address)[0]
         for address in (
@@ -809,6 +812,9 @@ def verify_logger_fragment() -> None:
         "E511": ("0xFFB874", "4", "float", {"x"}),
         "E512": ("0xFFBE40", "4", "float", {"x"}),
         "E513": ("0xFFBE48", "4", "float", {"x"}),
+        "E514": ("0xFFC468", "4", "float", {"x"}),
+        "E515": ("0xFFC2B8", "4", "float", {"x/.84"}),
+        "E516": ("0xFFB2BC", "1", "uint8", {"x"}),
     }
     parameters = list(root.findall("ecuparam"))
     by_id = {parameter.get("id"): parameter for parameter in parameters}
@@ -945,6 +951,12 @@ def verify_logger_profile() -> None:
                      logger_parameters[parameter_id].findall("./conversions/conversion")}
             if item.get("units") not in units:
                 fail(f"{path.name}: invalid units for {parameter_id}")
+            # RomRaider writes these labels into an unquoted CSV header.
+            # The first recovery capture exposed an extra field in E503's units.
+            if parameter_id in expected_selected:
+                label = logger_parameters[parameter_id].get("name", "") + item.get("units", "")
+                if any(character in label for character in ',\r\n'):
+                    fail(f"{path.name}: {parameter_id} would split the CSV header")
         switches = profile.findall("./switches/switch")
         switch_ids = [item.get("id") for item in switches]
         if (len(switch_ids) != len(set(switch_ids)) or
@@ -1172,6 +1184,9 @@ def main() -> None:
     guard_execution_test.verify_execution(image)
     primary_fueling_test.verify_execution(image)
     transient_fueling_test.verify_execution(image)
+    idle_timing_test.verify_execution(image)
+    load_conditioning_test.verify_execution(image)
+    idle_air_test.verify_execution(image)
     injector_cut_test.verify_execution(image)
     injector_scheduler_test.verify_execution(image)
     cut_interrupt_test.verify_execution(image)
@@ -1224,7 +1239,7 @@ def main() -> None:
     print("  fueling safety    : pressure-forced OL ON; 13.0-AFR delayed/latched cut ON")
     print("  guard execution   : cuts, native IRQ/context restore, locks and injector queues PASS")
     print("  logger            : complete D2WD610H-only SSM definition and fragment validated")
-    print("  capture profiles  : separate idle/after-start/recovery captures within native 43-address limit")
+    print("  capture profiles  : idle/after-start/recovery/idle-air profiles within native 43-address limit")
     print("  provenance        : root stock, base copy, and SRF payload remain byte-identical")
 
 

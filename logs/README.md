@@ -15,6 +15,21 @@ not generated patch artifacts and must not be treated as calibration approval.
   followed by near-stall RPM and lean recovery after throttle blips. The user
   reports the physical gauge followed RomRaider. See
   [the numerical review and chart](20260908_idle_review.md).
+- `romraiderlog_idle_diagnostic2_20260908_141335.csv` contains 2,510 samples
+  and 19 channels on the `6af0d1...` candidate, verified against recorded flash
+  CRCs. Settled fueling improves, but blips nearly stall the engine. The user
+  confirms intentional key-off at the end. Its AVLS units label contains an
+  unquoted comma; the [analysis](20260908_recovery_review.md) normalizes that
+  exact header in memory without changing the source CSV.
+
+`20260908_recovery_review.json` contains summaries and explicitly conditional
+timing-table comparisons; the associated PNG plots recorded channels. These
+are derived review artifacts, not another ECU capture.
+
+`20260908_load_recovery_replay.json` contains native load-filter/B874 replay
+and in-memory alpha sensitivity on the fixed 14:13 engine trajectory. It is
+not a new log or an engine prediction. The [follow-up audit](../master_patch/IDLE_AIR_RECOVERY_AUDIT.md)
+documents its limits and the new idle-air request profile for the same BIN.
 
 `20260908_transient_replay.json` contains **offline model outputs**, not new
 ECU measurements. It replays the complete capture through the retained B874

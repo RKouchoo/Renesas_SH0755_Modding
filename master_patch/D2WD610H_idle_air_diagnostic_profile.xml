@@ -9,43 +9,43 @@
         <parameter id="P6" units="%" />
         <parameter id="P7" livedata="selected" dash="selected" units="kPa" />
         <parameter id="P8" livedata="selected" dash="selected" units="rpm" />
-        <parameter id="P10" units="degrees" />
+        <parameter id="P10" livedata="selected" dash="selected" units="degrees" />
         <parameter id="P11" livedata="selected" dash="selected" units="C" />
-        <parameter id="P12" units="g/s" />
-        <parameter id="P13" units="%" />
+        <parameter id="P12" livedata="selected" dash="selected" units="g/s" />
+        <parameter id="P13" livedata="selected" dash="selected" units="%" />
         <parameter id="P17" livedata="selected" dash="selected" units="V" />
-        <parameter id="P21" livedata="selected" dash="selected" units="ms" />
+        <parameter id="P21" units="ms" />
         <parameter id="P24" units="mmHg" />
-        <parameter id="P30" units="%" />
+        <parameter id="P30" livedata="selected" dash="selected" units="%" />
         <parameter id="P38" units="%" />
-        <parameter id="P47" livedata="selected" dash="selected" units="%" />
+        <parameter id="P47" units="%" />
         <parameter id="P92" units="%" />
-        <parameter id="E32" units="g/rev" />
+        <parameter id="E32" livedata="selected" dash="selected" units="g/rev" />
         <parameter id="E33" livedata="selected" dash="selected" units="status" />
         <parameter id="E50" units="ms" />
         <parameter id="E51" units="kPa absolute" />
-        <parameter id="E60" units="ms" />
+        <parameter id="E60" livedata="selected" dash="selected" units="ms" />
         <parameter id="E81" units="%" />
         <parameter id="E84" units="estimated AFR" />
         <parameter id="E105" units="%" />
-        <parameter id="E123" livedata="selected" dash="selected" units="estimated AFR" />
+        <parameter id="E123" livedata="selected" dash="selected" units="fuel-air equivalence ratio" />
         <parameter id="E500" livedata="selected" dash="selected" units="estimated AFR (14.64 stoich)" />
-        <parameter id="E501" units="ADC counts" />
+        <parameter id="E501" livedata="selected" dash="selected" units="ADC counts" />
         <parameter id="E502" units="ready metric" />
         <parameter id="E503" units="AVLS mode (1 low; 3 high)" />
         <parameter id="E504" units="state (0 idle; 1 delay; 2 monitor; 3 cut)" />
         <parameter id="E505" units="task calls" />
         <parameter id="E506" units="raw flags" />
-        <parameter id="E507" livedata="selected" dash="selected" units="task calls" />
-        <parameter id="E508" livedata="selected" dash="selected" units="raw additive factor" />
-        <parameter id="E509" livedata="selected" dash="selected" units="raw additive factor" />
-        <parameter id="E510" livedata="selected" dash="selected" units="raw additive factor" />
+        <parameter id="E507" units="task calls" />
+        <parameter id="E508" units="raw additive factor" />
+        <parameter id="E509" units="raw additive factor" />
+        <parameter id="E510" units="raw additive factor" />
         <parameter id="E511" livedata="selected" dash="selected" units="raw additive factor" />
-        <parameter id="E512" livedata="selected" dash="selected" units="raw additive factor" />
-        <parameter id="E513" livedata="selected" dash="selected" units="raw additive factor" />
-        <parameter id="E514" units="rpm" />
-        <parameter id="E515" units="%" />
-        <parameter id="E516" units="raw flags" />
+        <parameter id="E512" units="raw additive factor" />
+        <parameter id="E513" units="raw additive factor" />
+        <parameter id="E514" livedata="selected" dash="selected" units="rpm" />
+        <parameter id="E515" livedata="selected" dash="selected" units="%" />
+        <parameter id="E516" livedata="selected" dash="selected" units="raw flags" />
     </parameters>
     <switches>
         <switch id="S4" />

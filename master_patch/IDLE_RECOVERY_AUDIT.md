@@ -1,13 +1,19 @@
 # September 8 — load-change fueling trace and idle-recovery candidate
 
+**Follow-up:** the [14:13 candidate capture](../logs/20260908_recovery_review.md)
+shows improved settled fueling but unresolved near-stall recovery. B874 is
+now measured directly, and the timing drops during opening are strongly
+compatible with the base-D map. The remainder records the initial offline
+build/trace; its proposed first validation has now happened.
+
 The unexplained pulse reduction now has a strong software attribution: stock
 load-change compensation `B874` becomes substantially negative as modeled
 load falls. The idle VE taper makes that fall larger. A separate candidate
 removes the steep VE drop in the measured idle-pressure region while keeping
 the stock transient routine and its calibration intact.
 
-This is an offline repair candidate, not an engine-validated cure. No ECU
-connection, flashing or engine operation was performed for this work.
+This candidate was produced offline; it has not resolved rev recovery. No ECU
+connection, flashing or engine operation was performed by the agent.
 
 ## Retained routine identification corrected
 
@@ -123,7 +129,7 @@ transient compensation is also the order recommended in
 [Haltech's transient tuning guidance](https://support.haltech.com/portal/en/kb/articles/tuning).
 That general guidance does not validate this Subaru calibration.
 
-## Checks and next measurement
+## Initial checks and proposed first measurement
 
 - Eight retained-code execution groups cover neutral steady load, signed
   responses long after startup, slow-history decay, startup/flag gates, both
@@ -139,7 +145,8 @@ That general guidance does not validate this Subaru calibration.
   an engine validation or a claim that the baseline hash check accepts it.
 - RomRaider's real queue and A8 builder retain all 19 recovery channels after
   reload, producing a checksum-valid 43-address / 136-byte request. This new
-  selection has not yet been captured live.
+  selection subsequently produced the complete 14:13 capture. Its units-label
+  comma required the header correction documented in the follow-up.
 
 For the next controlled validation use the
 [idle recovery profile](D2WD610H_idle_recovery_profile.xml) with the updated

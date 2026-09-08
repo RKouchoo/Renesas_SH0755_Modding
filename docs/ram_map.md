@@ -9,11 +9,11 @@ unless marked *(inferred)*. Cross-refs: [D2WD610H_RE_notes.md](D2WD610H_RE_notes
 | RAM addr | Type | Meaning | Evidence |
 |---|---|---|---|
 | **0xFFFFB544** | float | **Engine RPM** | compared vs 4000/3800/512/510; table input; ign+AVLS |
-| **0xFFFFB538** | float | **Vehicle speed, km/h** | `ign_idle_timing_target_update` compares it with the stock 4.0-km/h threshold at 0x77E1C; also consumed by AVLS logic |
+| **0xFFFFB538** | float | **Vehicle speed, km/h** | `ign_idle_timing_target_update` compares it with the stock 4.0-km/h threshold at 0x77E1C; gate input to pedal conditioning |
 | **0xFFFFB420** | float | **Final mass airflow, g/s** | stock final-airflow store; master speed density replaces its producer |
 | **0xFFFFB428** | float | **Raw engine load, g/rev** | stock calculation is `B420 * 60 / B544` before conditioning |
 | **0xFFFFB438** | float | **Conditioned engine load, g/rev** | load axis input for AVCS, ignition, fuel, and knock consumers |
-| **0xFFFFB46C** | float | **Conditioned vehicle speed, km/h** | snapshot of B4C8 compared with the AVLS RPM-versus-speed boundary; not engine load |
+| **0xFFFFB46C** | float | **Conditioned accelerator pedal, percent** | snapshot of B4C8 used by P30, AVLS and idle-air release qualification; [native proof](../master_patch/IDLE_AIR_RECOVERY_AUDIT.md) |
 | **0xFFFFB124** | float | **Engine-oil temperature, degrees C** | AB12 thermistor conversion through descriptor 0x60950; source for the AVLS selector |
 | **0xFFFFCF94** | float | **Conditioned/fallback engine-oil temperature, degrees C** | valid B124 or stock 70 C fallback; selects AVLS cold/normal/hot state |
 | **0xFFFFABC4** | float | **Manifold pressure (MAP), native mmHg absolute** | `map_sensor_voltage_to_pressure_process` @0x7A14 output; `MAP = voltage × scaling[1] + scaling[0]` |
@@ -64,7 +64,7 @@ allocates no RAM and does not alter the stock correction array.
 | 0xFFFFCD9C | AVLS operating state / curve selector (2=curve 1, 3=curve 2) |
 | 0xFFFFCD9E | AVLS flags (mask 0x04 = hard-RPM high-cam latch; mask 0x10 = engine running) |
 | 0xFFFFCD84 | Mode timer |
-| 0xFFFFB46C | Conditioned vehicle speed in km/h compared to the oil-temperature-selected RPM-versus-speed curve |
+| 0xFFFFB46C | Conditioned accelerator pedal in percent compared to the oil-temperature-selected RPM-versus-pedal curve |
 | 0xFFFFB124 | Converted engine-oil temperature in degrees C |
 | 0xFFFFCF94 | Validated oil temperature, or stock 70 C fallback, used by the 13/15 and 113/115 C selector bands |
 | 0xFFFFB528 | Phase/crank counter (OSV actuation sync) |

@@ -158,13 +158,13 @@ HIGH_VE_DATA_ADDR = 0x0007E88C
 
 AVLS_COMMITTED_MODE_ADDR = 0xFFFFCD86
 AVLS_HIGH_MODE = 3
-AVLS_NORMAL_SPEED_DATA_ADDR = 0x0007D67C
-AVLS_HOT_SPEED_DATA_ADDR = 0x0007D6B4
-AVLS_SPEED_ROWS = 7
-AVLS_SPEED_DISABLED_VALUE = 110.0
-AVLS_SPEED_DISABLED = (AVLS_SPEED_DISABLED_VALUE,) * AVLS_SPEED_ROWS
-AVLS_FIXED_SPEED_A_ADDR = 0x0007D4B0
-AVLS_FIXED_SPEED_B_ADDR = 0x0007D4B4
+AVLS_NORMAL_PEDAL_DATA_ADDR = 0x0007D67C
+AVLS_HOT_PEDAL_DATA_ADDR = 0x0007D6B4
+AVLS_PEDAL_ROWS = 7
+AVLS_PEDAL_DISABLED_VALUE = 110.0
+AVLS_PEDAL_DISABLED = (AVLS_PEDAL_DISABLED_VALUE,) * AVLS_PEDAL_ROWS
+AVLS_FIXED_PEDAL_A_ADDR = 0x0007D4B0
+AVLS_FIXED_PEDAL_B_ADDR = 0x0007D4B4
 AVLS_ACTUATION_MIN_RPM_ADDR = 0x0007D4AC
 AVLS_RELEASE_RPM_ADDR = 0x0007D4B8
 AVLS_ENGAGE_RPM_ADDR = 0x0007D4BC
@@ -722,24 +722,24 @@ def apply_to_rom(rom: bytearray) -> list[tuple[str, int, bytes]]:
 def apply_predictable_avls_calibration(
     rom: bytearray,
 ) -> dict[str, tuple[int, bytes]]:
-    """Disable road-speed engagement and retain 3200/3000 RPM hysteresis."""
+    """Disable pedal-based engagement and retain 3200/3000 RPM hysteresis."""
     writes = {
-        "AVLS Vehicle Speed Threshold (Normal Oil Temperature)": (
-            AVLS_NORMAL_SPEED_DATA_ADDR,
-            b"".join(f32(value) for value in AVLS_SPEED_DISABLED),
+        "AVLS Accelerator Pedal Threshold (Normal Oil Temperature)": (
+            AVLS_NORMAL_PEDAL_DATA_ADDR,
+            b"".join(f32(value) for value in AVLS_PEDAL_DISABLED),
         ),
-        "AVLS Vehicle Speed Threshold (High Oil Temperature)": (
-            AVLS_HOT_SPEED_DATA_ADDR,
-            b"".join(f32(value) for value in AVLS_SPEED_DISABLED),
+        "AVLS Accelerator Pedal Threshold (High Oil Temperature)": (
+            AVLS_HOT_PEDAL_DATA_ADDR,
+            b"".join(f32(value) for value in AVLS_PEDAL_DISABLED),
         ),
         "AVLS Actuation Minimum RPM": (
             AVLS_ACTUATION_MIN_RPM_ADDR, f32(AVLS_ACTUATION_MIN_RPM)
         ),
-        "AVLS Fixed/Fallback Speed Threshold A": (
-            AVLS_FIXED_SPEED_A_ADDR, f32(AVLS_SPEED_DISABLED_VALUE)
+        "AVLS Fixed/Fallback Pedal Threshold A": (
+            AVLS_FIXED_PEDAL_A_ADDR, f32(AVLS_PEDAL_DISABLED_VALUE)
         ),
-        "AVLS Fixed/Fallback Speed Threshold B": (
-            AVLS_FIXED_SPEED_B_ADDR, f32(AVLS_SPEED_DISABLED_VALUE)
+        "AVLS Fixed/Fallback Pedal Threshold B": (
+            AVLS_FIXED_PEDAL_B_ADDR, f32(AVLS_PEDAL_DISABLED_VALUE)
         ),
         "AVLS High Cam Release RPM": (
             AVLS_RELEASE_RPM_ADDR, f32(AVLS_RELEASE_RPM)

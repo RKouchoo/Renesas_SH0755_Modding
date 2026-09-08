@@ -1,5 +1,5 @@
 {
-  "status": "OFFLINE CANDIDATE; engine calibration remains unvalidated",
+  "status": "RESEARCH CANDIDATE; 14:13 capture improves settled fueling but rev recovery remains unresolved",
   "baseline_sha256": "48d63cf3b7085afc672dd809cf08f4aef2b1aaae8a880f421e656467b7aaf8f0",
   "candidate_sha256": "6af0d130b585abf9c9b275840ddb0b237485d84f8f8adf7b15df8462adc72433",
   "subaru_checksum": "0x16CB75E9",
