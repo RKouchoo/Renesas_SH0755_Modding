@@ -114,7 +114,7 @@ class PrimaryFuelMachine(GuardMachine):
             handled = False
         if handled:
             self.instructions += 1
-            assert self.instructions < 2000
+            assert self.instructions < self.INSTRUCTION_LIMIT
         else:
             self.pc = pc
             super().step(in_delay)

@@ -70,7 +70,7 @@ class OverrideMachine(RequestMachine):
             return super().step(in_delay)
         self.pc += 2
         self.instructions += 1
-        assert self.instructions < 2000
+        assert self.instructions < self.INSTRUCTION_LIMIT
 
     def call_lookup(self, target):
         if target in RECEIVE_GETTERS | {
@@ -149,7 +149,7 @@ class OverrideTests(unittest.TestCase):
                 cpu.write(0xFFFFAB06, raw, 2)
                 cpu.invoke(0x2F684, OFF_WRITES)
                 self.assertEqual(cpu.read(0xFFFFC640, 1) & 1, 0)
-                self.assertNotIn((0xFFFFAB06, 2), cpu.reads)
+                self.assertNotIn(0xFFFFAB06, cpu.reads)
                 cpu.invoke(0x2AAAC, {(0xFFFFC2B4, 4)})
                 self.assertEqual(cpu.get_float(0xFFFFC2B4), 8)
 
@@ -210,7 +210,7 @@ class OverrideTests(unittest.TestCase):
             for count in range(1, 30):
                 cpu.invoke(0x61A08, PAIR_WRITES)
                 self.assertEqual(cpu.read(0xFFFF8134, 1) & 1, int(count == 29))
-                self.assertNotIn((0xFFFFAB06, 2), cpu.reads)
+                self.assertNotIn(0xFFFFAB06, cpu.reads)
             cpu.invoke(0x64874, FAULT_WRITES)
             self.assertEqual(cpu.read(0xFFFFD274, 1) & 0x40, 0x40)
             cpu.put_float(0xFFFFC2B8, 6)
@@ -237,7 +237,7 @@ class OverrideTests(unittest.TestCase):
             cpu.write(0xFFFFAB06, maf_raw, 2)
             cpu.invoke(0xC5C8, ADC_WRITES)
             outputs.append((cpu.get_float(0xFFFFAF80), cpu.get_float(0xFFFFAF84)))
-            self.assertNotIn((0xFFFFAB06, 2), cpu.reads)
+            self.assertNotIn(0xFFFFAB06, cpu.reads)
         self.assertEqual(outputs[0], outputs[1])
         self.assertAlmostEqual(outputs[0][0], 4.0283203125, delta=1e-6)
         self.assertAlmostEqual(outputs[0][1], 8.056640625, delta=1e-6)

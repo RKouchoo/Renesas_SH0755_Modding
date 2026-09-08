@@ -1,0 +1,1963 @@
+{
+  "scope": "Offline analysis only; no ROM output, ECU connection, flash or engine operation.",
+  "user_observations": "Sluggish pickup predates dashpot changes. More dashpot experimentation did not help. Larger blips worsen recovery; even small throttle movements can leave prolonged rough low RPM.",
+  "first_user_dashpot": {
+    "sha256": "7590b6ce79b41caea9d8bb850a31c41318708687120e45a584ad5030c1c47b8f",
+    "checksum": "0x0D556987",
+    "tag": "0x26090802",
+    "flash": {
+      "available": true,
+      "path": "/Users/regan/.config/FastECU/0.1.0-beta.5/syslogs/log_fastecu_2026-09-08_17h59m01s.txt",
+      "matches_candidate": true,
+      "blocks": [
+        {
+          "block": 0,
+          "start": 0,
+          "length": 4096,
+          "crc": "0xC133D601"
+        },
+        {
+          "block": 1,
+          "start": 4096,
+          "length": 4096,
+          "crc": "0x840A76BF"
+        },
+        {
+          "block": 2,
+          "start": 8192,
+          "length": 4096,
+          "crc": "0xF1C48D21"
+        },
+        {
+          "block": 3,
+          "start": 12288,
+          "length": 4096,
+          "crc": "0xB56C5182"
+        },
+        {
+          "block": 4,
+          "start": 16384,
+          "length": 4096,
+          "crc": "0xCD616FA9"
+        },
+        {
+          "block": 5,
+          "start": 20480,
+          "length": 4096,
+          "crc": "0xAC3913AC"
+        },
+        {
+          "block": 6,
+          "start": 24576,
+          "length": 4096,
+          "crc": "0xBB1A48A4"
+        },
+        {
+          "block": 7,
+          "start": 28672,
+          "length": 4096,
+          "crc": "0x999FB0E5"
+        },
+        {
+          "block": 8,
+          "start": 32768,
+          "length": 32768,
+          "crc": "0xF49252F3"
+        },
+        {
+          "block": 9,
+          "start": 65536,
+          "length": 65536,
+          "crc": "0x8D7C92A9"
+        },
+        {
+          "block": 10,
+          "start": 131072,
+          "length": 65536,
+          "crc": "0xFFE4BF89"
+        },
+        {
+          "block": 11,
+          "start": 196608,
+          "length": 65536,
+          "crc": "0xCF8D8B68"
+        },
+        {
+          "block": 12,
+          "start": 262144,
+          "length": 65536,
+          "crc": "0xC3E145D2"
+        },
+        {
+          "block": 13,
+          "start": 327680,
+          "length": 65536,
+          "crc": "0xA4CBA2FB"
+        },
+        {
+          "block": 14,
+          "start": 393216,
+          "length": 65536,
+          "crc": "0xFFBC5EC1"
+        },
+        {
+          "block": 15,
+          "start": 458752,
+          "length": 65536,
+          "crc": "0x926036A9"
+        }
+      ]
+    }
+  },
+  "later_user_dashpot": {
+    "sha256": "2f80b8e5cb80361cdee170655bc26aa8ed8a41bcf4cd7f7249fe3f8c8eaa1f1c",
+    "checksum": "0x0807644D",
+    "tag": "0x26090803",
+    "flash": {
+      "available": true,
+      "path": "/Users/regan/.config/FastECU/0.1.0-beta.5/syslogs/log_fastecu_2026-09-08_17h59m01s.txt",
+      "matches_candidate": true,
+      "blocks": [
+        {
+          "block": 0,
+          "start": 0,
+          "length": 4096,
+          "crc": "0xC133D601"
+        },
+        {
+          "block": 1,
+          "start": 4096,
+          "length": 4096,
+          "crc": "0x840A76BF"
+        },
+        {
+          "block": 2,
+          "start": 8192,
+          "length": 4096,
+          "crc": "0xF1C48D21"
+        },
+        {
+          "block": 3,
+          "start": 12288,
+          "length": 4096,
+          "crc": "0xB56C5182"
+        },
+        {
+          "block": 4,
+          "start": 16384,
+          "length": 4096,
+          "crc": "0xCD616FA9"
+        },
+        {
+          "block": 5,
+          "start": 20480,
+          "length": 4096,
+          "crc": "0xAC3913AC"
+        },
+        {
+          "block": 6,
+          "start": 24576,
+          "length": 4096,
+          "crc": "0xBB1A48A4"
+        },
+        {
+          "block": 7,
+          "start": 28672,
+          "length": 4096,
+          "crc": "0x999FB0E5"
+        },
+        {
+          "block": 8,
+          "start": 32768,
+          "length": 32768,
+          "crc": "0xF49252F3"
+        },
+        {
+          "block": 9,
+          "start": 65536,
+          "length": 65536,
+          "crc": "0x8D7C92A9"
+        },
+        {
+          "block": 10,
+          "start": 131072,
+          "length": 65536,
+          "crc": "0xFFE4BF89"
+        },
+        {
+          "block": 11,
+          "start": 196608,
+          "length": 65536,
+          "crc": "0xCF8D8B68"
+        },
+        {
+          "block": 12,
+          "start": 262144,
+          "length": 65536,
+          "crc": "0xC3E145D2"
+        },
+        {
+          "block": 13,
+          "start": 327680,
+          "length": 65536,
+          "crc": "0xA4CBA2FB"
+        },
+        {
+          "block": 14,
+          "start": 393216,
+          "length": 65536,
+          "crc": "0xFFBC5EC1"
+        },
+        {
+          "block": 15,
+          "start": 458752,
+          "length": 65536,
+          "crc": "0x9E4FBB6C"
+        }
+      ]
+    }
+  },
+  "chronology": "18:00 verification matches first dashpot version. The 18:01, 18:11 and 18:15 captures precede the later 18:18 verification. The 18:17 pre-flash comparison still reads first-version CRC 926036A9. Do not attribute those captures to the later version merely because the filename was reused.",
+  "captures": [
+    {
+      "label": "18:01",
+      "file": "romraiderlog_20260908_180131.csv",
+      "sha256": "6fd6a6ecbc03d5d326c265ec8000ed4656666b0f3fb9db287a60f9f1be36c66d",
+      "samples": 1112,
+      "duration": 123.73,
+      "coolant_start_end": [
+        23.0,
+        32.0
+      ],
+      "median_interval_ms": 103.9999999999992,
+      "gaps_seconds": [
+        [
+          15.82,
+          24.085,
+          8.265
+        ]
+      ],
+      "minimum_running_rpm": {
+        "time": 80.774,
+        "battery": 14.64,
+        "state": 7.0,
+        "coolant": 28.0,
+        "load": 0.7,
+        "rpm": 816.0,
+        "afr": 12.58,
+        "adc": 16960.0,
+        "latency": 0.655,
+        "total_pulse": 3.33,
+        "pulse": 2.533,
+        "pump": 33.33,
+        "timing": 15.0,
+        "iat": 20.0,
+        "map": 44.1,
+        "airflow": 10.71,
+        "throttle": 7.06,
+        "baro": 712.0,
+        "ready": 50.0,
+        "raw_load_from_flow": 0.7875
+      },
+      "invalid_afr_count": 36,
+      "zero_net_pulse_running": [],
+      "pulse_consistency_outliers": [
+        {
+          "time": 82.128,
+          "battery": 14.4,
+          "state": 7.0,
+          "coolant": 28.0,
+          "load": 1.53,
+          "rpm": 1667.0,
+          "afr": 14.67,
+          "adc": 30144.0,
+          "latency": 0.624,
+          "total_pulse": 8.19,
+          "pulse": 32.623,
+          "pump": 66.67,
+          "timing": 2.0,
+          "iat": 20.0,
+          "map": 85.55,
+          "airflow": 44.73,
+          "throttle": 8.24,
+          "baro": 712.0,
+          "ready": 50.0,
+          "raw_load_from_flow": 1.6099580083983203
+        }
+      ],
+      "events": [
+        {
+          "start": 57.692,
+          "end": 63.692,
+          "peak_rpm": {
+            "time": 58.004,
+            "battery": 14.32,
+            "state": 7.0,
+            "coolant": 26.0,
+            "load": 0.97,
+            "rpm": 1514.0,
+            "afr": 14.6,
+            "adc": 30144.0,
+            "latency": 0.6312,
+            "total_pulse": 3.84,
+            "pulse": 3.482,
+            "pump": 33.33,
+            "timing": 15.0,
+            "iat": 20.0,
+            "map": 46.83,
+            "airflow": 20.5,
+            "throttle": 7.45,
+            "baro": 712.0,
+            "ready": 50.0,
+            "raw_load_from_flow": 0.8124174372523117
+          },
+          "min_rpm_after_peak": {
+            "time": 59.044,
+            "battery": 14.4,
+            "state": 7.0,
+            "coolant": 26.0,
+            "load": 0.71,
+            "rpm": 917.0,
+            "afr": 13.13,
+            "adc": 20544.0,
+            "latency": 0.6145,
+            "total_pulse": 3.33,
+            "pulse": 2.6648,
+            "pump": 33.33,
+            "timing": 15.0,
+            "iat": 20.0,
+            "map": 45.13,
+            "airflow": 12.27,
+            "throttle": 7.84,
+            "baro": 712.0,
+            "ready": 50.0,
+            "raw_load_from_flow": 0.8028353326063249
+          },
+          "min_timing": 13.0,
+          "max_throttle": 15.29,
+          "net_pulse_floor_samples": 0,
+          "zero_net_pulse": []
+        },
+        {
+          "start": 68.816,
+          "end": 74.816,
+          "peak_rpm": {
+            "time": 69.231,
+            "battery": 14.48,
+            "state": 7.0,
+            "coolant": 27.0,
+            "load": 0.89,
+            "rpm": 1246.0,
+            "afr": 14.57,
+            "adc": 29952.0,
+            "latency": 0.6288,
+            "total_pulse": 3.33,
+            "pulse": 2.8638,
+            "pump": 33.33,
+            "timing": 15.0,
+            "iat": 20.0,
+            "map": 42.51,
+            "airflow": 14.71,
+            "throttle": 5.88,
+            "baro": 712.0,
+            "ready": 50.0,
+            "raw_load_from_flow": 0.708346709470305
+          },
+          "min_rpm_after_peak": {
+            "time": 70.167,
+            "battery": 14.4,
+            "state": 7.0,
+            "coolant": 27.0,
+            "load": 0.69,
+            "rpm": 844.0,
+            "afr": 13.14,
+            "adc": 20480.0,
+            "latency": 0.6573,
+            "total_pulse": 3.07,
+            "pulse": 2.4882,
+            "pump": 33.33,
+            "timing": 15.0,
+            "iat": 20.0,
+            "map": 43.19,
+            "airflow": 10.67,
+            "throttle": 7.06,
+            "baro": 712.0,
+            "ready": 50.0,
+            "raw_load_from_flow": 0.7585308056872039
+          },
+          "min_timing": 5.5,
+          "max_throttle": 15.69,
+          "net_pulse_floor_samples": 0,
+          "zero_net_pulse": []
+        },
+        {
+          "start": 79.319,
+          "end": 81.709,
+          "peak_rpm": {
+            "time": 79.838,
+            "battery": 14.4,
+            "state": 7.0,
+            "coolant": 28.0,
+            "load": 1.09,
+            "rpm": 1504.0,
+            "afr": 0.0,
+            "adc": 59776.0,
+            "latency": 0.6312,
+            "total_pulse": 4.1,
+            "pulse": 4.0308,
+            "pump": 33.33,
+            "timing": 15.0,
+            "iat": 20.0,
+            "map": 45.67,
+            "airflow": 19.76,
+            "throttle": 5.49,
+            "baro": 712.0,
+            "ready": 50.0,
+            "raw_load_from_flow": 0.7882978723404256
+          },
+          "min_rpm_after_peak": {
+            "time": 80.774,
+            "battery": 14.64,
+            "state": 7.0,
+            "coolant": 28.0,
+            "load": 0.7,
+            "rpm": 816.0,
+            "afr": 12.58,
+            "adc": 16960.0,
+            "latency": 0.655,
+            "total_pulse": 3.33,
+            "pulse": 2.533,
+            "pump": 33.33,
+            "timing": 15.0,
+            "iat": 20.0,
+            "map": 44.1,
+            "airflow": 10.71,
+            "throttle": 7.06,
+            "baro": 712.0,
+            "ready": 50.0,
+            "raw_load_from_flow": 0.7875
+          },
+          "min_timing": 2.0,
+          "max_throttle": 37.65,
+          "net_pulse_floor_samples": 0,
+          "zero_net_pulse": []
+        },
+        {
+          "start": 81.709,
+          "end": 87.709,
+          "peak_rpm": {
+            "time": 82.233,
+            "battery": 14.4,
+            "state": 7.0,
+            "coolant": 28.0,
+            "load": 1.36,
+            "rpm": 1826.0,
+            "afr": 18.12,
+            "adc": 53120.0,
+            "latency": 0.6525,
+            "total_pulse": 4.61,
+            "pulse": 4.9203,
+            "pump": 66.67,
+            "timing": 15.0,
+            "iat": 20.0,
+            "map": 57.0,
+            "airflow": 27.5,
+            "throttle": 7.06,
+            "baro": 712.0,
+            "ready": 50.0,
+            "raw_load_from_flow": 0.9036144578313253
+          },
+          "min_rpm_after_peak": {
+            "time": 83.583,
+            "battery": 14.4,
+            "state": 7.0,
+            "coolant": 28.0,
+            "load": 0.72,
+            "rpm": 846.0,
+            "afr": 12.5,
+            "adc": 16832.0,
+            "latency": 0.6192,
+            "total_pulse": 3.58,
+            "pulse": 2.7793,
+            "pump": 33.33,
+            "timing": 15.0,
+            "iat": 20.0,
+            "map": 45.76,
+            "airflow": 11.57,
+            "throttle": 7.06,
+            "baro": 712.0,
+            "ready": 50.0,
+            "raw_load_from_flow": 0.8205673758865248
+          },
+          "min_timing": 2.0,
+          "max_throttle": 82.75,
+          "net_pulse_floor_samples": 0,
+          "zero_net_pulse": []
+        },
+        {
+          "start": 94.4,
+          "end": 100.4,
+          "peak_rpm": {
+            "time": 95.024,
+            "battery": 14.4,
+            "state": 7.0,
+            "coolant": 29.0,
+            "load": 1.35,
+            "rpm": 2014.0,
+            "afr": 18.13,
+            "adc": 50432.0,
+            "latency": 0.6288,
+            "total_pulse": 4.1,
+            "pulse": 4.2373,
+            "pump": 66.67,
+            "timing": 2.0,
+            "iat": 20.0,
+            "map": 59.76,
+            "airflow": 30.55,
+            "throttle": 7.06,
+            "baro": 712.0,
+            "ready": 50.0,
+            "raw_load_from_flow": 0.9101290963257199
+          },
+          "min_rpm_after_peak": {
+            "time": 96.375,
+            "battery": 14.4,
+            "state": 7.0,
+            "coolant": 29.0,
+            "load": 0.68,
+            "rpm": 842.0,
+            "afr": 12.61,
+            "adc": 17024.0,
+            "latency": 0.6382,
+            "total_pulse": 3.33,
+            "pulse": 2.6723,
+            "pump": 33.33,
+            "timing": 15.0,
+            "iat": 20.0,
+            "map": 44.07,
+            "airflow": 10.99,
+            "throttle": 7.06,
+            "baro": 712.0,
+            "ready": 50.0,
+            "raw_load_from_flow": 0.7831353919239905
+          },
+          "min_timing": 2.0,
+          "max_throttle": 100.0,
+          "net_pulse_floor_samples": 0,
+          "zero_net_pulse": []
+        }
+      ]
+    },
+    {
+      "label": "18:11",
+      "file": "romraiderlog_dashpot2_20260908_181118.csv",
+      "sha256": "dd07aeadc3d5c390c2ccb2fdf8514343acf54dfb2b9c83558bfcbcb28d0dc99d",
+      "samples": 1813,
+      "duration": 222.598,
+      "coolant_start_end": [
+        33.0,
+        46.0
+      ],
+      "median_interval_ms": 103.9999999999992,
+      "gaps_seconds": [
+        [
+          174.019,
+          191.859,
+          17.840000000000003
+        ],
+        [
+          200.179,
+          216.667,
+          16.488
+        ]
+      ],
+      "minimum_running_rpm": {
+        "time": 30.377,
+        "battery": 14.32,
+        "state": 7.0,
+        "coolant": 33.0,
+        "load": 0.65,
+        "rpm": 858.0,
+        "afr": 14.14,
+        "adc": 26880.0,
+        "latency": 0.643,
+        "total_pulse": 3.07,
+        "pulse": 2.4975,
+        "pump": 100.0,
+        "timing": 15.0,
+        "iat": 20.0,
+        "map": 42.75,
+        "airflow": 10.72,
+        "throttle": 7.06,
+        "baro": 712.0,
+        "ready": 50.0,
+        "raw_load_from_flow": 0.7496503496503497
+      },
+      "invalid_afr_count": 61,
+      "zero_net_pulse_running": [],
+      "pulse_consistency_outliers": [
+        {
+          "time": 216.667,
+          "battery": 14.32,
+          "state": 7.0,
+          "coolant": 46.0,
+          "load": 0.62,
+          "rpm": 1064.0,
+          "afr": 14.79,
+          "adc": 31680.0,
+          "latency": 0.6645,
+          "total_pulse": 2.82,
+          "pulse": 8.191,
+          "pump": 33.33,
+          "timing": 15.0,
+          "iat": 21.0,
+          "map": 37.34,
+          "airflow": 11.16,
+          "throttle": 6.67,
+          "baro": 712.0,
+          "ready": 50.0,
+          "raw_load_from_flow": 0.6293233082706767
+        }
+      ],
+      "events": []
+    },
+    {
+      "label": "18:15",
+      "file": "romraiderlog_dashpot3_20260908_181505.csv",
+      "sha256": "5150975c8ce9377691a7a7b38e5977aeb796d43c54be24d1debbbb71bddf1739",
+      "samples": 498,
+      "duration": 51.684,
+      "coolant_start_end": [
+        46.0,
+        49.0
+      ],
+      "median_interval_ms": 103.9999999999992,
+      "gaps_seconds": [],
+      "minimum_running_rpm": {
+        "time": 35.88,
+        "battery": 14.08,
+        "state": 7.0,
+        "coolant": 48.0,
+        "load": 0.52,
+        "rpm": 655.0,
+        "afr": 13.12,
+        "adc": 20352.0,
+        "latency": 0.6288,
+        "total_pulse": 2.82,
+        "pulse": 2.2295,
+        "pump": 33.33,
+        "timing": 15.0,
+        "iat": 22.0,
+        "map": 41.87,
+        "airflow": 7.88,
+        "throttle": 5.88,
+        "baro": 712.0,
+        "ready": 50.0,
+        "raw_load_from_flow": 0.7218320610687023
+      },
+      "invalid_afr_count": 6,
+      "zero_net_pulse_running": [
+        {
+          "time": 34.217,
+          "battery": 14.32,
+          "state": 7.0,
+          "coolant": 48.0,
+          "load": 1.19,
+          "rpm": 1973.0,
+          "afr": 14.58,
+          "adc": 28736.0,
+          "latency": 0.6573,
+          "total_pulse": 0.51,
+          "pulse": 0.0,
+          "pump": 33.33,
+          "timing": 15.0,
+          "iat": 21.0,
+          "map": 34.17,
+          "airflow": 15.64,
+          "throttle": 4.31,
+          "baro": 712.0,
+          "ready": 50.0,
+          "raw_load_from_flow": 0.4756208819057274
+        },
+        {
+          "time": 34.32,
+          "battery": 14.32,
+          "state": 7.0,
+          "coolant": 48.0,
+          "load": 0.85,
+          "rpm": 1935.0,
+          "afr": 13.59,
+          "adc": 23424.0,
+          "latency": 0.6455,
+          "total_pulse": 0.77,
+          "pulse": 0.0,
+          "pump": 33.33,
+          "timing": 15.0,
+          "iat": 21.0,
+          "map": 25.83,
+          "airflow": 10.65,
+          "throttle": 3.92,
+          "baro": 712.0,
+          "ready": 50.0,
+          "raw_load_from_flow": 0.3302325581395349
+        }
+      ],
+      "pulse_consistency_outliers": [],
+      "events": [
+        {
+          "start": 11.334,
+          "end": 17.334,
+          "peak_rpm": {
+            "time": 11.646,
+            "battery": 14.08,
+            "state": 7.0,
+            "coolant": 47.0,
+            "load": 1.19,
+            "rpm": 1628.0,
+            "afr": 17.76,
+            "adc": 54784.0,
+            "latency": 0.6478,
+            "total_pulse": 5.12,
+            "pulse": 3.6953,
+            "pump": 33.33,
+            "timing": 15.0,
+            "iat": 21.0,
+            "map": 40.84,
+            "airflow": 20.11,
+            "throttle": 4.71,
+            "baro": 712.0,
+            "ready": 50.0,
+            "raw_load_from_flow": 0.7411547911547911
+          },
+          "min_rpm_after_peak": {
+            "time": 12.998,
+            "battery": 14.32,
+            "state": 7.0,
+            "coolant": 47.0,
+            "load": 0.58,
+            "rpm": 683.0,
+            "afr": 12.57,
+            "adc": 16960.0,
+            "latency": 0.6265,
+            "total_pulse": 2.82,
+            "pulse": 2.256,
+            "pump": 33.33,
+            "timing": 15.0,
+            "iat": 21.0,
+            "map": 41.16,
+            "airflow": 8.09,
+            "throttle": 5.49,
+            "baro": 712.0,
+            "ready": 50.0,
+            "raw_load_from_flow": 0.710688140556369
+          },
+          "min_timing": 0.5,
+          "max_throttle": 32.94,
+          "net_pulse_floor_samples": 0,
+          "zero_net_pulse": []
+        },
+        {
+          "start": 17.468,
+          "end": 21.941,
+          "peak_rpm": {
+            "time": 17.99,
+            "battery": 14.24,
+            "state": 7.0,
+            "coolant": 47.0,
+            "load": 1.54,
+            "rpm": 1990.0,
+            "afr": 0.0,
+            "adc": 60032.0,
+            "latency": 0.643,
+            "total_pulse": 6.91,
+            "pulse": 4.4855,
+            "pump": 66.67,
+            "timing": 15.0,
+            "iat": 21.0,
+            "map": 56.09,
+            "airflow": 27.53,
+            "throttle": 6.27,
+            "baro": 712.0,
+            "ready": 0.0,
+            "raw_load_from_flow": 0.8300502512562815
+          },
+          "min_rpm_after_peak": {
+            "time": 19.55,
+            "battery": 14.08,
+            "state": 7.0,
+            "coolant": 48.0,
+            "load": 0.51,
+            "rpm": 684.0,
+            "afr": 12.61,
+            "adc": 16704.0,
+            "latency": 0.6857,
+            "total_pulse": 2.82,
+            "pulse": 2.109,
+            "pump": 33.33,
+            "timing": 15.0,
+            "iat": 21.0,
+            "map": 39.97,
+            "airflow": 7.8,
+            "throttle": 5.88,
+            "baro": 712.0,
+            "ready": 50.0,
+            "raw_load_from_flow": 0.6842105263157895
+          },
+          "min_timing": 0.0,
+          "max_throttle": 100.0,
+          "net_pulse_floor_samples": 5,
+          "zero_net_pulse": []
+        },
+        {
+          "start": 21.941,
+          "end": 27.941,
+          "peak_rpm": {
+            "time": 22.566,
+            "battery": 14.32,
+            "state": 7.0,
+            "coolant": 48.0,
+            "load": 1.46,
+            "rpm": 2029.0,
+            "afr": 18.58,
+            "adc": 51520.0,
+            "latency": 0.6525,
+            "total_pulse": 4.86,
+            "pulse": 3.2458,
+            "pump": 33.33,
+            "timing": 0.5,
+            "iat": 21.0,
+            "map": 46.24,
+            "airflow": 22.27,
+            "throttle": 5.49,
+            "baro": 712.0,
+            "ready": 50.0,
+            "raw_load_from_flow": 0.6585510103499261
+          },
+          "min_rpm_after_peak": {
+            "time": 24.125,
+            "battery": 14.24,
+            "state": 7.0,
+            "coolant": 48.0,
+            "load": 0.53,
+            "rpm": 677.0,
+            "afr": 13.14,
+            "adc": 20288.0,
+            "latency": 0.636,
+            "total_pulse": 2.82,
+            "pulse": 2.1492,
+            "pump": 33.33,
+            "timing": 15.0,
+            "iat": 21.0,
+            "map": 40.28,
+            "airflow": 7.74,
+            "throttle": 5.88,
+            "baro": 712.0,
+            "ready": 50.0,
+            "raw_load_from_flow": 0.6859675036927623
+          },
+          "min_timing": 0.0,
+          "max_throttle": 100.0,
+          "net_pulse_floor_samples": 4,
+          "zero_net_pulse": []
+        },
+        {
+          "start": 33.385,
+          "end": 39.208,
+          "peak_rpm": {
+            "time": 34.113,
+            "battery": 14.24,
+            "state": 7.0,
+            "coolant": 48.0,
+            "load": 1.52,
+            "rpm": 2157.0,
+            "afr": 15.6,
+            "adc": 36352.0,
+            "latency": 0.6455,
+            "total_pulse": 5.89,
+            "pulse": 3.551,
+            "pump": 66.67,
+            "timing": 0.5,
+            "iat": 21.0,
+            "map": 51.96,
+            "airflow": 27.31,
+            "throttle": 5.88,
+            "baro": 712.0,
+            "ready": 50.0,
+            "raw_load_from_flow": 0.7596662030598053
+          },
+          "min_rpm_after_peak": {
+            "time": 35.88,
+            "battery": 14.08,
+            "state": 7.0,
+            "coolant": 48.0,
+            "load": 0.52,
+            "rpm": 655.0,
+            "afr": 13.12,
+            "adc": 20352.0,
+            "latency": 0.6288,
+            "total_pulse": 2.82,
+            "pulse": 2.2295,
+            "pump": 33.33,
+            "timing": 15.0,
+            "iat": 22.0,
+            "map": 41.87,
+            "airflow": 7.88,
+            "throttle": 5.88,
+            "baro": 712.0,
+            "ready": 50.0,
+            "raw_load_from_flow": 0.7218320610687023
+          },
+          "min_timing": 0.0,
+          "max_throttle": 100.0,
+          "net_pulse_floor_samples": 0,
+          "zero_net_pulse": [
+            {
+              "time": 34.217,
+              "battery": 14.32,
+              "state": 7.0,
+              "coolant": 48.0,
+              "load": 1.19,
+              "rpm": 1973.0,
+              "afr": 14.58,
+              "adc": 28736.0,
+              "latency": 0.6573,
+              "total_pulse": 0.51,
+              "pulse": 0.0,
+              "pump": 33.33,
+              "timing": 15.0,
+              "iat": 21.0,
+              "map": 34.17,
+              "airflow": 15.64,
+              "throttle": 4.31,
+              "baro": 712.0,
+              "ready": 50.0,
+              "raw_load_from_flow": 0.4756208819057274
+            },
+            {
+              "time": 34.32,
+              "battery": 14.32,
+              "state": 7.0,
+              "coolant": 48.0,
+              "load": 0.85,
+              "rpm": 1935.0,
+              "afr": 13.59,
+              "adc": 23424.0,
+              "latency": 0.6455,
+              "total_pulse": 0.77,
+              "pulse": 0.0,
+              "pump": 33.33,
+              "timing": 15.0,
+              "iat": 21.0,
+              "map": 25.83,
+              "airflow": 10.65,
+              "throttle": 3.92,
+              "baro": 712.0,
+              "ready": 50.0,
+              "raw_load_from_flow": 0.3302325581395349
+            }
+          ]
+        },
+        {
+          "start": 39.208,
+          "end": 45.208,
+          "peak_rpm": {
+            "time": 39.729,
+            "battery": 14.24,
+            "state": 7.0,
+            "coolant": 49.0,
+            "load": 1.59,
+            "rpm": 2012.0,
+            "afr": 18.94,
+            "adc": 58432.0,
+            "latency": 0.6455,
+            "total_pulse": 7.42,
+            "pulse": 5.0572,
+            "pump": 66.67,
+            "timing": 15.0,
+            "iat": 21.0,
+            "map": 61.49,
+            "airflow": 31.13,
+            "throttle": 7.84,
+            "baro": 712.0,
+            "ready": 50.0,
+            "raw_load_from_flow": 0.9283300198807157
+          },
+          "min_rpm_after_peak": {
+            "time": 41.392,
+            "battery": 14.24,
+            "state": 7.0,
+            "coolant": 49.0,
+            "load": 0.51,
+            "rpm": 672.0,
+            "afr": 13.09,
+            "adc": 20224.0,
+            "latency": 0.636,
+            "total_pulse": 2.56,
+            "pulse": 2.068,
+            "pump": 33.33,
+            "timing": 15.0,
+            "iat": 22.0,
+            "map": 39.49,
+            "airflow": 7.63,
+            "throttle": 5.88,
+            "baro": 712.0,
+            "ready": 50.0,
+            "raw_load_from_flow": 0.68125
+          },
+          "min_timing": 0.0,
+          "max_throttle": 100.0,
+          "net_pulse_floor_samples": 6,
+          "zero_net_pulse": []
+        }
+      ]
+    }
+  ],
+  "timing_comparisons": [
+    {
+      "capture": "18:01",
+      "logged": {
+        "time": 79.527,
+        "battery": 14.56,
+        "state": 7.0,
+        "coolant": 28.0,
+        "load": 1.02,
+        "rpm": 1112.0,
+        "afr": 14.32,
+        "adc": 29568.0,
+        "latency": 0.6335,
+        "total_pulse": 6.91,
+        "pulse": 5.7933,
+        "pump": 33.33,
+        "timing": 5.5,
+        "iat": 20.0,
+        "map": 93.49,
+        "airflow": 31.08,
+        "throttle": 30.2,
+        "baro": 712.0,
+        "ready": 50.0,
+        "raw_load_from_flow": 1.676978417266187
+      },
+      "conditional_native_scenarios": [
+        {
+          "image": "stock",
+          "cam_tracking_ratio": 0,
+          "base_A": 7.068147659301758,
+          "base_D": 0.8590127229690552,
+          "selected_base": 0.8590127229690552,
+          "final_with_neutral_other_corrections": 2.1484375,
+          "final_minimum": 2.1484375
+        },
+        {
+          "image": "stock",
+          "cam_tracking_ratio": 0.5,
+          "base_A": 7.068147659301758,
+          "base_D": 0.8590127229690552,
+          "selected_base": 3.9635801315307617,
+          "final_with_neutral_other_corrections": 3.9635801315307617,
+          "final_minimum": 2.1484375
+        },
+        {
+          "image": "stock",
+          "cam_tracking_ratio": 1,
+          "base_A": 7.068147659301758,
+          "base_D": 0.8590127229690552,
+          "selected_base": 7.068147659301758,
+          "final_with_neutral_other_corrections": 7.068147659301758,
+          "final_minimum": 2.1484375
+        },
+        {
+          "image": "tested_dashpot",
+          "cam_tracking_ratio": 0,
+          "base_A": 7.068150043487549,
+          "base_D": 0.8590156435966492,
+          "selected_base": 0.8590156435966492,
+          "final_with_neutral_other_corrections": 2.1484375,
+          "final_minimum": 2.1484375
+        },
+        {
+          "image": "tested_dashpot",
+          "cam_tracking_ratio": 0.5,
+          "base_A": 7.068150043487549,
+          "base_D": 0.8590156435966492,
+          "selected_base": 3.963582754135132,
+          "final_with_neutral_other_corrections": 3.963582754135132,
+          "final_minimum": 2.1484375
+        },
+        {
+          "image": "tested_dashpot",
+          "cam_tracking_ratio": 1,
+          "base_A": 7.068150043487549,
+          "base_D": 0.8590156435966492,
+          "selected_base": 7.068150043487549,
+          "final_with_neutral_other_corrections": 7.068150043487549,
+          "final_minimum": 2.1484375
+        }
+      ]
+    },
+    {
+      "capture": "18:01",
+      "logged": {
+        "time": 81.919,
+        "battery": 14.48,
+        "state": 7.0,
+        "coolant": 28.0,
+        "load": 1.17,
+        "rpm": 1222.0,
+        "afr": 14.3,
+        "adc": 28544.0,
+        "latency": 0.6312,
+        "total_pulse": 7.68,
+        "pulse": 6.8457,
+        "pump": 33.33,
+        "timing": 2.0,
+        "iat": 20.0,
+        "map": 95.08,
+        "airflow": 33.59,
+        "throttle": 82.75,
+        "baro": 712.0,
+        "ready": 50.0,
+        "raw_load_from_flow": 1.649263502454992
+      },
+      "conditional_native_scenarios": [
+        {
+          "image": "stock",
+          "cam_tracking_ratio": 0,
+          "base_A": 3.998736619949341,
+          "base_D": -3.3920533657073975,
+          "selected_base": 0.0390625,
+          "final_with_neutral_other_corrections": 2.1484375,
+          "final_minimum": 2.1484375
+        },
+        {
+          "image": "stock",
+          "cam_tracking_ratio": 0.5,
+          "base_A": 3.998736619949341,
+          "base_D": -3.3920533657073975,
+          "selected_base": 0.3033416271209717,
+          "final_with_neutral_other_corrections": 2.1484375,
+          "final_minimum": 2.1484375
+        },
+        {
+          "image": "stock",
+          "cam_tracking_ratio": 1,
+          "base_A": 3.998736619949341,
+          "base_D": -3.3920533657073975,
+          "selected_base": 3.998736619949341,
+          "final_with_neutral_other_corrections": 3.998736619949341,
+          "final_minimum": 2.1484375
+        },
+        {
+          "image": "tested_dashpot",
+          "cam_tracking_ratio": 0,
+          "base_A": 3.9987401962280273,
+          "base_D": -3.3920507431030273,
+          "selected_base": 0.0390625,
+          "final_with_neutral_other_corrections": 2.1484375,
+          "final_minimum": 2.1484375
+        },
+        {
+          "image": "tested_dashpot",
+          "cam_tracking_ratio": 0.5,
+          "base_A": 3.9987401962280273,
+          "base_D": -3.3920507431030273,
+          "selected_base": 0.3033447265625,
+          "final_with_neutral_other_corrections": 2.1484375,
+          "final_minimum": 2.1484375
+        },
+        {
+          "image": "tested_dashpot",
+          "cam_tracking_ratio": 1,
+          "base_A": 3.9987401962280273,
+          "base_D": -3.3920507431030273,
+          "selected_base": 3.9987401962280273,
+          "final_with_neutral_other_corrections": 3.9987401962280273,
+          "final_minimum": 2.1484375
+        }
+      ]
+    },
+    {
+      "capture": "18:01",
+      "logged": {
+        "time": 94.607,
+        "battery": 14.4,
+        "state": 7.0,
+        "coolant": 29.0,
+        "load": 1.25,
+        "rpm": 1363.0,
+        "afr": 15.14,
+        "adc": 33600.0,
+        "latency": 0.6265,
+        "total_pulse": 8.19,
+        "pulse": 7.2675,
+        "pump": 66.67,
+        "timing": 2.0,
+        "iat": 20.0,
+        "map": 94.92,
+        "airflow": 38.61,
+        "throttle": 100.0,
+        "baro": 712.0,
+        "ready": 50.0,
+        "raw_load_from_flow": 1.699633162142333
+      },
+      "conditional_native_scenarios": [
+        {
+          "image": "stock",
+          "cam_tracking_ratio": 0,
+          "base_A": 3.7866482734680176,
+          "base_D": -2.7146880626678467,
+          "selected_base": 0.0390625,
+          "final_with_neutral_other_corrections": 2.1484375,
+          "final_minimum": 2.1484375
+        },
+        {
+          "image": "stock",
+          "cam_tracking_ratio": 0.5,
+          "base_A": 3.7866482734680176,
+          "base_D": -2.7146880626678467,
+          "selected_base": 0.5359801054000854,
+          "final_with_neutral_other_corrections": 2.1484375,
+          "final_minimum": 2.1484375
+        },
+        {
+          "image": "stock",
+          "cam_tracking_ratio": 1,
+          "base_A": 3.7866482734680176,
+          "base_D": -2.7146880626678467,
+          "selected_base": 3.7866482734680176,
+          "final_with_neutral_other_corrections": 3.7866482734680176,
+          "final_minimum": 2.1484375
+        },
+        {
+          "image": "tested_dashpot",
+          "cam_tracking_ratio": 0,
+          "base_A": 3.84824275970459,
+          "base_D": -2.685985803604126,
+          "selected_base": 0.0390625,
+          "final_with_neutral_other_corrections": 2.1484375,
+          "final_minimum": 2.1484375
+        },
+        {
+          "image": "tested_dashpot",
+          "cam_tracking_ratio": 0.5,
+          "base_A": 3.84824275970459,
+          "base_D": -2.685985803604126,
+          "selected_base": 0.5811284780502319,
+          "final_with_neutral_other_corrections": 2.1484375,
+          "final_minimum": 2.1484375
+        },
+        {
+          "image": "tested_dashpot",
+          "cam_tracking_ratio": 1,
+          "base_A": 3.84824275970459,
+          "base_D": -2.685985803604126,
+          "selected_base": 3.84824275970459,
+          "final_with_neutral_other_corrections": 3.84824275970459,
+          "final_minimum": 2.1484375
+        }
+      ]
+    },
+    {
+      "capture": "18:01",
+      "logged": {
+        "time": 94.816,
+        "battery": 14.4,
+        "state": 7.0,
+        "coolant": 29.0,
+        "load": 1.58,
+        "rpm": 1794.0,
+        "afr": 17.12,
+        "adc": 46656.0,
+        "latency": 0.6265,
+        "total_pulse": 8.7,
+        "pulse": 8.2138,
+        "pump": 66.67,
+        "timing": 2.0,
+        "iat": 20.0,
+        "map": 95.0,
+        "airflow": 51.43,
+        "throttle": 66.27,
+        "baro": 712.0,
+        "ready": 50.0,
+        "raw_load_from_flow": 1.7200668896321072
+      },
+      "conditional_native_scenarios": [
+        {
+          "image": "stock",
+          "cam_tracking_ratio": 0,
+          "base_A": 1.0095058679580688,
+          "base_D": -4.121683120727539,
+          "selected_base": 0.0390625,
+          "final_with_neutral_other_corrections": 2.1484375,
+          "final_minimum": 2.1484375
+        },
+        {
+          "image": "stock",
+          "cam_tracking_ratio": 0.5,
+          "base_A": 1.0095058679580688,
+          "base_D": -4.121683120727539,
+          "selected_base": 0.0390625,
+          "final_with_neutral_other_corrections": 2.1484375,
+          "final_minimum": 2.1484375
+        },
+        {
+          "image": "stock",
+          "cam_tracking_ratio": 1,
+          "base_A": 1.0095058679580688,
+          "base_D": -4.121683120727539,
+          "selected_base": 1.0095058679580688,
+          "final_with_neutral_other_corrections": 2.1484375,
+          "final_minimum": 2.1484375
+        },
+        {
+          "image": "tested_dashpot",
+          "cam_tracking_ratio": 0,
+          "base_A": -2.202324628829956,
+          "base_D": -4.41980504989624,
+          "selected_base": 0.0390625,
+          "final_with_neutral_other_corrections": 2.1484375,
+          "final_minimum": 2.1484375
+        },
+        {
+          "image": "tested_dashpot",
+          "cam_tracking_ratio": 0.5,
+          "base_A": -2.202324628829956,
+          "base_D": -4.41980504989624,
+          "selected_base": 0.0390625,
+          "final_with_neutral_other_corrections": 2.1484375,
+          "final_minimum": 2.1484375
+        },
+        {
+          "image": "tested_dashpot",
+          "cam_tracking_ratio": 1,
+          "base_A": -2.202324628829956,
+          "base_D": -4.41980504989624,
+          "selected_base": 0.0390625,
+          "final_with_neutral_other_corrections": 2.1484375,
+          "final_minimum": 2.1484375
+        }
+      ]
+    },
+    {
+      "capture": "18:01",
+      "logged": {
+        "time": 95.024,
+        "battery": 14.4,
+        "state": 7.0,
+        "coolant": 29.0,
+        "load": 1.35,
+        "rpm": 2014.0,
+        "afr": 18.13,
+        "adc": 50432.0,
+        "latency": 0.6288,
+        "total_pulse": 4.1,
+        "pulse": 4.2373,
+        "pump": 66.67,
+        "timing": 2.0,
+        "iat": 20.0,
+        "map": 59.76,
+        "airflow": 30.55,
+        "throttle": 7.06,
+        "baro": 712.0,
+        "ready": 50.0,
+        "raw_load_from_flow": 0.9101290963257199
+      },
+      "conditional_native_scenarios": [
+        {
+          "image": "stock",
+          "cam_tracking_ratio": 0,
+          "base_A": 10.758199691772461,
+          "base_D": 3.0484344959259033,
+          "selected_base": 3.0484344959259033,
+          "final_with_neutral_other_corrections": 3.0484344959259033,
+          "final_minimum": 2.1484375
+        },
+        {
+          "image": "stock",
+          "cam_tracking_ratio": 0.5,
+          "base_A": 10.758199691772461,
+          "base_D": 3.0484344959259033,
+          "selected_base": 6.903316974639893,
+          "final_with_neutral_other_corrections": 6.903316974639893,
+          "final_minimum": 2.1484375
+        },
+        {
+          "image": "stock",
+          "cam_tracking_ratio": 1,
+          "base_A": 10.758199691772461,
+          "base_D": 3.0484344959259033,
+          "selected_base": 10.758199691772461,
+          "final_with_neutral_other_corrections": 10.758199691772461,
+          "final_minimum": 2.1484375
+        },
+        {
+          "image": "tested_dashpot",
+          "cam_tracking_ratio": 0,
+          "base_A": 0.34726524353027344,
+          "base_D": 0.34726524353027344,
+          "selected_base": 0.34726524353027344,
+          "final_with_neutral_other_corrections": 2.1484375,
+          "final_minimum": 2.1484375
+        },
+        {
+          "image": "tested_dashpot",
+          "cam_tracking_ratio": 0.5,
+          "base_A": 0.34726524353027344,
+          "base_D": 0.34726524353027344,
+          "selected_base": 0.34726524353027344,
+          "final_with_neutral_other_corrections": 2.1484375,
+          "final_minimum": 2.1484375
+        },
+        {
+          "image": "tested_dashpot",
+          "cam_tracking_ratio": 1,
+          "base_A": 0.34726524353027344,
+          "base_D": 0.34726524353027344,
+          "selected_base": 0.34726524353027344,
+          "final_with_neutral_other_corrections": 2.1484375,
+          "final_minimum": 2.1484375
+        }
+      ]
+    },
+    {
+      "capture": "18:15",
+      "logged": {
+        "time": 11.437,
+        "battery": 14.32,
+        "state": 7.0,
+        "coolant": 47.0,
+        "load": 1.01,
+        "rpm": 1355.0,
+        "afr": 14.6,
+        "adc": 30016.0,
+        "latency": 0.643,
+        "total_pulse": 6.14,
+        "pulse": 5.8895,
+        "pump": 33.33,
+        "timing": 0.5,
+        "iat": 21.0,
+        "map": 83.41,
+        "airflow": 36.48,
+        "throttle": 29.8,
+        "baro": 712.0,
+        "ready": 50.0,
+        "raw_load_from_flow": 1.6153505535055348
+      },
+      "conditional_native_scenarios": [
+        {
+          "image": "stock",
+          "cam_tracking_ratio": 0,
+          "base_A": 11.998947143554688,
+          "base_D": 4.886904716491699,
+          "selected_base": 4.886904716491699,
+          "final_with_neutral_other_corrections": 4.886904716491699,
+          "final_minimum": 0.0390625
+        },
+        {
+          "image": "stock",
+          "cam_tracking_ratio": 0.5,
+          "base_A": 11.998947143554688,
+          "base_D": 4.886904716491699,
+          "selected_base": 8.442925453186035,
+          "final_with_neutral_other_corrections": 8.442925453186035,
+          "final_minimum": 0.0390625
+        },
+        {
+          "image": "stock",
+          "cam_tracking_ratio": 1,
+          "base_A": 11.998947143554688,
+          "base_D": 4.886904716491699,
+          "selected_base": 11.998947143554688,
+          "final_with_neutral_other_corrections": 11.998947143554688,
+          "final_minimum": 0.0390625
+        },
+        {
+          "image": "tested_dashpot",
+          "cam_tracking_ratio": 0,
+          "base_A": 11.99894905090332,
+          "base_D": 4.88690710067749,
+          "selected_base": 4.88690710067749,
+          "final_with_neutral_other_corrections": 4.88690710067749,
+          "final_minimum": 0.0390625
+        },
+        {
+          "image": "tested_dashpot",
+          "cam_tracking_ratio": 0.5,
+          "base_A": 11.99894905090332,
+          "base_D": 4.88690710067749,
+          "selected_base": 8.442927360534668,
+          "final_with_neutral_other_corrections": 8.442927360534668,
+          "final_minimum": 0.0390625
+        },
+        {
+          "image": "tested_dashpot",
+          "cam_tracking_ratio": 1,
+          "base_A": 11.99894905090332,
+          "base_D": 4.88690710067749,
+          "selected_base": 11.99894905090332,
+          "final_with_neutral_other_corrections": 11.99894905090332,
+          "final_minimum": 0.0390625
+        }
+      ]
+    },
+    {
+      "capture": "18:15",
+      "logged": {
+        "time": 17.677,
+        "battery": 14.24,
+        "state": 7.0,
+        "coolant": 47.0,
+        "load": 1.13,
+        "rpm": 1365.0,
+        "afr": 14.08,
+        "adc": 27072.0,
+        "latency": 0.6502,
+        "total_pulse": 6.66,
+        "pulse": 6.4565,
+        "pump": 33.33,
+        "timing": 0.0,
+        "iat": 21.0,
+        "map": 94.69,
+        "airflow": 41.99,
+        "throttle": 100.0,
+        "baro": 712.0,
+        "ready": 50.0,
+        "raw_load_from_flow": 1.8457142857142859
+      },
+      "conditional_native_scenarios": [
+        {
+          "image": "stock",
+          "cam_tracking_ratio": 0,
+          "base_A": 7.636866569519043,
+          "base_D": 0.2658858597278595,
+          "selected_base": 0.2658858597278595,
+          "final_with_neutral_other_corrections": 0.2658858597278595,
+          "final_minimum": 0.0390625
+        },
+        {
+          "image": "stock",
+          "cam_tracking_ratio": 0.5,
+          "base_A": 7.636866569519043,
+          "base_D": 0.2658858597278595,
+          "selected_base": 3.95137619972229,
+          "final_with_neutral_other_corrections": 3.95137619972229,
+          "final_minimum": 0.0390625
+        },
+        {
+          "image": "stock",
+          "cam_tracking_ratio": 1,
+          "base_A": 7.636866569519043,
+          "base_D": 0.2658858597278595,
+          "selected_base": 7.636866569519043,
+          "final_with_neutral_other_corrections": 7.636866569519043,
+          "final_minimum": 0.0390625
+        },
+        {
+          "image": "tested_dashpot",
+          "cam_tracking_ratio": 0,
+          "base_A": 7.636870384216309,
+          "base_D": 0.26588883996009827,
+          "selected_base": 0.26588883996009827,
+          "final_with_neutral_other_corrections": 0.26588883996009827,
+          "final_minimum": 0.0390625
+        },
+        {
+          "image": "tested_dashpot",
+          "cam_tracking_ratio": 0.5,
+          "base_A": 7.636870384216309,
+          "base_D": 0.26588883996009827,
+          "selected_base": 3.9513795375823975,
+          "final_with_neutral_other_corrections": 3.9513795375823975,
+          "final_minimum": 0.0390625
+        },
+        {
+          "image": "tested_dashpot",
+          "cam_tracking_ratio": 1,
+          "base_A": 7.636870384216309,
+          "base_D": 0.26588883996009827,
+          "selected_base": 7.636870384216309,
+          "final_with_neutral_other_corrections": 7.636870384216309,
+          "final_minimum": 0.0390625
+        }
+      ]
+    },
+    {
+      "capture": "18:15",
+      "logged": {
+        "time": 22.357,
+        "battery": 14.32,
+        "state": 7.0,
+        "coolant": 48.0,
+        "load": 1.49,
+        "rpm": 1696.0,
+        "afr": 18.37,
+        "adc": 54912.0,
+        "latency": 0.6502,
+        "total_pulse": 8.19,
+        "pulse": 7.651,
+        "pump": 66.67,
+        "timing": 0.0,
+        "iat": 21.0,
+        "map": 95.0,
+        "airflow": 50.25,
+        "throttle": 100.0,
+        "baro": 712.0,
+        "ready": 50.0,
+        "raw_load_from_flow": 1.7777122641509433
+      },
+      "conditional_native_scenarios": [
+        {
+          "image": "stock",
+          "cam_tracking_ratio": 0,
+          "base_A": 2.216583013534546,
+          "base_D": -2.9616613388061523,
+          "selected_base": 0.0390625,
+          "final_with_neutral_other_corrections": 0.0390625,
+          "final_minimum": 0.0390625
+        },
+        {
+          "image": "stock",
+          "cam_tracking_ratio": 0.5,
+          "base_A": 2.216583013534546,
+          "base_D": -2.9616613388061523,
+          "selected_base": 0.0390625,
+          "final_with_neutral_other_corrections": 0.0390625,
+          "final_minimum": 0.0390625
+        },
+        {
+          "image": "stock",
+          "cam_tracking_ratio": 1,
+          "base_A": 2.216583013534546,
+          "base_D": -2.9616613388061523,
+          "selected_base": 2.216583013534546,
+          "final_with_neutral_other_corrections": 2.216583013534546,
+          "final_minimum": 0.0390625
+        },
+        {
+          "image": "tested_dashpot",
+          "cam_tracking_ratio": 0,
+          "base_A": 0.005312188062816858,
+          "base_D": -3.5595314502716064,
+          "selected_base": 0.0390625,
+          "final_with_neutral_other_corrections": 0.0390625,
+          "final_minimum": 0.0390625
+        },
+        {
+          "image": "tested_dashpot",
+          "cam_tracking_ratio": 0.5,
+          "base_A": 0.005312188062816858,
+          "base_D": -3.5595314502716064,
+          "selected_base": 0.0390625,
+          "final_with_neutral_other_corrections": 0.0390625,
+          "final_minimum": 0.0390625
+        },
+        {
+          "image": "tested_dashpot",
+          "cam_tracking_ratio": 1,
+          "base_A": 0.005312188062816858,
+          "base_D": -3.5595314502716064,
+          "selected_base": 0.0390625,
+          "final_with_neutral_other_corrections": 0.0390625,
+          "final_minimum": 0.0390625
+        }
+      ]
+    },
+    {
+      "capture": "18:15",
+      "logged": {
+        "time": 33.8,
+        "battery": 14.32,
+        "state": 7.0,
+        "coolant": 48.0,
+        "load": 1.52,
+        "rpm": 1738.0,
+        "afr": 18.59,
+        "adc": 56320.0,
+        "latency": 0.643,
+        "total_pulse": 8.19,
+        "pulse": 7.6093,
+        "pump": 66.67,
+        "timing": 0.0,
+        "iat": 21.0,
+        "map": 94.92,
+        "airflow": 50.81,
+        "throttle": 100.0,
+        "baro": 712.0,
+        "ready": 50.0,
+        "raw_load_from_flow": 1.7540851553509784
+      },
+      "conditional_native_scenarios": [
+        {
+          "image": "stock",
+          "cam_tracking_ratio": 0,
+          "base_A": 1.9322240352630615,
+          "base_D": -3.3174147605895996,
+          "selected_base": 0.0390625,
+          "final_with_neutral_other_corrections": 0.0390625,
+          "final_minimum": 0.0390625
+        },
+        {
+          "image": "stock",
+          "cam_tracking_ratio": 0.5,
+          "base_A": 1.9322240352630615,
+          "base_D": -3.3174147605895996,
+          "selected_base": 0.0390625,
+          "final_with_neutral_other_corrections": 0.0390625,
+          "final_minimum": 0.0390625
+        },
+        {
+          "image": "stock",
+          "cam_tracking_ratio": 1,
+          "base_A": 1.9322240352630615,
+          "base_D": -3.3174147605895996,
+          "selected_base": 1.9322240352630615,
+          "final_with_neutral_other_corrections": 1.9322240352630615,
+          "final_minimum": 0.0390625
+        },
+        {
+          "image": "tested_dashpot",
+          "cam_tracking_ratio": 0,
+          "base_A": -0.8605853915214539,
+          "base_D": -3.8348042964935303,
+          "selected_base": 0.0390625,
+          "final_with_neutral_other_corrections": 0.0390625,
+          "final_minimum": 0.0390625
+        },
+        {
+          "image": "tested_dashpot",
+          "cam_tracking_ratio": 0.5,
+          "base_A": -0.8605853915214539,
+          "base_D": -3.8348042964935303,
+          "selected_base": 0.0390625,
+          "final_with_neutral_other_corrections": 0.0390625,
+          "final_minimum": 0.0390625
+        },
+        {
+          "image": "tested_dashpot",
+          "cam_tracking_ratio": 1,
+          "base_A": -0.8605853915214539,
+          "base_D": -3.8348042964935303,
+          "selected_base": 0.0390625,
+          "final_with_neutral_other_corrections": 0.0390625,
+          "final_minimum": 0.0390625
+        }
+      ]
+    },
+    {
+      "capture": "18:15",
+      "logged": {
+        "time": 34.008,
+        "battery": 14.24,
+        "state": 7.0,
+        "coolant": 48.0,
+        "load": 1.6,
+        "rpm": 2103.0,
+        "afr": 17.61,
+        "adc": 49728.0,
+        "latency": 0.6455,
+        "total_pulse": 7.68,
+        "pulse": 6.9428,
+        "pump": 66.67,
+        "timing": 0.0,
+        "iat": 21.0,
+        "map": 90.08,
+        "airflow": 50.88,
+        "throttle": 52.55,
+        "baro": 712.0,
+        "ready": 50.0,
+        "raw_load_from_flow": 1.4516405135520685
+      },
+      "conditional_native_scenarios": [
+        {
+          "image": "stock",
+          "cam_tracking_ratio": 0,
+          "base_A": 5.10642671585083,
+          "base_D": -0.8877801895141602,
+          "selected_base": 0.0390625,
+          "final_with_neutral_other_corrections": 0.0390625,
+          "final_minimum": 0.0390625
+        },
+        {
+          "image": "stock",
+          "cam_tracking_ratio": 0.5,
+          "base_A": 5.10642671585083,
+          "base_D": -0.8877801895141602,
+          "selected_base": 2.109323263168335,
+          "final_with_neutral_other_corrections": 2.109323263168335,
+          "final_minimum": 0.0390625
+        },
+        {
+          "image": "stock",
+          "cam_tracking_ratio": 1,
+          "base_A": 5.10642671585083,
+          "base_D": -0.8877801895141602,
+          "selected_base": 5.10642671585083,
+          "final_with_neutral_other_corrections": 5.10642671585083,
+          "final_minimum": 0.0390625
+        },
+        {
+          "image": "tested_dashpot",
+          "cam_tracking_ratio": 0,
+          "base_A": -1.61767578125,
+          "base_D": -1.8787109851837158,
+          "selected_base": 0.0390625,
+          "final_with_neutral_other_corrections": 0.0390625,
+          "final_minimum": 0.0390625
+        },
+        {
+          "image": "tested_dashpot",
+          "cam_tracking_ratio": 0.5,
+          "base_A": -1.61767578125,
+          "base_D": -1.8787109851837158,
+          "selected_base": 0.0390625,
+          "final_with_neutral_other_corrections": 0.0390625,
+          "final_minimum": 0.0390625
+        },
+        {
+          "image": "tested_dashpot",
+          "cam_tracking_ratio": 1,
+          "base_A": -1.61767578125,
+          "base_D": -1.8787109851837158,
+          "selected_base": 0.0390625,
+          "final_with_neutral_other_corrections": 0.0390625,
+          "final_minimum": 0.0390625
+        }
+      ]
+    },
+    {
+      "capture": "18:15",
+      "logged": {
+        "time": 35.88,
+        "battery": 14.08,
+        "state": 7.0,
+        "coolant": 48.0,
+        "load": 0.52,
+        "rpm": 655.0,
+        "afr": 13.12,
+        "adc": 20352.0,
+        "latency": 0.6288,
+        "total_pulse": 2.82,
+        "pulse": 2.2295,
+        "pump": 33.33,
+        "timing": 15.0,
+        "iat": 22.0,
+        "map": 41.87,
+        "airflow": 7.88,
+        "throttle": 5.88,
+        "baro": 712.0,
+        "ready": 50.0,
+        "raw_load_from_flow": 0.7218320610687023
+      },
+      "conditional_native_scenarios": [
+        {
+          "image": "stock",
+          "cam_tracking_ratio": 0,
+          "base_A": 14.799413681030273,
+          "base_D": 10.407519340515137,
+          "selected_base": 10.407519340515137,
+          "final_with_neutral_other_corrections": 10.407519340515137,
+          "final_minimum": 0.0390625
+        },
+        {
+          "image": "stock",
+          "cam_tracking_ratio": 0.5,
+          "base_A": 14.799413681030273,
+          "base_D": 10.407519340515137,
+          "selected_base": 12.603466033935547,
+          "final_with_neutral_other_corrections": 12.603466033935547,
+          "final_minimum": 0.0390625
+        },
+        {
+          "image": "stock",
+          "cam_tracking_ratio": 1,
+          "base_A": 14.799413681030273,
+          "base_D": 10.407519340515137,
+          "selected_base": 14.799413681030273,
+          "final_with_neutral_other_corrections": 14.799413681030273,
+          "final_minimum": 0.0390625
+        },
+        {
+          "image": "tested_dashpot",
+          "cam_tracking_ratio": 0,
+          "base_A": 14.79941463470459,
+          "base_D": 10.407520294189453,
+          "selected_base": 10.407520294189453,
+          "final_with_neutral_other_corrections": 10.407520294189453,
+          "final_minimum": 0.0390625
+        },
+        {
+          "image": "tested_dashpot",
+          "cam_tracking_ratio": 0.5,
+          "base_A": 14.79941463470459,
+          "base_D": 10.407520294189453,
+          "selected_base": 12.603466987609863,
+          "final_with_neutral_other_corrections": 12.603466987609863,
+          "final_minimum": 0.0390625
+        },
+        {
+          "image": "tested_dashpot",
+          "cam_tracking_ratio": 1,
+          "base_A": 14.79941463470459,
+          "base_D": 10.407520294189453,
+          "selected_base": 14.79941463470459,
+          "final_with_neutral_other_corrections": 14.79941463470459,
+          "final_minimum": 0.0390625
+        }
+      ]
+    }
+  ],
+  "tip_in_fixed_delta20_fixtures": [
+    {
+      "map_mmhg": 330,
+      "baro_minus_map": 382,
+      "requested": true,
+      "calculated_extra_microseconds": 1578.139892578125,
+      "event_boundary": [
+        [
+          1578.139892578125,
+          2228.139892578125
+        ]
+      ]
+    },
+    {
+      "map_mmhg": 482.5,
+      "baro_minus_map": 229.5,
+      "requested": true,
+      "calculated_extra_microseconds": 789.0699462890625,
+      "event_boundary": [
+        [
+          789.0699462890625,
+          1439.0699462890625
+        ]
+      ]
+    },
+    {
+      "map_mmhg": 560.6,
+      "baro_minus_map": 151.39999999999998,
+      "requested": false,
+      "calculated_extra_microseconds": 0.00030832906486466527,
+      "event_boundary": []
+    },
+    {
+      "map_mmhg": 650,
+      "baro_minus_map": 62,
+      "requested": false,
+      "calculated_extra_microseconds": 0.0,
+      "event_boundary": []
+    },
+    {
+      "map_mmhg": 712,
+      "baro_minus_map": 0,
+      "requested": false,
+      "calculated_extra_microseconds": 0.0,
+      "event_boundary": []
+    },
+    {
+      "map_mmhg": 760,
+      "baro_minus_map": -48,
+      "requested": false,
+      "calculated_extra_microseconds": 0.0,
+      "event_boundary": []
+    }
+  ],
+  "limitations": "No pedal, cam targets/positions, cam-tracking ratio, idle flag, tip-in flag/delta/pulse, fuel-cut reason or B874/B7DC in these evening captures. Calculations use rounded asynchronous channels; short tip-in events cannot be reconstructed from 104-ms sampling. AFR zero is an invalid-input sentinel. Isolated float pulse discrepancies are flagged, not treated as physical injector events. Cold temperatures and different blips preclude controlled dashpot comparisons. Native fixture tests do not predict engine response or validate a calibration."
+}

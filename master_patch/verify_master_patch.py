@@ -42,11 +42,15 @@ import test_wideband_fuel_guard_execution as guard_execution_test  # noqa: E402
 import test_primary_fueling_execution as primary_fueling_test  # noqa: E402
 import test_transient_fuel_execution as transient_fueling_test  # noqa: E402
 import test_idle_timing_execution as idle_timing_test  # noqa: E402
+import test_opening_timing_execution as opening_timing_test  # noqa: E402
+import test_tip_in_execution as tip_in_test  # noqa: E402
 import test_load_conditioning_execution as load_conditioning_test  # noqa: E402
 import test_idle_air_execution as idle_air_test  # noqa: E402
 import test_idle_air_handover_execution as idle_handover_test  # noqa: E402
 import test_idle_air_request_execution as idle_request_test  # noqa: E402
 import test_idle_air_override_execution as idle_override_test  # noqa: E402
+import test_throttle_link_execution as throttle_link_test  # noqa: E402
+import test_dbw_table_execution as dbw_table_test  # noqa: E402
 import test_pedal_patch_dependencies as pedal_dependencies_test  # noqa: E402
 import test_sh2e_fpu as fpu_test  # noqa: E402
 import test_injector_cut_execution as injector_cut_test  # noqa: E402
@@ -1190,11 +1194,15 @@ def main() -> None:
     primary_fueling_test.verify_execution(image)
     transient_fueling_test.verify_execution(image)
     idle_timing_test.verify_execution(image)
+    opening_timing_test.verify_execution(image)
+    tip_in_test.verify_execution(image)
     load_conditioning_test.verify_execution(image)
     idle_air_test.verify_execution(image)
     idle_handover_test.verify_execution(image)
     idle_request_test.verify_execution(image)
     idle_override_test.verify_execution(image)
+    throttle_link_test.verify_execution(image)
+    dbw_table_test.verify_execution(image)
     pedal_dependencies_test.verify_execution(image)
     injector_cut_test.verify_execution(image)
     injector_scheduler_test.verify_execution(image)

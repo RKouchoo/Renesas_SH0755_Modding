@@ -70,7 +70,7 @@ class RequestMachine(HandoverMachine):
             return super().step(in_delay)
         self.pc += 2
         self.instructions += 1
-        assert self.instructions < 2000
+        assert self.instructions < self.INSTRUCTION_LIMIT
 
     def call_lookup(self, target):
         if target in (0x18D08, 0x1629A, 0x2B8AC, 0x2B908, 0x653BA):
@@ -209,7 +209,7 @@ class RequestTests(unittest.TestCase):
                     cpu.write(0xFFFFAB08 + channel*2, raw, 2)
                     cpu.write(0xFFFFAB06, maf_raw, 2)
                     self.assertEqual(cpu.invoke(0xC688, set()), expected)
-                    self.assertNotIn((0xFFFFAB06, 2), cpu.reads)
+                    self.assertNotIn(0xFFFFAB06, cpu.reads)
 
     def test_final_request_adds_learning_and_honors_separate_overrides(self):
         cpu = RequestMachine(self.image)

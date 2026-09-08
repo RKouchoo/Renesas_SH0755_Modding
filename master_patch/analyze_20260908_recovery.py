@@ -70,13 +70,19 @@ def read_capture():
     return headings, rows
 
 
-def flash_identity(image):
-    if not FLASH_LOG.exists():
-        return {'available': False, 'path': str(FLASH_LOG)}
-    text = FLASH_LOG.read_text(errors='replace').split('after reflash ---')[-1]
+def flash_identity(image, flash_log=None, verification=-1):
+    path = FLASH_LOG if flash_log is None else Path(flash_log)
+    if not path.exists():
+        return {'available': False, 'path': str(path)}
+    sessions = path.read_text(errors='replace').split('after reflash ---')[1:]
+    if not sessions:
+        raise ValueError('No recorded post-flash verification in ' + str(path))
+    text = sessions[verification]
     entries = re.findall(
         r'FB(\d+)\s+0x([0-9a-fA-F]+)\s+0x([0-9a-fA-F]+).*?'
-        r'ROM CRC: 0x([0-9a-fA-F]+) IMG CRC: 0x([0-9a-fA-F]+)', text, re.S)
+        r'ROM CRC: 0x([0-9a-fA-F]+) IMG CRC: 0x([0-9a-fA-F]+)', text, re.S)[:16]
+    # A subsequent pre-flash comparison may share this section. Only the first
+    # complete 16-block set belongs to the selected post-flash verification.
     # FastECU custom reflected CRC, not zlib's polynomial. Source:
     # modules/ecu/flash_ecu_subaru_denso_sh705x_kline.cpp crc32/init_crc32_tab.
     table = []
@@ -97,7 +103,7 @@ def flash_identity(image):
     assert blocks[0]['start'] == 0
     assert all(a['start'] + a['length'] == b['start'] for a, b in zip(blocks, blocks[1:]))
     assert blocks[-1]['start'] + blocks[-1]['length'] == len(image)
-    return dict(available=True, path=str(FLASH_LOG), matches_candidate=True, blocks=blocks)
+    return dict(available=True, path=str(path), matches_candidate=True, blocks=blocks)
 
 
 def timing_endpoint(image, map_index, rpm, load):

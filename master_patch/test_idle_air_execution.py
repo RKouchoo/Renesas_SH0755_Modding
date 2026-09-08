@@ -91,7 +91,7 @@ class IdleAirMachine(LoadConditioningMachine):
             return super().step(in_delay)
         self.pc += 2
         self.instructions += 1
-        assert self.instructions < 2000
+        assert self.instructions < self.INSTRUCTION_LIMIT
 
     def table(self, target, descriptor, x, y):
         if descriptor == 0x604D0:
@@ -169,7 +169,7 @@ class IdleAirOutputMachine(IdleAirMachine):
             return super().step(in_delay)
         self.pc += 2
         self.instructions += 1
-        assert self.instructions < 2000
+        assert self.instructions < self.INSTRUCTION_LIMIT
 
     def call_lookup(self, target):
         if target in (0x36986, 0x12C12, 0x12C26, 0x14774, 0x14778, 0x2D1FC):

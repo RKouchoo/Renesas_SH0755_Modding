@@ -3,6 +3,12 @@
 These CSVs are preserved outside `master_patch` as diagnostic inputs. They are
 not generated patch artifacts and must not be treated as calibration approval.
 
+The [September 8 evening review](20260908_dashpot_review.md) covers the
+18:01, 18:11 and 18:15 dashpot captures, with matched recorded flash CRCs,
+timing execution and a tip-in pressure multiplier that can suppress added fuel.
+The report distinguishes both versions of the user's reused BIN filename.
+Its JSON and PNG are derived review artifacts, not new measurements.
+
 - `romraiderlog_20260903_022932.csv` is the engine-off/invalid capture used to
   establish that the earlier file did not contain the reported start.
 - `romraiderlog_20260903_023334.csv` contains the cold-start lean-out event

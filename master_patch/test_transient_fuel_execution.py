@@ -104,7 +104,7 @@ class TransientFuelMachine(PrimaryFuelMachine):
             self.pc = pc
             return super().step(in_delay)
         self.instructions += 1
-        assert self.instructions < 2000
+        assert self.instructions < self.INSTRUCTION_LIMIT
 
     def transient(self, load=None, rpm=None, coolant=None):
         for address, value in ((0xFFFFB438, load), (0xFFFFB544, rpm), (0xFFFFB3AC, coolant)):

@@ -51,7 +51,7 @@ class LoadConditioningMachine(TransientFuelMachine):
             self.r[n] = signed(self.load(address, 2), 16) & 0xFFFFFFFF
             self.pc += 2
             self.instructions += 1
-            assert self.instructions < 2000
+            assert self.instructions < self.INSTRUCTION_LIMIT
         else:
             super().step(in_delay)
 

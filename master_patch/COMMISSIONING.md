@@ -1,5 +1,13 @@
 # Master-patch commissioning order
 
+> **Evening follow-up:** dashpot experiments have not resolved sluggish pickup
+> or near-stall recovery. Native checks now identify low opening timing and
+> a stock tip-in pressure multiplier that can suppress supplemental fuel.
+> The minimum-pulse editor units were corrected; no BIN calibration changed.
+> The [evening review](../logs/20260908_dashpot_review.md) distinguishes both
+> user BIN versions and records the unlogged states still needed. No new flash
+> or engine run is recommended by this pass.
+
 > **Current next step:** leave the car off and continue tracing idle-air control
 > offline. The repeat rev test on the unchanged `6af0d130...` candidate is
 > withdrawn after the user's objection that it will nearly stall again.
@@ -14,6 +22,17 @@ selection clears with ignition on. D274 can still select a fault request
 from received status or the pedal-pair agreement monitor. Their actual
 states remain unlogged; these passing checks do not establish a near-stall
 repair. The candidate and prepared logger are unchanged.
+
+The [DBW/dashpot follow-up](IDLE_AIR_RECOVERY_AUDIT.md#dbw-tables-and-dashpot-follow-up)
+confirms both visible DBW maps/axes remain stock. Dashpot amount and decay
+remain calibration leads; increasing its shared hold threshold also delays
+idle feedback. All alternatives tested so far exist only in memory and do
+not establish a cure. The [packet trace](THROTTLE_LINK_AUDIT.md) verifies
+received-fault selection, without knowing the car's actual received status.
+The user's separate `D2WD610H_slight_dashpot_candidate.bin` experiment retains
+the earlier code fixes, but its six raised zero-request table cells do not
+increase normal zero-pedal idle air in native execution. It has not been
+promoted as a fix. No new BIN is needed for the test-only corrections.
 
 > **September 8 corrected development image:** SHA-256
 > `48d63cf3b7085afc672dd809cf08f4aef2b1aaae8a880f421e656467b7aaf8f0`,

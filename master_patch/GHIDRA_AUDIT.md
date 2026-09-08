@@ -1,5 +1,19 @@
 # D2WD610H master-patch Ghidra audit
 
+**FPU follow-up:** the [native opcode census](FPU_USAGE_AUDIT.md) supersedes
+the earlier hand instruction counts below. SD has 200/198 valid-path wrapper
+instructions and up to three FDIV operations inside stock lookup callees.
+Immediate FP consumers incur documented pipeline waits; actual ECU utilization
+and deadlines remain unmeasured. No executable bytes changed.
+
+**Evening follow-up:** [opening timing and tip-in](../logs/20260908_dashpot_review.md)
+now have thirteen additional native execution groups. `2777C` supplies a
+coolant-dependent final timing minimum; `23BAE` forms a separate supplemental
+fuel request and multiplies it by `CFBC-B2A0` vacuum compensation, which is
+zero near atmospheric pressure. The generator corrects the minimum-pulse
+float's display units only. Actual cam, tip-in and fuel-cut states are unlogged;
+no engine repair or new agent-built BIN is established.
+
 > **Repair implemented — 2026-09-08:** the current `48d63c...` development image
 > restores stock radiator-fan control and deletes actual CPC output/purge fuel
 > subtraction. Previous images overriding fan PWM remain quarantined, including
@@ -32,6 +46,13 @@ the full verifier passes. Scripted IRQ arrival/body and device boundaries remain
 explicit, and no real-time or physical-delivery measurement is claimed.
 
 ## Result
+
+The later [throttle-link trace](THROTTLE_LINK_AUDIT.md) executes transmit
+prerequisites, header/checksum validation and received status through D274's
+final override. The [DBW/dashpot follow-up](IDLE_AIR_RECOVERY_AUDIT.md#dbw-tables-and-dashpot-follow-up)
+pins both visible maps to stock and distinguishes the shared hold threshold
+from the separate air-decay constant. Twelve new bounded groups cover these
+paths; no ROM change or near-stall cure is established.
 
 The September 8 [final-request override trace](IDLE_AIR_RECOVERY_AUDIT.md#final-request-override-producers-and-pedal-pair-fault-path)
 adds native execution of the C618/C640 producers, shutdown counter, D274

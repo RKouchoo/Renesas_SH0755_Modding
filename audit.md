@@ -1,5 +1,66 @@
 # D2WD610H Patch Audits
 
+## 2026-09-08 — native FPU workload and interlocks
+
+The [FPU census](master_patch/FPU_USAGE_AUDIT.md) executes SD's stock float
+lookup helpers as well as its wrapper. No added wrapper contains FDIV; SD's
+helpers execute up to three per calculation. The idle fixture executes 476
+instructions including helpers, with 42 immediate FP dependency pairs inside
+the wrapper. The SH-2E manual specifies one extra slot for an ordinary
+immediate result dependency and 13 E1 cycles for division. This confirms an
+optimization opportunity, not a prolonged CPU freeze or a deadline guarantee.
+No BIN changed; existing engine timing/fuel findings remain open.
+
+## 2026-09-08 — evening blips, opening timing and tip-in pressure compensation
+
+Slow pickup predates dashpot changes. The 18:15 capture reaches 100% logged
+throttle / atmospheric MAP while timing falls to 0°, then timing returns to
+15° before recovery minima of 655–684 RPM. Two zero net-pulse samples in the
+largest blip have an unlogged cut source. Six new native timing groups execute
+all base producers and final composition; stock coolant-dependent minima
+account for the colder 18:01 run's 2° floor versus 0° later.
+
+Seven native tip-in groups identify an unchanged pressure multiplier that
+zeroes the separate supplemental pulse near atmospheric MAP. Increasing A/B
+pulse tables cannot overcome that zero. Retained flags/counters work in the
+fixtures; no bypass is justified. The master definition now displays the
+existing minimum as 0.186 ms instead of 0.744 ms, without changing a BIN.
+All thirteen groups and the full verifier pass.
+
+The user's filename changed from 7590b6... to 2f80b8...; recorded 18:00 and
+18:18 verifications match all 16 blocks respectively. All three evening
+captures precede the second flash. No agent-built ROM or engine test resulted.
+Evidence and limits: [evening review](logs/20260908_dashpot_review.md).
+
+## 2026-09-08 — throttle link, DBW tables and dashpot handover
+
+Seven new native groups cover outgoing messages, diagnostic prerequisites,
+frame validation and received-fault history through final throttle override.
+With request/fault state held fixed, repurposed sensors and synthetic airflow
+do not change the outgoing frame. Received changes require two agreeing
+accepted frames. Invalid frames leave history untouched; actual vehicle
+status is unknown. Four earlier read-counter assertions were corrected to
+use address keys, and the thirteen affected groups still pass.
+
+The user's DBW suggestion led to a complete comparison of both visible maps
+and axes: all bytes are stock-identical in both original BINs. Five further groups
+cover native map callers, zero-pedal idle-air composition and dashpot
+sensitivity. The decel hold threshold also delays feedback; a separate decay
+constant can extend the air taper without that delay in memory-only fixtures.
+Neither alternative is a validated calibration or written to a BIN.
+
+The user's separate slight-dashpot experiment changes six zero-request
+throttle-target cells, checksum and a marker, retaining the earlier code
+fixes. Native execution reads the raised targets but the zero-pedal limit
+removes their driver contribution before normal idle composition. This does
+not establish a useful dashpot repair. The user confirmed it was an experiment;
+there is no new firmware fix from this pass requiring a rebuilt BIN.
+
+The complete verifier and seven candidate-integrity groups pass. Artifacts
+and prepared logger remain unchanged; no repair or new engine test is
+established. Evidence: [throttle link](master_patch/THROTTLE_LINK_AUDIT.md)
+and [DBW/dashpot](master_patch/IDLE_AIR_RECOVERY_AUDIT.md#dbw-tables-and-dashpot-follow-up).
+
 ## 2026-09-08 — final-throttle override producers narrowed
 
 Continued offline with seven native execution groups. C618's override

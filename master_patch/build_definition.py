@@ -782,6 +782,28 @@ def update_patch_descriptions(target: ET.Element) -> None:
         set_description(table_by_name(target, name), description)
 
 
+def clarify_tip_in_units(parent: ET.Element) -> None:
+    # 23BAE compares the float at 763E0 directly with BEF0. The A/B
+    # descriptors multiply their uint16 entries by four before that compare;
+    # the float threshold is already in microseconds, not four-us table units.
+    threshold = table_by_name(parent, "Minimum Tip-in Enrichment Activation")
+    threshold.find("scaling").set("expression", "x*.001")
+    threshold.find("scaling").set("to_byte", "x/.001")
+    set_description(threshold,
+        "Minimum calculated supplemental injector pulse, in milliseconds. "
+        "Firmware compares this float in microseconds after all tip-in "
+        "multipliers; unlike the uint16 A/B tables it has no four-us raw scaling. "
+        "The throttle-change threshold and retained eligibility flags also apply.")
+    set_description(table_by_name(parent, "Tip-in Enrichment Compensation (MRP)"),
+        "Multiplier on the separate throttle-tip-in pulse. The native input is "
+        "barometric pressure minus retained manifold absolute pressure; the axis "
+        "displays the equivalent negative gauge pressure. Minus 100 percent "
+        "means zero added fuel. The retained first cell is minus 100 percent, "
+        "so that multiplier also applies toward atmospheric pressure and boost "
+        "where the lookup clamps to the first cell. This is distinct from "
+        "the signed load-change fuel correction.")
+
+
 def apply_master_categories(parent: ET.Element, target: ET.Element) -> None:
     """Assign and order the flat RomRaider menu categories by tuning workflow."""
     for rom in (parent, target):
@@ -979,6 +1001,7 @@ def build_tree() -> ET.ElementTree:
     for name in BOOST_NAMES:
         target.append(deepcopy(table_by_name(boost_target, name)))
     update_patch_descriptions(target)
+    clarify_tip_in_units(parent)
     add_wideband_templates(parent, target)
     add_fueling_safety_templates(parent, target)
     add_fuel_pump_tables(target)

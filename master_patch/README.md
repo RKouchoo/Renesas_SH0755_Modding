@@ -36,6 +36,14 @@ firmware work into one deterministic stock-to-output build:
   and
 - focused, self-contained D2WD610H RomRaider ECU and logger definitions.
 
+The [evening opening/recovery review](../logs/20260908_dashpot_review.md)
+identifies retained tip-in pressure compensation that can suppress the
+separate supplemental pulse near atmospheric pressure. Opening timing also
+falls to 0–2° despite large logged throttle openings. Thirteen new native
+groups and the full verifier pass, but these findings do not establish an
+engine repair. Minimum tip-in pulse editor units were corrected; no BIN
+threshold or other engine calibration changed in this pass.
+
 The generated baseline is `D2WD610H_master_patch.bin`, SHA-256
 `48d63cf3b7085afc672dd809cf08f4aef2b1aaae8a880f421e656467b7aaf8f0`.
 It is 512 KiB, contains CALID `D2WD610H`, and has a valid Subaru additive
@@ -64,6 +72,13 @@ changed or promoted to a finished tune. The main BIN above remains the logged
 
 The [load/idle-air follow-up](IDLE_AIR_RECOVERY_AUDIT.md) reproduces retained
 load filtering and transient compensation with native instruction replay.
+The subsequent [DBW/dashpot check](IDLE_AIR_RECOVERY_AUDIT.md#dbw-tables-and-dashpot-follow-up)
+confirms both visible DBW maps and axes are untouched in both BINs. Idle air
+survives zero pedal in the normal native request route. The deceleration hold
+threshold also delays feedback; a separate air-decay constant has a distinct
+effect in memory-only tests. Suitability for the modified engine remains
+unproven. Seven [throttle-link groups](THROTTLE_LINK_AUDIT.md) also execute
+packet validation and received-fault overrides, whose actual state is unlogged.
 Faster filtering has mixed fuel effects; no further ROM change was made.
 The new 19-channel `D2WD610H_idle_air_diagnostic_profile.xml` adds effective
 idle RPM target, combined throttle request, pedal position and air-feedback flags
@@ -327,6 +342,8 @@ and verifies provenance and checksum.
 | `test_idle_air_handover_execution.py` | Native periodic timer division, task call order and stationary deceleration-air/feedback handover; five bounded groups, including distinct fault effects. |
 | `test_idle_air_request_execution.py` | Native base-air/coolant calculation, air-to-plate conversion, combined/final selections and a raw ADC fault helper; six bounded groups with explicit unlogged-state fixtures. |
 | `test_idle_air_override_execution.py` | Native ignition/RPM override gates, shutdown counter, D274 fault aggregation, pedal-pair monitor and separate ADC channels; seven bounded groups. |
+| `THROTTLE_LINK_AUDIT.md` / `test_throttle_link_execution.py` | Seven groups execute transmit data/prerequisites, receive validation, per-bit history and final fault selection; hardware and raw fault producers remain boundaries. |
+| `test_dbw_table_execution.py` | Five groups verify untouched DBW maps/axes, native callers, zero-pedal idle air, separate/shared dashpot controls, and clipping of the user's zero-request table experiment. |
 | `test_pedal_patch_dependencies.py` | Five groups isolate added decisions from pedal state, verify the separate speed channel and check in-memory mistaken-address negative controls. |
 | `IDLE_RECOVERY_AUDIT.md` / `idle_recovery_candidate.py` | Native load-change trace and isolated ten-cell VE candidate; settled fueling improved in first candidate capture, blip recovery unresolved. |
 | `analyze_20260908_recovery.py` / `test_idle_timing_execution.py` | Candidate log analysis, flash CRC check and native idle/base timing selection fixtures. |

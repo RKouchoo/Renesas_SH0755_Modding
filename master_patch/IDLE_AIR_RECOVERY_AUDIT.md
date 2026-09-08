@@ -1,5 +1,12 @@
 # September 8 — load replay and idle-air investigation
 
+**Evening follow-up:** the [18:01/18:11/18:15 review](../logs/20260908_dashpot_review.md)
+adds opening timing and separate throttle-tip-in execution. A retained pressure
+multiplier can suppress tip-in fuel near atmospheric MAP; its actual short
+trigger window is unlogged. The user's reused dashpot filename was edited
+again and flashed at 18:18, after all three captures. Both identities are
+preserved in the report. No new engine repair is established.
+
 The proposed repeat rev test is withdrawn after the user correctly points
 out that the unchanged candidate is expected to nearly stall again. Leave
 the car off; continue the stock idle-air/patch interaction trace offline.
@@ -446,6 +453,100 @@ logger unchanged. The remaining unlogged distinctions include fault state, alter
 C2DC request selection, learned state, requested versus actual plate motion,
 and air/fuel adequacy during release. No stock-routine replacement or new
 calibration is justified by these exclusions alone.
+
+## Throttle-link follow-up
+
+The later packet trace executes validation, receive-history filtering and
+the full received-fault-to-final-override path. See
+[THROTTLE_LINK_AUDIT.md](THROTTLE_LINK_AUDIT.md). Seven groups pass;
+physical incoming status remains unlogged.
+
+## DBW tables and dashpot follow-up
+
+The user suggested untouched DBW tables and then asked about speed-density
+"dashpot protection". Direct comparison finds **zero changed bytes** in
+both the 10:30 baseline and flashed candidate across:
+
+- DBW/idle code `2AAAC..2F38F`;
+- both visible DBW maps and their complete axes `7A6AC..7AD23`;
+- their descriptors `607D4..6080B`;
+- the traced idle/DBW constant block `79524..797D7`.
+
+The pedal-request table is `7AA2C`, 19 pedal columns by 20 RPM rows,
+descriptor `607F0`. Native caller `2B35A` publishes C3DC. The throttle
+target table is `7A738`, 15 request columns by 20 RPM rows, descriptor
+`607D4`; caller `2AF5C` reads arbitrated C3D4 and publishes C3D0.
+The intermediate `2AF74` arbitration remains an explicit test boundary.
+
+Five groups in `test_dbw_table_execution.py` pin these bytes, execute both
+lookup callers, check released-pedal composition and compare dashpot
+sensitivity in memory. At zero pedal, requested torque is zero across
+558..2500 RPM. With other torque requests inactive, target C3D0 is also
+zero. Native `2ADEC/2AD6C` clears a deliberately stale driver component
+C2C8, yet normal idle air survives: base 7, decel .666 and feedback 0/2/6
+produce combined requests approximately 4.479/5.611/7.606 percent. The
+visible pedal maps therefore do not act as a zero-pedal cap on this normal
+idle-request route. Actual alternative selections, learning and actuator
+response are not reconstructed.
+
+In general, dashpot/throttle-follower control temporarily retains extra idle
+air after throttle closure and tapers it away to help catch idle; this is
+described in [Haltech's idle-control documentation](https://support.haltech.com/portal/en/kb/articles/idle-control).
+That source explains the concept, not this Subaru implementation. A link
+to the user's particular "protection" reference was requested; until supplied,
+no specific aftermarket algorithm is assumed.
+
+This ROM already has a comparable retained deceleration-air path
+`2B9F2 -> 2BB26/2BA10`. The stationary hold allowance is approximately
+.666 at `79638`, with decrement .6 at `7963C`. Those are internal air
+terms, not throttle percentage. Crucially, the 38-count value at `79538`
+is shared by the deceleration hold and air-feedback eligibility.
+
+With fixed 558 RPM, 40 C and other explicit handover fixtures, these
+**in-memory-only** alternatives give:
+
+| Fixture | First feedback call | First decel-air reduction | Decel air reaches zero |
+|---|---:|---:|---:|
+| Stock 38-count hold / .6 decrement | 40 | 40 | 48 |
+| 76-count shared threshold | 78 | 78 | 86 |
+| Stock threshold / .1 decrement | 40 | 40 | 88 |
+
+Increasing the shared threshold delays feedback as well as holding air.
+Changing the separate decrement extends taper without changing feedback
+eligibility in this fixture. These comparisons establish control effects,
+not a preferred calibration or an engine-response prediction. They do not
+recalculate the changed physical airflow, RPM, fuel transient or AFR.
+Normal stock handover has no demonstrated missing-air gap, but the amount,
+decay rate and live feedback state could still be unsuitable for the modified
+engine. Unchanged tables alone cannot establish their suitability.
+
+No ROM or logger change, new capture or flash is requested. Dashpot/base-air
+adequacy and requested versus actual throttle remain concrete leads alongside
+the recorded stock transient fuel reduction.
+
+The user's experimental `candidates/D2WD610H_slight_dashpot_candidate.bin`
+appeared during this check. At inspection its SHA-256 was
+`7590b6ce79b41caea9d8bb850a31c41318708687120e45a584ad5030c1c47b8f`.
+It differs from the flashed candidate by 19 bytes: six zero-request throttle
+table cells at 1000..2000 RPM, the valid checksum `0D556987`, and the word
+at 7FC4C changed from FFFFFFFF to 26090802. All earlier firmware fixes are
+retained. The shared hold and separate decel-air settings remain unchanged.
+
+The fifth DBW test reproduces those six table cells in memory. Their mapped
+targets rise to approximately 0.50/1.20/2.00/2.50/3.00/3.50 percent, but
+native `2AD6C` bounds the driver component by pedal times `7959C/100`;
+7959C is 84. At zero pedal, C2C8 remains zero and normal combined request
+remains 5.611138 percent for the explicit base/decel/feedback fixture. The
+new table values are read, but do not supply extra idle-catch air through
+this normal zero-pedal path. Effects at nonzero pedal or alternate request
+modes are not claimed absent. The user's file was inspected, not rewritten.
+
+The user clarified this was an experiment and asked whether earlier fixes
+require a new BIN. They do not: the earlier firmware fixes are already in
+`D2WD610H_idle_recovery_candidate.bin` and retained in this experiment.
+This investigation changes test/audit files only. No new firmware fix or
+validated dashpot calibration has been produced. All twelve new packet/DBW
+groups pass on the baseline and flashed candidate; the full verifier passes.
 
 ## Follow-up: do patches mistakenly use the pedal signal?
 
