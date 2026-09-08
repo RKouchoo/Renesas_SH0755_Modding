@@ -1,73 +1,182 @@
-# D2WD610H EZ30R ECU project
+# D2WD610H EZ30R ECU Patches
 
-Firmware patches and reverse engineering for the 2005 Subaru Liberty 3.0R
-manual ECU: Denso D2WD610H, ECU ID `3C5A387116`, Renesas SH7055 / SH-2E,
-big-endian, 512 KiB flash.
+Firmware patches, calibration tools and reverse engineering for a MAFless turbo
+conversion of the Subaru EZ30R. The project integrates speed-density airflow,
+external wideband feedback and additional fuel-cut protection into the factory
+Denso ECU.
 
-Start with the [central reference](docs/reference/README.md). It explains the
-patch, the reviewed RAM and routines, the saved-image evidence and the
-remaining issues. The [document register](docs/reference/DOCUMENT_REGISTER.md)
-records where the older notes now live.
-
-## Current builds
-
-| Build | State |
+| Target | Specification |
 |---|---|
-| [V1 / rolling main](master_patch/README.md) | Contains the local MAF-fault load bypass and SD low-pressure boundary repair. Its saved ROM matches its builder. |
-| [V2](docs/reference/IMAGES.md) | Includes its timing and MAP-pressure tip-in corrections plus main's local load-fallback bypass, added in the September 9 repair. Existing v2 calibration is preserved. |
+| Vehicle | 2005 ADM Subaru Liberty 3.0R, manual transmission |
+| ECU | Denso D2WD610H · ECU ID `3C5A387116` |
+| Processor | Renesas SH7055SF · SH-2E · big-endian |
+| Memory | 512 KiB flash · 32 KiB on-chip RAM |
 
-The [v2 bypass repair](docs/reference/V2_LOAD_FALLBACK_FIX.md) is built and
-verified offline. Its only binary changes are the local helper pointer and
-checksum. The logged
-near-stall remains unresolved; offline verification establishes the tested
-software behavior. See [image identities and differences](docs/reference/IMAGES.md)
-before choosing a build or interpreting a capture.
+[Technical reference](docs/reference/README.md) ·
+[Memory ownership](master_patch/MEMORY_LAYOUT.md) ·
+[Logger profiles](logger/README.md) ·
+[Wiring](master_patch/WIRING.md)
 
-The integration supplies MAFless speed density with separate low/high-lift VE,
-an external wideband through the former MAF input, removal of the four stock
-O2 processing paths and CPC purge contributions, and pressure/lean fuel cuts.
-Stock fan control is retained. Boost uses the mechanical wastegate spring;
-the optional rotational-idle component is installed with its switch off.
+## Patch set
 
-## Repository layout
+The patches use the factory scheduler, electronic throttle control, injector
+drivers, AVCS and radiator-fan control. New routines occupy checked erased
+flash, with integration through specific task pointers, call sites and
+calibration tables.
+
+| Component | What it does |
+|---|---|
+| [Speed density](patches/speed_density/README.md) | Calculates airflow from native absolute MAP, RPM, IAT and displacement. Separate low- and high-lift VE tables follow committed AVLS state, and the result enters the factory load calculation. |
+| [External wideband](patches/wideband_o2/wideband_component.py) | Uses the former MAF ADC input for wideband voltage, publishes lambda and readiness to both banks, and integrates with retained fuel feedback. Replaces the four stock O2 processing paths and adjusts their remaining consumers. |
+| [Overboost protection](patches/core/patch_boost.py) | Adds a hard-overboost fuel cut alongside the stock rev limiter. Boost regulation uses the mechanical wastegate spring. |
+| [Fueling protection](patches/fueling_safety/README.md) | Requests open loop near atmospheric pressure and adds a delayed, latched lean fuel cut under boost. Added cuts publish native injector inhibition under the scheduler lock. |
+| [Purge removal](patches/purge_delete/purge_delete_component.py) | Zeros CPC purge duty, modeled purge airflow and both banks' purge fuel subtractions. |
+| [Rotational idle](patches/core/ROTATIONAL_IDLE.md) | Applies bounded, per-cylinder ignition retard after the stock final-timing calculation, gated by idle conditions. Installed with its enable switch off. |
+| [Integrated calibration](master_patch/CALIBRATION.md) | Supplies MAP/IAT transfers, injector characterization, load axes, fuel and timing tables, and the AVLS switching policy. |
+
+## How the patches fit together
+
+```mermaid
+flowchart LR
+    Inputs["Native MAP, IAT and RPM"] --> SD["Speed density"]
+    AVLS["Committed AVLS mode"] --> SD
+    SD --> Air["Airflow<br/>FFFFB420"]
+    Air --> Load["Factory load conditioning<br/>FFFFB428 to FFFFB438"]
+    Load --> Control["Fuel, ignition and AVCS"]
+    WB["External wideband<br/>Former MAF ADC"] --> Feedback["Bank lambda and readiness"]
+    Feedback --> Control
+```
+
+The speed-density helper supplies air mass in g/s. The retained ECU code
+converts this to g/rev and conditions it before the fuel, timing and AVCS
+lookups. The patch also updates the existing airflow-history channels so they
+remain consistent with the modeled airflow. The local load-task hook keeps
+the obsolete MAF-fault substitution from replacing this result.
+
+Pressure/open-loop and fuel-cut wrappers run around the relevant native tasks.
+Their decisions use the same native MAP and wideband signals. Detailed
+producers, consumers and units are in the [signal reference](docs/reference/SIGNALS.md).
+
+## RAM allocation
+
+The SH7055SF RAM range is **`0xFFFF6000–0xFFFFDFFF` (32 KiB)**, with reset stack
+pointer `0xFFFFDFA0`. Most storage belongs to the factory firmware; the patches
+reuse identified signals and reclaim a small amount of retired O2 state.
+Floats below are 32-bit, big-endian values.
+
+### Persistent patch state
+
+The lean-cut component reuses two four-byte rear-O2 response-integrator slots.
+Its runtime fields occupy three bytes; initialization clears both complete
+slots, so the allocation covers **eight bytes**.
+
+| Reclaimed storage | Runtime field | Purpose |
+|---|---|---|
+| `0xFFFFC85C–0xFFFFC85F` | `uint16` at `0xFFFFC85C` | Sensor transport-delay and lean-confirmation counter, measured in task calls. |
+| `0xFFFFC860–0xFFFFC863` | `uint8` at `0xFFFFC860` | State: `0` idle, `1` delay, `2` monitoring, `3` cut latched. |
+
+Installation requires all five traced rear-O2 runtime tasks to be bypassed and
+replaces their stock initializer with an explicit zero initializer. The
+[fueling-safety component](patches/fueling_safety/fueling_safety_component.py)
+checks these prerequisites before claiming the storage.
+
+### Existing factory storage used by the patches
+
+These are shared native allocations, with the listed patch interfaces:
+
+| Address | Storage | Role |
+|---|---|---|
+| `0xFFFFABC4` | Float, mmHg absolute | Native MAP input to speed density and pressure protection. |
+| `0xFFFFAB06` | `uint16` ADC word | External wideband input on the former MAF circuit. |
+| `0xFFFFB420` | Float, g/s | Final airflow published through the retained airflow task. |
+| `0xFFFFB448`, `0xFFFFB458`, `0xFFFFB45C` | Three floats | Existing airflow state kept consistent with speed-density output. |
+| `0xFFFFB428`, `0xFFFFB438` | Floats, g/rev | Raw and conditioned engine load produced by retained code. |
+| `0xFFFFAE60`, `0xFFFFAE64` | Two floats | Synthetic bank lambda values. |
+| `0xFFFFAE70`, `0xFFFFAE74` | Two floats | Synthetic bank sensor-readiness values. |
+| `0xFFFFB098`, `0xFFFFB09C` | Two floats | Wideband lambda mirrors for logging. |
+| `0xFFFFBF6C`, `0xFFFFB744` | `uint8` flags / `uint16` inhibit | Native fuel-cut flag and injector-inhibit publication. |
+| `0xFFFFC0EC–0xFFFFC103` | Six floats, 24 bytes | Final per-cylinder ignition angles used by rotational idle. |
+| `0xFFFFCD86` | `uint8` | Committed AVLS mode used to select the VE surface. |
+
+Other inputs and purge-state destinations are listed in the
+[complete signal reference](docs/reference/SIGNALS.md). Existing arrays,
+initializers and computed accesses remain part of each allocation's ownership.
+
+The speed-density wrapper uses a maximum 16-byte frame of its own; its traced
+lookup call chain reaches 28 bytes beyond the caller's existing frame,
+excluding interrupts. Total runtime stack headroom remains unmeasured.
+
+## Flash allocation
+
+The ROM occupies `0x00000000–0x0007FFFF`; file offsets equal ECU flash addresses.
+The erased patch window starts at `0x0007D790`. Major component regions are:
+
+| Region | Contents |
+|---|---|
+| `0x0007D790–0x0007D91F` | Overboost protection, architecture signature and retained reservations. |
+| `0x0007DB40–0x0007DCEB` | Rotational-idle calibration and wrapper. |
+| `0x0007DD00–0x0007E3FF` | Speed-density calibration, lookup descriptors and airflow wrapper reservation. |
+| `0x0007E400–0x0007E63F` | Wideband conversion, closed-loop inhibit helper and reserved space. |
+| `0x0007E640–0x0007EAC7` | Dual-VE descriptors, RPM axes and table data. |
+| `0x0007EAC8–0x0007EDFF` | Pressure/open-loop and lean-cut calibration, wrappers and state initializer. |
+| `0x0007EE00–0x0007FAF7` | **3,320 bytes of contiguous unallocated flash.** |
+
+These grouped spans include internal padding and reservations. Stock hook and
+calibration edits elsewhere have separate ownership. The
+[detailed memory layout](master_patch/MEMORY_LAYOUT.md) records exact blob
+boundaries, intentional overlaps and retired reservations. The Subaru additive
+checksum covers `0x00002000–0x0007FAF7`, including the injected code.
+
+## Build and verify
+
+Each integration keeps its builder, calibration, ROM and ECU definition
+together. Run the commands for the integration you are working on from the
+repository root.
+
+For `master_patch/`:
+
+```sh
+python3 -B master_patch/build_master_patch.py
+python3 -B master_patch/build_definition.py
+python3 -B tests/verify_master_patch.py
+```
+
+For `master_patch_v2/`:
+
+```sh
+python3 -B master_patch_v2/build_master_patch.py
+python3 -B master_patch_v2/build_definition.py
+python3 -B master_patch_v2/verify_master_patch.py
+```
+
+Builders start from pinned factory inputs, check original bytes before patching,
+and write their normal output artifacts. Verification coverage, including
+instruction execution, memory ownership, definitions and checksums, is described
+in the [test guide](tests/README.md). Exact artifact identities are kept in the
+[image reference](docs/reference/IMAGES.md).
+
+Use the shared [logger definition and capture profiles](logger/README.md) with
+either integration. The five generated captures each use 43 byte addresses,
+producing a 136-byte SSM request. Hardware assumptions and vehicle validation
+procedures are documented in [calibration](master_patch/CALIBRATION.md),
+[wiring](master_patch/WIRING.md) and [commissioning](master_patch/COMMISSIONING.md).
+
+## Repository guide
 
 | Location | Contents |
 |---|---|
-| [master_patch/](master_patch/README.md) | V1 integration, calibration, saved ROM and ECU definition. |
-| `master_patch_v2/` | Separate v2 builder, calibration, ROM and definition. |
-| [logger/](logger/README.md) | Shared RomRaider logger definitions and capture profiles. |
-| [patches/](patches/README.md) | Shared firmware components and low-level build utilities. |
-| [tests/](tests/README.md) | Offline instruction fixtures and verifiers. |
-| [tools/](tools/README.md) | Documentation audit tools and [historical analysis/replay tools](tools/analysis/README.md). |
-| [docs/reference/](docs/reference/README.md) | Current documentation, reviewed address index and retained MCP evidence. |
-| [docs/hardware/](docs/hardware/README.md) | Specialist donor and direct-attach interface research. |
-| [docs/archive/](docs/archive/README.md) | Superseded investigations and former project overviews. |
-| [logs/](logs/README.md) | Original captures and their analysis results. |
-| `base_roms/`, `defs/` | Pinned factory/donor inputs and source definitions. |
-| `pico_kline_adapter/` | Independent K-line adapter project. |
+| [master_patch/](master_patch/README.md), [master_patch_v2/](master_patch_v2/) | Integrated builds, calibration sources, ROMs and ECU definitions. |
+| [patches/](patches/README.md) | Shared firmware components and SH-2 assembly tools. |
+| [logger/](logger/README.md) | RomRaider logger definitions and capture profiles. |
+| [tests/](tests/README.md) | Offline verifiers and instruction-execution fixtures. |
+| [tools/](tools/README.md) | Analysis, replay and documentation-audit utilities. |
+| [docs/reference/](docs/reference/README.md) | Architecture, verified addresses, routine descriptions and Ghidra evidence. |
+| [docs/hardware/](docs/hardware/README.md) | Hardware and direct-attach interface research. |
+| [logs/](logs/README.md) | Captures and their analysis. |
+| [base_roms/](base_roms/), [defs/](defs/) | Factory inputs and source ECU definitions. |
+| [pico_kline_adapter/](pico_kline_adapter/README.md) | Independent K-line adapter project. |
 
-## Verification and development
-
-Run from the repository root:
-
-```sh
-python3 -B tests/verify_master_patch.py
-python3 -B master_patch_v2/verify_master_patch.py
-python3 -B tools/audit_image_contracts.py
-```
-
-The main verifier rebuilds in memory and checks the saved image, calibration,
-ownership, definitions, logger and instruction fixtures. V2 checks its
-checksum/layout/definition plus five load-fallback regression groups; its
-coverage is still narrower than main's. The image audit reproduces the original
-pre-fix comparison using the pinned images at `2d95301`.
-
-Make fixes in the relevant rolling sources and use Git for regression history.
-Build commands and hardware assumptions are in the [master guide](master_patch/README.md).
-Existing candidate ROMs are retained only to reproduce their historical logs.
-The user's independent dashpot experiment has not been merged into main.
-
-The stock Ghidra project remains at the repository root. Its annotations were
-updated through MCP; [Ghidra status](docs/reference/GHIDRA.md) records the RAM
-block and save/reopen limitations. Audit source text is pinned to its reviewed
-Git revision so reorganizing notes cannot silently change what was audited.
+The [address index](docs/reference/ADDRESS_INDEX.md) provides the detailed RAM
+and routine register. Ghidra analysis status is documented
+[here](docs/reference/GHIDRA.md); retained investigations are indexed in the
+[documentation archive](docs/archive/README.md).
