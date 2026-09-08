@@ -1,5 +1,73 @@
 # D2WD610H Patch Audits
 
+## 2026-09-08 — final-throttle override producers narrowed
+
+Continued offline with seven native execution groups. C618's override
+requires the stopped-engine RPM qualifier (set below 200; clear at 300).
+C640's override requires ignition off and a C614 count below 375, with
+additional retained gates. The complete native SSM-62 getter confirms the
+ignition identity. Its counter resets while ignition is on and saturates
+when off; it is a shutdown window, not an after-start timer.
+
+D274/0x40 aggregates seven receive-derived bits plus pedal-pair monitor
+8134 bit 0. One-bit positive/negative cases follow the full native builder,
+including the r13 overwrite at 64B8E. A deliberately mismatched pair faults
+on count 29 and selects the retained fault request. Native ADC tests keep
+AB08/AB0A independent of wideband AB06. C5C8's obsolete cylinder-airflow
+label is corrected in Ghidra, the naming script and reverse-engineering notes.
+
+The seven groups, full master verifier and seven candidate-integrity groups
+pass. Stock, baseline, candidate, capture and complete logger hashes are
+unchanged. Received status, diagnostic enable, actual sensor agreement,
+learning and requested versus actual throttle remain unlogged. No repair is
+established and the live test remains withdrawn. See the
+[override-producer evidence](master_patch/IDLE_AIR_RECOVERY_AUDIT.md#final-request-override-producers-and-pedal-pair-fault-path).
+
+## 2026-09-08 — base air reaches the normal throttle request
+
+Continued offline after the user's capture-or-continue question; no engine
+capture or flash was requested. Six new native-execution groups cover the
+base-air/coolant calculation, air-to-plate conversion, combined request and
+final learned-offset/override selection. C45C 0/2/6 with fixed base 7 and
+decel .666 gives approximately 4.479/5.611/7.606 percent combined request.
+Extra air survives the normal route in these fixtures. Alternative selections
+and limits change the result; their real states and actuator response remain
+unknown. No fault bypass or calibration change is justified by this result.
+
+The C688 raw-input fault helper reads AB08/AB0A with unchanged stock bounds,
+independently of repurposed MAF ADC AB06. The receive-derived fault states
+remain an audit boundary. Monitor dependency selectors at 4711E are not DTC
+record indices; a disabled DTC switch alone does not establish absence of
+all raw fallback states. The six groups, seven candidate integrity groups
+and integrated full verifier pass. BINs, source log and logger are unchanged.
+See [request propagation and fault-input evidence](master_patch/IDLE_AIR_RECOVERY_AUDIT.md#base-air-request-propagation-and-fault-input-follow-up).
+
+## 2026-09-08 — nominal timer and stationary idle-air handover
+
+Native CMT1 initialization and 1024 divider calls establish an eight-tick
+task-9 activation interval. Renesas's divider specification gives a nominal
+8-ms task at the project's 40-MHz CPU clock, superseding the old 10-ms guess.
+This is not an oscillator/task-latency measurement. The historical B688
+pump-timing exclusion is corrected accordingly.
+
+Five new native test groups pin actual task order and execute release
+qualification, pressure output and stationary deceleration air. Under normal
+fixtures, feedback becomes available on released call 40 as the decel term
+falls from .666 to .066, then zero on call 48. Imposed D26C/0x10 or D272/0x80
+can prevent feedback without retaining that term, but neither state is known
+from the capture. MAF fallback D26F/0x40 instead preserves a 1.0 minimum and
+does not directly inhibit feedback here. No normal handover gap or active
+fault is proven as the near-stall cause.
+
+E517/C4D9 replaces ignition-idle E516 in the prepared idle-air selection;
+E516 remains separately available. E507's optional derived time uses x*.008
+with the clock assumption explicit. All four actual RomRaider queue/A8
+checks pass within 43 addresses. The five candidate execution groups,
+seven candidate integrity groups and integrated full master verifier pass.
+Stock, baseline, flashed candidate and original capture are unchanged.
+Leave the car off; the live rev test remains withdrawn. Evidence and limits:
+[idle-air timer/handover audit](master_patch/IDLE_AIR_RECOVERY_AUDIT.md#timer-and-stationary-deceleration-air-handover).
+
 ## 2026-09-08 — current patch pedal-dependency check
 
 Followed the user's question about whether any patch mistakenly uses pedal.
@@ -2071,4 +2139,28 @@ calibration remain stock-identical. The old log lacks pedal, feedback flags,
 effective idle target and combined throttle request, so this does not prove
 the delay caused its dip. No verified near-stall repair or new BIN results
 from this trace. Full boundaries and remaining work are in
+[IDLE_AIR_RECOVERY_AUDIT.md](master_patch/IDLE_AIR_RECOVERY_AUDIT.md).
+
+## 2026-09-08 — primary-issue leads and native idle-air output limits
+
+The pedal correction changed identification, not ECU behavior. Rechecked
+the 14:13 recovery order: five consecutive 0.60-ms net-pulse samples extend
+down to 792 RPM; throttle and fuel increase before the 558-RPM trough.
+The trough has 13.60 AFR and 15-degree timing. This supports investigating
+release-to-idle air delivery together with the retained fuel transient, but
+does not prove a lean stall or justify removing that compensation. Timing
+has already recovered during several closing dips.
+
+Four new bounded native groups extend the idle-air suite to eleven. They
+execute the B54C RPM-delta producer and the pressure/output chain through
+2D1FC, including eligibility/update-boundary retention, the CA64-selected
+6.0 correction ceiling and base-air headroom. The native chain requests
+positive air under eligible underspeed fixtures. Actual flags, base terms,
+controller history, scheduling and engine/actuator response are not recovered
+from the old capture. No calibration fix is established.
+
+All eleven groups pass on the candidate and the integrated master verifier
+passes. Stock, 10:30 baseline, already-flashed candidate and original capture
+hashes remain unchanged. The live test remains withdrawn. Detailed sample
+order, native addresses, fixture values and limits are recorded in
 [IDLE_AIR_RECOVERY_AUDIT.md](master_patch/IDLE_AIR_RECOVERY_AUDIT.md).

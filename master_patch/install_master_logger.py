@@ -27,7 +27,7 @@ FRAGMENT = HERE / "D2WD610H_master_logger_ecuparams.xml"
 ECU_ID = "3C5A387116"
 TRANSPORT_ID = "iso9141"
 MODULE_ID = "ecu"
-PARAMETER_IDS = {f"E{number}" for number in range(500, 517)}
+PARAMETER_IDS = {f"E{number}" for number in range(500, 518)}
 
 # The upstream logger contains a global catalogue for many Subaru ECUs, TCMs,
 # diesel engines, and DCCD controllers.  Standard SSM parameters do not carry
@@ -196,7 +196,7 @@ def build_definition(source_text: str) -> tuple[str, int]:
     container = containers[0]
 
     # Accept a previously generated master file as regeneration input without
-    # duplicating the custom block. Normal upstream sources have no E500-E516.
+    # duplicating the custom block. Normal upstream sources have no E500-E517.
     for parameter in list(container.findall("ecuparam")):
         if parameter.get("id") in PARAMETER_IDS:
             container.remove(parameter)
@@ -380,7 +380,7 @@ def main(argv: list[str] | None = None) -> None:
         "  always-visible stock  : "
         f"{len(ALWAYS_VISIBLE_STOCK_PARAMETER_IDS)}"
     )
-    print("  project params         : E500 through E516 (always visible)")
+    print("  project params         : E500 through E517 (always visible)")
     print(f"  ECU-specific records   : {ECU_ID} only")
 
 

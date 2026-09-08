@@ -514,7 +514,7 @@ _(underscore names only — strict naming enforcement is ON)_
 - 0x00017A24 → **airflow_load_filter_state_requires_initialization**
 - 0x00018A68 → **pedal_conditioned_filter_update** (B4C0 → conditioned pedal percent @0xFFFFB4C8)
 - 0x00009FEC → **float_3d_table_consumer_update**
-- 0x0000C5C8 → **cylinder_airflow_pair_update**
+- 0x0000C5C8 → **accelerator_pedal_adc_pair_update** (corrected September 8: AB08/AB0A → AF80/AF84; consumed by pedal normalization 180C6, separate from wideband AB06)
 - 0x00017B2A → **airflow_bank_charge_update**
 - 0x00017C40 → **airflow_bank_charge_diagnostic_update**
 - 0x000180C6 → **accelerator_pedal_pair_normalize**

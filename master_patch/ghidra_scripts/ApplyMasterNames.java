@@ -40,6 +40,30 @@ public class ApplyMasterNames extends GhidraScript {
 
     @Override
     public void run() throws Exception {
+        // September 8 final-throttle override producer trace; no ROM edits.
+        createOrRename("0000c5c8", "accelerator_pedal_adc_pair_update");
+        createOrRename("00019c04", "ignition_switch_is_on");
+        createOrRename("0002efb8", "throttle_ignition_off_counter_update");
+        createOrRename("0002f03c", "throttle_stopped_engine_override_update");
+        createOrRename("0002f684", "throttle_ignition_off_override_update");
+        createOrRename("00061a08", "pedal_pair_agreement_monitor");
+        setPlateComment(toAddr("0000c5c8"),
+            "Pedal ADC pair AB08/AB0A -> AF80/AF84. Native 180C6 subtracts " +
+            "8110/8118 into B464/B468 before percent normalization. Earlier " +
+            "cylinder_airflow_pair_update identification was incorrect. AB06 " +
+            "is a separate channel repurposed by the wideband patch.");
+        setPlateComment(toAddr("0002f03c"),
+            "C618 bit 0 override requires C638 low-RPM qualifier: set below " +
+            "200 RPM, clear at 300 or above. Both activation routes share this " +
+            "gate. Native execution tests include an initially active override.");
+        setPlateComment(toAddr("0002f684"),
+            "C640 bit 0 requires ignition OFF (19C04 == 0), C614 < 375 and " +
+            "other retained qualifiers. 19C04 is native SSM-62 bit 3. C614 " +
+            "resets while ignition is on; this is a shutdown window, not an " +
+            "after-start timer. No vehicle switch state is inferred.");
+        setEOLComment(toAddr("00064b8e"),
+            "r13 now holds 8134 bit 0 (pedal-pair monitor), replacing the " +
+            "earlier C6FB/8 getter. Its 64D44 use feeds D273/10 -> D274/40.");
         // September 8 downstream cut audit: these six crank-phase channels
         // are injector scheduling, not the previously labelled cam bank.
         createOrRename("0001c5d4", "injector_fuel_cut_inhibit_word_build");

@@ -45,7 +45,8 @@
         <parameter id="E513" units="raw additive factor" />
         <parameter id="E514" livedata="selected" dash="selected" units="rpm" />
         <parameter id="E515" livedata="selected" dash="selected" units="%" />
-        <parameter id="E516" livedata="selected" dash="selected" units="raw flags" />
+        <parameter id="E516" units="raw flags" />
+        <parameter id="E517" livedata="selected" dash="selected" units="raw flags" />
     </parameters>
     <switches>
         <switch id="S4" />

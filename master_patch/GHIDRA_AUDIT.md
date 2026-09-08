@@ -33,6 +33,17 @@ explicit, and no real-time or physical-delivery measurement is claimed.
 
 ## Result
 
+The September 8 [final-request override trace](IDLE_AIR_RECOVERY_AUDIT.md#final-request-override-producers-and-pedal-pair-fault-path)
+adds native execution of the C618/C640 producers, shutdown counter, D274
+fault aggregation, pedal-pair monitor and its separate ADC source. C618
+clears at 300 RPM; C640 clears with ignition on. D274 includes seven received
+bits and raw pedal-pair fault 8134 bit 0. The register overwrite at 64B8E is
+tracked explicitly. C5C8's former cylinder-airflow name is corrected: its
+AB08/AB0A -> AF80/AF84 outputs feed pedal normalization at 180C6. The added
+seven groups pass without altering ROM bytes. Actual received status,
+sensor agreement, learning and actuator response remain unlogged; no
+near-stall cure is established.
+
 The master image is structurally consistent with the canonical stock ROM and
 passes the deterministic verifier. The result remains firmware-development
 quality: no bench ECU, harness, running engine, or dyno validation has been
@@ -724,40 +735,44 @@ reduced parameter set is captured.
 
 ## Engine-runtime timer cross-reference (2026-09-03)
 
+**September 8 correction:** the timer-register/native-divider trace replaces
+the earlier 10-ms assumption with **nominal 8 ms at a 40-MHz CPU clock**.
+Times below are corrected accordingly; the earlier conclusion that the
+3750-count pump gate could not occur during the 34.813-second run is withdrawn.
+See the [timer/handover execution evidence](IDLE_AIR_RECOVERY_AUDIT.md#timer-and-stationary-deceleration-air-handover).
+
 No ROM bytes were changed by this trace. Ghidra xrefs establish that
 `engine_run_counter_update @ 0x1A838` is the producer of saturating u16 RAM
 counter `0xFFFFB688`. It increments from the main engine-control periodic task
-and resets while `runtime_status_b748_bit7_is_set` is true. The approximately
-10 ms cadence used below is derived from the scheduler grouping and the
-consistent physical meaning of several stock calibrations, including the
-977-count radiator-fan startup gate (about 9.77 seconds); it has not been
-measured on a running ECU with an instrumented task pin.
+and resets while `runtime_status_b748_bit7_is_set` is true. The corrected
+nominal 8-ms cadence makes the 977-count fan startup gate about 7.816 seconds.
+Oscillator frequency and actual task cadence have not been measured on the ECU.
 
 Manual data-flow checks were performed after a ROM-wide B688 xref and candidate
 constant scan. This distinction matters because merely finding a 16-bit value
 inside a function does not prove that it is compared with B688.
 
-| Consumer | Direct B688 calibration | Approximate time | Relevance |
+| Consumer | Direct B688 calibration | Nominal time at 40 MHz | Relevance |
 |---|---:|---:|---|
-| `fuel_pump_control_state_update @ 0x2A614` | `0x794DA = 3750` | 37.5 s | Direct fuel-pump mode gate. This is D2WD610H evidence, not an inference from another Subaru ROM. |
-| `after_start_enrichment_group_c_residual_decay_update @ 0x22CE4` | `0x75E8E = 5000` | 50.0 s | Updates the group-C residual state; group output `0xFFFFBE40` is read by final fueling. |
-| `ign_timing_cylinder_minimum_check_update @ 0x28C38` | `0x77D44 = 2500` | 25.0 s | Ignition/cylinder-minimum logic, not a direct fuel-delivery command. |
-| `diagnostic_monitor_enable_state_update_6e338 @ 0x6E338` | `0x74D44 = 2500` | 25.0 s | Diagnostic enable gate, not base fueling. |
+| `fuel_pump_control_state_update @ 0x2A614` | `0x794DA = 3750` | 30.0 s | Direct fuel-pump mode gate. This is D2WD610H evidence, not an inference from another Subaru ROM. |
+| `after_start_enrichment_group_c_residual_decay_update @ 0x22CE4` | `0x75E8E = 5000` | 40.0 s | Updates the group-C residual state; group output `0xFFFFBE40` is read by final fueling. |
+| `ign_timing_cylinder_minimum_check_update @ 0x28C38` | `0x77D44 = 2500` | 20.0 s | Ignition/cylinder-minimum logic, not a direct fuel-delivery command. |
+| `diagnostic_monitor_enable_state_update_6e338 @ 0x6E338` | `0x74D44 = 2500` | 20.0 s | Diagnostic enable gate, not base fueling. |
 
 The recorded run lasted 34.813 seconds from first to last nonzero RPM, and the
 sustained lean trend was already visible about 26.8 seconds after first nonzero
-RPM. If B688 reset with the non-running state as its producer indicates, the
-specific 37.5-second fuel-pump gate was not reached in this capture. B688 itself
-was not logged, so this is a strong timing exclusion rather than a measured
-counter value; P47 remains the direct way to confirm any earlier pump-mode
-change caused by another state-machine condition.
+RPM. A nominal 30-second fuel-pump gate could therefore fall inside this run,
+although after the stated lean onset. B688 itself was not logged, so this
+does not locate an actual transition or prove a pump cause. P47 remains the
+direct way to check commanded mode; later reported stable rail pressure and
+the newer captures must be considered separately.
 
 Three initially suspicious candidates were rejected after following the actual
 compare operands: `diagnostic_enable_runtime_latch_update_123f6` uses a
-500-count B688 gate (about 5 seconds),
+500-count B688 gate (nominal 4 seconds),
 `diagnostic_monitor_11_condition_counter_update` uses 375 counts (about
-3.75 seconds), and `diagnostic_monitor_state_latch_update_6b6fc` uses 625
-counts (about 6.25 seconds). Values near 20--40 seconds loaded elsewhere in
+3 seconds), and `diagnostic_monitor_state_latch_update_6b6fc` uses 625
+counts (nominal 5 seconds). Values near 20--40 seconds loaded elsewhere in
 those functions belong to other operands and are not their B688 thresholds.
 
 The fixed-duration list is not the whole after-start fuel story. Groups A and B

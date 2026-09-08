@@ -217,9 +217,30 @@ for this profile with a checksum-valid 136-byte request. The complete logger
 regenerates identically and the full master audit passes. No JAR change or
 ECU traffic was needed.
 
-Current complete logger SHA-256:
+Complete logger SHA-256 at the initial idle-air profile stage:
 `3ff3a49fb332551c411a635ddcac49d04fea5f3ee1c308d917fa0145b8d5925e`.
 The profile is prepared for later use; the repeat rev test is withdrawn.
 Leave the car off while the offline investigation continues. E516/B2BC alone
 does not prove idle-air feedback is enabled. See
 [the native load replay and request-channel evidence](IDLE_AIR_RECOVERY_AUDIT.md).
+
+## September 8 — actual air-feedback permission and timer correction
+
+E517 now reads C4D9: mask 8 is air-feedback permission, with a separate
+controller update boundary still required for a new output. The prepared
+idle-air profile selects E517 instead of E516; E516 remains available with
+its original ignition-idle meaning. All four profiles explicitly clear the
+additional parameter when unused. No request grows beyond 43 addresses.
+
+E507's optional derived-seconds expression changes from x/100 to x*.008,
+qualified by the nominal 40-MHz clock and the native CMT1/task divider trace.
+Prepared selections continue to use task calls, so existing raw logs are
+not rescaled or rewritten. See the [timer evidence and limits](IDLE_AIR_RECOVERY_AUDIT.md#timer-and-stationary-deceleration-air-handover).
+
+The actual repaired RomRaider queue/reload/A8 check passes for all four
+profiles: 22/17/19/19 channels, each 43 addresses and a checksum-valid
+136-byte request. This is offline validation; no connection or engine run
+was performed, and the repeat rev test remains withdrawn.
+
+Current complete logger SHA-256:
+`f225b9688b05823941f6939e71f22a08deb0f11f898eb5bb477f0657f5b97d2e`.

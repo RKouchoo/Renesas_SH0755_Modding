@@ -66,10 +66,31 @@ The [load/idle-air follow-up](IDLE_AIR_RECOVERY_AUDIT.md) reproduces retained
 load filtering and transient compensation with native instruction replay.
 Faster filtering has mixed fuel effects; no further ROM change was made.
 The new 19-channel `D2WD610H_idle_air_diagnostic_profile.xml` adds effective
-idle RPM target, combined throttle request, pedal position and idle flags
+idle RPM target, combined throttle request, pedal position and air-feedback flags
 within 43 addresses. **The repeat rev test is withdrawn:** the unchanged
 candidate is still expected to nearly stall. The next work is offline
 idle-air tracing; leave the car off for now.
+The output trace now executes the stock pressure controller and its limits:
+eligible underspeed fixtures do request extra air, but the capture cannot
+establish when that feedback was available or what limited its actual output.
+The pedal correction changed identification only. Release-to-idle air delivery
+and its interaction with the recorded fuel reduction remain the primary leads.
+The timer/deceleration follow-up derives a nominal 8-ms idle task at 40 MHz:
+normal feedback qualifies in about 0.32 seconds as deceleration air decays.
+Five native groups check that handover and distinct fault effects; they do
+not establish the car's unlogged states. E517 now selects actual C4D9
+air-feedback permission instead of ignition-idle E516, with no address increase.
+Six further native groups trace the base-air sum through combined and final
+throttle requests. Extra feedback survives the normal route; alternate modes
+and final overrides remain explicit unlogged states. The raw ADC fault helper
+checked here reads AB08/AB0A independently of the repurposed MAF ADC AB06.
+These checks do not establish the live cause or request another capture.
+Seven override-producer groups now distinguish a stopped-engine path, which
+clears at 300 RPM, from an ignition-off path, which clears with ignition on.
+The remaining D274 fault route combines seven received status bits and the
+native pedal-pair agreement monitor. Its ADC inputs AB08/AB0A are separate
+from wideband AB06. Actual fault state and actuator response remain unlogged;
+this narrows the investigation without establishing a repair or a new BIN.
 
 The September 8 hook hardening uses saved caller RPM and single-read MAP/IAT,
 and removes only this load task's obsolete MAF-fault fallback. Cranking and
@@ -91,7 +112,7 @@ remain; the target ignores the separate voltage trim, including stored history.
 Other raw-voltage consumers and closed-loop transport dynamics remain audit
 limits; this does not establish total independence from the removed circuits.
 The complete generated logger definition has SHA-256
-`3ff3a49fb332551c411a635ddcac49d04fea5f3ee1c308d917fa0145b8d5925e`.
+`f225b9688b05823941f6939e71f22a08deb0f11f898eb5bb477f0657f5b97d2e`.
 E511 now correctly identifies the signed transient load correction at B874.
 E503/E504 units use semicolons to prevent RomRaider splitting CSV headers.
 
@@ -214,7 +235,7 @@ reduces the upstream global catalogue to 63 H6-MT standard parameters, 46
 relevant switches, and 35 useful stock extended parameters. Nine stock
 high-resolution channels required for the lean-out capture are converted to
 unconditional direct SSM-address entries; the other 26 remain restricted to ECU
-ID `3C5A387116`. Project parameters E500--E516 are also unconditional. The
+ID `3C5A387116`. Project parameters E500--E517 are also unconditional. The
 complete diagnostic set therefore remains visible in Data, Graph, and Dashboard
 before RomRaider completes ECU identification. TCU/DCCD, diesel/common-rail/DPF,
 removed stock-O2/MAF, and unrelated-model dashboard entries are omitted. The
@@ -296,13 +317,16 @@ and verifies provenance and checksum.
 | `build_definition.py` | Generates the focused D2WD610H RomRaider definition. |
 | `D2WD610H_master_patch.xml` | Matching self-contained metric RomRaider definition. |
 | `D2WD610H_master_logger.xml` | Complete metric, SSM-only logger definition for ECU ID `3C5A387116`; ready artifact generated from logger v370. |
-| `D2WD610H_master_logger_ecuparams.xml` | Internal seventeen-parameter fragment used to generate the complete logger definition. |
+| `D2WD610H_master_logger_ecuparams.xml` | Internal eighteen-parameter fragment used to generate the complete logger definition. |
 | `D2WD610H_idle_diagnostic_profile.xml` | First-idle capture: wideband/raw/ready, MAP/load, immediate/learned trims, pulse/latency, pump/battery and operating conditions. 43 addresses, 136-byte request. |
 | `D2WD610H_afterstart_diagnostic_profile.xml` | Separate follow-up: six retained fuel terms (including transient E511), composed base factor/runtime, AFR, pulse and operating conditions. 43 addresses, 136-byte request. |
 | `D2WD610H_idle_recovery_profile.xml` | Previous recovery capture: 19 channels including signed transient E511, base factor E123 and committed AVLS E503. 43 addresses, 136-byte request. Load separately. |
-| `D2WD610H_idle_air_diagnostic_profile.xml` | Prepared profile; live test deferred. Idle RPM target, combined throttle request, pedal/idle flags and fuel response. 19 channels; 43 addresses. |
+| `D2WD610H_idle_air_diagnostic_profile.xml` | Prepared profile; live test deferred. Idle RPM target, combined throttle request, pedal, C4D9 air-feedback flags and fuel response. 19 channels; 43 addresses. |
 | `IDLE_AIR_RECOVERY_AUDIT.md` / `test_load_conditioning_execution.py` / `replay_20260908_load_recovery.py` | Native load/transient replay and idle-air investigation; repeat rev test withdrawn. |
-| `test_idle_air_execution.py` | Native pedal-release and idle-air eligibility, pressure-demand mode, and P30 identity; seven bounded groups, no engine-response proof. |
+| `test_idle_air_execution.py` | Native pedal/air eligibility, pressure demand and output limits, RPM-delta production, and P30 identity; eleven bounded groups, no engine-response proof. |
+| `test_idle_air_handover_execution.py` | Native periodic timer division, task call order and stationary deceleration-air/feedback handover; five bounded groups, including distinct fault effects. |
+| `test_idle_air_request_execution.py` | Native base-air/coolant calculation, air-to-plate conversion, combined/final selections and a raw ADC fault helper; six bounded groups with explicit unlogged-state fixtures. |
+| `test_idle_air_override_execution.py` | Native ignition/RPM override gates, shutdown counter, D274 fault aggregation, pedal-pair monitor and separate ADC channels; seven bounded groups. |
 | `test_pedal_patch_dependencies.py` | Five groups isolate added decisions from pedal state, verify the separate speed channel and check in-memory mistaken-address negative controls. |
 | `IDLE_RECOVERY_AUDIT.md` / `idle_recovery_candidate.py` | Native load-change trace and isolated ten-cell VE candidate; settled fueling improved in first candidate capture, blip recovery unresolved. |
 | `analyze_20260908_recovery.py` / `test_idle_timing_execution.py` | Candidate log analysis, flash CRC check and native idle/base timing selection fixtures. |

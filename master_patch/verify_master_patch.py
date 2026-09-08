@@ -44,6 +44,9 @@ import test_transient_fuel_execution as transient_fueling_test  # noqa: E402
 import test_idle_timing_execution as idle_timing_test  # noqa: E402
 import test_load_conditioning_execution as load_conditioning_test  # noqa: E402
 import test_idle_air_execution as idle_air_test  # noqa: E402
+import test_idle_air_handover_execution as idle_handover_test  # noqa: E402
+import test_idle_air_request_execution as idle_request_test  # noqa: E402
+import test_idle_air_override_execution as idle_override_test  # noqa: E402
 import test_pedal_patch_dependencies as pedal_dependencies_test  # noqa: E402
 import test_sh2e_fpu as fpu_test  # noqa: E402
 import test_injector_cut_execution as injector_cut_test  # noqa: E402
@@ -59,7 +62,7 @@ LOGGER_FRAGMENT = HERE / "D2WD610H_master_logger_ecuparams.xml"
 LOGGER_DEFINITION = HERE / "D2WD610H_master_logger.xml"
 LOGGER_PROFILE = HERE / "D2WD610H_idle_diagnostic_profile.xml"
 EXPECTED_OUTPUT_SHA256 = "48d63cf3b7085afc672dd809cf08f4aef2b1aaae8a880f421e656467b7aaf8f0"
-EXPECTED_LOGGER_SHA256 = "3ff3a49fb332551c411a635ddcac49d04fea5f3ee1c308d917fa0145b8d5925e"
+EXPECTED_LOGGER_SHA256 = "f225b9688b05823941f6939e71f22a08deb0f11f898eb5bb477f0657f5b97d2e"
 
 
 def fail(message: str) -> None:
@@ -806,7 +809,7 @@ def verify_logger_fragment() -> None:
         "E504": ("0xFFC860", "1", "uint8", {"x"}),
         "E505": ("0xFFC85C", "2", "uint16", {"x"}),
         "E506": ("0xFFBE38", "1", "uint8", {"x"}),
-        "E507": ("0xFFB688", "2", "uint16", {"x", "x/100"}),
+        "E507": ("0xFFB688", "2", "uint16", {"x", "x*.008"}),
         "E508": ("0xFFB834", "4", "float", {"x"}),
         "E509": ("0xFFB854", "4", "float", {"x"}),
         "E510": ("0xFFB868", "4", "float", {"x"}),
@@ -816,6 +819,7 @@ def verify_logger_fragment() -> None:
         "E514": ("0xFFC468", "4", "float", {"x"}),
         "E515": ("0xFFC2B8", "4", "float", {"x/.84"}),
         "E516": ("0xFFB2BC", "1", "uint8", {"x"}),
+        "E517": ("0xFFC4D9", "1", "uint8", {"x"}),
     }
     parameters = list(root.findall("ecuparam"))
     by_id = {parameter.get("id"): parameter for parameter in parameters}
@@ -1188,6 +1192,9 @@ def main() -> None:
     idle_timing_test.verify_execution(image)
     load_conditioning_test.verify_execution(image)
     idle_air_test.verify_execution(image)
+    idle_handover_test.verify_execution(image)
+    idle_request_test.verify_execution(image)
+    idle_override_test.verify_execution(image)
     pedal_dependencies_test.verify_execution(image)
     injector_cut_test.verify_execution(image)
     injector_scheduler_test.verify_execution(image)

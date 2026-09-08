@@ -24,7 +24,7 @@ RECOVERY_PARAMETERS = (IDLE_PARAMETERS - {'P3', 'P4', 'P5', 'P6', 'P24', 'E502'}
 }
 IDLE_AIR_PARAMETERS = {
     'P2', 'P7', 'P8', 'P10', 'P11', 'P12', 'P13', 'P17', 'P30',
-    'E32', 'E33', 'E60', 'E123', 'E500', 'E501', 'E511', 'E514', 'E515', 'E516',
+    'E32', 'E33', 'E60', 'E123', 'E500', 'E501', 'E511', 'E514', 'E515', 'E517',
 }
 PROFILE_SELECTIONS = {
     IDLE_PROFILE: IDLE_PARAMETERS,
@@ -46,7 +46,7 @@ UNITS = {
     'E504': 'state (0 idle; 1 delay; 2 monitor; 3 cut)',
     'E505': 'task calls', 'E506': 'raw flags', 'E507': 'task calls',
     **{f'E{i}': 'raw additive factor' for i in range(508, 514)},
-    'E514': 'rpm', 'E515': '%', 'E516': 'raw flags',
+    'E514': 'rpm', 'E515': '%', 'E516': 'raw flags', 'E517': 'raw flags',
 }
 SWITCHES = {'S4', 'S5', 'S11'}
 

@@ -46,6 +46,7 @@
         <parameter id="E514" units="rpm" />
         <parameter id="E515" units="%" />
         <parameter id="E516" units="raw flags" />
+        <parameter id="E517" units="raw flags" />
     </parameters>
     <switches>
         <switch id="S4" />

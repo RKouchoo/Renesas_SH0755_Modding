@@ -8,6 +8,13 @@
 > [the load/idle-air follow-up](IDLE_AIR_RECOVERY_AUDIT.md). No further flash
 > or filter/timing change was produced. Earlier build history below is retained.
 
+The latest offline override checks narrow the normal-running possibilities:
+C618's stopped-engine selection clears at 300 RPM, and C640's shutdown
+selection clears with ignition on. D274 can still select a fault request
+from received status or the pedal-pair agreement monitor. Their actual
+states remain unlogged; these passing checks do not establish a near-stall
+repair. The candidate and prepared logger are unchanged.
+
 > **September 8 corrected development image:** SHA-256
 > `48d63cf3b7085afc672dd809cf08f4aef2b1aaae8a880f421e656467b7aaf8f0`,
 > checksum `0x1923EC61`, restores `0x3FD8C -> 0xE8C4` stock fan control and
@@ -130,7 +137,7 @@ master_patch/D2WD610H_master_logger.xml
 ```
 
 Do not select `D2WD610H_master_logger_ecuparams.xml`; it is only the internal
-seventeen-parameter fragment. To regenerate the complete file from another normal
+eighteen-parameter fragment. To regenerate the complete file from another normal
 logger release without modifying the source file:
 
 ```sh
@@ -138,7 +145,7 @@ python3 master_patch/install_master_logger.py /path/to/logger.xml
 ```
 
 Fully exit RomRaider after selecting a different logger definition, then start
-it again. E500--E516 and the nine high-resolution stock channels used by the
+it again. E500--E517 and the nine high-resolution stock channels used by the
 lean-out test are unconditional in this D2WD610H-only logger and must be
 listed in the Data, Graph, and Dashboard parameter panes even before connecting
 to the ECU. If they are absent, RomRaider is using another file or a stale
