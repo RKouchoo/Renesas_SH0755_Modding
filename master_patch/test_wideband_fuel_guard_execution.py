@@ -9,6 +9,8 @@ and its six D94C getters execute from ROM. Here 22454 is a stand-in with
 poisoned scratch registers; test_primary_fueling_execution covers it and 1DD04.
 This does not emulate the scheduler, interrupts, peripheral hardware, or FP
 exception delivery/flags, and cannot validate controller health or an engine.
+Native 3AF4/3B08 lock/unlock instructions execute; the pending-task dispatcher
+3F84 is a recorded ABI boundary, not a context-switch or interrupt simulation.
 """
 from collections import Counter
 from io import StringIO
@@ -52,8 +54,11 @@ class GuardMachine(Machine):
         self.image = image
         self.memory.clear()
         self.fpul = 0
+        self.sr = 0
+        self.task_handoffs = []
         self.stock_target_flags = 0xFF
         self.entered = []
+        self.write(0xFFFF72C8, 0x49FC)  # Current task-6 descriptor, ordinary dispatchable task.
         self.write(safety.FUEL_CUT_FLAG, 0, 1)
         self.write(RPM_FLAGS, 0, 1)
         self.write(safety.LEAN_STATE_RAM, 0, 1)
@@ -92,7 +97,8 @@ class GuardMachine(Machine):
             self.write(safety.CL_OL_STATE_FLAGS, self.stock_target_flags, 1, record=True)
             self.poison_scratch()
         else:
-            assert target in (boost.REVWRAP_ADDR, boost.REVLIMITER, 0x24FC, 0x1A256, *INHIBIT_GETTERS), hex(target)
+            assert target in (boost.REVWRAP_ADDR, boost.REVLIMITER, boost.TASK_LOCK,
+                              0x24FC, 0x1A256, *INHIBIT_GETTERS), hex(target)
             return_pc = self.pr
             self.pc = target
             while self.pc != return_pc:
@@ -100,6 +106,16 @@ class GuardMachine(Machine):
 
     def step(self, in_delay=False):
         pc = self.pc
+        if pc == 0x3F84:
+            assert not in_delay
+            self.entered.append(pc)
+            self.task_handoffs.append((self.read(INHIBIT_WORD, 2),
+                                       self.read(safety.FUEL_CUT_FLAG, 1), self.sr & 0xF0))
+            self.poison_scratch()
+            self.r[0] = 0
+            self.pc = self.pr
+            self.instructions += 1
+            return
         if pc == INHIBIT_BUILDER:
             self.entered.append(pc)
         op = self.read(pc, 2)
@@ -121,6 +137,8 @@ class GuardMachine(Machine):
             self.r[n] = self.load(address, 4)
             if n != m:
                 self.r[m] = (address + 4) & 0xFFFFFFFF
+        elif op & 0xF000 == 0x5000:
+            self.r[n] = self.load((self.r[m] + (op & 15) * 4) & 0xFFFFFFFF, 4)
         elif op & 0xF00F == 0x600C:
             self.r[n] = self.r[m] & 255
         elif op & 0xF00F == 0x600D:
@@ -131,6 +149,10 @@ class GuardMachine(Machine):
             self.write(self.r[n], self.r[m], 1 << (op & 15), record=True)
         elif op & 0xF00F == 0x3002:
             self.t = self.r[n] >= self.r[m]
+        elif op & 0xF00F == 0x3006:
+            self.t = self.r[n] > self.r[m]
+        elif op & 0xF00F == 0x2009:
+            self.r[n] &= self.r[m]
         elif op & 0xF00F == 0x200B:
             self.r[n] |= self.r[m]
         elif op & 0xF00F == 0x2008:
@@ -143,6 +165,11 @@ class GuardMachine(Machine):
             self.r[n] = signed(self.load((self.r[0] + self.r[m]) & 0xFFFFFFFF, 1), 8) & 0xFFFFFFFF
         elif op & 0xF0FF == 0x0029:
             self.r[n] = int(self.t)
+        elif op & 0xF0FF == 0x0002:
+            self.r[n] = (self.sr & ~1) | int(self.t)
+        elif op & 0xF0FF == 0x400E:
+            self.sr = self.r[n]
+            self.t = bool(self.sr & 1)
         elif op & 0xFF00 == 0xC800:
             self.t = (self.r[0] & (op & 255)) == 0
         elif op & 0xFF00 == 0xC900:
@@ -168,12 +195,13 @@ class GuardMachine(Machine):
             handled = False
         if handled:
             self.instructions += 1
-            assert self.instructions < 2000
+            assert self.instructions < self.INSTRUCTION_LIMIT
         else:
             self.pc = pc
             super().step(in_delay)
 
     def invoke(self, entry, allowed_writes):
+        original_imask = self.sr & 0xF0
         self.r = self.original_r.copy()
         self.fr = self.original_fr.copy()
         self.pr = self.STOP
@@ -188,6 +216,7 @@ class GuardMachine(Machine):
         assert self.r[15] == self.STACK and self.pr == self.STOP
         assert self.r[8:15] == self.original_r[8:15]
         assert self.fr[12:] == self.original_fr[12:]
+        assert self.sr & 0xF0 == original_imask, "Caller interrupt mask changed"
         for address, size in self.writes:
             assert (address, size) in allowed_writes or self.min_sp <= address < self.STACK, (
                 hex(entry), hex(address), size)

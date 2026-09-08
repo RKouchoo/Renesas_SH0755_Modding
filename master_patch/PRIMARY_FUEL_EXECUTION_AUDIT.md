@@ -5,7 +5,8 @@ Its image was
 `5fff8b3776af0b56b720c360e940b193f49893b35eb64e15b3578b203b97046c`,
 Subaru checksum `0x75E22B4F`. Further downstream tracing then found and fixed
 the [injector inhibit publication defect](INJECTOR_CUT_EXECUTION_AUDIT.md),
-producing current `aea793...`. The primary-calculation findings below remain
+producing `aea793...`. The later [scheduler repair](INJECTOR_SCHEDULER_EXECUTION_AUDIT.md)
+produces current `48d63c...`. The primary-calculation findings below remain
 valid; the second idle-VE trial is still unvalidated.
 
 ## Test-model defect corrected

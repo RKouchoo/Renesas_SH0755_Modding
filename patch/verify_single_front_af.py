@@ -171,10 +171,10 @@ def main():
     if unexpected:
         raise SystemExit("FAIL: unexpected changed offsets: %s"
                          % ", ".join("0x%05X" % value for value in unexpected[:32]))
-    if image[0x7D790:0x7D90C] != stock[0x7D790:0x7D90C]:
+    if image[0x7D790:0x7D91C] != stock[0x7D790:0x7D91C]:
         raise SystemExit("FAIL: standalone front-A/F image modifies the reserved boost region")
-    if (image[0x7D90C:patch.FRONT_AF_ENABLE_ADDR] !=
-            stock[0x7D90C:patch.FRONT_AF_ENABLE_ADDR] or
+    if (image[0x7D91C:patch.FRONT_AF_ENABLE_ADDR] !=
+            stock[0x7D91C:patch.FRONT_AF_ENABLE_ADDR] or
             image[patch.FRONT_AF_ENABLE_ADDR + 1:patch.FRONT_MIRROR_WRAPPER_ADDR] !=
             stock[patch.FRONT_AF_ENABLE_ADDR + 1:patch.FRONT_MIRROR_WRAPPER_ADDR]):
         raise SystemExit("FAIL: unused pre-wrapper free space is not stock/erased")
@@ -223,7 +223,7 @@ def main():
     print("  OFF caveat     : all 13 removed-sensor DTC bytes remain disabled until re-enabled")
     print("  rear O2 paths  : ADC conversion and five monitor stages bypassed; 8 DTCs disabled")
     print("  ext. wideband  : no ECU hook, ADC conversion, RAM publication, or definition")
-    print("  boost region   : 0x7D790..0x7D90B unchanged")
+    print("  boost region   : 0x7D790..0x7D91B unchanged")
 
 
 if __name__ == "__main__":

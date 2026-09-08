@@ -1730,3 +1730,87 @@ Exact evidence and remaining release boundaries:
 `master_patch/GUARD_EXECUTION_AUDIT.md`. The execution gap is closed for the
 listed paths; physical inputs/controller fault voltages, post-turbo feedback
 response, intended VE baseline and engine validation remain unresolved.
+
+## 2026-09-08 — Injector queue execution and cut-update scheduler lock
+
+Continuing downstream execution found a second integration defect after the
+B744 publication repair. In the prior aea793 image, a continuing added cut
+briefly published BF6C=0/B744=0 while the stock limiter ran, then reasserted
+both before returning. Return-state-only checks passed despite this interval.
+Native task 5 (6938 -> 11958 -> 263EE) has priority 4; task 6 (696C -> 11AD0,
+including cut slot 11B18) has priority 2. The native activation path permits
+the higher-priority task to dispatch when the mask/kernel restrictions allow.
+Replaying the unprotected zero word through actual scheduler instructions
+releases previously inhibited records and reaches all six enqueue callbacks.
+The exact IRQ arrival time and occurrence on the car are not established.
+
+Both added wrappers now use the existing 3AF4(0x10)/3B08 critical-section pair.
+The outer lean update remains protected through the nested stock/overboost
+call and every release/disabled/fault exit. The inner unlock preserves the
+outer mask; the standalone overboost wrapper protects itself. All 16 incoming
+mask values are restored, with no lowering of an existing higher mask.
+No static RAM or calibration changes. Each wrapper adds one four-byte saved
+mask slot. Hardware interrupts above IMASK 1 remain enabled.
+
+Current SHA-256:
+48d63cf3b7085afc672dd809cf08f4aef2b1aaae8a880f421e656467b7aaf8f0,
+checksum 0x1923EC61. Exactly 543 bytes differ from aea793: 75 in the now-88-byte
+hard-cut wrapper, 464 in the now-512-byte lean wrapper, and four checksum bytes.
+The larger difference reflects relocated instructions/literals. Free contiguous
+flash is 3,320 bytes at 7EE00..7FAF7. Architecture signature 7D91C, stock code,
+all tuning and hook addresses remain unchanged. Root stock provenance is intact.
+
+Twelve new execution groups cover 1,728 cut-transition fixtures (10,368 record
+decisions), all channel masks, phase equality/wrap, native queued cancellation,
+release windows, startup/resync/mode transitions, pulse logging and 768
+wrapper/mask/state/pressure/enable cases. Removing either required lock exposes
+the temporary release even though the final word remains FFFF. Removing three
+native gate/cache instructions also exposes output; eight damaged native lock
+contracts are refused before mutation. Native 26958 now executes instead of
+being modeled: it only marks activity at C0B0.
+
+Native 26AEC can defer a cut transition for a pulse already handed to the timer;
+263EE applies the cached word at its next record phase boundary. 26F8C logs
+per-record state, not B744 or physical injector on-time, so some nonzero widths
+can persist briefly after a global cut. This behavior is preserved and tested.
+
+Full master verification, eight SD execution groups, standalone stock-to-boost
+lock/cut execution and single-front-A/F isolation checks pass. IRQ/context-switch
+timing, dynamic timer effects, actual injector delivery and the second-VE trial
+remain unvalidated. No ECU traffic or flashing occurred. Full evidence and
+explicit mathematical/device boundaries are in
+master_patch/INJECTOR_SCHEDULER_EXECUTION_AUDIT.md.
+
+## 2026-09-08 — Native IRQ/context return execution
+
+The next pass checks whether the scheduler lock also prevents a task switch at
+IRQ exit. Native 3454 loads the interrupted task's saved SR at 3482, extracts
+IMASK at 3486, and combines it with nesting/dispatch restrictions before the
+3492 return gate. A nonzero saved mask defers task dispatch while higher-level
+IRQ bodies can still run and queue work.
+
+New test_cut_interrupt_execution.py executes the native 33F4/340C/3454 IRQ
+frames, 3A28 activation, priority queues, 34C8 and 3DC8 context saves, 3930
+dispatch, 3998/399C restores and 3F2C task completion. Eight groups with 82
+fixtures cover all unmasked/masked IRQ-return contexts through IMASK 14,
+nested IRQs, both cuts interrupted during the temporary stock clear, wrapper/
+unlock boundary arrivals and higher caller masks held until a later unlock.
+The injected task executes actual 263EE. Full IRQ register state and the
+wrappers' callee-saved registers, stack and return address are restored.
+
+Removing either wrapper lock or the IRQ saved-mask gate reproduces all six
+enqueue requests during the temporary release, despite final B744=FFFF.
+Four deliberately damaged context restores are also detected. The new model
+accounts for the native synchronous frame's unused R0 slot and RTE-based return
+without treating it as an ordinary RTS. These were test-model corrections,
+not stock-ROM defects.
+
+IRQ arrival/frame creation and handler body, the rest of the task payload,
+debug callback and existing device/math boundaries remain explicit fixtures.
+This is not cycle-accurate peripheral execution or a stack-headroom proof.
+All eight groups and the full master verifier pass. No ROM or tuning changes:
+SHA-256 remains 48d63cf3b7085afc672dd809cf08f4aef2b1aaae8a880f421e656467b7aaf8f0,
+checksum 0x1923EC61. No ECU connection or flash. Controlled bench/idle logging
+with a known calibration baseline is the next validation step; actual timing,
+fuel delivery and the second-VE trial remain unvalidated. See
+master_patch/INJECTOR_SCHEDULER_EXECUTION_AUDIT.md for the detailed evidence.

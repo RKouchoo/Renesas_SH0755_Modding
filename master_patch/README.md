@@ -37,9 +37,9 @@ firmware work into one deterministic stock-to-output build:
 - focused, self-contained D2WD610H RomRaider ECU and logger definitions.
 
 The generated baseline is `D2WD610H_master_patch.bin`, SHA-256
-`aea793053fd3df4cab1efc3f15fbcee81024e6e90c0e8ba13025cb602b253b6b`.
+`48d63cf3b7085afc672dd809cf08f4aef2b1aaae8a880f421e656467b7aaf8f0`.
 It is 512 KiB, contains CALID `D2WD610H`, and has a valid Subaru additive
-checksum (`0x11787AA2`). It is a development artifact, not a vehicle-tested tune.
+checksum (`0x1923EC61`). It is a development artifact, not a vehicle-tested tune.
 Its second idle-VE increase is an unvalidated trial derived from a still-rising
 AFR endpoint. The old recommendation to continue running the first-VE ROM is
 withdrawn: that image also used the erroneous fan hook. Any future first-VE
@@ -87,11 +87,24 @@ it does not guarantee a rich target when modeled load is low.
 Further downstream execution found a separate [injector-cut publication
 defect](INJECTOR_CUT_EXECUTION_AUDIT.md): the added cuts set the status flag
 after the stock limiter had already built the scheduler's inhibit word. Both
-now publish the stock all-channel inhibit value too. Current `aea793...`
+now publish the stock all-channel inhibit value too. The `aea793...` stage
 changes 169 bytes from `5fff8b...`, with unchanged calibration and no new RAM.
 Six new execution groups cover native word construction, downstream channel
 gates, release and negative controls; all pass. The old “cam-solenoid bank”
 identification of this six-channel scheduler is corrected to injector scheduling.
+The current [scheduler follow-up](INJECTOR_SCHEDULER_EXECUTION_AUDIT.md) fixes
+a further temporary release during each continuing cut update. Both wrappers
+use the native scheduler lock, preserving the incoming mask and protecting the
+complete nested decision. Twelve new execution groups cover queue cancellation,
+phase boundaries, release, startup/resync and damaged-lock reproductions.
+Current `48d63c...` changes 543 bytes from `aea793...`, confined to two wrappers
+and checksum. No calibration or static RAM changes; hardware timing remains unvalidated.
+The subsequent IRQ/context follow-up adds eight execution groups covering native
+interrupt entry/exit, pending-task dispatch, nested IRQs and register restoration.
+Removing either wrapper lock or the native saved-mask gate reproduces the cut
+release through actual dispatch. The full verifier passes without further ROM
+changes. Real timing, injector delivery and the calibration still need controlled
+commissioning; see the same audit for the scripted hardware/task boundaries.
 
 `Overboost Fuel Cut Enable` remains in RomRaider, defaults ON, and retains the
 6.5 psi hard MAP cut relative to 760 mmHg. Electronic boost enable, target,

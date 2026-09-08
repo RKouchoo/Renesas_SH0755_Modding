@@ -1,8 +1,9 @@
 # Wideband and fuel-guard execution audit
 
 The later [injector-cut audit](INJECTOR_CUT_EXECUTION_AUDIT.md) supersedes this
-stage's image with current `aea793...`, fixing a separate stale B744 inhibit
-word. The `5fff8b...` image and 488-byte layout below identify this earlier
+stage's image with `aea793...`, fixing a separate stale B744 inhibit word.
+The subsequent [scheduler repair](INJECTOR_SCHEDULER_EXECUTION_AUDIT.md)
+produces current `48d63c...`. The `5fff8b...` image and 488-byte layout below identify this earlier
 fault-sentinel repair stage, not the latest build.
 
 2026-09-08. Continued review after the retained-sensor repairs. No ECU traffic,

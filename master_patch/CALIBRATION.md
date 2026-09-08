@@ -5,8 +5,8 @@ achieve the commanded values. All pressure figures described as boost are
 relative to the firmware's fixed 760 mmHg reference unless stated otherwise.
 
 The September 8 corrected build has SHA-256
-`aea793053fd3df4cab1efc3f15fbcee81024e6e90c0e8ba13025cb602b253b6b`
-and checksum `0x11787AA2`. It restores stock radiator-fan control and deletes
+`48d63cf3b7085afc672dd809cf08f4aef2b1aaae8a880f421e656467b7aaf8f0`
+and checksum `0x1923EC61`. It restores stock radiator-fan control and deletes
 actual CPC purge duty/modeled flow/fuel subtraction, without changing VE,
 injector, timing or AVLS calibrations. No new cam-hold policy was selected.
 Earlier images, including the first-VE ROM, retain the erroneous fan hook and

@@ -11,8 +11,8 @@ EBCS-OFF images. Static verification does not prove this fixes the cold lean-out
 or makes the ROM vehicle-validated; see the latest master Ghidra audit.
 
 Current master SHA-256:
-`aea793053fd3df4cab1efc3f15fbcee81024e6e90c0e8ba13025cb602b253b6b`,
-checksum `0x11787AA2`. The fan/purge repair first produced `fbc1a8...` with a
+`48d63cf3b7085afc672dd809cf08f4aef2b1aaae8a880f421e656467b7aaf8f0`,
+checksum `0x1923EC61`. The fan/purge repair first produced `fbc1a8...` with a
 436-byte difference from `0600d73a...`. The two retained-sensor passes then
 change 20 bytes from `fbc1a8...`, neutralizing atmospheric lambda correction,
 auxiliary O2-voltage fuel adders and two legacy-voltage contributions to the
@@ -25,9 +25,19 @@ allocation or calibration changes. Twelve new execution test groups now run
 in the master verifier; scheduler and physical validation remain separate.
 Further downstream execution found that those cuts left B744 stale after the
 stock limiter returned. Both wrappers now publish the native all-channel word;
-current `aea793...` differs by 169 bytes from `5fff8b...`. See
+the `aea793...` stage differs by 169 bytes from `5fff8b...`. See
 [the injector-cut audit](../master_patch/INJECTOR_CUT_EXECUTION_AUDIT.md).
 The earlier six-channel “cam-solenoid bank” identification is corrected below.
+Current `48d63c...` additionally fixes a temporary cut release during the update:
+native task 5 (injector phase, priority 4) outranks task 6 (cut calculation,
+priority 2). Both wrappers use `3AF4(0x10)/3B08` to protect the complete decision.
+The [scheduler execution audit](../master_patch/INJECTOR_SCHEDULER_EXECUTION_AUDIT.md)
+documents the native queue/phase behavior and state replays. Its later eight-group
+IRQ/context follow-up executes native interrupt returns, task dispatch and
+register restoration, confirms the saved-mask gate at 3486/3492, and reproduces
+the cut release when either a wrapper lock or that gate is removed. Full
+verification passes without further ROM changes; timer timing and actual fuel
+delivery remain unmeasured.
 
 Current cold-idle investigation: the second VE increase is an unvalidated
 trial, not a proved repair. The latest run used the first increase, but its

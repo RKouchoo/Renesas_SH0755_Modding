@@ -165,6 +165,7 @@ def verify_image(image: bytes) -> None:
             safety.LEAN_AFR_THRESHOLD_ADDR, safety.LEAN_CONFIRM_COUNT_ADDR,
             safety.LEAN_TRANSPORT_COUNT_ADDR, safety.LEAN_RESET_DELTA_ADDR,
             safety.FUEL_CUT_FLAG, safety.boost.FUELCUT_INHIBIT_WORD,
+            safety.boost.TASK_LOCK, safety.boost.TASK_UNLOCK,
         },
     )
     if "or #128,r0" not in lean_decoded:

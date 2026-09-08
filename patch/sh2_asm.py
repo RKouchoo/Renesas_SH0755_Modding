@@ -30,6 +30,7 @@ class Asm:
     def movw_store(self, rm, rn): return self._w(0x2001 | rn<<8 | rm<<4)   # mov.w Rm,@Rn (low word)
     def movl_store(self, rm, rn): return self._w(0x2002 | rn<<8 | rm<<4)   # mov.l Rm,@Rn
     def push(self, rm):           return self._w(0x2006 | 15<<8 | rm<<4)   # mov.l Rm,@-r15
+    def pop(self, rn):            return self._w(0x6006 | rn<<8 | 15<<4)   # mov.l @r15+,Rn
     def movb_at(self, rn, rm):    return self._w(0x6000 | rn<<8 | rm<<4)   # mov.b @Rm,Rn (sign-ext)
     def movb_store(self, rm, rn): return self._w(0x2000 | rn<<8 | rm<<4)   # mov.b Rm,@Rn (low byte)
     def mov_imm(self, imm, rn):   return self._w(0xE000 | rn<<8 | (imm & 0xFF)) # mov #imm,Rn (sign-ext)

@@ -1,8 +1,8 @@
 # Master-patch commissioning order
 
 > **September 8 corrected development image:** SHA-256
-> `aea793053fd3df4cab1efc3f15fbcee81024e6e90c0e8ba13025cb602b253b6b`,
-> checksum `0x11787AA2`, restores `0x3FD8C -> 0xE8C4` stock fan control and
+> `48d63cf3b7085afc672dd809cf08f4aef2b1aaae8a880f421e656467b7aaf8f0`,
+> checksum `0x1923EC61`, restores `0x3FD8C -> 0xE8C4` stock fan control and
 > deletes actual CPC purge duty/modeled flow/fuel subtraction. Electronic boost
 > control is removed. Do not run earlier images with the erroneous fan hook,
 > including the first-VE ROM. Static checks pass; vehicle behavior and a cure
@@ -47,8 +47,19 @@ select zero enrichment at low modeled load. These passing tests do not validate
 boost-entry response or the tune; this pass changes no ROM bytes.
 The later [injector-cut repair](INJECTOR_CUT_EXECUTION_AUDIT.md) does change
 the ROM: both added cuts now publish the native scheduler inhibit word, fixing
-the flag-only mismatch in `5fff8b...`. Use the current `aea793...` artifact;
-the new execution tests still do not measure queued pulses or physical delivery.
+the flag-only mismatch in `5fff8b...`. The subsequent
+[scheduler repair](INJECTOR_SCHEDULER_EXECUTION_AUDIT.md) protects the complete
+update against a higher-priority injector task seeing a temporary clear.
+Use the current `48d63c...` artifact. Queued-state, release and lock execution
+tests pass; interrupt timing and physical delivery remain unmeasured. A nonzero
+logged pulse width may persist for a pulse already handed to the timer after
+the global inhibit word becomes FFFF; the logger is not a physical on-time probe.
+The IRQ/context follow-up now executes native interrupt returns and task
+switching, including nested IRQs and pending-task resumption after both cut
+wrappers. All eight groups and the full verifier pass on the unchanged image.
+This supports proceeding to controlled bench/idle commissioning once the input
+checks and intended VE baseline above are established. It does not validate
+real-time deadlines, physical injector delivery or loaded operation.
 
 ## 1. Confirm parts and harness with power off
 

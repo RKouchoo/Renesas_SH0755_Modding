@@ -4,7 +4,12 @@
 defect after the primary-calculation tests passed. No ECU traffic, flashing,
 or engine operation was performed.
 
-Current master SHA-256:
+This records the publication-repair stage. The subsequent
+[scheduler repair](INJECTOR_SCHEDULER_EXECUTION_AUDIT.md) produces current
+`48d63c...`, protecting the temporary clear during each update. Hash, checksum
+and wrapper sizes below describe the preceding stage.
+
+Publication-repair master SHA-256:
 `aea793053fd3df4cab1efc3f15fbcee81024e6e90c0e8ba13025cb602b253b6b`.
 Subaru checksum: `0x11787AA2`.
 
@@ -55,8 +60,8 @@ fault bits. Its writer is `1C90A`; the destination literal is `1C91C = B744`.
 Thus the earlier generic “solenoid”/“cam bank” identification of this
 crank-phase subsystem was misleading. The five relevant function names were
 corrected in live Ghidra and in `ApplyMasterNames.java`; source comments and
-canonical RAM/RE notes now identify the injector path. Complete scheduler and
-hardware execution remain outside the tests below.
+canonical RAM/RE notes now identify the injector path. The later scheduler
+suite covers queue/phase transitions; physical output remains unvalidated.
 
 ## Bounded repair
 
@@ -111,8 +116,8 @@ python3 speed_density/test_hook_execution.py master_patch/D2WD610H_master_patch.
 ```
 
 Both pass. The master verifier confirms a deterministic rebuild, valid checksum,
-stock provenance, ownership and definitions. Output handoffs `90BA/26958` are
-recorded substitutes, not emulated peripheral writes. The complete scheduler,
-already queued pulse handling, interrupt timing and actual injector delivery
-still need validation. These tests do not establish 100% flash/engine certainty,
+stock provenance, ownership and definitions. `90BA` remains a recorded device
+boundary. The later scheduler suite removes the old `26958` substitute: that
+tail simply sets activity byte C0B0. It also executes queued-state/phase handling;
+interrupt timing and actual injector delivery remain unvalidated. These tests do not establish 100% flash/engine certainty,
 validate the second-VE trial or clear the image for load/boost operation.

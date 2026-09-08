@@ -126,8 +126,15 @@ fragment and installation script in `master_patch`; never treat E500 = 0.0 as a 
 | RAM addr | Meaning |
 |---|---|
 | 0xFFFFBFB8 | Control-struct array base (6 × 0x28 = **spans 0xFFFFBFB8–0xFFFFC0A7**, channel idx @ +0x0C). Accessed by computed base+index, so per-field addresses (e.g. 0xFFFFBFF0/BFF8) show NO xref but ARE used — do not repurpose. |
-| 0xFFFFB744 | Injector scheduler inhibit word (16-bit; bits 0..5 per channel, FFFF native global cut). Added overboost/lean cuts publish FFFF as well as BF6C bit80; old cam-solenoid identity is retracted. |
+| 0xFFFFB744 | Injector scheduler inhibit word (16-bit; bits 0..5 per channel, FFFF native global cut). Added overboost/lean cuts publish FFFF as well as BF6C bit80 under the native scheduler lock; old cam-solenoid identity is retracted. |
 | 0xFFFFBF21 | Circuit-fault byte (bits 0x80..0x04 = ch0..5) |
 | 0xFFFFD94C | Six channel inhibit-status bits read by 46EE0..46F3E; not a cam command |
-| 0xFFFFC0A8 / C0AC / C0B0 | Injector scheduling initialization/global state |
+| 0xFFFFC0A8 / C0AC | Injector scheduling sequence/counter state |
+| 0xFFFFC0B0 | Injector output-activity byte; 26958 writes 1 |
 | 0xFFFFC0B2 | Cached B744 word used by phase scheduler 263EE |
+
+`26AEC` can defer a record's inhibit transition for a pulse already handed to
+the timer. The record catches up at its native phase boundary. `26F8C` logs
+the record's scheduled count times 0.25 when its inhibit byte is clear, not
+the global B744 word or a measurement of physical on-time. See
+[the scheduler audit](../master_patch/INJECTOR_SCHEDULER_EXECUTION_AUDIT.md).

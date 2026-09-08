@@ -2,9 +2,10 @@
 """Execute native cut-word publication and a downstream channel inhibit gate.
 
 1C5D4 and its six D94C getters execute in GuardMachine. This suite also
-executes 26DFC and the 268E8 channel gate. Hardware handoffs 90BA/26958 are
-recorded substitutes, not device actions. The entire phase scheduler, queued
-pulses, interrupts, peripheral state, and physical injection are not emulated.
+executes 26DFC, the 268E8 channel gate and its 26958 output-activity flag tail.
+Hardware handoff 90BA is a recorded substitute, not a device action. The
+separate scheduler suite covers queued-state transitions; neither suite
+emulates interrupt timing or physical injection.
 """
 from io import StringIO
 from pathlib import Path
@@ -36,10 +37,6 @@ class ChannelGateMachine(GuardMachine):
             super().call_lookup(target)
 
     def step(self, in_delay=False):
-        if self.pc == 0x26958:
-            self.handoffs.append(self.pc)
-            self.pc = self.pr
-            return
         pc, op = self.pc, self.read(self.pc, 2)
         n, m = (op >> 8) & 15, (op >> 4) & 15
         handled = True
@@ -67,7 +64,7 @@ class ChannelGateMachine(GuardMachine):
             handled = False
         if handled:
             self.instructions += 1
-            assert self.instructions < 2000
+            assert self.instructions < self.INSTRUCTION_LIMIT
         else:
             self.pc = pc
             super().step(in_delay)
@@ -76,7 +73,9 @@ class ChannelGateMachine(GuardMachine):
         self.original_r[4] = channel
         self.original_fr[4] = bits(1000)
         self.handoffs.clear()
-        self.invoke(0x268E8, set())
+        self.write(0xFFFFC0B0, 0, 1)
+        self.invoke(0x268E8, {(0xFFFFC0B0, 1)})
+        assert self.read(0xFFFFC0B0, 1) == bool(self.handoffs)
         return bool(self.handoffs)
 
 
@@ -87,6 +86,7 @@ class InjectorCutTests(unittest.TestCase):
         stock = (ROOT / "2005 BLE MT.bin").read_bytes()
         for start, end in ((0x1C5D4, 0x1C91E), (0x46EE0, 0x46F52), (0x46FD8, 0x46FDA),
                            (0x26DFC, 0x26E02), (0x26EEE, 0x26EF0), (0x268E8, 0x26944),
+                           (0x26958, 0x26960), (0x269DA, 0x269DC),
                            (0x269E0, 0x269F8), (0x4B64C, 0x4B658), (0x4B6A8, 0x4B6B4)):
             assert cls.image[start:end] == stock[start:end], f"Stock cut path changed at {start:#x}"
         assert cls.image[0x4B64C:0x4B658] == bytes.fromhex("000100020004000800100020")

@@ -2,7 +2,9 @@
 
 The later [guard execution audit](GUARD_EXECUTION_AUDIT.md) produced
 master `5fff8b...`, fixing zero-lambda/stale-readiness handling. The subsequent
-[injector-cut repair](INJECTOR_CUT_EXECUTION_AUDIT.md) produces current `aea793...`.
+[injector-cut repair](INJECTOR_CUT_EXECUTION_AUDIT.md) produced `aea793...`;
+the later [scheduler repair](INJECTOR_SCHEDULER_EXECUTION_AUDIT.md) produces
+current `48d63c...`, with no sensor-correction or tuning-data changes.
 The retained-sensor
 changes and `5a1b3e...` output recorded below remain the preceding audit stage;
 that later guard repair changes no sensor-correction or tuning data.

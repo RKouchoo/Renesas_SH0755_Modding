@@ -129,14 +129,36 @@ def emit_added_fuel_cut(a):
     a.movl_pool(1, FUELCUT_INHIBIT_WORD).mov_imm(-1, 0).movw_store(0, 1)
 
 
+TASK_LOCK = 0x00003AF4
+TASK_UNLOCK = 0x00003B08
+
+
+def emit_cut_update_begin(a, prior):
+    """Use the native minimum-IMASK-1 critical section around the whole update.
+
+    Higher hardware interrupt levels remain enabled. Native task activation
+    defers dispatch while IMASK is nonzero; 3B08 restores the incoming mask
+    and dispatches a pending task when unlocking to zero. Save its mask return
+    in the prior routine's delay slot, before that routine can clobber R0.
+    """
+    a.stsl_pr()
+    a.movl_pool(3, TASK_LOCK).jsr(3).mov_imm(0x10, 4)
+    a.movl_pool(2, prior).jsr(2).push(0)
+
+
+def emit_cut_update_end(a):
+    """Restore the original mask and caller PR, including nested guard calls."""
+    a.pop(4).movl_pool(3, TASK_UNLOCK).jmp(3).ldsl_pr()
+
+
 def build_fuelcut_wrapper():
     """Rev-limiter wrapper: run the stock rev limiter, then set the fuel-cut flag on overboost.
        Entered void (PR = dispatcher). Runs in the rev-limiter's task slot, so the fuel-cut
        aggregator sees the flag and the scheduler sees the inhibit word before
-       this task returns. No new RAM state."""
+       this task returns. The native scheduler lock prevents a higher-priority
+       injector task seeing the retained limiter's temporary clear. No new RAM state."""
     a = Asm(REVWRAP_ADDR)
-    a.stsl_pr()                                                    # save dispatcher PR
-    a.movl_pool(2, REVLIMITER); a.jsr(2); a.nop()                  # call stock rev limiter
+    emit_cut_update_begin(a, REVLIMITER)
     a.movl_pool(1, OVERBOOST_ENABLE_ADDR); a.movb_at(0, 1); a.cmp_eq_imm(0x01)
     a.bf('skip')                                                   # anything but 01: stock rev limiter only
     a.movl_pool(1, MAP_ADDR); a.fmov_load(2, 1)                    # fr2 = MAP
@@ -144,7 +166,7 @@ def build_fuelcut_wrapper():
     a.fcmpgt(3, 2); a.bf('skip')                                   # if MAP > limit:
     emit_added_fuel_cut(a)
     a.label('skip')
-    a.ldsl_pr(); a.rts(); a.nop()                                  # return to dispatcher
+    emit_cut_update_end(a)
     return a.assemble()
 
 # ---------------- apply ----------------
@@ -185,6 +207,13 @@ def apply_to_rom(rom):
         data = bytes.fromhex(expected)
         if rom[address:address + len(data)] != data:
             raise SystemExit("REFUSING: native injector-inhibit contract changed @0x%X" % address)
+    lock_contract = bytes.fromhex(
+        "95050002205934068b02000b440e00f0000b0009"
+        "24488b07d5045656846188018902d603462b440e000b440e"
+        "ffff72b000003f84"
+    )
+    if rom[TASK_LOCK:TASK_LOCK + len(lock_contract)] != lock_contract:
+        raise SystemExit("REFUSING: native scheduler-lock contract changed @0x3AF4")
     for addr in (BASE_DESC, RPM_AXIS, TARGET_DESC, STUB_ADDR, KP_ADDR):
         assert addr % 4 == 0
 

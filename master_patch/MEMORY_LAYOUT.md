@@ -6,10 +6,10 @@ build fails on any overlap except the explicit replacement of boost component
 seed data by the final boost calibration.
 
 Current corrected master SHA-256 is
-`aea793053fd3df4cab1efc3f15fbcee81024e6e90c0e8ba13025cb602b253b6b`
-(checksum `0x11787AA2`). The fan/purge repair adds no RAM or free-flash
-allocation. The later injector-cut repair grows two existing wrappers; the
-contiguous unallocated tail is now 3,332 bytes.
+`48d63cf3b7085afc672dd809cf08f4aef2b1aaae8a880f421e656467b7aaf8f0`
+(checksum `0x1923EC61`). The fan/purge repair adds no RAM or free-flash
+allocation. The later injector-cut and scheduler-lock repairs grow two existing
+wrappers; the contiguous unallocated tail is now 3,320 bytes.
 
 ## Injected flash
 
@@ -18,7 +18,7 @@ contiguous unallocated tail is now 3,332 bytes.
 | `0x7D790..0x7D80F` | Legacy actuator descriptors/data and independent hard-cut enable; actuator data is inert. |
 | `0x7D810..0x7D8BB` | Retired actuator reservation: `RTS; NOP`, then erased bytes (172 bytes). |
 | `0x7D8BC..0x7D8C3` | Inert former throttle gate and active hard-overboost limit. |
-| `0x7D8C4..0x7D90B` | Independent rev-limiter/hard-overboost fuel-cut wrapper, including injector inhibit publication (72 bytes). |
+| `0x7D8C4..0x7D91B` | Independent rev-limiter/hard-overboost fuel-cut wrapper, including injector inhibit publication and scheduler lock (88 bytes). |
 | `0x7D91C` | Master wideband/O2 architecture signature. |
 | `0x7DB40..0x7DCEB` | Integrated default-OFF rotational-idle calibration and wrapper. |
 | `0x7DD00..0x7E18B` | Speed-density calibration, descriptors and original seed data. |
@@ -34,8 +34,8 @@ contiguous unallocated tail is now 3,332 bytes.
 | `0x7EAC8..0x7EAEB` | Pressure-open-loop and lean-cut switches/calibration. |
 | `0x7EB20..0x7EB9B` | Stock-target-first pressure/open-loop wrapper. |
 | `0x7EBA0..0x7EBB7` | Explicit lean-state zero initializer. |
-| `0x7EC00..0x7EDF3` | Composed rev-limit/overboost/latched-lean-cut wrapper, including injector inhibit publication (500 bytes). |
-| `0x7EDF4..0x7FAF7` | Unallocated contiguous verified free flash remaining in the checksum range (3,332 bytes). |
+| `0x7EC00..0x7EDFF` | Composed rev-limit/overboost/latched-lean-cut wrapper, including injector inhibit publication and scheduler lock (512 bytes). |
+| `0x7EE00..0x7FAF7` | Unallocated contiguous verified free flash remaining in the checksum range (3,320 bytes). |
 
 The critical boundary is exact: the wideband component ends at `0x7E63F` and
 the speed-density component's dual-VE data segment starts at `0x7E640`. Component builders also require every destination
@@ -94,7 +94,11 @@ The earlier lean fault-sentinel stage changed instructions within
 [injector-cut repair](INJECTOR_CUT_EXECUTION_AUDIT.md) grows that wrapper to
 500 bytes and the hard-cut wrapper to 72. It intentionally shares existing
 stock `B744` with the native inhibit builder, publishing `FFFF` on an added
-global cut. No new RAM, stack frame or calibration address is introduced.
+global cut. That publication repair adds no RAM, stack frame or calibration address.
+The subsequent [scheduler repair](INJECTOR_SCHEDULER_EXECUTION_AUDIT.md) grows
+the wrappers to 512 and 88 bytes. It adds one four-byte saved-mask slot to each
+wrapper, eight bytes for the composed path, and no static RAM. The native
+`3AF4/3B08` lock/unlock code and the signature at `7D91C` remain unchanged.
 
 The fueling-safety component reserves `0xFFFFC85C` as a 16-bit task-call counter
 and `0xFFFFC860` as an 8-bit state (`0` idle, `1` sensor delay, `2` monitoring,
@@ -111,7 +115,7 @@ The hardened SD wrapper adds no static RAM: its maximum own frame is 16 bytes
 lookup helpers gives a statically traced 28-byte additional depth at this call
 site, excluding interrupt frames and the caller's pre-existing frame. Total
 runtime stack headroom remains unmeasured. The wrapper is 16 bytes smaller than
-before; the later cut-publication changes leave the 3,332-byte tail shown above.
+before; the later cut-publication/locking changes leave the 3,320-byte tail shown above.
 
 `python3 master_patch/verify_master_patch.py` checks all declared blob ranges,
 stock hook ranges, calibration ranges, the rotational-idle component,

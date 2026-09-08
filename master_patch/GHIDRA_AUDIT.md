@@ -1,6 +1,6 @@
 # D2WD610H master-patch Ghidra audit
 
-> **Repair implemented — 2026-09-08:** the current `aea793...` development image
+> **Repair implemented — 2026-09-08:** the current `48d63c...` development image
 > restores stock radiator-fan control and deletes actual CPC output/purge fuel
 > subtraction. Previous images overriding fan PWM remain quarantined, including
 > `0600d73a...`. Passing tests does not establish a lean-out cure or physical
@@ -20,8 +20,16 @@ Further [primary-fueling execution](PRIMARY_FUEL_EXECUTION_AUDIT.md) corrected
 the test FPU and covered stock target/transition/composer calculations. The
 subsequent [injector-cut audit](INJECTOR_CUT_EXECUTION_AUDIT.md) found and fixed
 the stale B744 word left by added cuts. It now executes 1C5D4 and the channel
-output gate as well. Current free tail is 3,332 bytes at 7EDF4; older sizes and
+output gate as well. The [scheduler follow-up](INJECTOR_SCHEDULER_EXECUTION_AUDIT.md)
+adds the native lock around both complete cut updates, closing a temporary
+release to the higher-priority injector task. Twelve new groups cover native
+queue/phase/lock paths. Current free tail is 3,320 bytes at 7EE00; older sizes and
 image hashes below describe their respective earlier audit stages.
+The same report's IRQ/context follow-up adds eight execution groups covering
+native entry/exit, nested IRQs, task dispatch and register restoration. It
+validates the saved-mask gate and both wrapper returns on the unchanged image;
+the full verifier passes. Scripted IRQ arrival/body and device boundaries remain
+explicit, and no real-time or physical-delivery measurement is claimed.
 
 ## Result
 
@@ -276,7 +284,7 @@ all boost, speed-density, wideband, fueling-safety, calibration, and RAM state.
 | `0x7EAC8..0x7EAEB` | Pressure/open-loop and lean-cut switches/calibration. |
 | `0x7EB20..0x7EB9B` | Pressure-forced-open-loop wrapper. |
 | `0x7EBA0..0x7EBB7` | Explicit lean-state zero initializer. |
-| `0x7EC00..0x7EDF3` | Composed latched-lean-cut wrapper, including native injector inhibit publication. |
+| `0x7EC00..0x7EDFF` | Composed latched-lean-cut wrapper, including native injector inhibit publication and scheduler lock. |
 
 The verifier rejects overlap, writes outside declared stock hooks/calibration
 regions, unknown injected opcodes, stale generated XML, unexpected logger RAM

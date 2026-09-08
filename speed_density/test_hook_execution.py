@@ -56,6 +56,7 @@ class Machine:
 
     STOP = 0xDEADBEE0
     STACK = 0xFFFFE000
+    INSTRUCTION_LIMIT = 2000
     OUTPUTS = (patch.FINAL_MASS_AIRFLOW_ADDR, patch.SYNTHETIC_RAW_AIRFLOW_ADDR,
                patch.SYNTHETIC_FILTER_A_ADDR, patch.SYNTHETIC_FILTER_B_ADDR)
 
@@ -175,7 +176,7 @@ class Machine:
         n, m = (op >> 8) & 15, (op >> 4) & 15
         self.pc += 2
         self.instructions += 1
-        assert self.instructions < 2000, "Wrapper did not terminate"
+        assert self.instructions < self.INSTRUCTION_LIMIT, "Instruction budget exceeded"
 
         def delay_then(target, call=False):
             assert not in_delay, "Control transfer in delay slot"

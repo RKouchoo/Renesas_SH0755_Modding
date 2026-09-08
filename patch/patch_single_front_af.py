@@ -14,7 +14,7 @@ An aftermarket post-turbo wideband, if fitted, remains external instrumentation
 and is not connected to or decoded by this ROM patch.
 
 This standalone development patch has a runtime-enable byte at 0x7D91C and its
-code starts at 0x7D920, after the boost patch's 0x7D790..0x7D90B allocation.
+code starts at 0x7D920, after the boost patch's 0x7D790..0x7D91B allocation.
 patch_combined.py applies both guarded components to one fresh stock image with
 no collision. Never use a generated image as patch input.
 
@@ -94,7 +94,7 @@ DISABLED_REAR_O2_DTC_SWITCHES = {
 }
 
 
-# ---- single-front-A/F free-space layout (boost patch ends at 0x7D90B) ----
+# ---- single-front-A/F free-space layout (boost patch ends at 0x7D91B) ----
 FRONT_AF_ENABLE_ADDR = 0x0007D91C  # uint8: exact 1=front mirror + rear delete; else stock logic
 FRONT_MIRROR_WRAPPER_ADDR = 0x0007D920
 FRONT_ORIGINAL_TRAMPOLINE_ADDR = 0x0007D9A0

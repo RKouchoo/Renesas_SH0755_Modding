@@ -63,7 +63,7 @@ LEAN_CONFIRM_COUNT_ADDR = 0x0007EAEA
 PRESSURE_OL_WRAPPER_ADDR = 0x0007EB20
 LEAN_STATE_INITIALIZE_ADDR = 0x0007EBA0
 LEAN_CUT_WRAPPER_ADDR = 0x0007EC00
-COMPONENT_END = 0x0007EDF3
+COMPONENT_END = 0x0007EDFF
 
 NATIVE_PER_PSI = boost.NATIVE_PER_PSI
 GASOLINE_STOICH_AFR = wideband.GASOLINE_STOICH_AFR
@@ -139,15 +139,14 @@ def _increment_counter_and_test(a: Asm, limit_address: int, reached: str, pendin
 def build_lean_cut_wrapper() -> bytes:
     """Compose prior cuts, then apply a pressure-armed, latched lean cut."""
     a = Asm(LEAN_CUT_WRAPPER_ADDR)
-    a.stsl_pr()
-    a.movl_pool(2, PRIOR_FUEL_CUT_WRAPPER).jsr(2).nop()
+    boost.emit_cut_update_begin(a, PRIOR_FUEL_CUT_WRAPPER)
 
     a.movl_pool(1, LEAN_CUT_ENABLE_ADDR).movb_at(0, 1).cmp_eq_imm(1)
     a.bt("enabled")
     a.mov_imm(0, 0)
     a.movl_pool(1, LEAN_STATE_RAM).movb_store(0, 1)
     a.movl_pool(1, LEAN_COUNTER_RAM).movw_store(0, 1)
-    a.ldsl_pr().rts().nop()
+    a.bra("done").nop()
 
     a.label("enabled")
     a.movl_pool(1, LEAN_STATE_RAM).movb_at(0, 1).cmp_eq_imm(3)
@@ -262,7 +261,7 @@ def build_lean_cut_wrapper() -> bytes:
     _clear_state(a, "done")
 
     a.label("done")
-    a.ldsl_pr().rts().nop()
+    boost.emit_cut_update_end(a)
     return a.assemble()
 
 

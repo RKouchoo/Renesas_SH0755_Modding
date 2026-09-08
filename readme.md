@@ -9,8 +9,8 @@
 > cure. See [the master audit](master_patch/GHIDRA_AUDIT.md).
 
 Current master SHA-256:
-`aea793053fd3df4cab1efc3f15fbcee81024e6e90c0e8ba13025cb602b253b6b`
-(Subaru checksum `0x11787AA2`). The retained-sensor audit adds a 20-byte repair
+`48d63cf3b7085afc672dd809cf08f4aef2b1aaae8a880f421e656467b7aaf8f0`
+(Subaru checksum `0x1923EC61`). The retained-sensor audit adds a 20-byte repair
 to `fbc1a8...`: unity factory lambda atmospheric compensation, neutralized
 fuel adders and target corrections dependent on removed O2 voltages, and
 checksum. VE, injector and timing calibrations are unchanged; the second idle-VE trial
@@ -23,8 +23,16 @@ The later [primary-fueling execution audit](master_patch/PRIMARY_FUEL_EXECUTION_
 corrects test-interpreter rounding and executes the retained primary target,
 transition and bank/cylinder fuel composer. Further tracing found that added
 cuts could leave the injector inhibit word stale. Both cut paths now publish
-that word as well as the status flag; current `aea793...` contains the repair.
+that word as well as the status flag; the `aea793...` stage contains that repair.
 See [the injector-cut audit](master_patch/INJECTOR_CUT_EXECUTION_AUDIT.md).
+The current [scheduler repair](master_patch/INJECTOR_SCHEDULER_EXECUTION_AUDIT.md)
+also protects the complete cut update with the native scheduler lock. It fixes
+a temporary release visible to the higher-priority injector task. Twelve added
+execution groups cover queued pulses, release, resync, masks and negative controls.
+Its IRQ/context follow-up adds eight groups executing native interrupt returns,
+task dispatch and register restoration, including nested interrupts and damaged
+gate/restore controls. The full verifier passes with no further ROM changes;
+controlled bench/idle validation and a known VE baseline remain the next step.
 
 ## About this ECU
 
@@ -32,7 +40,7 @@ See [the injector-cut audit](master_patch/INJECTOR_CUT_EXECUTION_AUDIT.md).
 - **Flash Size:** 512 KB (0x00000000–0x0007FFFF)
 - **Vehicle:** 2005 ADM Subaru Liberty 3.0R (EZ30R) MT (BLE Sedan)
 - **CALID:** D2WD610H · **ECU ID:** 3C5A387116
-- **Master free flash remaining:** 3,332 contiguous bytes at `0x7EDF4..0x7FAF7`
+- **Master free flash remaining:** 3,320 contiguous bytes at `0x7EE00..0x7FAF7`
 
 ## Goals
 

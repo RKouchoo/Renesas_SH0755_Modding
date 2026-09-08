@@ -47,11 +47,18 @@ public class ApplyMasterNames extends GhidraScript {
         createOrRename("000263ee", "injector_phase_scheduler");
         createOrRename("000268e8", "injector_channel_pulse_output_gate");
         createOrRename("00026aec", "injector_schedule_inhibit_transition_update");
+        createOrRename("00026958", "injector_output_activity_mark");
+        createOrRename("00026990", "injector_phase_distance_wrap_720");
+        createOrRename("00026f8c", "injector_pulse_width_log_update");
+        createOrRename("00003af4", "kernel_raise_interrupt_mask");
+        createOrRename("00003b08", "kernel_restore_mask_and_dispatch");
         setPlateComment(toAddr("0001c5d4"),
             "Builds B744: native global cuts publish FFFF, otherwise six channel " +
             "fault bits. Called at the end of stock 24B24 before added master " +
             "cuts. Both added wrappers must publish B744 as well as BF6C bit80; " +
-            "BF1C aggregation alone is insufficient. See INJECTOR_CUT_EXECUTION_AUDIT.md.");
+            "BF1C aggregation alone is insufficient. Both complete updates now " +
+            "use 3AF4(0x10)/3B08 so higher-priority injector task 5 cannot see " +
+            "the temporary clear. See INJECTOR_SCHEDULER_EXECUTION_AUDIT.md.");
         setPlateComment(toAddr("000268e8"),
             "Reads B744 via 26DFC, tests the channel mask from 4B64C, and " +
             "returns before output handoffs when inhibited. Instruction-tested " +
@@ -533,7 +540,9 @@ public class ApplyMasterNames extends GhidraScript {
             toAddr("00024b24"),
             "Stock RPM limiter sets fuel-cut status 0xFFFFBF6C bit 0x80. The " +
             "periodic task pointer at 0x11D3C is the verified composition point " +
-            "for hard-overboost and latched-lean cuts."
+            "for hard-overboost and latched-lean cuts. Its B744 rebuild can " +
+            "temporarily clear a continuing added cut. Both wrappers now hold " +
+            "the native scheduler lock through their complete decision."
         );
         setPlateComment(
             toAddr("000279cc"),
