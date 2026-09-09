@@ -282,6 +282,8 @@ TRANSIENT_FALLING_LOAD_FILTER_ADDR = 0x76050
 TRANSIENT_FALLING_LOAD_FILTER_VALUE = 0.08
 TARGET_THROTTLE_ADDR = 0x7A738
 TARGET_THROTTLE_SIZE = 15 * 20 * 2
+REQUESTED_TORQUE_ADDR = 0x7AA2C
+REQUESTED_TORQUE_SIZE = 19 * 20 * 2
 TRANSIENT_NEGATIVE_ECT_ADDR = 0x76D48
 TRANSIENT_NEGATIVE_ECT_SIZE = 32
 # Clamp cold negative transient load multiplier to 2.0 max (stock was 11.8 - 14.5 below 50C)
@@ -370,6 +372,7 @@ CALIBRATION_REGIONS = (
     ("Deceleration Dashpot Air Decrement", DECR_DASHPOT_AIR_ADDR, 4),
     ("Transient Fuel Falling Load Filter", TRANSIENT_FALLING_LOAD_FILTER_ADDR, 4),
     ("Target Throttle Plate Position", TARGET_THROTTLE_ADDR, TARGET_THROTTLE_SIZE),
+    ("Requested Torque (Accelerator Pedal)", REQUESTED_TORQUE_ADDR, REQUESTED_TORQUE_SIZE),
     ("Transient Negative ECT Multiplier", TRANSIENT_NEGATIVE_ECT_ADDR, TRANSIENT_NEGATIVE_ECT_SIZE),
     ("A/F Learning Airflow Ranges", AF_LEARNING_RANGES_ADDR, len(AF_LEARNING_RANGES) * 4),
     ("Lean Fuel Cut Arm Pressure", LEAN_ARM_ADDR, 4),
@@ -735,13 +738,13 @@ def build_target_throttle_map(reference: bytes) -> bytes:
     data = bytearray(reference[TARGET_THROTTLE_ADDR : TARGET_THROTTLE_ADDR + TARGET_THROTTLE_SIZE])
     scale = 0.0019073486328125
     smooth_openings = {
-        1: 2.5,   # req 22.9 (~1.5% pedal): 2.5%
-        2: 4.0,   # req 45.7 (~3.0% pedal): 4.0%
-        3: 6.0,   # req 68.6 (~5.0% pedal): 6.0%
-        4: 8.0,   # req 91.4 (~7.0% pedal): 8.0%
-        5: 10.0,  # req 114.3 (~9.0% pedal): 10.0%
-        6: 12.0,  # req 137.1 (~11.0% pedal): 12.0%
-        7: 14.5,  # req 160.0 (~13.0% pedal): 14.5%
+        1: 3.5,   # req 22.9: 3.5% (smoothly bridges the ~3.0% idle air feedback dropout)
+        2: 6.0,   # req 45.7: 6.0%
+        3: 9.0,   # req 68.6: 9.0%
+        4: 12.0,  # req 91.4: 12.0%
+        5: 15.0,  # req 114.3: 15.0%
+        6: 18.0,  # req 137.1: 18.0%
+        7: 21.0,  # req 160.0: 21.0%
     }
     for row in range(20):
         for col, target_angle in smooth_openings.items():
@@ -750,6 +753,30 @@ def build_target_throttle_map(reference: bytes) -> bytes:
             raw_target = round(target_angle / scale)
             if raw_target > old_val:
                 struct.pack_into(">H", data, offset, raw_target)
+    return bytes(data)
+
+
+def build_requested_torque_map(reference: bytes) -> bytes:
+    """Eliminate off-idle requested torque dip on 1-4% pedal while preserving 0% pedal and cruise decel behavior."""
+    data = bytearray(reference[REQUESTED_TORQUE_ADDR : REQUESTED_TORQUE_ADDR + REQUESTED_TORQUE_SIZE])
+    scale_rt = 0.0078125
+    floors = {
+        # row: {col: min_torque}
+        0: {1: 20.0, 2: 42.0, 3: 80.0},  # 600 RPM
+        1: {1: 20.0, 2: 40.0, 3: 75.0},  # 800 RPM
+        2: {1: 20.0, 2: 40.0, 3: 70.0},  # 1000 RPM
+        3: {1: 20.0, 2: 40.0, 3: 70.0},  # 1200 RPM
+        4: {1: 18.0, 2: 36.0, 3: 65.0},  # 1400 RPM
+        5: {1: 16.0, 2: 32.0, 3: 55.0},  # 1600 RPM
+        6: {1: 12.0, 2: 24.0, 3: 40.0},  # 1800 RPM
+        7: {1: 8.0,  2: 16.0, 3: 28.0},  # 2000 RPM
+    }
+    for r, col_map in floors.items():
+        for c, min_val in col_map.items():
+            offset = (r * 19 + c) * 2
+            old_val = struct.unpack_from(">H", data, offset)[0] * scale_rt
+            if min_val > old_val:
+                struct.pack_into(">H", data, offset, round(min_val / scale_rt))
     return bytes(data)
 
 
@@ -921,6 +948,7 @@ def apply_calibration(rom: bytearray, reference: bytes) -> dict[str, tuple[int, 
     write("Deceleration Dashpot Air Decrement", DECR_DASHPOT_AIR_ADDR, f32(DECR_DASHPOT_AIR_VALUE))
     write("Transient Fuel Falling Load Filter", TRANSIENT_FALLING_LOAD_FILTER_ADDR, f32(TRANSIENT_FALLING_LOAD_FILTER_VALUE))
     write("Target Throttle Plate Position", TARGET_THROTTLE_ADDR, build_target_throttle_map(reference))
+    write("Requested Torque (Accelerator Pedal)", REQUESTED_TORQUE_ADDR, build_requested_torque_map(reference))
     write("Transient Negative ECT Multiplier", TRANSIENT_NEGATIVE_ECT_ADDR, TRANSIENT_NEGATIVE_ECT_RAW)
     write("A/F Learning Airflow Ranges", AF_LEARNING_RANGES_ADDR, pack_floats(AF_LEARNING_RANGES))
     write("Lean Fuel Cut Arm Pressure", LEAN_ARM_ADDR, f32(LEAN_ARM_PSI * boost.NATIVE_PER_PSI))

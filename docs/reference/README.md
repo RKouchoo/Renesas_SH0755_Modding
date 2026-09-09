@@ -24,6 +24,7 @@ See [findings](FINDINGS.md) before relying on an older address label.
 | [Document disposition register](DOCUMENT_REGISTER.md) | Completed cleanup: original documents, archive locations and retained specialist references. |
 | [Audit status](AUDIT_STATUS.md) | Scope, verification and remaining limits. |
 | [Repository cleanup](REPOSITORY_CLEANUP.md) | Post-audit file moves, preserved artifacts and verification. |
+| [Denso scaling and FPU math](DENSO_SCALING_AND_FPU_MATH.md) | SH-2E FPU latencies, fixed-point integer tricks, RomRaider helper floats, and wideband ADC execution audit. |
 
 ## The runtime path
 
