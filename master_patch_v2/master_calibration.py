@@ -190,29 +190,39 @@ FUEL_LAMBDA_CAPS = {
 # timing is never increased.  Positive KCA is independently removed from
 # >=1.22 g/rev.  All six base maps are covered, including early-AVLS paths.
 FULL_BOOST_TIMING_CAP = (
-    (2000.0, 10.0),
-    (2400.0, 11.0),
-    (2800.0, 11.5),
-    (3200.0, 12.0),
-    (3600.0, 13.0),
-    (4000.0, 14.0),
-    (4400.0, 14.5),
-    (4800.0, 15.0),
-    (5200.0, 15.5),
-    (5600.0, 16.0),
-    (6000.0, 16.5),
-    (6400.0, 17.0),
-    (6800.0, 17.5),
+    (2000.0, 7.5),
+    (2400.0, 8.5),
+    (2800.0, 9.0),
+    (3200.0, 9.5),
+    (3600.0, 10.5),
+    (4000.0, 11.5),
+    (4400.0, 12.0),
+    (4800.0, 12.5),
+    (5200.0, 13.0),
+    (5600.0, 13.5),
+    (6000.0, 14.0),
+    (6400.0, 14.5),
+    (6800.0, 15.0),
 )
 TIMING_LOAD_OFFSETS = {
-    1.09: 8.0,
-    1.22: 5.0,
-    1.40: 2.5,
+    1.09: 6.0,
+    1.22: 4.0,
+    1.40: 2.0,
     1.60: 0.0,
     2.00: 0.0,
     2.50: -2.0,
     3.20: -4.0,
     4.00: -6.0,
+}
+KCA_LOAD_CAPS = {
+    1.09: 7.0,
+    1.22: 5.5,
+    1.40: 4.5,
+    1.60: 4.5,
+    2.00: 4.0,
+    2.50: 3.5,
+    3.20: 3.0,
+    4.00: 2.5,
 }
 
 # More assertive high-IAT retard than stock, still using the stock 50..110 C
@@ -619,25 +629,12 @@ def build_kca_map(
     )
 
     for y_index, rpm in enumerate(rpm_axis):
-        if rpm <= 1600.0 and label in ("Base Timing A", "Base Timing D"):
-            for x_index, load in enumerate(TUNED_TIMING_LOAD_AXIS):
-                rounded_load = round(load, 2)
-                floor_val = LOW_RPM_TIMING_FLOOR.get(rounded_load, 8.0)
-                floor_raw = timing_raw_at_or_below(floor_val)
-                offset = y_index * TIMING_X + x_index
-                new[offset] = max(new[offset], floor_raw)
-        if rpm < 2000.0:
-            continue
         for x_index, load in enumerate(TUNED_TIMING_LOAD_AXIS):
             rounded_load = round(load, 2)
-            if rounded_load == 1.09:
-                cap_raw = kca_raw_at_or_below(2.0)
-            elif rounded_load >= 1.22:
-                cap_raw = 0
-            else:
-                continue
-            offset = y_index * TIMING_X + x_index
-            new[offset] = min(new[offset], cap_raw)
+            if rounded_load in KCA_LOAD_CAPS:
+                cap_raw = kca_raw_at_or_below(KCA_LOAD_CAPS[rounded_load])
+                offset = y_index * TIMING_X + x_index
+                new[offset] = min(new[offset], cap_raw)
 
     if len(new) != TIMING_X * rows:
         raise AssertionError(f"{label} size changed")
