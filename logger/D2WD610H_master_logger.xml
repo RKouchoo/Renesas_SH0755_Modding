@@ -283,10 +283,10 @@ any damage or injury incurred as a result of these definitions. USE AT YOUR OWN 
                         <conversion units="degrees" expr="(x-128)/2" format="0.00" />
                     </conversions>
                 </parameter>
-                <parameter id="P30" name="Accelerator Pedal Angle" desc="P30-Accelerator pedal angle (Direct RAM FFFFB46C)." target="1">
-                    <address length="4">0xFFB46C</address>
+                <parameter id="P30" name="Accelerator Pedal Angle" desc="P30-Accelerator pedal angle." ecubyteindex="11" ecubit="2" target="1">
+                    <address>0x000029</address>
                     <conversions>
-                        <conversion units="%" storagetype="float" expr="x" format="0.00" />
+                        <conversion units="%" expr="x*100/255" format="0.00" />
                     </conversions>
                 </parameter>
                 <parameter id="P35" name="Fuel Level" desc="P35" ecubyteindex="12" ecubit="5" target="1">
@@ -759,12 +759,6 @@ any damage or injury incurred as a result of these definitions. USE AT YOUR OWN 
                     <address length="1">0xFFCFD0</address>
                     <conversions>
                         <conversion units="raw flags" storagetype="uint8" expr="x" format="0" gauge_min="0" gauge_max="255" gauge_step="16" />
-                    </conversions>
-                </parameter>
-                <parameter id="E524" name="Accelerator Pedal Angle (Direct RAM)*" desc="Direct 4-byte float conditioned accelerator pedal percent at FFFFB46C. Bypasses standard SSM P30 capability bit check." target="1">
-                    <address length="4">0xFFB46C</address>
-                    <conversions>
-                        <conversion units="%" storagetype="float" expr="x" format="0.0" gauge_min="0" gauge_max="100" gauge_step="10" />
                     </conversions>
                 </parameter>
             </parameters>
@@ -1624,6 +1618,14 @@ any damage or injury incurred as a result of these definitions. USE AT YOUR OWN 
                         <conversion units="estimated AFR" storagetype="float" expr="x*14.7" format="0.00" />
                         <conversion units="lambda" storagetype="float" expr="x" format="0.00" />
                         <conversion units="fuel-air equivalence ratio" storagetype="float" expr="1/x" format="0.00" />
+                    </conversions>
+                </ecuparam>
+                <ecuparam id="E524" name="Accelerator Pedal Angle (4-byte)*" desc="E524-Direct 4-byte float conditioned accelerator pedal percent at FFFFB46C." target="1">
+                    <ecu id="3C5A387116">
+                        <address length="4">0xFFB46C</address>
+                    </ecu>
+                    <conversions>
+                        <conversion units="%" storagetype="float" expr="x" format="0.00" gauge_min="0" gauge_max="100" gauge_step="10" />
                     </conversions>
                 </ecuparam>
             </ecuparams>

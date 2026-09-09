@@ -88,7 +88,12 @@ _cand_ve = [
 # 1. 0 RPM row matches 500 RPM row to prevent modeled air collapse on deep decel
 _cand_ve[0] = list(_cand_ve[1])
 
-# 2. Retain 1600 RPM candidate VE (1.068 at 350 mmHg) which supplies the necessary fuel
+# 2. Floor deep-vacuum column 0 (150 mmHg) across operating RPMs so decel / light tip-in
+# never collapses pulse width below injector dead time (preventing 18.5 AFR tip-in misfire).
+for y in range(2, len(LOW_RPM_AXIS)):
+    _cand_ve[y][0] = 0.920
+
+# 3. Retain 1600 RPM candidate VE (1.068 at 350 mmHg) which supplies the necessary fuel
 # to prevent the 18.6 AFR lean-out and anti-lag misfire on light throttle.
 # Fill the vacuum VE cliff at 2000-3200 RPM so AFR remains flat (~14.7) as RPM climbs.
 _cand_ve[5][1] = 0.985  # 2000 RPM, 250 mmHg
@@ -109,6 +114,19 @@ _cand_ve[8][1] = 0.910  # 3200 RPM, 250 mmHg (was 0.813)
 _cand_ve[8][2] = 0.950  # 3200 RPM, 350 mmHg (was 0.853)
 _cand_ve[8][3] = 0.970  # 3200 RPM, 450 mmHg (was 0.894)
 
+# 4. Scale medium-to-high load columns (650 to 1500 mmHg) in Low Lift to provide
+# sufficient fuel under WOT (prevents 18.1 AFR lean-out at 2500-3200 RPM WOT).
+mults_low = {
+    4: 1.10,  # 1600 RPM
+    5: 1.20,  # 2000 RPM
+    6: 1.25,  # 2500 RPM
+    7: 1.25,  # 3000 RPM
+    8: 1.25,  # 3200 RPM
+}
+for y, mult in mults_low.items():
+    for x in range(5, len(MAP_AXIS)):
+        _cand_ve[y][x] = round(_cand_ve[y][x] * mult, 3)
+
 _cand_ve[0] = list(_cand_ve[1])
 
 SMOOTHED_LOW_VE_TABLE = tuple(val for row in _cand_ve for val in row)
@@ -122,6 +140,9 @@ _high_ve = [
     list(sd.HIGH_VE_TABLE[y * len(MAP_AXIS) : (y + 1) * len(MAP_AXIS)])
     for y in range(len(HIGH_RPM_AXIS))
 ]
+for y in range(len(HIGH_RPM_AXIS)):
+    _high_ve[y][0] = 0.920  # Floor deep vacuum column
+
 _high_ve[0][1] = 0.920  # 3000 RPM, 250 mmHg (matches low-lift)
 _high_ve[0][2] = 0.960  # 3000 RPM, 350 mmHg
 _high_ve[0][3] = 0.980  # 3000 RPM, 450 mmHg
@@ -141,6 +162,12 @@ _high_ve[3][3] = 0.950  # 4000 RPM, 450 mmHg
 _high_ve[4][1] = 0.880  # 4500 RPM, 250 mmHg
 _high_ve[4][2] = 0.920  # 4500 RPM, 350 mmHg
 _high_ve[4][3] = 0.940  # 4500 RPM, 450 mmHg
+
+# Scale High-Lift medium-to-boost columns (650..1500 mmHg) by +25%
+# With 10.5mm valve lift, the engine breathes ~25% more air at WOT than modeled.
+for y in range(len(HIGH_RPM_AXIS)):
+    for x in range(5, len(MAP_AXIS)):
+        _high_ve[y][x] = round(_high_ve[y][x] * 1.25, 3)
 
 SMOOTHED_HIGH_VE_TABLE = tuple(val for row in _high_ve for val in row)
 assert len(SMOOTHED_HIGH_VE_TABLE) == len(HIGH_RPM_AXIS) * len(MAP_AXIS)
