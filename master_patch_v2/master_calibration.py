@@ -32,7 +32,7 @@ import speed_density_component as speed_density  # noqa: E402
 
 BUILD_MARKER_ADDR = 0x7FC4C
 BUILD_MARKER = 0x26090804
-SD_MAP_MIN_WORD = 0x429D3ADC  # 78.6149597168 mmHg: native converter at ADC 3932 (prevents 500 g/s fallback on decel)
+SD_MAP_MIN_WORD = 0x41F00000  # 30.0 mmHg (4.0 kPa): prevents 500 g/s failsafe on deep manual decel (which pulls 5-7 kPa)
 
 
 # Hardcoded 550cc (Subaru 16611AA510) injector calibration in D2WD610H native units
