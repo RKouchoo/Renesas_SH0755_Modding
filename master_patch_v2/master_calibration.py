@@ -280,6 +280,16 @@ DECR_DASHPOT_AIR_ADDR = 0x7963C
 DECR_DASHPOT_AIR_VALUE = 0.15
 TRANSIENT_FALLING_LOAD_FILTER_ADDR = 0x76050
 TRANSIENT_FALLING_LOAD_FILTER_VALUE = 0.08
+TARGET_THROTTLE_ADDR = 0x7A738
+TARGET_THROTTLE_SIZE = 15 * 20 * 2
+TRANSIENT_NEGATIVE_ECT_ADDR = 0x76D48
+TRANSIENT_NEGATIVE_ECT_SIZE = 32
+# Clamp cold negative transient load multiplier to 2.0 max (stock was 11.8 - 14.5 below 50C)
+# This prevents B874 from exploding to -0.50 on cold decel and cutting fuel in half
+TRANSIENT_NEGATIVE_ECT_RAW = struct.pack(
+    ">16H",
+    *[min(v, 4096) for v in (29696, 29696, 27034, 25190, 24166, 24166, 24166, 22528, 21914, 21094, 18432, 12288, 4096, 2048, 2048, 2048)]
+)
 
 LOW_RPM_TIMING_FLOOR = {
     0.15: 15.0,
@@ -332,6 +342,8 @@ CALIBRATION_REGIONS = (
     ("Tip-in Enrichment Compensation (MRP)", TIP_IN_MRP_ADDR, len(TIP_IN_MRP_RAW)),
     ("Deceleration Dashpot Air Decrement", DECR_DASHPOT_AIR_ADDR, 4),
     ("Transient Fuel Falling Load Filter", TRANSIENT_FALLING_LOAD_FILTER_ADDR, 4),
+    ("Target Throttle Plate Position", TARGET_THROTTLE_ADDR, TARGET_THROTTLE_SIZE),
+    ("Transient Negative ECT Multiplier", TRANSIENT_NEGATIVE_ECT_ADDR, TRANSIENT_NEGATIVE_ECT_SIZE),
     ("Boost Target", boost.TARGET_DATA, len(BOOST_TARGET_NATIVE) * 4),
     ("Boost Wastegate Duty", boost.BASE_DATA, len(boost.BASE_DUTY)),
     ("Boost Kp", boost.KP_ADDR, 4),
@@ -685,6 +697,29 @@ def build_avcs_map(
     )
 
 
+def build_target_throttle_map(reference: bytes) -> bytes:
+    """Smooth the light-pedal requested-torque region so throttle opens progressively rather than dipping below idle."""
+    data = bytearray(reference[TARGET_THROTTLE_ADDR : TARGET_THROTTLE_ADDR + TARGET_THROTTLE_SIZE])
+    scale = 0.0019073486328125
+    smooth_openings = {
+        1: 2.5,   # req 22.9 (~1.5% pedal): 2.5%
+        2: 4.0,   # req 45.7 (~3.0% pedal): 4.0%
+        3: 6.0,   # req 68.6 (~5.0% pedal): 6.0%
+        4: 8.0,   # req 91.4 (~7.0% pedal): 8.0%
+        5: 10.0,  # req 114.3 (~9.0% pedal): 10.0%
+        6: 12.0,  # req 137.1 (~11.0% pedal): 12.0%
+        7: 14.5,  # req 160.0 (~13.0% pedal): 14.5%
+    }
+    for row in range(20):
+        for col, target_angle in smooth_openings.items():
+            offset = (row * 15 + col) * 2
+            old_val = struct.unpack_from(">H", data, offset)[0]
+            raw_target = round(target_angle / scale)
+            if raw_target > old_val:
+                struct.pack_into(">H", data, offset, raw_target)
+    return bytes(data)
+
+
 def checksum_value(image: bytes | bytearray) -> tuple[int, int, int]:
     start, end, stored = struct.unpack_from(">III", image, CHECKSUM_TABLE_ADDR)
     if (start, end) != (0x2000, 0x7FAF7):
@@ -830,6 +865,8 @@ def apply_calibration(rom: bytearray, reference: bytes) -> dict[str, tuple[int, 
     write("Tip-in Enrichment Compensation (MRP)", TIP_IN_MRP_ADDR, TIP_IN_MRP_RAW)
     write("Deceleration Dashpot Air Decrement", DECR_DASHPOT_AIR_ADDR, f32(DECR_DASHPOT_AIR_VALUE))
     write("Transient Fuel Falling Load Filter", TRANSIENT_FALLING_LOAD_FILTER_ADDR, f32(TRANSIENT_FALLING_LOAD_FILTER_VALUE))
+    write("Target Throttle Plate Position", TARGET_THROTTLE_ADDR, build_target_throttle_map(reference))
+    write("Transient Negative ECT Multiplier", TRANSIENT_NEGATIVE_ECT_ADDR, TRANSIENT_NEGATIVE_ECT_RAW)
 
     # Five-psi spring-only commissioning: no electronic duty can be produced,
     # even if a table or gain is accidentally non-zero. The component has
