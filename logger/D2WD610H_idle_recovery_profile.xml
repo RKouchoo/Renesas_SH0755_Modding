@@ -61,8 +61,7 @@
         <parameter id="E56" units="raw ecu value"/>
         <parameter id="E59" units="position"/>
         <parameter id="E58" units="index position"/>
-        <parameter id="P30" dash="selected" units="%"/>
-        <parameter id="E524" livedata="selected" dash="selected" units="%"/>
+        <parameter id="P30" units="%"/>
         <parameter id="E500" livedata="selected" dash="selected" units="estimated AFR (14.64 stoich)"/>
         <parameter id="E105" units="%"/>
         <parameter id="E501" livedata="selected" dash="selected" units="ADC counts"/>
@@ -113,6 +112,7 @@
         <parameter id="E521" units="raw flags"/>
         <parameter id="E522" units="raw flags"/>
         <parameter id="E523" units="raw flags"/>
+        <parameter id="E524" livedata="selected" units="%"/>
         <parameter id="P241" units="rpm"/>
         <parameter id="P240" units="rpm"/>
         <parameter id="E81" units="%"/>
