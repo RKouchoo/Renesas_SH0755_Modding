@@ -283,7 +283,7 @@ any damage or injury incurred as a result of these definitions. USE AT YOUR OWN 
                         <conversion units="degrees" expr="(x-128)/2" format="0.00" />
                     </conversions>
                 </parameter>
-                <parameter id="P30" name="Accelerator Pedal Angle" desc="P30-Accelerator pedal angle." ecubyteindex="11" ecubit="2" target="3">
+                <parameter id="P30" name="Accelerator Pedal Angle" desc="P30-Accelerator pedal angle." ecubyteindex="11" ecubit="2" target="1">
                     <address>0x000029</address>
                     <conversions>
                         <conversion units="%" expr="x*100/255" format="0.00" />

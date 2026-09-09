@@ -294,6 +294,21 @@ TRANSIENT_NEGATIVE_ECT_RAW = struct.pack(
 AF_LEARNING_RANGES_ADDR = 0x7616C
 AF_LEARNING_RANGES = (5.0, 10.0, 500.0)
 
+# Idle Speed Targets (floor at 850 RPM warm so engine never chokes down to 600 RPM)
+IDLE_SPEED_TARGET_NAMES = (
+    "Idle Speed Target A",
+    "Idle Speed Target B",
+    "Idle Speed Target C",
+    "Idle Speed Target D",
+    "Idle Speed Target E",
+    "Idle Speed Target F",
+)
+IDLE_SPEED_TARGET_ADDRS = (0x79D64, 0x79D84, 0x79DA4, 0x79DC4, 0x79DE4, 0x79E04)
+
+# Base Idle Air tables (floor warm base air at 12.0-12.5 to maintain ~5.8% throttle baseline)
+BASE_AIR_NAMES = ("Base Idle Air (Normal)", "Base Idle Air (Alternate)")
+BASE_AIR_ADDRS = (0x79C9C, 0x79CBC)
+
 # Lean Fuel Cut Safety Thresholds (re-calibrated for 5 psi turbo on 98 RON)
 LEAN_ARM_ADDR = 0x7EAD4
 LEAN_RESET_ADDR = 0x7EAD8
@@ -360,6 +375,8 @@ CALIBRATION_REGIONS = (
     ("Lean Fuel Cut Arm Pressure", LEAN_ARM_ADDR, 4),
     ("Lean Fuel Cut Reset Pressure", LEAN_RESET_ADDR, 4),
     ("Lean Fuel Cut AFR Threshold", LEAN_AFR_ADDR, 4),
+    *((name, addr, 32) for name, addr in zip(IDLE_SPEED_TARGET_NAMES, IDLE_SPEED_TARGET_ADDRS)),
+    *((name, addr, 32) for name, addr in zip(BASE_AIR_NAMES, BASE_AIR_ADDRS)),
     ("Boost Target", boost.TARGET_DATA, len(BOOST_TARGET_NATIVE) * 4),
     ("Boost Wastegate Duty", boost.BASE_DATA, len(boost.BASE_DUTY)),
     ("Boost Kp", boost.KP_ADDR, 4),
@@ -736,6 +753,28 @@ def build_target_throttle_map(reference: bytes) -> bytes:
     return bytes(data)
 
 
+def build_idle_speed_target(reference: bytes, address: int) -> bytes:
+    """Floor warm target idle speed at 850 RPM (raw 6800) so the engine never chokes below 700 RPM."""
+    raw_floor = round(850.0 / 0.125)  # 6800 raw
+    old = [struct.unpack_from(">H", reference, address + i * 2)[0] for i in range(16)]
+    new = [max(v, raw_floor) for v in old]
+    return struct.pack(">16H", *new)
+
+
+def build_base_air(reference: bytes, address: int) -> bytes:
+    """Floor warm base idle air at 12.0-12.5 so throttle plate baseline stays at ~5.8% rather than choking to 3.9%."""
+    scale_air = 0.00152587890625
+    old = [struct.unpack_from(">H", reference, address + i * 2)[0] * scale_air for i in range(16)]
+    new = []
+    for i, v in enumerate(old):
+        if i >= 7:  # 30C..110C
+            target = 12.5 if i < 11 else 12.0
+            new.append(max(v, round(target / scale_air)))
+        else:
+            new.append(round(v / scale_air))
+    return struct.pack(">16H", *new)
+
+
 def checksum_value(image: bytes | bytearray) -> tuple[int, int, int]:
     start, end, stored = struct.unpack_from(">III", image, CHECKSUM_TABLE_ADDR)
     if (start, end) != (0x2000, 0x7FAF7):
@@ -887,6 +926,10 @@ def apply_calibration(rom: bytearray, reference: bytes) -> dict[str, tuple[int, 
     write("Lean Fuel Cut Arm Pressure", LEAN_ARM_ADDR, f32(LEAN_ARM_PSI * boost.NATIVE_PER_PSI))
     write("Lean Fuel Cut Reset Pressure", LEAN_RESET_ADDR, f32(LEAN_RESET_PSI * boost.NATIVE_PER_PSI))
     write("Lean Fuel Cut AFR Threshold", LEAN_AFR_ADDR, f32(LEAN_AFR_THRESHOLD / 14.64))
+    for name, addr in zip(IDLE_SPEED_TARGET_NAMES, IDLE_SPEED_TARGET_ADDRS):
+        write(name, addr, build_idle_speed_target(reference, addr))
+    for name, addr in zip(BASE_AIR_NAMES, BASE_AIR_ADDRS):
+        write(name, addr, build_base_air(reference, addr))
 
     # Five-psi spring-only commissioning: no electronic duty can be produced,
     # even if a table or gain is accidentally non-zero. The component has
