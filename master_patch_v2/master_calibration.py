@@ -789,13 +789,14 @@ def build_idle_speed_target(reference: bytes, address: int) -> bytes:
 
 
 def build_base_air(reference: bytes, address: int) -> bytes:
-    """Floor warm base idle air at 12.0-12.5 so throttle plate baseline stays at ~5.8% rather than choking to 3.9%."""
+    """Floor warm base idle air at 5.5 g/s so throttle plate baseline stays at ~5.5% rather than choking to 3.9% or hanging at 1340 RPM."""
     scale_air = 0.00152587890625
     old = [struct.unpack_from(">H", reference, address + i * 2)[0] * scale_air for i in range(16)]
     new = []
+    # ECT axis: [-40, -30, -20, -10, 0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100, 110]
     for i, v in enumerate(old):
-        if i >= 7:  # 30C..110C
-            target = 12.5 if i < 11 else 12.0
+        if i >= 9:  # 50C..110C (warm engine)
+            target = 5.8 if i == 9 else 5.5
             new.append(max(v, round(target / scale_air)))
         else:
             new.append(round(v / scale_air))

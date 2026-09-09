@@ -90,10 +90,24 @@ _cand_ve[0] = list(_cand_ve[1])
 
 # 2. Retain 1600 RPM candidate VE (1.068 at 350 mmHg) which supplies the necessary fuel
 # to prevent the 18.6 AFR lean-out and anti-lag misfire on light throttle.
-# Contour 2000 RPM at 250-450 mmHg so the transition from 1600 to 2000 RPM is smooth.
-_cand_ve[5][1] = 0.880  # 250 mmHg
-_cand_ve[5][2] = 0.940  # 350 mmHg
-_cand_ve[5][3] = 0.960  # 450 mmHg
+# Fill the vacuum VE cliff at 2000-3200 RPM so AFR remains flat (~14.7) as RPM climbs.
+_cand_ve[5][1] = 0.985  # 2000 RPM, 250 mmHg
+_cand_ve[5][2] = 1.035  # 2000 RPM, 350 mmHg
+_cand_ve[5][3] = 1.060  # 2000 RPM, 450 mmHg
+_cand_ve[5][4] = 1.030  # 2000 RPM, 550 mmHg
+
+_cand_ve[6][1] = 0.950  # 2500 RPM, 250 mmHg (was 0.752)
+_cand_ve[6][2] = 1.000  # 2500 RPM, 350 mmHg (was 0.790)
+_cand_ve[6][3] = 1.020  # 2500 RPM, 450 mmHg (was 0.827)
+_cand_ve[6][4] = 1.000  # 2500 RPM, 550 mmHg (was 0.865)
+
+_cand_ve[7][1] = 0.920  # 3000 RPM, 250 mmHg (was 0.800)
+_cand_ve[7][2] = 0.960  # 3000 RPM, 350 mmHg (was 0.840)
+_cand_ve[7][3] = 0.980  # 3000 RPM, 450 mmHg (was 0.880)
+
+_cand_ve[8][1] = 0.910  # 3200 RPM, 250 mmHg (was 0.813)
+_cand_ve[8][2] = 0.950  # 3200 RPM, 350 mmHg (was 0.853)
+_cand_ve[8][3] = 0.970  # 3200 RPM, 450 mmHg (was 0.894)
 
 _cand_ve[0] = list(_cand_ve[1])
 

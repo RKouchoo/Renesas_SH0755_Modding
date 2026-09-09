@@ -62,6 +62,7 @@
         <parameter id="E59" units="position"/>
         <parameter id="E58" units="index position"/>
         <parameter id="P30" dash="selected" units="%"/>
+        <parameter id="E524" livedata="selected" dash="selected" units="%"/>
         <parameter id="E500" livedata="selected" dash="selected" units="estimated AFR (14.64 stoich)"/>
         <parameter id="E105" units="%"/>
         <parameter id="E501" livedata="selected" dash="selected" units="ADC counts"/>
