@@ -290,6 +290,9 @@ TRANSIENT_NEGATIVE_ECT_RAW = struct.pack(
     ">16H",
     *[min(v, 4096) for v in (29696, 29696, 27034, 25190, 24166, 24166, 24166, 22528, 21914, 21094, 18432, 12288, 4096, 2048, 2048, 2048)]
 )
+# A/F Learning Range D threshold set to 500 g/s so learned fuel trims never corrupt WOT/boost
+AF_LEARNING_RANGES_ADDR = 0x7616C
+AF_LEARNING_RANGES = (5.0, 10.0, 500.0)
 
 LOW_RPM_TIMING_FLOOR = {
     0.15: 15.0,
@@ -344,6 +347,7 @@ CALIBRATION_REGIONS = (
     ("Transient Fuel Falling Load Filter", TRANSIENT_FALLING_LOAD_FILTER_ADDR, 4),
     ("Target Throttle Plate Position", TARGET_THROTTLE_ADDR, TARGET_THROTTLE_SIZE),
     ("Transient Negative ECT Multiplier", TRANSIENT_NEGATIVE_ECT_ADDR, TRANSIENT_NEGATIVE_ECT_SIZE),
+    ("A/F Learning Airflow Ranges", AF_LEARNING_RANGES_ADDR, len(AF_LEARNING_RANGES) * 4),
     ("Boost Target", boost.TARGET_DATA, len(BOOST_TARGET_NATIVE) * 4),
     ("Boost Wastegate Duty", boost.BASE_DATA, len(boost.BASE_DUTY)),
     ("Boost Kp", boost.KP_ADDR, 4),
@@ -867,6 +871,7 @@ def apply_calibration(rom: bytearray, reference: bytes) -> dict[str, tuple[int, 
     write("Transient Fuel Falling Load Filter", TRANSIENT_FALLING_LOAD_FILTER_ADDR, f32(TRANSIENT_FALLING_LOAD_FILTER_VALUE))
     write("Target Throttle Plate Position", TARGET_THROTTLE_ADDR, build_target_throttle_map(reference))
     write("Transient Negative ECT Multiplier", TRANSIENT_NEGATIVE_ECT_ADDR, TRANSIENT_NEGATIVE_ECT_RAW)
+    write("A/F Learning Airflow Ranges", AF_LEARNING_RANGES_ADDR, pack_floats(AF_LEARNING_RANGES))
 
     # Five-psi spring-only commissioning: no electronic duty can be produced,
     # even if a table or gain is accidentally non-zero. The component has
