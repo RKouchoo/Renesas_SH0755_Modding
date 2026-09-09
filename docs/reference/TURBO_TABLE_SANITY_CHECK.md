@@ -974,7 +974,7 @@ Every single parameter, switch, and multi-dimensional table defined in `master_p
 - **Category:** `04.3 - Ignition - Knock Control`
 - **Storage Address:** `0x77FD8` | **Type:** `2D` | **Dimensions:** `1x1` | **Data Type:** `float` (`little`)
 - **Scaling Formula:** `x` | **Units:** `Ignition Advance Multiplier (IAM)`
-- **Current Value:** `0.5000 Ignition Advance Multiplier (IAM)` (Raw: `0.5`)
+- **Current Value:** `1.0000 Ignition Advance Multiplier (IAM)` (Raw: `1.0`)
 - **Function & Description:** Global Ignition Advance Multiplier (IAM) learning boundaries, step rates, and initial state.
 - **Forced-Induction Rationale:** IAM controls global timing scalar between base timing and KCA Max. Initialized at 0.5 (8/16).
 - **Turbo Sanity Assessment:** **ATTENTION / ABNORMAL FOR TURBO**

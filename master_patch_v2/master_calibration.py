@@ -278,6 +278,7 @@ BOOST_TARGET_NATIVE = tuple(
 FINE_CORRECTION_LOAD_RANGE_ADDR = 0x78040
 ROUGH_CORRECTION_LOAD_RANGE_ADDR = 0x77FEC
 FINE_CORRECTION_COLUMNS_ADDR = 0x78050
+ADVANCE_MULTIPLIER_INITIAL_ADDR = 0x77FD8
 TUNED_FINE_CORRECTION_LOAD_RANGE = (0.62, 0.65, 3.90, 4.00)
 TUNED_ROUGH_CORRECTION_LOAD_RANGE = (0.95, 1.00, 3.90, 4.00)
 TUNED_FINE_CORRECTION_COLUMNS = (0.70, 1.10, 1.50, 2.00, 2.50, 3.00, 3.50)
@@ -1033,6 +1034,7 @@ def apply_calibration(rom: bytearray, reference: bytes) -> dict[str, tuple[int, 
     write("Fine Correction Range (Load)", FINE_CORRECTION_LOAD_RANGE_ADDR, pack_floats(TUNED_FINE_CORRECTION_LOAD_RANGE))
     write("Rough Correction Range (Load)", ROUGH_CORRECTION_LOAD_RANGE_ADDR, pack_floats(TUNED_ROUGH_CORRECTION_LOAD_RANGE))
     write("Fine Correction Columns (Load)", FINE_CORRECTION_COLUMNS_ADDR, pack_floats(TUNED_FINE_CORRECTION_COLUMNS))
+    write("Advance Multiplier (Initial)", ADVANCE_MULTIPLIER_INITIAL_ADDR, f32(1.0))
 
     # Five-psi spring-only commissioning: no electronic duty can be produced,
     # even if a table or gain is accidentally non-zero. The component has
