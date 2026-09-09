@@ -76,6 +76,9 @@ def verify_memory_layout(
         boost.OVERB_ADDR,
         boost.OVERB_FC_ADDR,
         speed_density.MAP_MIN_ADDR,
+        calibration.LEAN_ARM_ADDR,
+        calibration.LEAN_RESET_ADDR,
+        calibration.LEAN_AFR_ADDR,
     }
 
     for name, (address, data) in calibration_writes.items():

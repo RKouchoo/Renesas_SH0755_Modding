@@ -294,6 +294,15 @@ TRANSIENT_NEGATIVE_ECT_RAW = struct.pack(
 AF_LEARNING_RANGES_ADDR = 0x7616C
 AF_LEARNING_RANGES = (5.0, 10.0, 500.0)
 
+# Lean Fuel Cut Safety Thresholds (re-calibrated for 5 psi turbo on 98 RON)
+LEAN_ARM_ADDR = 0x7EAD4
+LEAN_RESET_ADDR = 0x7EAD8
+LEAN_AFR_ADDR = 0x7EADC
+
+LEAN_ARM_PSI = 2.50       # Arms at 2.5 psi boost (not 0.5 psi!), stays out of the way off-boost
+LEAN_RESET_PSI = 1.50     # Resets when boost drops below 1.5 psi
+LEAN_AFR_THRESHOLD = 12.8 # Trips if leaner than 12.8 AFR while under 2.5+ psi boost
+
 LOW_RPM_TIMING_FLOOR = {
     0.15: 15.0,
     0.35: 15.0,
@@ -348,6 +357,9 @@ CALIBRATION_REGIONS = (
     ("Target Throttle Plate Position", TARGET_THROTTLE_ADDR, TARGET_THROTTLE_SIZE),
     ("Transient Negative ECT Multiplier", TRANSIENT_NEGATIVE_ECT_ADDR, TRANSIENT_NEGATIVE_ECT_SIZE),
     ("A/F Learning Airflow Ranges", AF_LEARNING_RANGES_ADDR, len(AF_LEARNING_RANGES) * 4),
+    ("Lean Fuel Cut Arm Pressure", LEAN_ARM_ADDR, 4),
+    ("Lean Fuel Cut Reset Pressure", LEAN_RESET_ADDR, 4),
+    ("Lean Fuel Cut AFR Threshold", LEAN_AFR_ADDR, 4),
     ("Boost Target", boost.TARGET_DATA, len(BOOST_TARGET_NATIVE) * 4),
     ("Boost Wastegate Duty", boost.BASE_DATA, len(boost.BASE_DUTY)),
     ("Boost Kp", boost.KP_ADDR, 4),
@@ -872,6 +884,9 @@ def apply_calibration(rom: bytearray, reference: bytes) -> dict[str, tuple[int, 
     write("Target Throttle Plate Position", TARGET_THROTTLE_ADDR, build_target_throttle_map(reference))
     write("Transient Negative ECT Multiplier", TRANSIENT_NEGATIVE_ECT_ADDR, TRANSIENT_NEGATIVE_ECT_RAW)
     write("A/F Learning Airflow Ranges", AF_LEARNING_RANGES_ADDR, pack_floats(AF_LEARNING_RANGES))
+    write("Lean Fuel Cut Arm Pressure", LEAN_ARM_ADDR, f32(LEAN_ARM_PSI * boost.NATIVE_PER_PSI))
+    write("Lean Fuel Cut Reset Pressure", LEAN_RESET_ADDR, f32(LEAN_RESET_PSI * boost.NATIVE_PER_PSI))
+    write("Lean Fuel Cut AFR Threshold", LEAN_AFR_ADDR, f32(LEAN_AFR_THRESHOLD / 14.64))
 
     # Five-psi spring-only commissioning: no electronic duty can be produced,
     # even if a table or gain is accidentally non-zero. The component has
