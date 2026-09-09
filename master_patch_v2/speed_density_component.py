@@ -90,29 +90,33 @@ _cand_ve[0] = list(_cand_ve[1])
 
 # 2. Floor deep-vacuum column 0 (150 mmHg) across operating RPMs so decel / light tip-in
 # never collapses pulse width below injector dead time (preventing 18.5 AFR tip-in misfire).
+# Warm idle decel return (800 RPM) trimmed to 0.860 based on log data (-9.3% rich at 0.920).
 for y in range(2, len(LOW_RPM_AXIS)):
     _cand_ve[y][0] = 0.920
+_cand_ve[2][0] = 0.860  # 800 RPM, 150 mmHg decel catch
 
-# 3. Retain 1600 RPM candidate VE (1.068 at 350 mmHg) which supplies the necessary fuel
-# to prevent the 18.6 AFR lean-out and anti-lag misfire on light throttle.
+# 3. Retain 1600 RPM candidate VE (1.068 at 350 mmHg) and trim cruise cells based on repeat log data:
+_cand_ve[3][1] = 0.955  # 1200 RPM, 250 mmHg (was 0.924, +3.3% for 14.97 AFR lean cruise)
+_cand_ve[4][1] = 1.025  # 1600 RPM, 250 mmHg (was 0.999, +2.6% for 14.82 AFR lean cruise)
+
 # Fill the vacuum VE cliff at 2000-3200 RPM so AFR remains flat (~14.7) as RPM climbs.
-_cand_ve[5][1] = 0.985  # 2000 RPM, 250 mmHg
-_cand_ve[5][2] = 1.035  # 2000 RPM, 350 mmHg
-_cand_ve[5][3] = 1.060  # 2000 RPM, 450 mmHg
-_cand_ve[5][4] = 1.030  # 2000 RPM, 550 mmHg
+_cand_ve[5][1] = 1.010  # 2000 RPM, 250 mmHg (was 0.985, +2.5% for 14.83 AFR)
+_cand_ve[5][2] = 1.120  # 2000 RPM, 350 mmHg (was 1.035, +8.2% for 15.76 AFR tip-in)
+_cand_ve[5][3] = 1.120  # 2000 RPM, 450 mmHg (was 1.060, +5.7%)
+_cand_ve[5][4] = 1.060  # 2000 RPM, 550 mmHg
 
-_cand_ve[6][1] = 0.950  # 2500 RPM, 250 mmHg (was 0.752)
-_cand_ve[6][2] = 1.000  # 2500 RPM, 350 mmHg (was 0.790)
-_cand_ve[6][3] = 1.020  # 2500 RPM, 450 mmHg (was 0.827)
-_cand_ve[6][4] = 1.000  # 2500 RPM, 550 mmHg (was 0.865)
+_cand_ve[6][1] = 0.985  # 2500 RPM, 250 mmHg (was 0.950, +3.7% for 14.99 AFR)
+_cand_ve[6][2] = 1.090  # 2500 RPM, 350 mmHg (was 1.000, +9.0% for 15.66 AFR tip-in)
+_cand_ve[6][3] = 1.100  # 2500 RPM, 450 mmHg (was 1.020, +7.8%)
+_cand_ve[6][4] = 1.050  # 2500 RPM, 550 mmHg
 
-_cand_ve[7][1] = 0.920  # 3000 RPM, 250 mmHg (was 0.800)
-_cand_ve[7][2] = 0.960  # 3000 RPM, 350 mmHg (was 0.840)
-_cand_ve[7][3] = 0.980  # 3000 RPM, 450 mmHg (was 0.880)
+_cand_ve[7][1] = 0.960  # 3000 RPM, 250 mmHg (was 0.920, +4.3% for 15.07 AFR)
+_cand_ve[7][2] = 1.040  # 3000 RPM, 350 mmHg (was 0.960, +8.3% for 15.02 AFR)
+_cand_ve[7][3] = 1.080  # 3000 RPM, 450 mmHg (was 0.980, +10.2%)
 
-_cand_ve[8][1] = 0.910  # 3200 RPM, 250 mmHg (was 0.813)
-_cand_ve[8][2] = 0.950  # 3200 RPM, 350 mmHg (was 0.853)
-_cand_ve[8][3] = 0.970  # 3200 RPM, 450 mmHg (was 0.894)
+_cand_ve[8][1] = 1.030  # 3200 RPM, 250 mmHg (was 0.910, +13.2% for 16.30 AFR transition)
+_cand_ve[8][2] = 1.100  # 3200 RPM, 350 mmHg (was 0.950, +15.8%)
+_cand_ve[8][3] = 1.140  # 3200 RPM, 450 mmHg (was 0.970, +17.5%)
 
 # 4. Scale medium-to-high load columns (650 to 1500 mmHg) in Low Lift to provide
 # sufficient fuel under WOT (prevents 18.1 AFR lean-out at 2500-3200 RPM WOT).
@@ -143,25 +147,25 @@ _high_ve = [
 for y in range(len(HIGH_RPM_AXIS)):
     _high_ve[y][0] = 0.920  # Floor deep vacuum column
 
-_high_ve[0][1] = 0.920  # 3000 RPM, 250 mmHg (matches low-lift)
-_high_ve[0][2] = 0.960  # 3000 RPM, 350 mmHg
-_high_ve[0][3] = 0.980  # 3000 RPM, 450 mmHg
+_high_ve[0][1] = 0.960  # 3000 RPM, 250 mmHg (matches low-lift)
+_high_ve[0][2] = 1.040  # 3000 RPM, 350 mmHg
+_high_ve[0][3] = 1.080  # 3000 RPM, 450 mmHg
 
-_high_ve[1][1] = 0.910  # 3200 RPM, 250 mmHg (matches low-lift)
-_high_ve[1][2] = 0.950  # 3200 RPM, 350 mmHg
-_high_ve[1][3] = 0.970  # 3200 RPM, 450 mmHg
+_high_ve[1][1] = 1.030  # 3200 RPM, 250 mmHg (matches low-lift)
+_high_ve[1][2] = 1.100  # 3200 RPM, 350 mmHg
+_high_ve[1][3] = 1.140  # 3200 RPM, 450 mmHg
 
-_high_ve[2][1] = 0.900  # 3500 RPM, 250 mmHg
-_high_ve[2][2] = 0.940  # 3500 RPM, 350 mmHg
-_high_ve[2][3] = 0.960  # 3500 RPM, 450 mmHg
+_high_ve[2][1] = 1.050  # 3500 RPM, 250 mmHg (was 0.900, +16.7% for 16.5-18.5 AFR highway lean hole)
+_high_ve[2][2] = 1.150  # 3500 RPM, 350 mmHg (was 0.940, +22.3% cures 18.5 AFR at 50 kPa)
+_high_ve[2][3] = 1.180  # 3500 RPM, 450 mmHg (was 0.960, +22.9%)
 
-_high_ve[3][1] = 0.890  # 4000 RPM, 250 mmHg
-_high_ve[3][2] = 0.930  # 4000 RPM, 350 mmHg
-_high_ve[3][3] = 0.950  # 4000 RPM, 450 mmHg
+_high_ve[3][1] = 1.000  # 4000 RPM, 250 mmHg (was 0.890)
+_high_ve[3][2] = 1.100  # 4000 RPM, 350 mmHg (was 0.930)
+_high_ve[3][3] = 1.140  # 4000 RPM, 450 mmHg (was 0.950)
 
-_high_ve[4][1] = 0.880  # 4500 RPM, 250 mmHg
-_high_ve[4][2] = 0.920  # 4500 RPM, 350 mmHg
-_high_ve[4][3] = 0.940  # 4500 RPM, 450 mmHg
+_high_ve[4][1] = 0.960  # 4500 RPM, 250 mmHg (was 0.880)
+_high_ve[4][2] = 1.050  # 4500 RPM, 350 mmHg (was 0.920)
+_high_ve[4][3] = 1.100  # 4500 RPM, 450 mmHg (was 0.940)
 
 # Scale High-Lift medium-to-boost columns (650..1500 mmHg) by +25%
 # With 10.5mm valve lift, the engine breathes ~25% more air at WOT than modeled.
