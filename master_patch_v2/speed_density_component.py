@@ -113,21 +113,56 @@ _cand_ve[0] = list(_cand_ve[1])
 
 SMOOTHED_LOW_VE_TABLE = tuple(val for row in _cand_ve for val in row)
 assert len(SMOOTHED_LOW_VE_TABLE) == len(LOW_RPM_AXIS) * len(MAP_AXIS)
-
-# Replace LOW_VE_TABLE with our smoothed table
 LOW_VE_TABLE = SMOOTHED_LOW_VE_TABLE
+
+# High-Lift VE smoothing:
+# Match the low-lift table in the 3000-3200 RPM AVLS transition zone
+# and smooth the light-load vacuum cells (250-450 mmHg) up through 4500 RPM highway cruise.
+_high_ve = [
+    list(sd.HIGH_VE_TABLE[y * len(MAP_AXIS) : (y + 1) * len(MAP_AXIS)])
+    for y in range(len(HIGH_RPM_AXIS))
+]
+_high_ve[0][1] = 0.920  # 3000 RPM, 250 mmHg (matches low-lift)
+_high_ve[0][2] = 0.960  # 3000 RPM, 350 mmHg
+_high_ve[0][3] = 0.980  # 3000 RPM, 450 mmHg
+
+_high_ve[1][1] = 0.910  # 3200 RPM, 250 mmHg (matches low-lift)
+_high_ve[1][2] = 0.950  # 3200 RPM, 350 mmHg
+_high_ve[1][3] = 0.970  # 3200 RPM, 450 mmHg
+
+_high_ve[2][1] = 0.900  # 3500 RPM, 250 mmHg
+_high_ve[2][2] = 0.940  # 3500 RPM, 350 mmHg
+_high_ve[2][3] = 0.960  # 3500 RPM, 450 mmHg
+
+_high_ve[3][1] = 0.890  # 4000 RPM, 250 mmHg
+_high_ve[3][2] = 0.930  # 4000 RPM, 350 mmHg
+_high_ve[3][3] = 0.950  # 4000 RPM, 450 mmHg
+
+_high_ve[4][1] = 0.880  # 4500 RPM, 250 mmHg
+_high_ve[4][2] = 0.920  # 4500 RPM, 350 mmHg
+_high_ve[4][3] = 0.940  # 4500 RPM, 450 mmHg
+
+SMOOTHED_HIGH_VE_TABLE = tuple(val for row in _high_ve for val in row)
+assert len(SMOOTHED_HIGH_VE_TABLE) == len(HIGH_RPM_AXIS) * len(MAP_AXIS)
+HIGH_VE_TABLE = SMOOTHED_HIGH_VE_TABLE
 
 
 def build_blobs() -> list[tuple[str, int, bytes]]:
-    """Build all speed density flash blobs, using the smoothed low-lift table."""
+    """Build all speed density flash blobs, using the smoothed low and high lift tables."""
     blobs = []
-    # Copy all blobs from original sd except the low lift ve table
+    # Copy all blobs from original sd except the low and high lift ve tables
     for name, addr, data in sd.build_blobs():
         if name == "speed_density_low_lift_ve_table":
             blobs.append((
                 "speed_density_low_lift_ve_table",
                 LOW_VE_DATA_ADDR,
                 b"".join(f32(value) for value in LOW_VE_TABLE),
+            ))
+        elif name == "speed_density_high_lift_ve_table":
+            blobs.append((
+                "speed_density_high_lift_ve_table",
+                HIGH_VE_DATA_ADDR,
+                b"".join(f32(value) for value in HIGH_VE_TABLE),
             ))
         else:
             blobs.append((name, addr, data))
