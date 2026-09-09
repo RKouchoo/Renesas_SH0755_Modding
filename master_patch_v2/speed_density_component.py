@@ -88,23 +88,12 @@ _cand_ve = [
 # 1. 0 RPM row matches 500 RPM row to prevent modeled air collapse on deep decel
 _cand_ve[0] = list(_cand_ve[1])
 
-# 2. 1600 RPM row smoothly bridges 1200 RPM and 2000 RPM (removes the +59% spike)
-for c in range(len(MAP_AXIS)):
-    _cand_ve[4][c] = round((_cand_ve[3][c] + _cand_ve[5][c]) / 2.0, 4)
-
-# 3. Trim low-RPM VE (rows 0, 1, 2: 0, 500, 800 RPM by ~11%, 1200 RPM by ~4%)
-# Log evidence shows the engine was running rich at 12.8-13.4 AFR under low RPM/load.
-# Trimming brings low-RPM idle/cruise AFR from 13.1 directly to 14.7:1 stoich.
-_trim_factors = {
-    0: 0.89,  # 0 RPM
-    1: 0.89,  # 500 RPM
-    2: 0.89,  # 800 RPM
-    3: 0.96,  # 1200 RPM
-    4: 0.99,  # 1600 RPM
-}
-for row_idx, factor in _trim_factors.items():
-    for col in range(1, 6):  # 250 to 650 mmHg
-        _cand_ve[row_idx][col] = round(_cand_ve[row_idx][col] * factor, 4)
+# 2. Retain 1600 RPM candidate VE (1.068 at 350 mmHg) which supplies the necessary fuel
+# to prevent the 18.6 AFR lean-out and anti-lag misfire on light throttle.
+# Contour 2000 RPM at 250-450 mmHg so the transition from 1600 to 2000 RPM is smooth.
+_cand_ve[5][1] = 0.880  # 250 mmHg
+_cand_ve[5][2] = 0.940  # 350 mmHg
+_cand_ve[5][3] = 0.960  # 450 mmHg
 
 _cand_ve[0] = list(_cand_ve[1])
 

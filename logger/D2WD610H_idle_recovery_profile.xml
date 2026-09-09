@@ -28,6 +28,7 @@
         <parameter id="E81" units="%" />
         <parameter id="E84" units="estimated AFR" />
         <parameter id="E105" units="%" />
+        <parameter id="E113" units="psi relative" />
         <parameter id="E123" livedata="selected" dash="selected" units="fuel-air equivalence ratio" />
         <parameter id="E500" livedata="selected" dash="selected" units="estimated AFR (14.64 stoich)" />
         <parameter id="E501" livedata="selected" dash="selected" units="ADC counts" />
