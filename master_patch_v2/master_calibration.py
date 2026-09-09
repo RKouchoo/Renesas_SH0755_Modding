@@ -277,7 +277,7 @@ BOOST_TARGET_NATIVE = tuple(
 TIP_IN_MRP_ADDR = 0x76AC8
 TIP_IN_MRP_RAW = bytes([128, 128, 128, 128, 128, 128, 128, 128])
 DECR_DASHPOT_AIR_ADDR = 0x7963C
-DECR_DASHPOT_AIR_VALUE = 0.15
+DECR_DASHPOT_AIR_VALUE = 0.50
 TRANSIENT_FALLING_LOAD_FILTER_ADDR = 0x76050
 TRANSIENT_FALLING_LOAD_FILTER_VALUE = 0.08
 TARGET_THROTTLE_ADDR = 0x7A738
@@ -781,8 +781,8 @@ def build_requested_torque_map(reference: bytes) -> bytes:
 
 
 def build_idle_speed_target(reference: bytes, address: int) -> bytes:
-    """Floor warm target idle speed at 850 RPM (raw 6800) so the engine never chokes below 700 RPM."""
-    raw_floor = round(850.0 / 0.125)  # 6800 raw
+    """Floor warm target idle speed at 850 RPM (raw 4352) so the engine never chokes below 700 RPM."""
+    raw_floor = round(850.0 / 0.1953125)  # 4352 raw -> 850 RPM
     old = [struct.unpack_from(">H", reference, address + i * 2)[0] for i in range(16)]
     new = [max(v, raw_floor) for v in old]
     return struct.pack(">16H", *new)
@@ -937,13 +937,16 @@ def apply_calibration(rom: bytearray, reference: bytes) -> dict[str, tuple[int, 
     )
     for label, address, count in CRANKING_IPW_MAPS:
         write(label, address, scale_u16_table(reference, address, count, injector_ratio, label))
+    # Turbo intake plenum and charge piping require stronger transient enrichment on throttle crack
+    # to overcome pneumatic lag and runner wetting. Scale by 0.80 instead of 0.49.
+    tip_in_ratio = 0.80
     for label, address, count in TIP_IN_IPW_MAPS:
-        write(label, address, scale_u16_table(reference, address, count, injector_ratio, label))
+        write(label, address, scale_u16_table(reference, address, count, tip_in_ratio, label))
     min_tip_in_raw = struct.unpack_from(">f", reference, MIN_TIP_IN_ACTIVATION_ADDR)[0]
     write(
         "Minimum Tip-in Enrichment Activation",
         MIN_TIP_IN_ACTIVATION_ADDR,
-        f32(min_tip_in_raw * injector_ratio),
+        f32(min_tip_in_raw * tip_in_ratio),
     )
     write("Tip-in Enrichment Compensation (MRP)", TIP_IN_MRP_ADDR, TIP_IN_MRP_RAW)
     write("Deceleration Dashpot Air Decrement", DECR_DASHPOT_AIR_ADDR, f32(DECR_DASHPOT_AIR_VALUE))
