@@ -32,7 +32,7 @@ import speed_density_component as speed_density  # noqa: E402
 
 BUILD_MARKER_ADDR = 0x7FC4C
 BUILD_MARKER = 0x26090804
-SD_MAP_MIN_WORD = 0x41F00000  # 30.0 mmHg (4.0 kPa): prevents 500 g/s failsafe on deep manual decel (which pulls 5-7 kPa)
+SD_MAP_MIN_WORD = 0x00000000  # 0.0 mmHg: physical absolute vacuum; prevents decel vacuum from ever tripping failsafe
 
 
 # Hardcoded 550cc (Subaru 16611AA510) injector calibration in D2WD610H native units
@@ -274,6 +274,18 @@ BOOST_TARGET_NATIVE = tuple(
 )
 
 
+# Fuel pump commands (continuous 100% duty for turbo)
+FUEL_PUMP_MED_CMD_ADDR = 0x2A60C
+FUEL_PUMP_LOW_CMD_ADDR = 0x2A610
+
+# Knock learning load ranges for forced induction (expand ceiling to 4.00 g/rev)
+FINE_CORRECTION_LOAD_RANGE_ADDR = 0x78040
+ROUGH_CORRECTION_LOAD_RANGE_ADDR = 0x77FEC
+FINE_CORRECTION_COLUMNS_ADDR = 0x78050
+TUNED_FINE_CORRECTION_LOAD_RANGE = (0.62, 0.65, 3.90, 4.00)
+TUNED_ROUGH_CORRECTION_LOAD_RANGE = (0.95, 1.00, 3.90, 4.00)
+TUNED_FINE_CORRECTION_COLUMNS = (0.70, 1.10, 1.50, 2.00, 2.50, 3.00, 3.50)
+
 TIP_IN_MRP_ADDR = 0x76AC8
 TIP_IN_MRP_RAW = bytes([128, 128, 128, 128, 128, 128, 128, 128])
 DECR_DASHPOT_AIR_ADDR = 0x7963C
@@ -284,6 +296,14 @@ TARGET_THROTTLE_ADDR = 0x7A738
 TARGET_THROTTLE_SIZE = 15 * 20 * 2
 REQUESTED_TORQUE_ADDR = 0x7AA2C
 REQUESTED_TORQUE_SIZE = 19 * 20 * 2
+TRANSIENT_POSITIVE_ECT_ADDR = 0x76D08
+TRANSIENT_POSITIVE_ECT_SIZE = 32
+# Clamp positive transient load multiplier to 2.0 max (stock was 4.0 - 7.0 below 50C)
+# This prevents B874 from exploding to +0.85 on throttle stabs and bogging the engine rich
+TRANSIENT_POSITIVE_ECT_RAW = struct.pack(
+    ">16H",
+    *[min(v, 4096) for v in (14336, 14336, 14336, 14131, 13210, 12493, 11878, 11059, 8192, 6144, 5734, 2662, 2048, 2048, 2048, 2048)]
+)
 TRANSIENT_NEGATIVE_ECT_ADDR = 0x76D48
 TRANSIENT_NEGATIVE_ECT_SIZE = 32
 # Clamp cold negative transient load multiplier to 2.0 max (stock was 11.8 - 14.5 below 50C)
@@ -373,6 +393,7 @@ CALIBRATION_REGIONS = (
     ("Transient Fuel Falling Load Filter", TRANSIENT_FALLING_LOAD_FILTER_ADDR, 4),
     ("Target Throttle Plate Position", TARGET_THROTTLE_ADDR, TARGET_THROTTLE_SIZE),
     ("Requested Torque (Accelerator Pedal)", REQUESTED_TORQUE_ADDR, REQUESTED_TORQUE_SIZE),
+    ("Transient Positive ECT Multiplier", TRANSIENT_POSITIVE_ECT_ADDR, TRANSIENT_POSITIVE_ECT_SIZE),
     ("Transient Negative ECT Multiplier", TRANSIENT_NEGATIVE_ECT_ADDR, TRANSIENT_NEGATIVE_ECT_SIZE),
     ("A/F Learning Airflow Ranges", AF_LEARNING_RANGES_ADDR, len(AF_LEARNING_RANGES) * 4),
     ("Lean Fuel Cut Arm Pressure", LEAN_ARM_ADDR, 4),
@@ -953,6 +974,7 @@ def apply_calibration(rom: bytearray, reference: bytes) -> dict[str, tuple[int, 
     write("Transient Fuel Falling Load Filter", TRANSIENT_FALLING_LOAD_FILTER_ADDR, f32(TRANSIENT_FALLING_LOAD_FILTER_VALUE))
     write("Target Throttle Plate Position", TARGET_THROTTLE_ADDR, build_target_throttle_map(reference))
     write("Requested Torque (Accelerator Pedal)", REQUESTED_TORQUE_ADDR, build_requested_torque_map(reference))
+    write("Transient Positive ECT Multiplier", TRANSIENT_POSITIVE_ECT_ADDR, TRANSIENT_POSITIVE_ECT_RAW)
     write("Transient Negative ECT Multiplier", TRANSIENT_NEGATIVE_ECT_ADDR, TRANSIENT_NEGATIVE_ECT_RAW)
     write("A/F Learning Airflow Ranges", AF_LEARNING_RANGES_ADDR, pack_floats(AF_LEARNING_RANGES))
     write("Lean Fuel Cut Arm Pressure", LEAN_ARM_ADDR, f32(LEAN_ARM_PSI * boost.NATIVE_PER_PSI))
@@ -962,6 +984,12 @@ def apply_calibration(rom: bytearray, reference: bytes) -> dict[str, tuple[int, 
         write(name, addr, build_idle_speed_target(reference, addr))
     for name, addr in zip(BASE_AIR_NAMES, BASE_AIR_ADDRS):
         write(name, addr, build_base_air(reference, addr))
+
+    write("Fine Correction Range (Load)", FINE_CORRECTION_LOAD_RANGE_ADDR, pack_floats(TUNED_FINE_CORRECTION_LOAD_RANGE))
+    write("Rough Correction Range (Load)", ROUGH_CORRECTION_LOAD_RANGE_ADDR, pack_floats(TUNED_ROUGH_CORRECTION_LOAD_RANGE))
+    write("Fine Correction Columns (Load)", FINE_CORRECTION_COLUMNS_ADDR, pack_floats(TUNED_FINE_CORRECTION_COLUMNS))
+    write("Fuel Pump Medium-Speed Command", FUEL_PUMP_MED_CMD_ADDR, f32(100.0))
+    write("Fuel Pump Low-Speed Command", FUEL_PUMP_LOW_CMD_ADDR, f32(100.0))
 
     # Five-psi spring-only commissioning: no electronic duty can be produced,
     # even if a table or gain is accidentally non-zero. The component has

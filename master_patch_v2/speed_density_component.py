@@ -191,6 +191,12 @@ def build_blobs() -> list[tuple[str, int, bytes]]:
                 HIGH_VE_DATA_ADDR,
                 b"".join(f32(value) for value in HIGH_VE_TABLE),
             ))
+        elif name == "speed_density_fixed_failsafe_airflow":
+            blobs.append((
+                "speed_density_fixed_failsafe_airflow",
+                addr,
+                f32(12.0),
+            ))
         else:
             blobs.append((name, addr, data))
     return blobs

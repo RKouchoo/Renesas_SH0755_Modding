@@ -25,6 +25,7 @@ See [findings](FINDINGS.md) before relying on an older address label.
 | [Audit status](AUDIT_STATUS.md) | Scope, verification and remaining limits. |
 | [Repository cleanup](REPOSITORY_CLEANUP.md) | Post-audit file moves, preserved artifacts and verification. |
 | [Denso scaling and FPU math](DENSO_SCALING_AND_FPU_MATH.md) | SH-2E FPU latencies, fixed-point integer tricks, RomRaider helper floats, and wideband ADC execution audit. |
+| [Turbo Table Sanity Check](TURBO_TABLE_SANITY_CHECK.md) | Exhaustive 146-table sanity audit calibrated against proven forced-induction standards (10.7:1 CR, 5 psi spring, 98 RON). |
 
 ## The runtime path
 
