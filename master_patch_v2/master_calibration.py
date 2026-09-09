@@ -583,7 +583,10 @@ def build_timing_map(
             cap = full_boost_cap + TIMING_LOAD_OFFSETS[rounded_load]
             cap_raw = timing_raw_at_or_below(cap)
             offset = y_index * TIMING_X + x_index
-            new[offset] = min(new[offset], cap_raw)
+            if rounded_load >= 1.40:
+                new[offset] = cap_raw
+            else:
+                new[offset] = min(new[offset], cap_raw)
 
     if len(new) != TIMING_X * rows:
         raise AssertionError(f"{label} size changed")

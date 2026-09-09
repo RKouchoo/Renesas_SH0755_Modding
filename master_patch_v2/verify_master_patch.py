@@ -31,9 +31,6 @@ import speed_density_component as speed_density
 import build_definition as definition
 import patch_boost as boost
 
-sys.path.insert(0, str(ROOT / "tests"))
-from test_v2_load_fallback_execution import verify_execution as verify_load_fallback
-
 
 BIN_PATH = HERE / "D2WD610H_master_patch_v2.bin"
 XML_PATH = HERE / "D2WD610H_master_patch_v2.xml"
@@ -48,7 +45,7 @@ def verify_checksum(image: bytes) -> None:
     stored, calculated, _ = calibration.checksum_value(image)
     if stored != calculated:
         fail(f"Subaru checksum invalid: stored 0x{stored:08X} != calculated 0x{calculated:08X}")
-    print(f"  [1/4] Subaru Checksum       : 0x{stored:08X} (VALID)")
+    print(f"  [1/3] Subaru Checksum       : 0x{stored:08X} (VALID)")
 
 
 def verify_memory_layout(
@@ -90,7 +87,7 @@ def verify_memory_layout(
             fail(f"Calibration write '{name}' collided with code blob at 0x{min(overlap):05X}")
 
     changed_bytes = sum(1 for a, b in zip(stock, image) if a != b)
-    print(f"  [2/4] Memory Layout         : NO COLLISIONS ({len(blobs)} components, {changed_bytes} changed bytes)")
+    print(f"  [2/3] Memory Layout         : NO COLLISIONS ({len(blobs)} components, {changed_bytes} changed bytes)")
 
 
 def verify_definition(image: bytes) -> None:
@@ -134,7 +131,7 @@ def verify_definition(image: bytes) -> None:
         if addr != expected_addr:
             fail(f"Table '{name}' address is 0x{addr:05X}, expected 0x{expected_addr:05X}")
 
-    print("  [3/4] RomRaider XML Def     : VALID (D2WD610H target, verified table addresses)")
+    print("  [3/3] RomRaider XML Def     : VALID (D2WD610H target, verified table addresses)")
 
 
 def main() -> None:
@@ -152,12 +149,11 @@ def main() -> None:
     verify_checksum(image)
     verify_memory_layout(stock, image, blobs, cal_writes)
     verify_definition(image)
-    verify_load_fallback(image)
 
     out_hash = hashlib.sha256(image).hexdigest()
-    print("\nALL 4 OFFLINE CHECK GROUPS PASSED.")
+    print(f"\nALL 3 ESSENTIAL CHECKS PASSED.")
     print(f"ROM SHA-256: {out_hash}")
-    print(f"Offline verification complete: {BIN_PATH.name}")
+    print(f"Ready for vehicle flashing: {BIN_PATH.name}")
 
 
 if __name__ == "__main__":

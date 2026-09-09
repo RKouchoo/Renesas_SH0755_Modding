@@ -92,6 +92,15 @@ _cand_ve[0] = list(_cand_ve[1])
 for c in range(len(MAP_AXIS)):
     _cand_ve[4][c] = round((_cand_ve[3][c] + _cand_ve[5][c]) / 2.0, 4)
 
+# 3. Scale idle vacuum cells (250-550 mmHg) in rows 0..4 (0 to 1600 RPM) by 1.12
+# to bring measured cold/warm idle AFR from 16.6:1 down to target 14.7:1
+_idle_scale_factors = {1: 1.12, 2: 1.12, 3: 1.08, 4: 1.04}
+for y in range(5):
+    for col, factor in _idle_scale_factors.items():
+        _cand_ve[y][col] = round(_cand_ve[y][col] * factor, 4)
+
+_cand_ve[0] = list(_cand_ve[1])
+
 SMOOTHED_LOW_VE_TABLE = tuple(val for row in _cand_ve for val in row)
 assert len(SMOOTHED_LOW_VE_TABLE) == len(LOW_RPM_AXIS) * len(MAP_AXIS)
 
