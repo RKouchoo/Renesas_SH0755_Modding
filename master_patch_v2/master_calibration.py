@@ -274,10 +274,6 @@ BOOST_TARGET_NATIVE = tuple(
 )
 
 
-# Fuel pump commands (continuous 100% duty for turbo)
-FUEL_PUMP_MED_CMD_ADDR = 0x2A60C
-FUEL_PUMP_LOW_CMD_ADDR = 0x2A610
-
 # Knock learning load ranges for forced induction (expand ceiling to 4.00 g/rev)
 FINE_CORRECTION_LOAD_RANGE_ADDR = 0x78040
 ROUGH_CORRECTION_LOAD_RANGE_ADDR = 0x77FEC
@@ -732,6 +728,32 @@ def build_cl_fuel_compensation(reference: bytes) -> bytes:
     )
 
 
+# Reasonable AVCS intake cam advance caps for forced induction on high cam
+# Allows strong spool (up to 25 deg advance at 2400-3600 RPM) while tapering
+# progressively to prevent high-RPM exhaust reversion against turbine backpressure.
+# Format: {RPM: (max_deg_at_1.22_load, max_deg_at_1.40_load, max_deg_at_1.60+_load)}
+AVCS_HIGH_CAM_BOOST_CAPS = {
+    1000: (0.0, 0.0, 0.0),
+    1200: (20.0, 20.0, 20.0),
+    1600: (22.0, 22.0, 22.0),
+    2000: (26.0, 25.0, 25.0),
+    2400: (35.0, 30.0, 25.0),
+    2800: (35.0, 30.0, 25.0),
+    3200: (35.0, 30.0, 25.0),
+    3600: (35.0, 30.0, 25.0),
+    4000: (32.0, 26.0, 22.0),
+    4200: (30.0, 25.0, 20.0),
+    4400: (28.0, 22.0, 18.0),
+    4800: (25.0, 20.0, 15.0),
+    5200: (20.0, 16.0, 12.0),
+    5600: (15.0, 12.0, 10.0),
+    6000: (10.0, 10.0, 8.0),
+    6400: (10.0, 10.0, 8.0),
+    6600: (4.0, 4.0, 4.0),
+    6800: (0.0, 0.0, 0.0),
+}
+
+
 def build_avcs_map(
     reference: bytes,
     data_address: int,
@@ -743,7 +765,7 @@ def build_avcs_map(
     assert_axis(reference, load_axis_address, STOCK_AVCS_LOAD_AXIS, f"{label} load axis")
     rpm_axis = read_floats(reference, rpm_axis_address, rows)
     old = reference[data_address:data_address + AVCS_X * rows * 2]
-    return resample_integer_surface(
+    resampled = resample_integer_surface(
         old,
         STOCK_AVCS_LOAD_AXIS,
         rpm_axis,
@@ -752,6 +774,29 @@ def build_avcs_map(
         16,
         "nearest",
     )
+    if "High Cam" in label:
+        raw_values = list(struct.unpack(f">{AVCS_X * rows}H", resampled))
+        scale = 0.005493164
+        for r_i, rpm in enumerate(rpm_axis):
+            rpm_int = int(round(rpm))
+            caps = AVCS_HIGH_CAM_BOOST_CAPS.get(rpm_int)
+            if not caps:
+                continue
+            cap_122, cap_140, cap_boost = caps
+            for c_i, load in enumerate(TUNED_AVCS_LOAD_AXIS):
+                idx = r_i * AVCS_X + c_i
+                val_deg = raw_values[idx] * scale
+                if load >= 1.60:
+                    target_deg = min(val_deg, cap_boost)
+                elif abs(load - 1.40) < 0.05:
+                    target_deg = min(val_deg, cap_140)
+                elif abs(load - 1.22) < 0.05:
+                    target_deg = min(val_deg, cap_122)
+                else:
+                    target_deg = val_deg
+                raw_values[idx] = round(target_deg / scale)
+        return struct.pack(f">{AVCS_X * rows}H", *raw_values)
+    return resampled
 
 
 def build_target_throttle_map(reference: bytes) -> bytes:
@@ -988,8 +1033,6 @@ def apply_calibration(rom: bytearray, reference: bytes) -> dict[str, tuple[int, 
     write("Fine Correction Range (Load)", FINE_CORRECTION_LOAD_RANGE_ADDR, pack_floats(TUNED_FINE_CORRECTION_LOAD_RANGE))
     write("Rough Correction Range (Load)", ROUGH_CORRECTION_LOAD_RANGE_ADDR, pack_floats(TUNED_ROUGH_CORRECTION_LOAD_RANGE))
     write("Fine Correction Columns (Load)", FINE_CORRECTION_COLUMNS_ADDR, pack_floats(TUNED_FINE_CORRECTION_COLUMNS))
-    write("Fuel Pump Medium-Speed Command", FUEL_PUMP_MED_CMD_ADDR, f32(100.0))
-    write("Fuel Pump Low-Speed Command", FUEL_PUMP_LOW_CMD_ADDR, f32(100.0))
 
     # Five-psi spring-only commissioning: no electronic duty can be produced,
     # even if a table or gain is accidentally non-zero. The component has

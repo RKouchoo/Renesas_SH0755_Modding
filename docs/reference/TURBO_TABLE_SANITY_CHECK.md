@@ -604,7 +604,7 @@ Every single parameter, switch, and multi-dimensional table defined in `master_p
 - **Category:** `02.8 - Fueling - Fuel Pump Control`
 - **Storage Address:** `0x2A610` | **Type:** `1D` | **Dimensions:** `1x1` | **Data Type:** `float` (`big`)
 - **Scaling Formula:** `x` | **Units:** `%`
-- **Current Value:** `100.0000 %` (Raw: `100.0`)
+- **Current Value:** `33.3000 %` (Raw: `33.29999923706055`)
 - **Function & Description:** Fuel pump controller PWM duty cycle commands (Low 33.3%, Medium 66.7%).
 - **Forced-Induction Rationale:** Controls multi-speed fuel pump controller. Stock two-step duty cycle.
 - **Turbo Sanity Assessment:** **ATTENTION / ABNORMAL FOR TURBO**
@@ -614,7 +614,7 @@ Every single parameter, switch, and multi-dimensional table defined in `master_p
 - **Category:** `02.8 - Fueling - Fuel Pump Control`
 - **Storage Address:** `0x2A60C` | **Type:** `1D` | **Dimensions:** `1x1` | **Data Type:** `float` (`big`)
 - **Scaling Formula:** `x` | **Units:** `%`
-- **Current Value:** `100.0000 %` (Raw: `100.0`)
+- **Current Value:** `66.7000 %` (Raw: `66.69999694824219`)
 - **Function & Description:** Fuel pump controller PWM duty cycle commands (Low 33.3%, Medium 66.7%).
 - **Forced-Induction Rationale:** Controls multi-speed fuel pump controller. Stock two-step duty cycle.
 - **Turbo Sanity Assessment:** **ATTENTION / ABNORMAL FOR TURBO**
@@ -1024,7 +1024,7 @@ Every single parameter, switch, and multi-dimensional table defined in `master_p
 - **Category:** `05.2 - Cam Control - Intake AVCS Targets`
 - **Storage Address:** `0x7C764` | **Type:** `3D` | **Dimensions:** `14x18` | **Data Type:** `uint16` (`big`)
 - **Scaling Formula:** `x*.0054931640625` | **Units:** `Advance (degrees)`
-- **Current Value Range:** Min = `0.000`, Max = `49.999 Advance (degrees)`
+- **Current Value Range:** Min = `0.000`, Max = `40.001 Advance (degrees)`
   - *X Axis ():* `[0.35, 0.45, 0.55, 0.7, 0.83, 0.96, 1.09, 1.22, 1.4, 1.6, 2.0, 2.5, 3.2, 4.0]`
   - *Y Axis ():* `[1000.0, 1200.0, 1600.0, 2000.0, 2400.0, 2800.0, 3200.0, 3600.0, 4000.0, 4200.0, 4400.0, 4800.0, 5200.0, 5600.0, 6000.0, 6400.0, 6600.0, 6800.0]`
 - **Function & Description:** Engine speed threshold for switching between AVLS low-lift (6.5 mm) and high-lift (10.5 mm) cam profiles.
