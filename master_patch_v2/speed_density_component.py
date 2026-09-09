@@ -92,12 +92,19 @@ _cand_ve[0] = list(_cand_ve[1])
 for c in range(len(MAP_AXIS)):
     _cand_ve[4][c] = round((_cand_ve[3][c] + _cand_ve[5][c]) / 2.0, 4)
 
-# 3. Scale idle vacuum cells (250-550 mmHg) in rows 0..4 (0 to 1600 RPM) by 1.12
-# to bring measured cold/warm idle AFR from 16.6:1 down to target 14.7:1
-_idle_scale_factors = {1: 1.12, 2: 1.12, 3: 1.08, 4: 1.04}
-for y in range(5):
-    for col, factor in _idle_scale_factors.items():
-        _cand_ve[y][col] = round(_cand_ve[y][col] * factor, 4)
+# 3. Trim low-RPM VE (rows 0, 1, 2: 0, 500, 800 RPM by ~11%, 1200 RPM by ~4%)
+# Log evidence shows the engine was running rich at 12.8-13.4 AFR under low RPM/load.
+# Trimming brings low-RPM idle/cruise AFR from 13.1 directly to 14.7:1 stoich.
+_trim_factors = {
+    0: 0.89,  # 0 RPM
+    1: 0.89,  # 500 RPM
+    2: 0.89,  # 800 RPM
+    3: 0.96,  # 1200 RPM
+    4: 0.99,  # 1600 RPM
+}
+for row_idx, factor in _trim_factors.items():
+    for col in range(1, 6):  # 250 to 650 mmHg
+        _cand_ve[row_idx][col] = round(_cand_ve[row_idx][col] * factor, 4)
 
 _cand_ve[0] = list(_cand_ve[1])
 
