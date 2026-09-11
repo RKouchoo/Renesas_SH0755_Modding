@@ -192,17 +192,17 @@ FUEL_LAMBDA_CAPS = {
 FULL_BOOST_TIMING_CAP = (
     (2000.0, 7.5),
     (2400.0, 8.5),
-    (2800.0, 9.0),
-    (3200.0, 9.5),
-    (3600.0, 10.5),
-    (4000.0, 11.5),
-    (4400.0, 12.0),
-    (4800.0, 12.5),
-    (5200.0, 13.0),
-    (5600.0, 13.5),
-    (6000.0, 14.0),
-    (6400.0, 14.5),
-    (6800.0, 15.0),
+    (2800.0, 9.5),
+    (3200.0, 10.5),
+    (3600.0, 11.5),
+    (4000.0, 12.0),
+    (4400.0, 12.5),
+    (4800.0, 13.0),
+    (5200.0, 13.5),
+    (5600.0, 14.0),
+    (6000.0, 14.5),
+    (6400.0, 15.0),
+    (6800.0, 15.5),
 )
 TIMING_LOAD_OFFSETS = {
     1.09: 10.0,
@@ -659,7 +659,7 @@ def build_timing_map(
             cap = full_boost_cap + TIMING_LOAD_OFFSETS[rounded_load]
             cap_raw = timing_raw_at_or_below(cap)
             offset = y_index * TIMING_X + x_index
-            if rounded_load >= 2.00:
+            if rounded_load >= 1.22:
                 new[offset] = cap_raw
             else:
                 new[offset] = min(new[offset], cap_raw)
