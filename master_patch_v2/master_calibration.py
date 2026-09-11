@@ -173,11 +173,11 @@ TUNED_AVCS_LOAD_AXIS = (
 # are retained whenever they are already richer.  At >=6000 RPM, columns at
 # and above 1.22 g/rev get another 0.01 lambda of enrichment.
 FUEL_LAMBDA_CAPS = {
-    0.96: 0.93,  # ~13.6 AFR
-    1.09: 0.88,  # ~12.9 AFR
-    1.22: 0.86,  # ~12.6 AFR
-    1.40: 0.85,  # ~12.5 AFR (rich best torque for off-boost hill climbing)
-    1.60: 0.81,  # ~11.9 AFR (transitioning as turbo begins to make positive boost)
+    0.96: 0.95,  # ~13.9 AFR
+    1.09: 0.91,  # ~13.3 AFR
+    1.22: 0.89,  # ~13.0 AFR
+    1.40: 0.87,  # ~12.8 AFR (optimal rich best torque for off-boost hill climbing)
+    1.60: 0.83,  # ~12.2 AFR (transitioning as turbo begins to make positive boost)
     2.00: 0.78,  # ~11.4 AFR (real full boost)
     2.50: 0.78,  # ~11.4 AFR
     3.20: 0.78,  # ~11.4 AFR

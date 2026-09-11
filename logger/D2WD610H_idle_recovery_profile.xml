@@ -23,14 +23,14 @@
         <parameter id="E33" livedata="selected" dash="selected" units="status"/>
         <parameter id="E32" livedata="selected" dash="selected" units="g/rev"/>
         <parameter id="P92" units="%"/>
-        <parameter id="E39" units="degrees"/>
+        <parameter id="E39" livedata="selected" dash="selected" units="degrees"/>
         <parameter id="P10" livedata="selected" dash="selected" units="degrees"/>
         <parameter id="P12" livedata="selected" dash="selected" units="g/s"/>
         <parameter id="P11" livedata="selected" dash="selected" units="C"/>
         <parameter id="P13" livedata="selected" dash="selected" units="%"/>
         <parameter id="P17" livedata="selected" dash="selected" units="V"/>
-        <parameter id="E40" units="degrees"/>
-        <parameter id="E41" units="degrees"/>
+        <parameter id="E40" livedata="selected" dash="selected" units="degrees"/>
+        <parameter id="E41" livedata="selected" dash="selected" units="degrees"/>
         <parameter id="E44" units="%"/>
         <parameter id="E46" units="%"/>
         <parameter id="E45" units="%"/>
