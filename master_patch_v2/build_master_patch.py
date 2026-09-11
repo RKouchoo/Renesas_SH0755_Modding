@@ -37,7 +37,6 @@ import master_calibration as calibration  # noqa: E402
 import wideband_component as wideband  # noqa: E402
 import fueling_safety_component as fueling_safety  # noqa: E402
 import purge_delete_component as purge_delete  # noqa: E402
-import alert_strobe_component as alert_strobe  # noqa: E402
 
 
 STOCK = (ROOT / "2005 BLE MT.bin").resolve()
@@ -171,7 +170,6 @@ def build_image() -> tuple[
     component_blobs["wideband_O2_delete"] = wideband.apply_to_rom(rom)
     component_blobs["purge_delete"] = purge_delete.apply_to_rom(rom)
     component_blobs["fueling_safety"] = fueling_safety.apply_to_rom(rom)
-    component_blobs["alert_strobe"] = alert_strobe.apply_to_rom(rom)
 
     component_reference = bytes(rom)
     calibration_writes = calibration.apply_calibration(rom, component_reference)

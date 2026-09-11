@@ -118,8 +118,8 @@ _cand_ve[8][1] = 1.030  # 3200 RPM, 250 mmHg (was 0.910, +13.2% for 16.30 AFR tr
 _cand_ve[8][2] = 1.100  # 3200 RPM, 350 mmHg (was 0.950, +15.8%)
 _cand_ve[8][3] = 1.140  # 3200 RPM, 450 mmHg (was 0.970, +17.5%)
 
-# 4. Scale medium-to-high load columns (650 to 1500 mmHg) in Low Lift to provide
-# sufficient fuel under WOT (prevents 18.1 AFR lean-out at 2500-3200 RPM WOT).
+# 4. Scale positive boost columns (850 to 1500 mmHg, index 7..12) in Low Lift to provide
+# sufficient fuel under boost without corrupting atmospheric/climbing VE (650 and 760 mmHg).
 mults_low = {
     4: 1.10,  # 1600 RPM
     5: 1.20,  # 2000 RPM
@@ -128,8 +128,17 @@ mults_low = {
     8: 1.25,  # 3200 RPM
 }
 for y, mult in mults_low.items():
-    for x in range(5, len(MAP_AXIS)):
+    for x in range(7, len(MAP_AXIS)):
         _cand_ve[y][x] = round(_cand_ve[y][x] * mult, 3)
+
+# Smooth 1200-2000 RPM at 650 and 760 mmHg to natural NA cylinder filling (VE ~0.84-0.89)
+# This prevents atmospheric WOT from calculating artificial 1.9-2.0 g/rev loads and bogging on hills.
+_cand_ve[3][5] = 0.840  # 1200 RPM, 650 mmHg
+_cand_ve[3][6] = 0.850  # 1200 RPM, 760 mmHg
+_cand_ve[4][5] = 0.860  # 1600 RPM, 650 mmHg
+_cand_ve[4][6] = 0.870  # 1600 RPM, 760 mmHg
+_cand_ve[5][5] = 0.880  # 2000 RPM, 650 mmHg
+_cand_ve[5][6] = 0.890  # 2000 RPM, 760 mmHg
 
 _cand_ve[0] = list(_cand_ve[1])
 
@@ -167,10 +176,10 @@ _high_ve[4][1] = 0.960  # 4500 RPM, 250 mmHg (was 0.880)
 _high_ve[4][2] = 1.050  # 4500 RPM, 350 mmHg (was 0.920)
 _high_ve[4][3] = 1.100  # 4500 RPM, 450 mmHg (was 0.940)
 
-# Scale High-Lift medium-to-boost columns (650..1500 mmHg) by +25%
-# With 10.5mm valve lift, the engine breathes ~25% more air at WOT than modeled.
+# Scale High-Lift boost columns (850..1500 mmHg, index 7..12) by +25%
+# With 10.5mm valve lift, the engine breathes ~25% more air in boost than modeled.
 for y in range(len(HIGH_RPM_AXIS)):
-    for x in range(5, len(MAP_AXIS)):
+    for x in range(7, len(MAP_AXIS)):
         _high_ve[y][x] = round(_high_ve[y][x] * 1.25, 3)
 
 SMOOTHED_HIGH_VE_TABLE = tuple(val for row in _high_ve for val in row)

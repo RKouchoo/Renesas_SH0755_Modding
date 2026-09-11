@@ -173,15 +173,15 @@ TUNED_AVCS_LOAD_AXIS = (
 # are retained whenever they are already richer.  At >=6000 RPM, columns at
 # and above 1.22 g/rev get another 0.01 lambda of enrichment.
 FUEL_LAMBDA_CAPS = {
-    0.96: 0.93,
-    1.09: 0.88,
-    1.22: 0.83,
-    1.40: 0.80,
-    1.60: 0.78,
-    2.00: 0.78,
-    2.50: 0.78,
-    3.20: 0.78,
-    4.00: 0.78,
+    0.96: 0.93,  # ~13.6 AFR
+    1.09: 0.88,  # ~12.9 AFR
+    1.22: 0.86,  # ~12.6 AFR
+    1.40: 0.85,  # ~12.5 AFR (rich best torque for off-boost hill climbing)
+    1.60: 0.81,  # ~11.9 AFR (transitioning as turbo begins to make positive boost)
+    2.00: 0.78,  # ~11.4 AFR (real full boost)
+    2.50: 0.78,  # ~11.4 AFR
+    3.20: 0.78,  # ~11.4 AFR
+    4.00: 0.78,  # ~11.4 AFR
 }
 
 # Full-boost base-timing ceiling for load >=1.60 g/rev.  Torque-onset timing is
@@ -205,10 +205,10 @@ FULL_BOOST_TIMING_CAP = (
     (6800.0, 15.0),
 )
 TIMING_LOAD_OFFSETS = {
-    1.09: 6.0,
-    1.22: 4.0,
-    1.40: 2.0,
-    1.60: 0.0,
+    1.09: 10.0,
+    1.22: 7.5,
+    1.40: 5.0,
+    1.60: 2.5,
     2.00: 0.0,
     2.50: -2.0,
     3.20: -4.0,
@@ -216,8 +216,8 @@ TIMING_LOAD_OFFSETS = {
 }
 KCA_LOAD_CAPS = {
     1.09: 7.0,
-    1.22: 5.5,
-    1.40: 4.5,
+    1.22: 6.0,
+    1.40: 5.0,
     1.60: 4.5,
     2.00: 4.0,
     2.50: 3.5,
@@ -659,7 +659,7 @@ def build_timing_map(
             cap = full_boost_cap + TIMING_LOAD_OFFSETS[rounded_load]
             cap_raw = timing_raw_at_or_below(cap)
             offset = y_index * TIMING_X + x_index
-            if rounded_load >= 1.40:
+            if rounded_load >= 2.00:
                 new[offset] = cap_raw
             else:
                 new[offset] = min(new[offset], cap_raw)
