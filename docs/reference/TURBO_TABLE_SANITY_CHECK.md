@@ -642,7 +642,7 @@ Every single parameter, switch, and multi-dimensional table defined in `master_p
 - **Category:** `04.1 - Ignition - Base Timing`
 - **Storage Address:** `0x78AA0` | **Type:** `3D` | **Dimensions:** `15x14` | **Data Type:** `uint8` (`big`)
 - **Scaling Formula:** `(x*.3515625)-20` | **Units:** `Base Ignition Timing (degrees BTDC)`
-- **Current Value Range:** Min = `1.445`, Max = `41.875 Base Ignition Timing (degrees BTDC)`
+- **Current Value Range:** Min = `7.773`, Max = `41.875 Base Ignition Timing (degrees BTDC)`
   - *X Axis ():* `[0.15, 0.35, 0.45, 0.55, 0.7, 0.83, 0.96, 1.09, 1.22, 1.4, 1.6, 2.0, 2.5, 3.2, 4.0]`
   - *Y Axis ():* `[400.0, 600.0, 800.0, 900.0, 1000.0, 1200.0, 1600.0, 2000.0, 2400.0, 2800.0, 3200.0, 3600.0, 4000.0, 4400.0]`
 - **Function & Description:** Primary ignition timing surfaces across load and engine speed for various AVLS/AVCS operating states.
@@ -653,7 +653,7 @@ Every single parameter, switch, and multi-dimensional table defined in `master_p
 - **Category:** `04.1 - Ignition - Base Timing`
 - **Storage Address:** `0x78CD0` | **Type:** `3D` | **Dimensions:** `15x20` | **Data Type:** `uint8` (`big`)
 - **Scaling Formula:** `(x*.3515625)-20` | **Units:** `Base Ignition Timing (degrees BTDC)`
-- **Current Value Range:** Min = `-10.156`, Max = `45.039 Base Ignition Timing (degrees BTDC)`
+- **Current Value Range:** Min = `7.773`, Max = `45.039 Base Ignition Timing (degrees BTDC)`
   - *X Axis ():* `[0.15, 0.35, 0.45, 0.55, 0.7, 0.83, 0.96, 1.09, 1.22, 1.4, 1.6, 2.0, 2.5, 3.2, 4.0]`
   - *Y Axis ():* `[400.0, 600.0, 800.0, 900.0, 1000.0, 1200.0, 1600.0, 2000.0, 2400.0, 2800.0, 3200.0, 3600.0, 4000.0, 4400.0, 4800.0, 5200.0, 5600.0, 6000.0, 6400.0, 6800.0]`
 - **Function & Description:** Primary ignition timing surfaces across load and engine speed for various AVLS/AVCS operating states.
@@ -664,7 +664,7 @@ Every single parameter, switch, and multi-dimensional table defined in `master_p
 - **Category:** `04.1 - Ignition - Base Timing`
 - **Storage Address:** `0x78E34` | **Type:** `3D` | **Dimensions:** `15x14` | **Data Type:** `uint8` (`big`)
 - **Scaling Formula:** `(x*.3515625)-20` | **Units:** `Base Ignition Timing (degrees BTDC)`
-- **Current Value Range:** Min = `1.445`, Max = `41.875 Base Ignition Timing (degrees BTDC)`
+- **Current Value Range:** Min = `7.773`, Max = `41.875 Base Ignition Timing (degrees BTDC)`
   - *X Axis ():* `[0.15, 0.35, 0.45, 0.55, 0.7, 0.83, 0.96, 1.09, 1.22, 1.4, 1.6, 2.0, 2.5, 3.2, 4.0]`
   - *Y Axis ():* `[400.0, 600.0, 800.0, 900.0, 1000.0, 1200.0, 1600.0, 2000.0, 2400.0, 2800.0, 3200.0, 3600.0, 4000.0, 4400.0]`
 - **Function & Description:** Primary ignition timing surfaces across load and engine speed for various AVLS/AVCS operating states.
@@ -675,7 +675,7 @@ Every single parameter, switch, and multi-dimensional table defined in `master_p
 - **Category:** `04.1 - Ignition - Base Timing`
 - **Storage Address:** `0x79064` | **Type:** `3D` | **Dimensions:** `15x20` | **Data Type:** `uint8` (`big`)
 - **Scaling Formula:** `(x*.3515625)-20` | **Units:** `Base Ignition Timing (degrees BTDC)`
-- **Current Value Range:** Min = `-10.156`, Max = `45.039 Base Ignition Timing (degrees BTDC)`
+- **Current Value Range:** Min = `7.773`, Max = `45.039 Base Ignition Timing (degrees BTDC)`
   - *X Axis ():* `[0.15, 0.35, 0.45, 0.55, 0.7, 0.83, 0.96, 1.09, 1.22, 1.4, 1.6, 2.0, 2.5, 3.2, 4.0]`
   - *Y Axis ():* `[400.0, 600.0, 800.0, 900.0, 1000.0, 1200.0, 1600.0, 2000.0, 2400.0, 2800.0, 3200.0, 3600.0, 4000.0, 4400.0, 4800.0, 5200.0, 5600.0, 6000.0, 6400.0, 6800.0]`
 - **Function & Description:** Primary ignition timing surfaces across load and engine speed for various AVLS/AVCS operating states.

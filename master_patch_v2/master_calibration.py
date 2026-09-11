@@ -176,10 +176,10 @@ FUEL_LAMBDA_CAPS = {
     0.96: 0.95,  # ~13.9 AFR
     1.09: 0.91,  # ~13.3 AFR
     1.22: 0.89,  # ~13.0 AFR
-    1.40: 0.87,  # ~12.8 AFR (optimal rich best torque for off-boost hill climbing)
-    1.60: 0.83,  # ~12.2 AFR (transitioning as turbo begins to make positive boost)
-    2.00: 0.78,  # ~11.4 AFR (real full boost)
-    2.50: 0.78,  # ~11.4 AFR
+    1.40: 0.88,  # ~12.9 AFR
+    1.60: 0.87,  # ~12.7 AFR (NA WOT climbing)
+    2.00: 0.85,  # ~12.4 AFR (NA WOT / 1 psi onset)
+    2.50: 0.78,  # ~11.4 AFR (real full 5.0 psi boost)
     3.20: 0.78,  # ~11.4 AFR
     4.00: 0.78,  # ~11.4 AFR
 }
@@ -190,29 +190,36 @@ FUEL_LAMBDA_CAPS = {
 # timing is never increased.  Positive KCA is independently removed from
 # >=1.22 g/rev.  All six base maps are covered, including early-AVLS paths.
 FULL_BOOST_TIMING_CAP = (
-    (2000.0, 7.5),
-    (2400.0, 8.5),
-    (2800.0, 9.5),
-    (3200.0, 10.5),
-    (3600.0, 11.5),
-    (4000.0, 12.0),
-    (4400.0, 12.5),
-    (4800.0, 13.0),
-    (5200.0, 13.5),
+    (400.0,   8.0),
+    (600.0,   8.0),
+    (800.0,   8.0),
+    (900.0,   8.0),
+    (1000.0,  8.0),
+    (1200.0,  8.5),
+    (1600.0,  9.0),
+    (2000.0,  9.5),
+    (2400.0, 10.5),
+    (2800.0, 11.5),
+    (3200.0, 12.0),
+    (3600.0, 12.5),
+    (4000.0, 13.0),
+    (4400.0, 13.5),
+    (4800.0, 13.5),
+    (5200.0, 13.8),
     (5600.0, 14.0),
-    (6000.0, 14.5),
-    (6400.0, 15.0),
-    (6800.0, 15.5),
+    (6000.0, 14.2),
+    (6400.0, 14.5),
+    (6800.0, 14.5),
 )
 TIMING_LOAD_OFFSETS = {
     1.09: 10.0,
-    1.22: 7.5,
-    1.40: 5.0,
-    1.60: 2.5,
-    2.00: 0.0,
-    2.50: -2.0,
-    3.20: -4.0,
-    4.00: -6.0,
+    1.22:  7.5,
+    1.40:  5.0,
+    1.60:  3.0,
+    2.00:  1.5,
+    2.50:  0.0,
+    3.20: -2.0,
+    4.00: -3.5,
 }
 KCA_LOAD_CAPS = {
     1.09: 7.0,
@@ -642,27 +649,16 @@ def build_timing_map(
     )
 
     for y_index, rpm in enumerate(rpm_axis):
-        if rpm <= 2000.0 and label in ("Base Timing A", "Base Timing D"):
-            for x_index, load in enumerate(TUNED_TIMING_LOAD_AXIS):
-                rounded_load = round(load, 2)
-                floor_val = LOW_RPM_TIMING_FLOOR.get(rounded_load, 8.0)
-                floor_raw = timing_raw_at_or_below(floor_val)
-                offset = y_index * TIMING_X + x_index
-                new[offset] = max(new[offset], floor_raw)
-        if rpm < 2000.0:
-            continue
         full_boost_cap = interpolate(FULL_BOOST_TIMING_CAP, rpm)
         for x_index, load in enumerate(TUNED_TIMING_LOAD_AXIS):
             rounded_load = round(load, 2)
-            if rounded_load not in TIMING_LOAD_OFFSETS:
-                continue
-            cap = full_boost_cap + TIMING_LOAD_OFFSETS[rounded_load]
-            cap_raw = timing_raw_at_or_below(cap)
             offset = y_index * TIMING_X + x_index
-            if rounded_load >= 1.22:
-                new[offset] = cap_raw
-            else:
-                new[offset] = min(new[offset], cap_raw)
+            if rounded_load in TIMING_LOAD_OFFSETS:
+                val = max(8.0, full_boost_cap + TIMING_LOAD_OFFSETS[rounded_load])
+                new[offset] = timing_raw_at_or_below(val)
+            elif rpm <= 2000.0 and label in ("Base Timing A", "Base Timing D"):
+                floor_val = LOW_RPM_TIMING_FLOOR.get(rounded_load, 8.0)
+                new[offset] = max(new[offset], timing_raw_at_or_below(floor_val))
 
     if len(new) != TIMING_X * rows:
         raise AssertionError(f"{label} size changed")
