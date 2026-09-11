@@ -3,6 +3,10 @@
 These CSVs are preserved outside `master_patch` as diagnostic inputs. They are
 not generated patch artifacts and must not be treated as calibration approval.
 
+The [September 11 v2 driving-bog review](20260911_drive2_review.md) examines
+the new drive2 capture, matches the flashed image, and separates the sustained
+rich bog from a confirmed mistake in the newest warning-light hook.
+
 The [September 8 evening review](20260908_dashpot_review.md) covers the
 18:01, 18:11 and 18:15 dashpot captures, with matched recorded flash CRCs,
 timing execution and a tip-in pressure multiplier that can suppress added fuel.
