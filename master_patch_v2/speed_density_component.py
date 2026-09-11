@@ -131,14 +131,31 @@ for y, mult in mults_low.items():
     for x in range(7, len(MAP_AXIS)):
         _cand_ve[y][x] = round(_cand_ve[y][x] * mult, 3)
 
-# Smooth 1200-2000 RPM at 650 and 760 mmHg to natural NA cylinder filling (VE ~0.84-0.89)
-# This prevents atmospheric WOT from calculating artificial 1.9-2.0 g/rev loads and bogging on hills.
-_cand_ve[3][5] = 0.840  # 1200 RPM, 650 mmHg
-_cand_ve[3][6] = 0.850  # 1200 RPM, 760 mmHg
-_cand_ve[4][5] = 0.860  # 1600 RPM, 650 mmHg
-_cand_ve[4][6] = 0.870  # 1600 RPM, 760 mmHg
-_cand_ve[5][5] = 0.880  # 2000 RPM, 650 mmHg
-_cand_ve[5][6] = 0.890  # 2000 RPM, 760 mmHg
+# Smooth 1200-3000 RPM at 650-850 mmHg to eliminate the 18.5 AFR lean misfire hole under load
+# Delivers the required 6.5-7.5 ms fuel pulse so the engine pulls cleanly in gear
+_cand_ve[3][5] = 1.040  # 1200 RPM, 650 mmHg
+_cand_ve[3][6] = 1.050  # 1200 RPM, 760 mmHg
+_cand_ve[3][7] = 1.060  # 1200 RPM, 850 mmHg
+
+_cand_ve[4][5] = 1.110  # 1600 RPM, 650 mmHg
+_cand_ve[4][6] = 1.100  # 1600 RPM, 760 mmHg
+_cand_ve[4][7] = 1.110  # 1600 RPM, 850 mmHg
+
+_cand_ve[5][5] = 1.060  # 2000 RPM, 650 mmHg
+_cand_ve[5][6] = 1.070  # 2000 RPM, 760 mmHg
+_cand_ve[5][7] = 1.120  # 2000 RPM, 850 mmHg
+
+_cand_ve[6][5] = 1.050  # 2500 RPM, 650 mmHg
+_cand_ve[6][6] = 1.060  # 2500 RPM, 760 mmHg
+_cand_ve[6][7] = 1.180  # 2500 RPM, 850 mmHg
+
+_cand_ve[7][4] = 1.040  # 3000 RPM, 550 mmHg
+_cand_ve[7][5] = 1.050  # 3000 RPM, 650 mmHg
+_cand_ve[7][6] = 1.060  # 3000 RPM, 760 mmHg
+
+_cand_ve[8][4] = 1.040  # 3200 RPM, 550 mmHg
+_cand_ve[8][5] = 1.050  # 3200 RPM, 650 mmHg
+_cand_ve[8][6] = 1.060  # 3200 RPM, 760 mmHg
 
 _cand_ve[0] = list(_cand_ve[1])
 

@@ -729,29 +729,32 @@ def build_cl_fuel_compensation(reference: bytes) -> bytes:
     )
 
 
-# Reasonable AVCS intake cam advance caps for forced induction on high cam
-# Allows strong spool (up to 25 deg advance at 2400-3600 RPM) while tapering
-# progressively to prevent high-RPM exhaust reversion against turbine backpressure.
-# Format: {RPM: (max_deg_at_1.22_load, max_deg_at_1.40_load, max_deg_at_1.60+_load)}
-AVCS_HIGH_CAM_BOOST_CAPS = {
-    1000: (0.0, 0.0, 0.0),
-    1200: (20.0, 20.0, 20.0),
-    1600: (22.0, 22.0, 22.0),
-    2000: (26.0, 25.0, 25.0),
-    2400: (35.0, 30.0, 25.0),
-    2800: (35.0, 30.0, 25.0),
-    3200: (35.0, 30.0, 25.0),
-    3600: (35.0, 30.0, 25.0),
-    4000: (32.0, 26.0, 22.0),
-    4200: (30.0, 25.0, 20.0),
-    4400: (28.0, 22.0, 18.0),
-    4800: (25.0, 20.0, 15.0),
-    5200: (20.0, 16.0, 12.0),
-    5600: (15.0, 12.0, 10.0),
-    6000: (10.0, 10.0, 8.0),
-    6400: (10.0, 10.0, 8.0),
-    6600: (4.0, 4.0, 4.0),
-    6800: (0.0, 0.0, 0.0),
+# Calibrated AVCS intake cam advance bounds for turbocharged EZ30
+# Caps advance to 25.0 deg max across both Low Cam and High Cam tables.
+# Eliminates the 50.0 deg overlap wall that causes pre-turbine exhaust reversion and power loss.
+TURBO_AVCS_MAX_ADVANCE = {
+    500:  0.0,
+    800:  0.0,
+    1000: 0.0,
+    1200: 15.0,
+    1600: 20.0,
+    2000: 25.0,
+    2400: 25.0,
+    2800: 25.0,
+    3000: 25.0,
+    3200: 25.0,
+    3500: 22.0,
+    3600: 22.0,
+    4000: 20.0,
+    4200: 18.0,
+    4400: 16.0,
+    4800: 14.0,
+    5200: 12.0,
+    5600: 10.0,
+    6000:  8.0,
+    6400:  6.0,
+    6600:  4.0,
+    6800:  0.0,
 }
 
 
@@ -775,29 +778,25 @@ def build_avcs_map(
         16,
         "nearest",
     )
-    if "High Cam" in label:
-        raw_values = list(struct.unpack(f">{AVCS_X * rows}H", resampled))
-        scale = 0.005493164
-        for r_i, rpm in enumerate(rpm_axis):
-            rpm_int = int(round(rpm))
-            caps = AVCS_HIGH_CAM_BOOST_CAPS.get(rpm_int)
-            if not caps:
-                continue
-            cap_122, cap_140, cap_boost = caps
-            for c_i, load in enumerate(TUNED_AVCS_LOAD_AXIS):
-                idx = r_i * AVCS_X + c_i
-                val_deg = raw_values[idx] * scale
-                if load >= 1.60:
-                    target_deg = min(val_deg, cap_boost)
-                elif abs(load - 1.40) < 0.05:
-                    target_deg = min(val_deg, cap_140)
-                elif abs(load - 1.22) < 0.05:
-                    target_deg = min(val_deg, cap_122)
-                else:
-                    target_deg = val_deg
-                raw_values[idx] = round(target_deg / scale)
-        return struct.pack(f">{AVCS_X * rows}H", *raw_values)
-    return resampled
+    raw_values = list(struct.unpack(f">{AVCS_X * rows}H", resampled))
+    scale = 0.005493164
+    for r_i, rpm in enumerate(rpm_axis):
+        rpm_int = int(round(rpm))
+        max_cap = TURBO_AVCS_MAX_ADVANCE.get(rpm_int, 25.0)
+        for c_i, load in enumerate(TUNED_AVCS_LOAD_AXIS):
+            idx = r_i * AVCS_X + c_i
+            deg = raw_values[idx] * scale
+            if load >= 2.00:
+                deg = min(deg, max_cap - 7.0)
+            elif load >= 1.60:
+                deg = min(deg, max_cap - 5.0)
+            elif load >= 1.40:
+                deg = min(deg, max_cap - 3.0)
+            else:
+                deg = min(deg, max_cap)
+            deg = max(0.0, deg)
+            raw_values[idx] = round(deg / scale)
+    return struct.pack(f">{AVCS_X * rows}H", *raw_values)
 
 
 def build_target_throttle_map(reference: bytes) -> bytes:

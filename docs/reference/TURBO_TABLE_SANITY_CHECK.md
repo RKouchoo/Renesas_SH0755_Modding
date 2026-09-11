@@ -1012,7 +1012,7 @@ Every single parameter, switch, and multi-dimensional table defined in `master_p
 - **Category:** `05.2 - Cam Control - Intake AVCS Targets`
 - **Storage Address:** `0x7C5B0` | **Type:** `3D` | **Dimensions:** `14x11` | **Data Type:** `uint16` (`big`)
 - **Scaling Formula:** `x*.0054931640625` | **Units:** `Advance (degrees)`
-- **Current Value Range:** Min = `0.000`, Max = `49.999 Advance (degrees)`
+- **Current Value Range:** Min = `0.000`, Max = `24.999 Advance (degrees)`
   - *X Axis ():* `[0.35, 0.45, 0.55, 0.7, 0.83, 0.96, 1.09, 1.22, 1.4, 1.6, 2.0, 2.5, 3.2, 4.0]`
   - *Y Axis ():* `[500.0, 800.0, 1000.0, 1200.0, 1600.0, 2000.0, 2400.0, 2800.0, 3200.0, 3600.0, 4000.0]`
 - **Function & Description:** Variable valve timing intake camshaft advance angle targets across engine speed and load.
@@ -1024,7 +1024,7 @@ Every single parameter, switch, and multi-dimensional table defined in `master_p
 - **Category:** `05.2 - Cam Control - Intake AVCS Targets`
 - **Storage Address:** `0x7C764` | **Type:** `3D` | **Dimensions:** `14x18` | **Data Type:** `uint16` (`big`)
 - **Scaling Formula:** `x*.0054931640625` | **Units:** `Advance (degrees)`
-- **Current Value Range:** Min = `0.000`, Max = `40.001 Advance (degrees)`
+- **Current Value Range:** Min = `0.000`, Max = `24.999 Advance (degrees)`
   - *X Axis ():* `[0.35, 0.45, 0.55, 0.7, 0.83, 0.96, 1.09, 1.22, 1.4, 1.6, 2.0, 2.5, 3.2, 4.0]`
   - *Y Axis ():* `[1000.0, 1200.0, 1600.0, 2000.0, 2400.0, 2800.0, 3200.0, 3600.0, 4000.0, 4200.0, 4400.0, 4800.0, 5200.0, 5600.0, 6000.0, 6400.0, 6600.0, 6800.0]`
 - **Function & Description:** Engine speed threshold for switching between AVLS low-lift (6.5 mm) and high-lift (10.5 mm) cam profiles.
