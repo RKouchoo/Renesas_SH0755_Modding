@@ -7,8 +7,7 @@ of the master architecture, gives the live timing maps their Ghidra-verified
 identities, groups the flat RomRaider menu by tuning workflow, and adds only the
 speed-density, overboost fuel cut, AVLS, external-wideband, pressure-open-loop, and lean-cut
 calibrations installed by build_master_patch.py.
-The generated target also exposes the integrated default-OFF rotational-idle
-switch, gates, limits, and six cylinder offsets.
+Rotational idle is excluded from v2, so its former allocation has no controls.
 """
 
 from __future__ import annotations
@@ -77,21 +76,6 @@ FUEL_PUMP_NAMES = (
     "Fuel Pump Medium-Speed Command",
 )
 
-ROTATIONAL_IDLE_NAMES = (
-    "Rotational Idle Enable",
-    "Rotational Idle Minimum Coolant Temperature",
-    "Rotational Idle Maximum Coolant Temperature",
-    "Rotational Idle Minimum Engine Speed",
-    "Rotational Idle Maximum Engine Speed",
-    "Rotational Idle Maximum Throttle",
-    "Rotational Idle Maximum Vehicle Speed",
-    "Rotational Idle Minimum Manifold Pressure",
-    "Rotational Idle Maximum Manifold Pressure",
-    "Rotational Idle Maximum Retard",
-    "Rotational Idle Minimum Final Timing",
-    "Rotational Idle Cylinder Timing Offsets",
-)
-
 AVLS_NAMES = (
     "AVLS High Cam Engage RPM",
     "AVLS High Cam Release RPM",
@@ -131,7 +115,6 @@ CAT_PROTECTION_RPM = "07.2 - Protection - RPM Limit"
 CAT_THROTTLE = "08 - Throttle - Drive-by-Wire"
 CAT_IDLE_TARGET = "09.1 - Idle - Speed Targets"
 CAT_IDLE_IGNITION = "09.2 - Idle - Ignition Timing"
-CAT_IDLE_ROTATIONAL = "09.3 - Idle - Rotational Idle"
 CAT_SENSOR_TEMPERATURE = "10.1 - Sensors - Temperature Scaling"
 CAT_COOLING_FANS = "10.2 - Cooling - Radiator Fans"
 CAT_CHECKSUM = "99 - ROM - Checksum"
@@ -162,7 +145,6 @@ CATEGORY_ORDER = (
     CAT_THROTTLE,
     CAT_IDLE_TARGET,
     CAT_IDLE_IGNITION,
-    CAT_IDLE_ROTATIONAL,
     CAT_SENSOR_TEMPERATURE,
     CAT_COOLING_FANS,
     CAT_CHECKSUM,
@@ -192,7 +174,6 @@ CATEGORY_RENAMES = {
     "Miscellaneous - Limits": CAT_PROTECTION_RPM,
     "Drive-by-Wire Throttle (DBW)": CAT_THROTTLE,
     "Idle Control": CAT_IDLE_TARGET,
-    "Rotational Idle (master patch)": CAT_IDLE_ROTATIONAL,
     "Miscellaneous - Sensor Scalings": CAT_SENSOR_TEMPERATURE,
     "Miscellaneous - Thresholds": CAT_COOLING_FANS,
     "Checksum Fix": CAT_CHECKSUM,
@@ -362,9 +343,11 @@ AVCS_DESCRIPTIONS = {
 
 PREDICTABLE_AVLS_DESCRIPTIONS = {
     "AVLS High Cam Engage RPM": (
-        "Predictable committed-state high-lift engagement threshold. Master "
-        "defaults to 3200 RPM. The former pedal/oil-band request tables "
-        "are fixed unreachable and omitted; keep engage above release."
+        "High-lift RPM-latch threshold; master defaults to 3200 RPM. "
+        "Native stationary, oil-temperature and fault gates still apply. "
+        "The actual pedal request curves are held at unreachable 110 percent. "
+        "Stationary oil gates at 0x7D4B0/0x7D4B4 retain stock 15 degrees C; "
+        "these are not pedal thresholds. Keep engage above release."
     ),
     "AVLS High Cam Release RPM": (
         "Predictable high-lift release threshold. Master defaults to 3000 RPM, "
@@ -568,113 +551,8 @@ def add_scalar_template(
     ET.SubElement(target, "table", {"name": name, "storageaddress": address})
 
 
-def add_rotational_idle_tables(target: ET.Element) -> None:
-    category = CAT_IDLE_ROTATIONAL
-    switch = ET.SubElement(
-        target,
-        "table",
-        {
-            "type": "Switch",
-            "name": ROTATIONAL_IDLE_NAMES[0],
-            "category": category,
-            "sizey": "1",
-            "userlevel": "1",
-            "storageaddress": "0x7DB40",
-        },
-    )
-    set_description(
-        switch,
-        "Exact 01 enables the bounded timing post-processor; 00 or any other "
-        "value leaves all six stock final ignition angles unchanged. Master "
-        "defaults OFF. Enable only after confirming a stable warm idle and log "
-        "final ignition timing while commissioning.",
-    )
-    ET.SubElement(switch, "state", {"name": "on", "data": "01"})
-    ET.SubElement(switch, "state", {"name": "off", "data": "00"})
-
-    scalar_specs = (
-        (ROTATIONAL_IDLE_NAMES[1], "0x7DB44", "Coolant Temp (Degrees C)", "x", "x", "0.0", "Inclusive warm-idle lower gate; default 80 C."),
-        (ROTATIONAL_IDLE_NAMES[2], "0x7DB48", "Coolant Temp (Degrees C)", "x", "x", "0.0", "Inclusive over-temperature exit; default 105 C."),
-        (ROTATIONAL_IDLE_NAMES[3], "0x7DB4C", "RPM", "x", "x", "#", "Inclusive idle-speed lower gate; default 600 RPM."),
-        (ROTATIONAL_IDLE_NAMES[4], "0x7DB50", "RPM", "x", "x", "#", "Inclusive idle-speed upper gate; default 1050 RPM."),
-        (ROTATIONAL_IDLE_NAMES[5], "0x7DB54", "Throttle Plate Opening Angle (%)", "x/.84", "x*.84", "0.0", "Inclusive processed-throttle gate; default native 1.68 displays as 2.0 percent."),
-        (ROTATIONAL_IDLE_NAMES[6], "0x7DB58", "km/h", "x", "x", "0.0", "Inclusive stationary-vehicle gate; default 1.0 km/h."),
-        (ROTATIONAL_IDLE_NAMES[7], "0x7DB5C", "kPa absolute", "x*.1333223684", "x/.1333223684", "0.0", "Inclusive MAP lower gate; default 150 mmHg or about 20.0 kPa absolute."),
-        (ROTATIONAL_IDLE_NAMES[8], "0x7DB60", "kPa absolute", "x*.1333223684", "x/.1333223684", "0.0", "Inclusive high-vacuum upper gate; default 550 mmHg or about 73.3 kPa absolute."),
-        (ROTATIONAL_IDLE_NAMES[9], "0x7DB64", "degrees", "x", "x", "0.0", "Maximum retard magnitude; default 8 degrees. Invalid or non-positive values apply no offset."),
-        (ROTATIONAL_IDLE_NAMES[10], "0x7DB68", "degrees BTDC", "x", "x", "0.0", "Post-retard timing floor; default 5 degrees BTDC. The stock-angle ceiling prevents this floor adding advance."),
-    )
-    for name, address, units, expression, to_byte, fmt, description in scalar_specs:
-        table = ET.SubElement(
-            target,
-            "table",
-            {
-                "type": "1D",
-                "name": name,
-                "category": category,
-                "storagetype": "float",
-                "endian": "big",
-                "sizey": "1",
-                "userlevel": "2",
-                "storageaddress": address,
-            },
-        )
-        ET.SubElement(
-            table,
-            "scaling",
-            {
-                "units": units,
-                "expression": expression,
-                "to_byte": to_byte,
-                "format": fmt,
-                "fineincrement": "0.5",
-                "coarseincrement": "1",
-            },
-        )
-        set_description(table, description)
-
-    offsets = ET.SubElement(
-        target,
-        "table",
-        {
-            "type": "2D",
-            "name": ROTATIONAL_IDLE_NAMES[11],
-            "category": category,
-            "storagetype": "float",
-            "endian": "big",
-            "sizey": "6",
-            "userlevel": "1",
-            "storageaddress": "0x7DB6C",
-        },
-    )
-    ET.SubElement(
-        offsets,
-        "scaling",
-        {
-            "units": "degrees",
-            "expression": "x",
-            "to_byte": "x",
-            "format": "0.0",
-            "fineincrement": "0.5",
-            "coarseincrement": "1",
-        },
-    )
-    axis = ET.SubElement(
-        offsets, "table", {"type": "Static Y Axis", "name": "Cylinder", "sizey": "6"}
-    )
-    for cylinder in range(1, 7):
-        ET.SubElement(axis, "data").text = f"Cylinder {cylinder}"
-    set_description(
-        offsets,
-        "Retard-only offsets in ECU final-angle array order. Defaults are "
-        "{-6, 0, -6, 0, -6, 0} degrees. Positive values are forced to zero; "
-        "Maximum Retard, Minimum Final Timing, and the original stock angle "
-        "bound every output.",
-    )
-
-
 def add_fuel_pump_tables(target: ET.Element) -> None:
-    """Expose the three verified discrete FPCU commands used by stock code."""
+    """Expose pump commands and the injector-dependent demand coefficient."""
     specs = (
         (
             FUEL_PUMP_NAMES[0],
@@ -728,6 +606,22 @@ def add_fuel_pump_tables(target: ET.Element) -> None:
             },
         )
         set_description(table, description)
+
+    table = ET.SubElement(target, "table", {
+        "type": "1D", "name": "Fuel Consumption Injector Coefficient",
+        "category": CAT_FUEL_PUMP, "storagetype": "float", "endian": "big",
+        "sizey": "1", "userlevel": "2", "storageaddress": "0x72D54",
+    })
+    ET.SubElement(table, "scaling", {
+        "units": "coefficient", "expression": "x", "to_byte": "x",
+        "format": "0.000000", "fineincrement": "0.001", "coarseincrement": "0.01",
+    })
+    set_description(table,
+        "Pulse-to-fuel-use coefficient used by native fuel-pump demand and telemetry. "
+        "Keep inversely proportional to the raw Injector Flow Scaling value: "
+        "coefficient = stock 4.59 * stock raw flow 6675 / current raw flow. "
+        "Approximately 9.379054 for the installed 550cc calibration. This does not "
+        "change injector pulse, force full pump speed or bypass the pump-off gate.")
 
 
 def add_fueling_safety_templates(parent: ET.Element, target: ET.Element) -> None:
@@ -1055,13 +949,15 @@ def validate(root: ET.Element) -> None:
             raise SystemExit(f"target table has no parent template: {table.get('name')!r}")
 
     target_names = {table.get("name") for table in target.findall("table")}
+    if any(name and name.startswith("Rotational Idle")
+           for name in parent_names | target_names):
+        raise SystemExit("rotational-idle controls must not be exposed by the v2 definition")
     expected_custom = set(
         SD_NAMES
         + BOOST_NAMES
         + WIDEBAND_NAMES
         + FUELING_SAFETY_NAMES
         + FUEL_PUMP_NAMES
-        + ROTATIONAL_IDLE_NAMES
         + AVLS_NAMES
         + REPAIR_NAMES
     )
@@ -1119,7 +1015,6 @@ def validate(root: ET.Element) -> None:
         "Requested Torque (Accelerator Pedal)": CAT_THROTTLE,
         "Idle Speed Target A": CAT_IDLE_TARGET,
         "Base Timing Idle": CAT_IDLE_IGNITION,
-        "Rotational Idle Enable": CAT_IDLE_ROTATIONAL,
         "Engine Oil Temperature Sensor Scaling": CAT_SENSOR_TEMPERATURE,
         "Radiator Fan Modes A (ECT)": CAT_COOLING_FANS,
         "Checksum Fix": CAT_CHECKSUM,
@@ -1155,18 +1050,6 @@ def validate(root: ET.Element) -> None:
         "Lean Fuel Cut Confirmation Count": "0x7EAEA",
         "Fuel Pump Low-Speed Command": "0x2A610",
         "Fuel Pump Medium-Speed Command": "0x2A60C",
-        "Rotational Idle Enable": "0x7DB40",
-        "Rotational Idle Minimum Coolant Temperature": "0x7DB44",
-        "Rotational Idle Maximum Coolant Temperature": "0x7DB48",
-        "Rotational Idle Minimum Engine Speed": "0x7DB4C",
-        "Rotational Idle Maximum Engine Speed": "0x7DB50",
-        "Rotational Idle Maximum Throttle": "0x7DB54",
-        "Rotational Idle Maximum Vehicle Speed": "0x7DB58",
-        "Rotational Idle Minimum Manifold Pressure": "0x7DB5C",
-        "Rotational Idle Maximum Manifold Pressure": "0x7DB60",
-        "Rotational Idle Maximum Retard": "0x7DB64",
-        "Rotational Idle Minimum Final Timing": "0x7DB68",
-        "Rotational Idle Cylinder Timing Offsets": "0x7DB6C",
     }
     for name, address in expected_addresses.items():
         if table_by_name(target, name).get("storageaddress") != address:
@@ -1203,7 +1086,6 @@ def build_tree() -> ET.ElementTree:
     add_wideband_templates(parent, target)
     add_fueling_safety_templates(parent, target)
     add_fuel_pump_tables(target)
-    add_rotational_idle_tables(target)
     add_repair_calibration_tables(parent, target)
     add_timing_minimum_templates(parent, target)
     apply_master_categories(parent, target)

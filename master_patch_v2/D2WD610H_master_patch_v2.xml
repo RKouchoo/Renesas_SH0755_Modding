@@ -1162,6 +1162,10 @@
    <scaling units="%" expression="x" to_byte="x" format="0.0" fineincrement="0.1" coarseincrement="1.0" />
    <description>Stock 66.7 percent medium-speed command. The Ghidra-verified selector at 0x2A53A copies this exact float to P47 RAM 0xFFFFC298 and to the fuel-pump PWM output. Set Low- and Medium-Speed Command to 100.0 together for the stationary full-speed diagnostic; changing only one leaves another reduced mode available.</description>
   </table>
+  <table type="1D" name="Fuel Consumption Injector Coefficient" category="02.8 - Fueling - Fuel Pump Control" storagetype="float" endian="big" sizey="1" userlevel="2" storageaddress="0x72D54">
+   <scaling units="coefficient" expression="x" to_byte="x" format="0.000000" fineincrement="0.001" coarseincrement="0.01" />
+   <description>Pulse-to-fuel-use coefficient used by native fuel-pump demand and telemetry. Keep inversely proportional to the raw Injector Flow Scaling value: coefficient = stock 4.59 * stock raw flow 6675 / current raw flow. Approximately 9.379054 for the installed 550cc calibration. This does not change injector pulse, force full pump speed or bypass the pump-off gate.</description>
+  </table>
   <table name="External Wideband Lambda Transfer" storageaddress="0x7E404" />
   <table name="External Wideband Valid Voltage Range" storageaddress="0x7E40C" />
   <table name="Base Timing A (Normal Cam, AVCS 1.0)" storageaddress="0x78AA0" sizey="14" category="04.1 - Ignition - Base Timing">
@@ -1245,7 +1249,7 @@
   <table name="Advance Multiplier Step Value" storageaddress="0x78000" />
   <table type="1D" name="AVLS High Cam Engage RPM" category="05.1 - Cam Control - AVLS Switching" storagetype="float" endian="big" sizey="1" userlevel="3" storageaddress="0x7D4BC">
    <scaling units="RPM" expression="x" to_byte="x" format="#" fineincrement="50" coarseincrement="100" />
-   <description>Predictable committed-state high-lift engagement threshold. Master defaults to 3200 RPM. The former pedal/oil-band request tables are fixed unreachable and omitted; keep engage above release.</description>
+   <description>High-lift RPM-latch threshold; master defaults to 3200 RPM. Native stationary, oil-temperature and fault gates still apply. The actual pedal request curves are held at unreachable 110 percent. Stationary oil gates at 0x7D4B0/0x7D4B4 retain stock 15 degrees C; these are not pedal thresholds. Keep engage above release.</description>
   </table>
   <table type="1D" name="AVLS High Cam Release RPM" category="05.1 - Cam Control - AVLS Switching" storagetype="float" endian="big" sizey="1" userlevel="3" storageaddress="0x7D4B8">
    <scaling units="RPM" expression="x" to_byte="x" format="#" fineincrement="50" coarseincrement="100" />
@@ -1317,63 +1321,6 @@
    <table type="Y Axis" storageaddress="0x78098" />
   </table>
   <table name="Base Timing Idle Vehicle Speed Threshold" storageaddress="0x77E1C" category="09.2 - Idle - Ignition Timing" />
-  <table type="Switch" name="Rotational Idle Enable" category="09.3 - Idle - Rotational Idle" sizey="1" userlevel="1" storageaddress="0x7DB40">
-   <description>Exact 01 enables the bounded timing post-processor; 00 or any other value leaves all six stock final ignition angles unchanged. Master defaults OFF. Enable only after confirming a stable warm idle and log final ignition timing while commissioning.</description>
-   <state name="on" data="01" />
-   <state name="off" data="00" />
-  </table>
-  <table type="1D" name="Rotational Idle Minimum Coolant Temperature" category="09.3 - Idle - Rotational Idle" storagetype="float" endian="big" sizey="1" userlevel="2" storageaddress="0x7DB44">
-   <scaling units="Coolant Temp (Degrees C)" expression="x" to_byte="x" format="0.0" fineincrement="0.5" coarseincrement="1" />
-   <description>Inclusive warm-idle lower gate; default 80 C.</description>
-  </table>
-  <table type="1D" name="Rotational Idle Maximum Coolant Temperature" category="09.3 - Idle - Rotational Idle" storagetype="float" endian="big" sizey="1" userlevel="2" storageaddress="0x7DB48">
-   <scaling units="Coolant Temp (Degrees C)" expression="x" to_byte="x" format="0.0" fineincrement="0.5" coarseincrement="1" />
-   <description>Inclusive over-temperature exit; default 105 C.</description>
-  </table>
-  <table type="1D" name="Rotational Idle Minimum Engine Speed" category="09.3 - Idle - Rotational Idle" storagetype="float" endian="big" sizey="1" userlevel="2" storageaddress="0x7DB4C">
-   <scaling units="RPM" expression="x" to_byte="x" format="#" fineincrement="0.5" coarseincrement="1" />
-   <description>Inclusive idle-speed lower gate; default 600 RPM.</description>
-  </table>
-  <table type="1D" name="Rotational Idle Maximum Engine Speed" category="09.3 - Idle - Rotational Idle" storagetype="float" endian="big" sizey="1" userlevel="2" storageaddress="0x7DB50">
-   <scaling units="RPM" expression="x" to_byte="x" format="#" fineincrement="0.5" coarseincrement="1" />
-   <description>Inclusive idle-speed upper gate; default 1050 RPM.</description>
-  </table>
-  <table type="1D" name="Rotational Idle Maximum Throttle" category="09.3 - Idle - Rotational Idle" storagetype="float" endian="big" sizey="1" userlevel="2" storageaddress="0x7DB54">
-   <scaling units="Throttle Plate Opening Angle (%)" expression="x/.84" to_byte="x*.84" format="0.0" fineincrement="0.5" coarseincrement="1" />
-   <description>Inclusive processed-throttle gate; default native 1.68 displays as 2.0 percent.</description>
-  </table>
-  <table type="1D" name="Rotational Idle Maximum Vehicle Speed" category="09.3 - Idle - Rotational Idle" storagetype="float" endian="big" sizey="1" userlevel="2" storageaddress="0x7DB58">
-   <scaling units="km/h" expression="x" to_byte="x" format="0.0" fineincrement="0.5" coarseincrement="1" />
-   <description>Inclusive stationary-vehicle gate; default 1.0 km/h.</description>
-  </table>
-  <table type="1D" name="Rotational Idle Minimum Manifold Pressure" category="09.3 - Idle - Rotational Idle" storagetype="float" endian="big" sizey="1" userlevel="2" storageaddress="0x7DB5C">
-   <scaling units="kPa absolute" expression="x*.1333223684" to_byte="x/.1333223684" format="0.0" fineincrement="0.5" coarseincrement="1" />
-   <description>Inclusive MAP lower gate; default 150 mmHg or about 20.0 kPa absolute.</description>
-  </table>
-  <table type="1D" name="Rotational Idle Maximum Manifold Pressure" category="09.3 - Idle - Rotational Idle" storagetype="float" endian="big" sizey="1" userlevel="2" storageaddress="0x7DB60">
-   <scaling units="kPa absolute" expression="x*.1333223684" to_byte="x/.1333223684" format="0.0" fineincrement="0.5" coarseincrement="1" />
-   <description>Inclusive high-vacuum upper gate; default 550 mmHg or about 73.3 kPa absolute.</description>
-  </table>
-  <table type="1D" name="Rotational Idle Maximum Retard" category="09.3 - Idle - Rotational Idle" storagetype="float" endian="big" sizey="1" userlevel="2" storageaddress="0x7DB64">
-   <scaling units="degrees" expression="x" to_byte="x" format="0.0" fineincrement="0.5" coarseincrement="1" />
-   <description>Maximum retard magnitude; default 8 degrees. Invalid or non-positive values apply no offset.</description>
-  </table>
-  <table type="1D" name="Rotational Idle Minimum Final Timing" category="09.3 - Idle - Rotational Idle" storagetype="float" endian="big" sizey="1" userlevel="2" storageaddress="0x7DB68">
-   <scaling units="degrees BTDC" expression="x" to_byte="x" format="0.0" fineincrement="0.5" coarseincrement="1" />
-   <description>Post-retard timing floor; default 5 degrees BTDC. The stock-angle ceiling prevents this floor adding advance.</description>
-  </table>
-  <table type="2D" name="Rotational Idle Cylinder Timing Offsets" category="09.3 - Idle - Rotational Idle" storagetype="float" endian="big" sizey="6" userlevel="1" storageaddress="0x7DB6C">
-   <scaling units="degrees" expression="x" to_byte="x" format="0.0" fineincrement="0.5" coarseincrement="1" />
-   <table type="Static Y Axis" name="Cylinder" sizey="6">
-    <data>Cylinder 1</data>
-    <data>Cylinder 2</data>
-    <data>Cylinder 3</data>
-    <data>Cylinder 4</data>
-    <data>Cylinder 5</data>
-    <data>Cylinder 6</data>
-   </table>
-   <description>Retard-only offsets in ECU final-angle array order. Defaults are {-6, 0, -6, 0, -6, 0} degrees. Positive values are forced to zero; Maximum Retard, Minimum Final Timing, and the original stock angle bound every output.</description>
-  </table>
   <table name="Engine Oil Temperature Sensor Scaling" storageaddress="0x7B7C4">
    <table type="Y Axis" storageaddress="0x7B748" />
   </table>

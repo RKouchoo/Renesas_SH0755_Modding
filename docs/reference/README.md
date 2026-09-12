@@ -14,6 +14,9 @@ See [findings](FINDINGS.md) before relying on an older address label.
 | [Patch story and operation](PATCH_STORY.md) | Why the patch exists, how the pieces interact, and the investigation's history. |
 | [Images and calibration](IMAGES.md) | Exact stock/main/v2 identities, differences, ownership and build commands. |
 | [V2 load-fallback repair](V2_LOAD_FALLBACK_FIX.md) | Local bypass added to v2 while preserving its timing, MAP tip-in and other calibrations. |
+| [September 12 AVLS/misfire review](V2_AVLS_MISFIRE_20260912.md) | Repeated disturbance after high-lift selection, captured-image verification and a separate corrected lean-cut release defect. |
+| [Neutral AVLS captures and fueling adjustment](V2_AVLS_NEUTRAL_20260912.md) | Oil-gate repair, stationary changeover evidence, warm rich/lean fueling observations and the requested v2 idle/high-lift VE correction. |
+| [Injector and pump-demand scaling](FUEL_PUMP_SCALING_20260912.md) | Separate consumption coefficient corrected for larger injectors; native pump replay and the limits of its relationship to the rich bog. |
 | [Memory and hardware](MEMORY_AND_IO.md) | Correct RAM range, timer descriptors, fan/purge paths and checksum boundaries. |
 | [Signals and routines](SIGNALS.md) | Types, units, producers, consumers and sensor sources. |
 | [Methods](METHODS.md) | Lookup descriptors, SH-2E arithmetic, literal decoding, scheduling and test limits. |

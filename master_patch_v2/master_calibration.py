@@ -98,6 +98,7 @@ REV_LIMIT_A_ADDR = 0x7644C
 # underlying flow constant and finer latency resolution, so the displayed
 # OEM values are translated rather than copying the raw bytes verbatim.
 INJECTOR_FLOW_ADDR = 0x76014
+FUEL_CONSUMPTION_INJECTOR_COEFFICIENT_ADDR = 0x72D54
 INJECTOR_FLOW_DISPLAY_CONSTANT = 1804727.0
 INJECTOR_LATENCY_ADDR = 0x7B318
 INJECTOR_LATENCY_SIZE = 10
@@ -388,6 +389,7 @@ CALIBRATION_REGIONS = (
     ("Haltech IAT Temperature Data", IAT_SENSOR_TEMPERATURE_ADDR, IAT_SENSOR_POINT_COUNT * 4),
     ("Rev Limit A", REV_LIMIT_A_ADDR, 8),
     ("Injector Flow Scaling", INJECTOR_FLOW_ADDR, 4),
+    ("Fuel Consumption Injector Coefficient", FUEL_CONSUMPTION_INJECTOR_COEFFICIENT_ADDR, 4),
     ("Injector Latency", INJECTOR_LATENCY_ADDR, INJECTOR_LATENCY_SIZE),
     *((name, addr, count * 2) for name, addr, count in CRANKING_IPW_MAPS),
     *((name, addr, count * 2) for name, addr, count in TIP_IN_IPW_MAPS),
@@ -992,6 +994,15 @@ def apply_calibration(rom: bytearray, reference: bytes) -> dict[str, tuple[int, 
         "injector latency voltage axis",
     )
     write("Injector Flow Scaling", INJECTOR_FLOW_ADDR, f32(flow_raw))
+    # Keep native pulse-to-fuel-use conversion aligned with the injector
+    # duration calibration. B1C4 also feeds the stock pump-demand selector.
+    consumption_coefficient = struct.unpack_from(
+        ">f", reference, FUEL_CONSUMPTION_INJECTOR_COEFFICIENT_ADDR)[0]
+    if abs(consumption_coefficient - 4.59) > 1e-5:
+        raise SystemExit("REFUSING: unexpected stock fuel-consumption coefficient")
+    write("Fuel Consumption Injector Coefficient",
+          FUEL_CONSUMPTION_INJECTOR_COEFFICIENT_ADDR,
+          f32(consumption_coefficient / injector_ratio))
     write(
         "Injector Latency",
         INJECTOR_LATENCY_ADDR,

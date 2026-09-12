@@ -219,13 +219,16 @@ class PrimaryFuelTests(unittest.TestCase):
         cpu.write(0xFFFFBE18, 0, 2)  # No extra BE16/BE18 eligibility delay.
         value, permission = cpu.target()
         self.assertEqual((value, permission & 128), (0, 0))
-        self.assertGreater(cpu.get_float(0xFFFFBE00), .2)
+        selected = cpu.get_float(0xFFFFBE00)
+        # V2's 2-g/rev target is leaner than v1's. This case tests the
+        # zero-to-selected ramp, not a minimum 20% enrichment calibration.
+        self.assertGreater(selected, 0)
         cpu.invoke(0x22756, DELAY_WRITES)
         self.assertEqual(cpu.read(0xFFFFBE14, 2), 1)
         self.assertEqual(cpu.read(safety.CL_OL_STATE_FLAGS, 1) & 128, 0)
         value, _ = cpu.target()
         self.assertEqual(value, cpu.get_float(0xFFFFBE00))
-        self.assertGreater(value, .2)
+        self.assertEqual(value, selected)
         # High MAP with a low modeled load can still select zero enrichment.
         cpu.put_float(0xFFFFB438, .5)
         self.assertEqual(cpu.target()[0], 0)

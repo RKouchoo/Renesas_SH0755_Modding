@@ -78,6 +78,11 @@ publication and independently zeros bank purge subtractions `BE60/BE64` at
 
 Fuel-pump request percent is `C298` (P47), produced through `2A53A` and its
 state selector. `DEAA` is its traced PWM writer, separate from fan and CPC.
+Native demand `2A910` consumes B1C4, produced from effective injector pulse
+C0B8 by `13CA8` through a separate injector-dependent coefficient at `72D54`.
+The [September 12 correction](FUEL_PUMP_SCALING_20260912.md) pairs that coefficient
+with the resized injector calibration; it leaves the discrete commands and
+pump-off gates intact.
 
 The injector scheduler owns six records at `BFB8 + n*0x28`, through `C0A7`
 inclusive. `BFF0` and `BFF8` are inside those records even without direct

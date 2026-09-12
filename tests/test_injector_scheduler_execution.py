@@ -15,6 +15,7 @@ from itertools import product
 from pathlib import Path
 import sys
 import unittest
+import struct
 
 from test_injector_cut_execution import ChannelGateMachine
 from test_wideband_fuel_guard_execution import INHIBIT_WORD, safety, boost, bits, signed
@@ -29,7 +30,7 @@ LAST_PHASE = 0xFFFFC0B4
 DEGREE = 1 << 16
 CYCLE = 720 * DEGREE
 NATIVE_CALLS = {
-    0x2088, 0x2098, 0x2378, 0x251C, 0x920C, 0xD744, 0x1D228,
+    0x2088, 0x2098, 0x2378, 0x251C, 0x258C, 0x920C, 0xD744, 0x1D228,
     0x26088, 0x261A6, 0x263EE, 0x2672A, 0x26944, 0x26958, 0x26960,
     0x26990, 0x269A4, 0x26AEC, 0x26C50, 0x26D44, 0x26D92,
     0x26DFC, 0x26E02, 0x26E1E, 0x26E9A, 0x26F78, 0x26F7E, 0x26F8C,
@@ -321,8 +322,18 @@ class InjectorSchedulerTests(unittest.TestCase):
             self.assertEqual(cpu.read(0xFFFFF444 + channel * 2, 2), 0x1233 if pending == 0 and not active else 0xABCD)
             self.assertEqual(cpu.read(0xFFFFF640 + channel * 2, 2), 0 if pending == 0 and not active and not timer_bit else 0x4321)
 
+    def held_cut_cases(self):
+        # The old 820-mmHg fixture releases v2's positive-reset lean latch.
+        # Choose a held pressure from the installed calibration, below hard
+        # overboost, so the two independent cut mechanisms stay isolated.
+        reset = struct.unpack_from('>f', self.image, safety.LEAN_RESET_DELTA_ADDR)[0]
+        hard = struct.unpack_from('>f', self.image, boost.OVERB_FC_ADDR)[0]
+        held = 760 + max(0, reset) + 32
+        self.assertLess(held, hard)
+        return ((hard + 32, 0), (held, 3))
+
     def test_added_cut_survives_scheduler_wrap_and_releases_fault_mask(self):
-        for pressure, state in ((1150, 0), (820, 3)):
+        for pressure, state in self.held_cut_cases():
             cpu = SchedulerMachine(self.image)
             cpu.write(0xFFFFD94C, 0x12, 1)
             cpu.put_float(safety.MAP_PRESSURE, pressure)
@@ -343,7 +354,7 @@ class InjectorSchedulerTests(unittest.TestCase):
             self.assertEqual(resumed, {0, 2, 3, 5})
 
     def test_already_queued_cut_and_logger_converge_at_phase_boundary(self):
-        for (pressure, state), pending in product(((1150, 0), (820, 3)), (0, 1, 2)):
+        for (pressure, state), pending in product(self.held_cut_cases(), (0, 1, 2)):
             cpu = SchedulerMachine(self.image)
             for record, hw in zip(RECORDS, HARDWARE):
                 cpu.write(record + 2, 1, 1)
@@ -409,6 +420,25 @@ class InjectorSchedulerTests(unittest.TestCase):
             cpu.log_pulses()
             self.assertEqual((cpu.get_float(0xFFFFC0D0), cpu.get_float(0xFFFFC0D4)), (0, 0))
 
+    def test_standard_p21_retains_only_latency_after_sustained_all_six_cut(self):
+        self.assertEqual(int.from_bytes(self.image[0x4B77C:0x4B780], 'big'),
+                         0x317B4)
+        cpu = SchedulerMachine(self.image)
+        # Native publisher: 4000 timer counts -> 1000 us scheduled fuel,
+        # plus an independent 1000 us latency fixture at AC7C/C0D8.
+        self.assertEqual(cpu.log_pulses()[0], 1000)
+        self.assertEqual(cpu.get_float(0xFFFFC0D8), 1000)
+        # 258C adds 0.5 before truncation: nearest 256-us byte count.
+        self.assertEqual(cpu.invoke(0x317B4, set()), 8)  # 2.048 ms displayed.
+        # 003F is the diagnostic path's all-six word, distinct from FFFF.
+        cpu.write(INHIBIT_WORD, 0x3F, 2)
+        for phase in list(range(24)) * 2:
+            cpu.tick(phase)
+            cpu.log_pulses()
+        self.assertEqual(cpu.log_pulses(), (0,) * 6)
+        self.assertEqual(cpu.invoke(0x317B4, set()), 4)  # 1.024 ms displayed.
+        self.assertFalse(cpu.device_calls)
+
     def test_deleted_native_gate_or_cache_exposes_output(self):
         for address in (0x26BFC, 0x265A2, 0x266AE):
             image = bytearray(self.image)
@@ -440,8 +470,8 @@ class InjectorSchedulerTests(unittest.TestCase):
                 self.assertEqual(word, cpu.read(INHIBIT_WORD, 2))
 
     def test_missing_outer_or_standalone_lock_exposes_temporary_release(self):
-        for entry, pressure, state in ((boost.REVWRAP_ADDR, 1150, 0),
-                                       (safety.LEAN_CUT_WRAPPER_ADDR, 820, 3)):
+        for entry, (pressure, state) in zip(
+                (boost.REVWRAP_ADDR, safety.LEAN_CUT_WRAPPER_ADDR), self.held_cut_cases()):
             for damage in (False, True):
                 image = bytearray(self.image)
                 self.assertEqual(image[entry + 6:entry + 8], bytes.fromhex('e410'))

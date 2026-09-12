@@ -7,6 +7,9 @@ independently of the current working directory.
 
 | Modules | Purpose |
 |---|---|
+| `analyze_20260912_adjusted_drive.py` | Matched post-adjustment drive, low-lift bog, native fuel arithmetic and held-input cut checks; no physical-cause claim. |
+| `analyze_20260912_pump_demand.py`, `_captured_images.py` | Native pump-demand comparison with explicit missing-input fixtures; exact capture-image recovery across the later pump-scaling correction. |
+| `analyze_20260912_avls_neutral.py`, `analyze_20260912_fueling_adjustment.py` | Exact neutral capture identities and the measured idle/high-lift vacuum VE adjustment, with historical-image reconstruction. |
 | `analyze_20260908_idle.py`, `analyze_20260908_recovery.py`, `analyze_20260908_dashpot.py` | Capture analysis tied to the original image and log hashes. |
 | `analyze_sd_fallback.py`, `analyze_transient_components.py`, `compare_transient_remedies.py` | Historical airflow/fuel hypotheses and bounded comparisons. |
 | `replay_20260908_transient.py`, `replay_20260908_load_recovery.py` | Retained transient/load instruction replay. |

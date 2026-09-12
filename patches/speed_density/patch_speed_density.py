@@ -163,8 +163,11 @@ AVLS_HOT_PEDAL_DATA_ADDR = 0x0007D6B4
 AVLS_PEDAL_ROWS = 7
 AVLS_PEDAL_DISABLED_VALUE = 110.0
 AVLS_PEDAL_DISABLED = (AVLS_PEDAL_DISABLED_VALUE,) * AVLS_PEDAL_ROWS
-AVLS_FIXED_PEDAL_A_ADDR = 0x0007D4B0
-AVLS_FIXED_PEDAL_B_ADDR = 0x0007D4B4
+# 40392/40398 select these scalars, then 403C4 compares FR6 = CF94 oil C.
+# They gate stationary RPM-override operation, not pedal engagement.
+AVLS_STATIONARY_OIL_A_ADDR = 0x0007D4B0
+AVLS_STATIONARY_OIL_B_ADDR = 0x0007D4B4
+AVLS_STATIONARY_OIL_MIN_C = 15.0
 AVLS_ACTUATION_MIN_RPM_ADDR = 0x0007D4AC
 AVLS_RELEASE_RPM_ADDR = 0x0007D4B8
 AVLS_ENGAGE_RPM_ADDR = 0x0007D4BC
@@ -722,7 +725,7 @@ def apply_to_rom(rom: bytearray) -> list[tuple[str, int, bytes]]:
 def apply_predictable_avls_calibration(
     rom: bytearray,
 ) -> dict[str, tuple[int, bytes]]:
-    """Disable pedal-based engagement and retain 3200/3000 RPM hysteresis."""
+    """Disable pedal engagement; retain native oil gates and 3200/3000 RPM band."""
     writes = {
         "AVLS Accelerator Pedal Threshold (Normal Oil Temperature)": (
             AVLS_NORMAL_PEDAL_DATA_ADDR,
@@ -735,11 +738,11 @@ def apply_predictable_avls_calibration(
         "AVLS Actuation Minimum RPM": (
             AVLS_ACTUATION_MIN_RPM_ADDR, f32(AVLS_ACTUATION_MIN_RPM)
         ),
-        "AVLS Fixed/Fallback Pedal Threshold A": (
-            AVLS_FIXED_PEDAL_A_ADDR, f32(AVLS_PEDAL_DISABLED_VALUE)
+        "AVLS Stationary Oil Temperature Threshold A": (
+            AVLS_STATIONARY_OIL_A_ADDR, f32(AVLS_STATIONARY_OIL_MIN_C)
         ),
-        "AVLS Fixed/Fallback Pedal Threshold B": (
-            AVLS_FIXED_PEDAL_B_ADDR, f32(AVLS_PEDAL_DISABLED_VALUE)
+        "AVLS Stationary Oil Temperature Threshold B": (
+            AVLS_STATIONARY_OIL_B_ADDR, f32(AVLS_STATIONARY_OIL_MIN_C)
         ),
         "AVLS High Cam Release RPM": (
             AVLS_RELEASE_RPM_ADDR, f32(AVLS_RELEASE_RPM)

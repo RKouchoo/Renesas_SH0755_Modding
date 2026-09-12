@@ -1133,6 +1133,10 @@
    <scaling units="%" expression="x" to_byte="x" format="0.0" fineincrement="0.1" coarseincrement="1.0" />
    <description>Stock 66.7 percent medium-speed command. The Ghidra-verified selector at 0x2A53A copies this exact float to P47 RAM 0xFFFFC298 and to the fuel-pump PWM output. Set Low- and Medium-Speed Command to 100.0 together for the stationary full-speed diagnostic; changing only one leaves another reduced mode available.</description>
   </table>
+  <table type="1D" name="Fuel Consumption Injector Coefficient" category="02.8 - Fueling - Fuel Pump Control" storagetype="float" endian="big" sizey="1" userlevel="2" storageaddress="0x72D54">
+   <scaling units="coefficient" expression="x" to_byte="x" format="0.000000" fineincrement="0.001" coarseincrement="0.01" />
+   <description>Pulse-to-fuel-use coefficient used by native fuel-pump demand and telemetry. Keep inversely proportional to the raw Injector Flow Scaling value: coefficient = stock 4.59 * stock raw flow 6675 / current raw flow. Approximately 9.379054 for the installed 550cc calibration. This does not change injector pulse, force full pump speed or bypass the pump-off gate.</description>
+  </table>
   <table name="External Wideband Lambda Transfer" storageaddress="0x7E404" />
   <table name="External Wideband Valid Voltage Range" storageaddress="0x7E40C" />
   <table name="Base Timing - Normal Cam (AVCS Tracking Ratio 1.0)" storageaddress="0x78AA0" sizey="14">
@@ -1210,7 +1214,7 @@
   <table name="Advance Multiplier Step Value" storageaddress="0x78000" />
   <table type="1D" name="AVLS High Cam Engage RPM" category="05.1 - Cam Control - AVLS Switching" storagetype="float" endian="big" sizey="1" userlevel="3" storageaddress="0x7D4BC">
    <scaling units="RPM" expression="x" to_byte="x" format="#" fineincrement="50" coarseincrement="100" />
-   <description>Predictable committed-state high-lift engagement threshold. Master defaults to 3200 RPM. The former pedal/oil-band request tables are fixed unreachable and omitted; keep engage above release.</description>
+   <description>High-lift RPM-latch threshold; master defaults to 3200 RPM. Native stationary, oil-temperature and fault gates still apply. The actual pedal request curves are held at unreachable 110 percent. Stationary oil gates at 0x7D4B0/0x7D4B4 retain stock 15 degrees C; these are not pedal thresholds. Keep engage above release.</description>
   </table>
   <table type="1D" name="AVLS High Cam Release RPM" category="05.1 - Cam Control - AVLS Switching" storagetype="float" endian="big" sizey="1" userlevel="3" storageaddress="0x7D4B8">
    <scaling units="RPM" expression="x" to_byte="x" format="#" fineincrement="50" coarseincrement="100" />

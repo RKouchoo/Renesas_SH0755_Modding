@@ -1,0 +1,79 @@
+{
+  "date": "2026-09-12",
+  "capture": "logs/romraiderlog_adjustedvedrive_20260912_144204.csv",
+  "captured_rom_sha256": "fd795813febf817c845fc922e81e498539a539efeeb6e4d11822af47098094a2",
+  "annotation": "2026-09-12 14:42 loaded-bog audit: reads conditioned B438 and scalar at 76014, multiplies them, clamps via 24C0 and publishes base pulse B82C (microseconds). Captured v2 fd795813 uses 3266.667236 us per g/rev; sustained P21 gross durations track B438 * scalar * B7DC plus approximately 0.7 ms residual. Residual is not measured injector latency; multiplicative terms, quantization and sample timing remain. This routine has no AVLS or 3000-RPM fuel step. Physical fuel delivery and the loaded misfire remain unproven by this calculation.",
+  "mcp_readback": {
+    "content": [
+      {
+        "type": "text",
+        "text": "0001e0c8: fmov.s fr15,@-r15 ; 2026-09-12 14:42 loaded-bog audit: reads conditioned B438 and scalar at 76014, multiplies them, clamps via 24C0 and publishes base pulse B82C (microseconds). Captured v2 fd795813 uses 3266.667236 us per g/rev; sustained P21 gross durations track B438 * scalar * B7DC plus approximately 0.7 ms residual. Residual is not measured injector latency; multiplicative terms, quantization and sample timing remain. This routine has no AVLS or 3000-RPM fuel step. Physical fuel delivery and the loaded misfire remain unproven by this calculation."
+      },
+      {
+        "type": "text",
+        "text": "0001e0ca: fldi0 fr5 "
+      },
+      {
+        "type": "text",
+        "text": "0001e0cc: mov.l 0x0001e0f4,r2 "
+      },
+      {
+        "type": "text",
+        "text": "0001e0ce: sts.l PR,@-r15 "
+      },
+      {
+        "type": "text",
+        "text": "0001e0d0: mov.w 0x0001e0ea,r3 "
+      },
+      {
+        "type": "text",
+        "text": "0001e0d2: fmov.s @r3,fr15 "
+      },
+      {
+        "type": "text",
+        "text": "0001e0d4: mova 0x0001e0f0,r0 "
+      },
+      {
+        "type": "text",
+        "text": "0001e0d6: fmov.s @r0,fr6 "
+      },
+      {
+        "type": "text",
+        "text": "0001e0d8: fmov.s @r2,fr4 "
+      },
+      {
+        "type": "text",
+        "text": "0001e0da: mov.l 0x0001e0f8,r1 "
+      },
+      {
+        "type": "text",
+        "text": "0001e0dc: jsr @r1 "
+      },
+      {
+        "type": "text",
+        "text": "0001e0de: _fmul fr15,fr4 "
+      },
+      {
+        "type": "text",
+        "text": "0001e0e0: mov.w 0x0001e0ec,r3 "
+      },
+      {
+        "type": "text",
+        "text": "0001e0e2: fmov.s fr0,@r3 "
+      },
+      {
+        "type": "text",
+        "text": "0001e0e4: lds.l @r15+,PR "
+      },
+      {
+        "type": "text",
+        "text": "0001e0e6: rts "
+      },
+      {
+        "type": "text",
+        "text": "0001e0e8: _fmov.s @r15+,fr15 "
+      }
+    ],
+    "isError": false
+  }
+}

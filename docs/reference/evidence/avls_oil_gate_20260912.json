@@ -1,0 +1,120 @@
+{
+  "date": "2026-09-12",
+  "finding": "C35: 7D4B0/B4 are stationary oil-temperature gates; prior pedal identity retracted.",
+  "captured_sha256": "c6528704472f396cf57c3d18b5e6ef14e46b6da376e9cf19f58f8739ca5c66bc",
+  "corrected_sha256": "4808414b01f3ede952197422f75a791f5325595a27bc810ca610b82d3954d67e",
+  "changed_offsets": [
+    "7D4B0",
+    "7D4B1",
+    "7D4B4",
+    "7D4B5",
+    "7FB88",
+    "7FB89"
+  ],
+  "stationary_and_moving_replay": [
+    {
+      "image": "captured",
+      "speed_kmh": 0,
+      "rpm": 3400,
+      "selected_oil_c": 50,
+      "pedal_percent": 12,
+      "mode": 1
+    },
+    {
+      "image": "captured",
+      "speed_kmh": 30,
+      "rpm": 3400,
+      "selected_oil_c": 50,
+      "pedal_percent": 12,
+      "mode": 3
+    },
+    {
+      "image": "corrected",
+      "speed_kmh": 0,
+      "rpm": 3400,
+      "selected_oil_c": 50,
+      "pedal_percent": 12,
+      "mode": 3
+    },
+    {
+      "image": "corrected",
+      "speed_kmh": 30,
+      "rpm": 3400,
+      "selected_oil_c": 50,
+      "pedal_percent": 12,
+      "mode": 3
+    }
+  ],
+  "regression_groups_passed": 5,
+  "ghidra_changes": [
+    {
+      "address": "0x40168",
+      "comment": "2026-09-12 correction: B46C is conditioned pedal percent; B538 is vehicle speed; CF94 is selected oil temperature. 40276 tests speed <1 after getter148EE=0 and marks the stationary path. With RPM latch CD9E/04 set, 403C4 compares FR6 (CF94 oil C) against FR5 loaded from 7D4B0 or 7D4B4, selected by 19C68 / B51C bit80. THESE TWO SCALARS ARE OIL TEMPERATURES, NOT PEDAL THRESHOLDS. Stock15C had been mispatched to110; this held stationary mode1 at50C/3400rpm while moving normal state selected3. Corrected rolling builds restore15C; actual pedal curves7D67C/7D6B4 remain110%. Native opcode regression covers both branches, independent pedal/oil changes, cold/fault gates and3200/3000 hysteresis. CD86 and bank copies are software states, not hydraulic feedback. Earlier plate/header labels and the September8 audit's fallback-pedal claim are retracted.",
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "Comment set successfully"
+          }
+        ],
+        "isError": false
+      }
+    },
+    {
+      "address": "0x403C4",
+      "comment": "2026-09-12: fcmp/gt FR6,FR5 means threshold > oil temperature. FR6 is loaded from CF94 at40264, not B46C pedal. FR5 is 7D4B0 (B51C80 set) or7D4B4 (clear). Below threshold branches403D4 -> CD87=1; otherwise403CA -> CD87=3. Stationary path is selected at403B8 after speed/RPM gates. Stock15C, capturedc652 had erroneous110C; corrected4808414b restores15C.",
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "Comment set successfully"
+          }
+        ],
+        "isError": false
+      }
+    },
+    {
+      "address": "0x0007D4B0",
+      "comment": "2026-09-12: stationary AVLS oil-temperature threshold A, degrees C. Selected when19C68/B51C bit80=1, compared against CF94 at403C4. Stock15C; restore15C from mistaken110%-pedal calibration. Not a pedal threshold.",
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "Comment set successfully"
+          }
+        ],
+        "isError": false
+      }
+    },
+    {
+      "address": "0x0007D4B4",
+      "comment": "2026-09-12: stationary AVLS oil-temperature threshold B, degrees C. Selected when19C68/B51C bit80=0, compared against CF94 at403C4. Stock15C; restore15C from mistaken110%-pedal calibration. Not a pedal threshold.",
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "Comment set successfully"
+          }
+        ],
+        "isError": false
+      }
+    }
+  ],
+  "ghidra_readback": [
+    {
+      "type": "text",
+      "text": "00040168: mov.l r14,@-r15 ; 2026-09-12 correction: B46C is conditioned pedal percent; B538 is vehicle speed; CF94 is selected oil temperature. 40276 tests speed <1 after getter148EE=0 and marks the stationary path. With RPM latch CD9E/04 set, 403C4 compares FR6 (CF94 oil C) against FR5 loaded from 7D4B0 or 7D4B4, selected by 19C68 / B51C bit80. THESE TWO SCALARS ARE OIL TEMPERATURES, NOT PEDAL THRESHOLDS. Stock15C had been mispatched to110; this held stationary mode1 at50C/3400rpm while moving normal state selected3. Corrected rolling builds restore15C; actual pedal curves7D67C/7D6B4 remain110%. Native opcode regression covers both branches, independent pedal/oil changes, cold/fault gates and3200/3000 hysteresis. CD86 and bank copies are software states, not hydraulic feedback. Earlier plate/header labels and the September8 audit's fallback-pedal claim are retracted."
+    },
+    {
+      "type": "text",
+      "text": "000403c4: fcmp/gt fr6,fr5 ; 2026-09-12: fcmp/gt FR6,FR5 means threshold > oil temperature. FR6 is loaded from CF94 at40264, not B46C pedal. FR5 is 7D4B0 (B51C80 set) or7D4B4 (clear). Below threshold branches403D4 -> CD87=1; otherwise403CA -> CD87=3. Stationary path is selected at403B8 after speed/RPM gates. Stock15C, capturedc652 had erroneous110C; corrected4808414b restores15C."
+    }
+  ],
+  "fixture_limits": "Native 40168/getters/405B2 execute. Table interpolation, CD9C selector state 2 and three unlogged qualifier returns are explicit fixtures. Neither bank phase scheduling nor hydraulics is modeled.",
+  "validation": {
+    "v1_full_verifier": "PASS",
+    "v2_verifier": "All 6 groups PASS",
+    "source_csv": "Preserved; no edits",
+    "physical_vehicle": "Corrected oil-gate build has not been captured yet; loaded misfire unresolved."
+  }
+}

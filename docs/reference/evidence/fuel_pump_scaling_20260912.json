@@ -1,0 +1,100 @@
+{
+  "date": "2026-09-12",
+  "finding": "Injector pulse-to-fuel-consumption coefficient remained stock after the main injector duration calibration was approximately halved.",
+  "causal_status": "Calibration inconsistency verified and repaired; not a demonstrated cause of the loaded bog.",
+  "images": [
+    {
+      "image": "master_patch/D2WD610H_master_patch.bin",
+      "before_sha256": "db33aad398d6335411c36f5c0e0f1338095b89821a4111370f5d16101fcf6089",
+      "after_sha256": "697b9f3a48a95027cc048ed68967520e2de4692314d88cf1768564ef15471d3a",
+      "before_checksum": "B3B44EC0",
+      "after_checksum": "B3311F6C",
+      "changed_byte_count": 7,
+      "changed_words": [
+        {
+          "address": "72D54",
+          "before_hex": "4092e147",
+          "after_hex": "4116109b"
+        },
+        {
+          "address": "7FB88",
+          "before_hex": "b3b44ec0",
+          "after_hex": "b3311f6c"
+        }
+      ],
+      "execution_groups_passed": 6
+    },
+    {
+      "image": "master_patch_v2/D2WD610H_master_patch_v2.bin",
+      "before_sha256": "fd795813febf817c845fc922e81e498539a539efeeb6e4d11822af47098094a2",
+      "after_sha256": "8ab70f32dce51857652fc2ab24e340dea9399f12d7042cf8f9afab851e0df6d5",
+      "before_checksum": "43191A9F",
+      "after_checksum": "4295EB4B",
+      "changed_byte_count": 8,
+      "changed_words": [
+        {
+          "address": "72D54",
+          "before_hex": "4092e147",
+          "after_hex": "4116109b"
+        },
+        {
+          "address": "7FB88",
+          "before_hex": "43191a9f",
+          "after_hex": "4295eb4b"
+        }
+      ],
+      "execution_groups_passed": 6
+    }
+  ],
+  "native_path": {
+    "producer_prefix": "00013CA8..00013CE4",
+    "formula": "B1C4 = B544 / 60 * ROM[72D54] * C0B8 * 0.000003 (native f32 arithmetic)",
+    "consumers": [
+      "00013CE6 onward: telemetry conversion and transmission",
+      "0002A910: B1C4*3.6 -> C2A0; filter into C2A4; compare against 60204/60220 -> C2AC",
+      "0002A53A: C2AC plus C2AD/01 -> C298 pump command -> DEAA"
+    ],
+    "paired_scale": "ROM[72D54] = stock ROM[72D54] * stock ROM[76014] / current ROM[76014]",
+    "duration_scale_before": 6675,
+    "duration_scale_after": 3266.667236328125,
+    "demand_coefficient_before": 4.589999675750732,
+    "demand_coefficient_after_hex": "4116109b",
+    "filter": "2424 uses 0.99 current weight with 0.01 residual snap tolerance; not a one-percent-current slow filter.",
+    "conditions": "2A910 is conditional within native 2A614. Startup/test/stop gates are separate; the repair does not change them."
+  },
+  "limits": [
+    "The drive does not log pump command, voltage, processed relative MAP B2A4, BE40 or measured rail pressure.",
+    "Log-based replays use explicitly stated voltage/latency, pressure and operating-state fixtures.",
+    "Six tests execute the B1C4 prefix and native pump selector/publisher. Table interpolation and DEAA hardware handoff are modeled boundaries.",
+    "No flashing, driving or ECU actuation performed."
+  ],
+  "ghidra": {
+    "status": "unavailable; local stock disassembly used",
+    "read_address": "00013CA8",
+    "read_result": "Request failed: HTTPConnectionPool(host='127.0.0.1', port=8080): Read timed out. (read timeout=5)",
+    "pending_comments": [
+      {
+        "address": "00013CA8",
+        "comment": "2026-09-12 pump-demand audit: prefix through 13CE4 publishes B1C4 = B544/60 * float ROM72D54 * effective injector pulse C0B8 * 3e-6. Subsequent telemetry conversion is separate. B1C4 also feeds 2A910 pump demand. Main injector duration scalar76014 changed6675->3266.66724 while72D54 remained4.59: both rolling builds now pair72D54 inversely with injector duration, approximately9.379054. Calibration correction; no observed vehicle pump duty/pressure or root-cause proof."
+      },
+      {
+        "address": "0002A910",
+        "comment": "2026-09-12: consumes B1C4*3.6 -> C2A0. Helper2424 follows current demand with coefficient794EC~.99 (FR6), not .01 current; .01 FR7 is snap tolerance. BE40 can add794E4=80 viaC29C. Tables60204/60220 use ABB4 volts and B2A4 processed relative pressure; thresholds at0mmHg are60/5.8, at-400mmHg73.3/19.1. Publishes C2AC discrete mode. Caller2A614 has separate operating/start/test gates."
+      }
+    ],
+    "annotation_saved": false
+  },
+  "verification": {
+    "main_verifier": "PASS, 697b9f3a48a95027cc048ed68967520e2de4692314d88cf1768564ef15471d3a",
+    "v2_verifier": "PASS, all 10 groups, 8ab70f32dce51857652fc2ab24e340dea9399f12d7042cf8f9afab851e0df6d5",
+    "focused_native_pump_groups": 6,
+    "original_captured_images_reconstructed": [
+      "fd795813febf817c845fc922e81e498539a539efeeb6e4d11822af47098094a2",
+      "4808414b01f3ede952197422f75a791f5325595a27bc810ca610b82d3954d67e",
+      "c6528704472f396cf57c3d18b5e6ef14e46b6da376e9cf19f58f8739ca5c66bc"
+    ],
+    "adjusted_drive_analysis": "PASS, original 16-block flash match retained",
+    "fueling_adjustment_analysis": "PASS, original ten VE words and checksum retained",
+    "pump_log_replay": "logs/20260912_pump_demand_review.json"
+  }
+}

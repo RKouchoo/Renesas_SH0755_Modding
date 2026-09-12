@@ -45,6 +45,20 @@ class MapBoundaryTests(unittest.TestCase):
         allowed = {i for address in (sd.MAP_MIN_ADDR, master.calibration.CHECKSUM_TABLE_ADDR + 8,
                                     master.calibration.BUILD_MARKER_ADDR)
                    for i in range(address, address + 4)}
+        # The rolling image also includes the later lean-reset hysteresis
+        # repair. Require its exact emitted wrapper before allowing that
+        # independently tested change relative to this historical MAP fixture.
+        guard = safety.build_lean_cut_wrapper()
+        start = safety.LEAN_CUT_WRAPPER_ADDR
+        self.assertEqual(self.image[start:start + len(guard)], guard)
+        allowed.update(range(start, start + len(guard)))
+        # Later AVLS repair restores the two misidentified oil scalars to stock.
+        self.assertEqual(self.image[0x7D4B0:0x7D4B8], self.stock[0x7D4B0:0x7D4B8])
+        allowed.update(range(0x7D4B0, 0x7D4B8))
+        # The later injector/pump calibration repair has its own execution
+        # suite. Pin its exact word before extending this historical scope.
+        self.assertEqual(self.image[0x72D54:0x72D58], bytes.fromhex('4116109b'))
+        allowed.update(range(0x72D54, 0x72D58))
         changed = {i for i, (a, b) in enumerate(zip(self.source, self.image)) if a != b}
         self.assertLessEqual(changed, allowed)
         self.assertEqual(len(self.image), 0x80000)

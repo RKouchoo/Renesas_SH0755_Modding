@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Speed density component with smoothed low-lift VE table for master_patch_v2.
+"""Speed density component with calibrated VE tables for master_patch_v2.
 
 Fixes the idle-recovery VE cliff and the 1600-RPM hump while retaining the
 identical code wrapper, descriptors, axes, and validation gates from
@@ -159,13 +159,25 @@ _cand_ve[8][6] = 1.060  # 3200 RPM, 760 mmHg
 
 _cand_ve[0] = list(_cand_ve[1])
 
+# Warm stationary fueling, 2026-09-12 14:13 capture: settled idle is
+# 15.59 AFR initially and about 15.13 after the revs, at 860-875 RPM and
+# 29-30 kPa absolute. Add 5% at its surrounding 800/1200-RPM,
+# 150/250-mmHg knots. Native interpolation tapers the adjustment toward
+# the unchanged 500/1600-RPM and 350-mmHg knots. This is a VE correction,
+# not a change to target AFR, injector calibration or warm-up enrichment.
+for rpm in (800.0, 1200.0):
+    y = LOW_RPM_AXIS.index(rpm)
+    for pressure in (150.0, 250.0):
+        x = MAP_AXIS.index(pressure)
+        _cand_ve[y][x] = round(_cand_ve[y][x] * 1.05, 6)
+
 SMOOTHED_LOW_VE_TABLE = tuple(val for row in _cand_ve for val in row)
 assert len(SMOOTHED_LOW_VE_TABLE) == len(LOW_RPM_AXIS) * len(MAP_AXIS)
 LOW_VE_TABLE = SMOOTHED_LOW_VE_TABLE
 
 # High-Lift VE smoothing:
-# Match the low-lift table in the 3000-3200 RPM AVLS transition zone
-# and smooth the light-load vacuum cells (250-450 mmHg) up through 4500 RPM highway cruise.
+# Starting surface before the measured warm-vacuum correction below.
+# Earlier low/high matching is not evidence of equal physical VE on both cams.
 _high_ve = [
     list(sd.HIGH_VE_TABLE[y * len(MAP_AXIS) : (y + 1) * len(MAP_AXIS)])
     for y in range(len(HIGH_RPM_AXIS))
@@ -181,9 +193,9 @@ _high_ve[1][1] = 1.030  # 3200 RPM, 250 mmHg (matches low-lift)
 _high_ve[1][2] = 1.100  # 3200 RPM, 350 mmHg
 _high_ve[1][3] = 1.140  # 3200 RPM, 450 mmHg
 
-_high_ve[2][1] = 1.050  # 3500 RPM, 250 mmHg (was 0.900, +16.7% for 16.5-18.5 AFR highway lean hole)
-_high_ve[2][2] = 1.150  # 3500 RPM, 350 mmHg (was 0.940, +22.3% cures 18.5 AFR at 50 kPa)
-_high_ve[2][3] = 1.180  # 3500 RPM, 450 mmHg (was 0.960, +22.9%)
+_high_ve[2][1] = 1.050  # 3500 RPM, 250 mmHg; pre-correction value
+_high_ve[2][2] = 1.150  # 3500 RPM, 350 mmHg; pre-correction value
+_high_ve[2][3] = 1.180  # 3500 RPM, 450 mmHg; retained, outside captured hold
 
 _high_ve[3][1] = 1.000  # 4000 RPM, 250 mmHg (was 0.890)
 _high_ve[3][2] = 1.100  # 4000 RPM, 350 mmHg (was 0.930)
@@ -198,6 +210,18 @@ _high_ve[4][3] = 1.100  # 4500 RPM, 450 mmHg (was 0.940)
 for y in range(len(HIGH_RPM_AXIS)):
     for x in range(7, len(MAP_AXIS)):
         _high_ve[y][x] = round(_high_ve[y][x] * 1.25, 3)
+
+# Both warm high-lift holds settle near AFR 12.10 at 39-40 kPa, with
+# B7DC 1.01 and B874 zero. A full ratio correction would remove about
+# 16.5%; use an initial 12% reduction in the 250/350-mmHg columns at
+# 3000/3200/3500 RPM. Keep the 3000-RPM hysteresis row consistent with
+# 3200 RPM. Unchanged 150/450-mmHg and 4000-RPM knots provide the taper.
+# This vacuum-only adjustment is not a correction of the loaded misfire.
+for rpm in (3000.0, 3200.0, 3500.0):
+    y = HIGH_RPM_AXIS.index(rpm)
+    for pressure in (250.0, 350.0):
+        x = MAP_AXIS.index(pressure)
+        _high_ve[y][x] = round(_high_ve[y][x] * 0.88, 6)
 
 SMOOTHED_HIGH_VE_TABLE = tuple(val for row in _high_ve for val in row)
 assert len(SMOOTHED_HIGH_VE_TABLE) == len(HIGH_RPM_AXIS) * len(MAP_AXIS)

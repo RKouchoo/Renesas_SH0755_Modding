@@ -1,0 +1,303 @@
+{
+  "source_log": "logs/romraiderlog_adjustedvedrive_20260912_144204.csv",
+  "source_log_sha256": "347d10ce5e5c70d64f478e4bb6d124453697af07b1e074271ecbe1830d7efb33",
+  "captured_rom_sha256": "fd795813febf817c845fc922e81e498539a539efeeb6e4d11822af47098094a2",
+  "repaired_rom_sha256": "8ab70f32dce51857652fc2ab24e340dea9399f12d7042cf8f9afab851e0df6d5",
+  "voltage_latency_fixtures_v_ms": [
+    [
+      11.5,
+      0.98
+    ],
+    [
+      14,
+      0.684
+    ],
+    [
+      16.5,
+      0.38
+    ]
+  ],
+  "relative_pressure_fixtures_mmhg": [
+    -400,
+    0
+  ],
+  "p21_quantization_fixture_offsets_ms": [
+    -0.128,
+    0,
+    0.128
+  ],
+  "windows": [
+    {
+      "window_seconds": [
+        70.5,
+        72.3
+      ],
+      "recorded_samples": 17,
+      "fixture_pairs": 306,
+      "settled_pump_command_pairs_percent": {
+        "33.3 -> 66.7": 39,
+        "66.7 -> 66.7": 267
+      },
+      "command_pairs_by_relative_pressure_fixture_mmhg": {
+        "-400": {
+          "33.3 -> 66.7": 39,
+          "66.7 -> 66.7": 114
+        },
+        "0": {
+          "66.7 -> 66.7": 153
+        }
+      },
+      "afr_recorded": {
+        "min": 11.11,
+        "median": 12.09,
+        "max": 13.07
+      },
+      "demand_ranges": {
+        "before": [
+          16.628955841064453,
+          26.81829071044922
+        ],
+        "after": [
+          33.97906494140625,
+          54.79961395263672
+        ]
+      },
+      "changed_command_times": [
+        70.54,
+        70.645,
+        70.75,
+        70.854,
+        70.958,
+        71.062,
+        71.165
+      ]
+    },
+    {
+      "window_seconds": [
+        77,
+        85.25
+      ],
+      "recorded_samples": 80,
+      "fixture_pairs": 1440,
+      "settled_pump_command_pairs_percent": {
+        "33.3 -> 66.7": 574,
+        "66.7 -> 66.7": 866
+      },
+      "command_pairs_by_relative_pressure_fixture_mmhg": {
+        "-400": {
+          "33.3 -> 66.7": 574,
+          "66.7 -> 66.7": 146
+        },
+        "0": {
+          "66.7 -> 66.7": 720
+        }
+      },
+      "afr_recorded": {
+        "min": 11.06,
+        "median": 11.58,
+        "max": 12.17
+      },
+      "demand_ranges": {
+        "before": [
+          14.122779846191406,
+          21.903352737426758
+        ],
+        "after": [
+          28.858022689819336,
+          44.756591796875
+        ]
+      },
+      "changed_command_times": [
+        77.003,
+        77.106,
+        77.211,
+        77.314,
+        77.418,
+        77.522,
+        77.627,
+        77.73,
+        77.835,
+        77.938,
+        78.043,
+        78.147,
+        78.251,
+        78.356,
+        78.461,
+        78.564,
+        78.669,
+        78.773,
+        78.877,
+        78.982,
+        79.085,
+        79.188,
+        79.293,
+        79.398,
+        79.502,
+        79.607,
+        79.712,
+        79.816,
+        79.921,
+        80.024,
+        80.129,
+        80.232,
+        80.337,
+        80.442,
+        80.547,
+        80.652,
+        80.755,
+        80.859,
+        80.964,
+        81.067,
+        81.171,
+        81.275,
+        81.38,
+        81.483,
+        81.586,
+        81.691,
+        81.794,
+        81.899,
+        82.002,
+        82.106,
+        82.21,
+        82.314,
+        82.418,
+        82.522,
+        82.627,
+        82.731,
+        82.835,
+        82.938,
+        83.043,
+        83.147,
+        83.252,
+        83.358,
+        83.463,
+        83.566,
+        83.67,
+        83.774,
+        83.878,
+        84.086,
+        84.19,
+        84.294
+      ]
+    },
+    {
+      "window_seconds": [
+        130.6,
+        132
+      ],
+      "recorded_samples": 14,
+      "fixture_pairs": 252,
+      "settled_pump_command_pairs_percent": {
+        "33.3 -> 66.7": 12,
+        "66.7 -> 66.7": 143,
+        "66.7 -> 100.0": 97
+      },
+      "command_pairs_by_relative_pressure_fixture_mmhg": {
+        "-400": {
+          "33.3 -> 66.7": 12,
+          "66.7 -> 66.7": 73,
+          "66.7 -> 100.0": 41
+        },
+        "0": {
+          "66.7 -> 66.7": 70,
+          "66.7 -> 100.0": 56
+        }
+      },
+      "afr_recorded": {
+        "min": 12.09,
+        "median": 13.11,
+        "max": 15.95
+      },
+      "demand_ranges": {
+        "before": [
+          14.37641716003418,
+          40.51799392700195
+        ],
+        "after": [
+          29.376296997070312,
+          82.79314422607422
+        ]
+      },
+      "changed_command_times": [
+        130.617,
+        130.72,
+        130.825,
+        131.347,
+        131.452,
+        131.555,
+        131.659,
+        131.763,
+        131.867,
+        131.974
+      ]
+    },
+    {
+      "window_seconds": [
+        177,
+        181
+      ],
+      "recorded_samples": 38,
+      "fixture_pairs": 684,
+      "settled_pump_command_pairs_percent": {
+        "33.3 -> 66.7": 182,
+        "66.7 -> 66.7": 502
+      },
+      "command_pairs_by_relative_pressure_fixture_mmhg": {
+        "-400": {
+          "33.3 -> 66.7": 182,
+          "66.7 -> 66.7": 160
+        },
+        "0": {
+          "66.7 -> 66.7": 342
+        }
+      },
+      "afr_recorded": {
+        "min": 11.15,
+        "median": 11.83,
+        "max": 12.3
+      },
+      "demand_ranges": {
+        "before": [
+          11.456729888916016,
+          28.312135696411133
+        ],
+        "after": [
+          23.410303115844727,
+          57.85207748413086
+        ]
+      },
+      "changed_command_times": [
+        177.148,
+        177.253,
+        177.356,
+        177.461,
+        177.565,
+        177.668,
+        177.773,
+        177.876,
+        177.981,
+        178.084,
+        178.189,
+        178.293,
+        178.398,
+        178.502,
+        178.608,
+        178.712,
+        178.816,
+        178.919,
+        179.024,
+        179.127,
+        179.232,
+        179.335
+      ]
+    }
+  ],
+  "conclusion": "At relative-pressure fixture 0 mmHg, the sustained 77\u201385.25 s bog points select 66.7 percent before and after. At -400 mmHg some old points select 33.3 instead of 66.7. The drive does not log this pressure or pump state, so the correction is not a demonstrated cure for the rich bog.",
+  "limits": [
+    "Pump command, voltage, B2A4, BE40 and rail pressure are not recorded in the drive.",
+    "Voltage fixtures pair with the installed latency curve; P21 offsets bracket half its 0.256-ms quantum.",
+    "B2A4 pressure fixtures span both table endpoints; no gauge boost is inferred from ABC4.",
+    "Each point is held settled. This is not a timed reconstruction of the vehicle state machine.",
+    "Native arithmetic, mode branches and publisher execute; table interpolation and physical DEAA output are modeled boundaries."
+  ]
+}

@@ -1,5 +1,11 @@
 # Master Turbo Calibration Sanity Check & Complete Table Registry (All 146 Tables)
 
+**September 12 scope update:** This registry describes an earlier v2 snapshot.
+Rotational idle has since been removed from the rolling v2 BIN and definition;
+tables #128–#139 below are historical and are no longer available in v2.
+The current [v2 definition](../../master_patch_v2/D2WD610H_master_patch_v2.xml)
+contains 134 target tables. See [image identities](IMAGES.md) for the rebuilt ROM.
+
 **Engine Configuration:** EZ30R 3.0L Flat-6 Turbo Conversion | **Static CR:** 10.7:1 | **Fuel:** 98 RON Australian Pump Fuel
 **Turbocharger:** Garrett GTX3584 Gen 2 | **Wastegate Spring:** 5.0 psi mechanical (~1019 mmHg absolute target)
 **Injectors:** Subaru OEM STI 550cc (`16611AA510`) | **Sensors:** Omni 3-bar MAP, Haltech open-element IAT, AEM X-Series Wideband
@@ -234,7 +240,7 @@ Every single parameter, switch, and multi-dimensional table defined in `master_p
   - *X Axis ():* `[0.2, 0.4, 0.6, 0.8, 1.0, 1.2, 1.6, 2.5, 4.0]`
   - *Y Axis ():* `[800.0, 1200.0, 1600.0, 2000.0, 2400.0, 2800.0, 3200.0, 3600.0, 4000.0, 4400.0, 4800.0, 5200.0, 5600.0]`
 - **Function & Description:** Closed loop target fuel trims based on load/ECT.
-- **Forced-Induction Rationale:** Standard closed loop trim curves. In master patch v2, front O2 sensors are retired, placing ECU in permanent open loop where these trims remain inactive.
+- **Forced-Induction Rationale:** Standard closed-loop target compensation. Front-sensor retirement does not by itself establish permanent OL: the wideband component retains native feedback consumers. The September 12 captures report OL, but this table's inactivity cannot be guaranteed globally from sensor retirement. See [warm fueling and OL-status review](V2_AVLS_NEUTRAL_20260912.md).
 - **Turbo Sanity Assessment:** **PASS / NORMAL**
 
 ### Table #022 — CL Fueling Target Compensation (ECT) 
@@ -244,7 +250,7 @@ Every single parameter, switch, and multi-dimensional table defined in `master_p
 - **Current Values (16x1):** `[-1.0291, -0.882, -0.735, -0.5879, -0.441, -0.2941, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0] Estimated Air/Fuel Ratio Points (Additive)`
   - *Y Axis ():* `[-40.0, -30.0, -20.0, -10.0, 0.0, 10.0, 20.0, 30.0, 40.0, 50.0, 60.0, 70.0, 80.0, 90.0, 100.0, 110.0]`
 - **Function & Description:** Closed loop target fuel trims based on load/ECT.
-- **Forced-Induction Rationale:** Standard closed loop trim curves. In master patch v2, front O2 sensors are retired, placing ECU in permanent open loop where these trims remain inactive.
+- **Forced-Induction Rationale:** Standard closed-loop target compensation. Its use depends on native CL eligibility; front-sensor retirement alone does not establish permanent OL. See [warm fueling and OL-status review](V2_AVLS_NEUTRAL_20260912.md).
 - **Turbo Sanity Assessment:** **PASS / NORMAL**
 
 ### Table #023 — CL Fueling Target Compensation (ECT) Disable
@@ -253,7 +259,7 @@ Every single parameter, switch, and multi-dimensional table defined in `master_p
 - **Scaling Formula:** `x` | **Units:** `Coolant Temp (Degrees C)`
 - **Current Value:** `20.0000 Coolant Temp (Degrees C)` (Raw: `20.0`)
 - **Function & Description:** Closed loop target fuel trims based on load/ECT.
-- **Forced-Induction Rationale:** Standard closed loop trim curves. In master patch v2, front O2 sensors are retired, placing ECU in permanent open loop where these trims remain inactive.
+- **Forced-Induction Rationale:** Native temperature gate for CL target compensation. Its presence is not a global permanent-OL switch. See [warm fueling and OL-status review](V2_AVLS_NEUTRAL_20260912.md).
 - **Turbo Sanity Assessment:** **PASS / NORMAL**
 
 ### Table #024 — CL to OL Delay (Atm. Pressure)

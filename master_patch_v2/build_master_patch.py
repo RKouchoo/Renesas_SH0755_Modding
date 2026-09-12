@@ -31,7 +31,6 @@ for directory in (PATCH_DIR, FUEL_SAFETY_DIR, MASTER_PATCH_DIR,
 
 import extract_srf  # noqa: E402
 import patch_boost as boost  # noqa: E402
-import patch_rotational_idle as rotational_idle  # noqa: E402
 import speed_density_component as speed_density  # noqa: E402
 import master_calibration as calibration  # noqa: E402
 import wideband_component as wideband  # noqa: E402
@@ -165,7 +164,8 @@ def build_image() -> tuple[
     component_blobs: dict[str, list[tuple[str, int, bytes]]] = {}
     component_blobs["boost"] = boost.apply_to_rom(rom)
     apply_omni_map_calibration(rom)
-    component_blobs["rotational_idle"] = rotational_idle.apply_to_rom(rom)
+    # Rotational idle is excluded from v2. Starting from stock retains the
+    # direct final-timing task pointer and erased former component allocation.
     component_blobs["speed_density"] = speed_density.apply_to_rom(rom)
     component_blobs["wideband_O2_delete"] = wideband.apply_to_rom(rom)
     component_blobs["purge_delete"] = purge_delete.apply_to_rom(rom)
@@ -187,6 +187,10 @@ def build_image() -> tuple[
     )
     output = bytes(rom)
 
+    if output[0x11E30:0x11E34] != struct.pack(">I", 0x279CC):
+        raise AssertionError("v2 final-timing task must call the stock routine directly")
+    if output[0x7DB40:0x7DD00] != b"\xff" * 0x1C0:
+        raise AssertionError("v2 former rotational-idle allocation must remain erased")
     stored, calculated, _ = calibration.checksum_value(output)
     if stored != calculated:
         raise AssertionError("master image Subaru checksum is invalid")
@@ -233,6 +237,7 @@ def main(argv: list[str] | None = None) -> None:
     )
     print("  speed density     : always-on MAFless, smoothed dual VE, 2.999 L")
     print("  load source       : local obsolete MAF-fault substitution bypassed")
+    print("  rotational idle   : removed; final-timing task calls stock 0x279CC directly")
     print("  AVLS switch       : fixed 3200 engage / 3000 release RPM")
     print("  timing fixes      : Base Timing D/A low-RPM floor >=9-15 deg; 2000 RPM full boost cap %+.1f deg"
           % calibration.interpolate(calibration.FULL_BOOST_TIMING_CAP, 2000))

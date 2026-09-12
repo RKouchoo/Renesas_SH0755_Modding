@@ -14,6 +14,23 @@ Claims removed or rewritten during this audit are retained from commit `2d95301`
 
 ## Structural coverage
 
+September 12 additions are kept outside the frozen inventory counts:
+
+| Address | Subsequent verified meaning | Evidence |
+|---|---|---|
+| `000253A8` / `FFFFD273` mask `02` | Native diagnostic 3000/2500 RPM injector-cut path; qualifying source is not established in the vehicle. | [Execution and limits](V2_AVLS_MISFIRE_20260912.md#all-cylinder-cut-test-connector-and-empty-dtc-scan) |
+| `00019BE2` / `FFFFB51E` mask `80` | Test-mode input; SSM `61` bit 5 through `00031A34`. | [MCP readback](evidence/native_fault_cut_20260912.json) |
+| `000148EE` / `FFFFB28C` mask `80` | ROM configuration `737C9`, not the physical test connector. | [MCP readback](evidence/native_fault_cut_20260912.json) |
+| `000317B4` / `FFFFC0B8` + `FFFFC0D8` | Standard P21 combines inhibit-filtered scheduled pulse with latency, then rounds to 256-us counts. A settled cut leaves latency alone. | [P21 execution and limits](V2_AVLS_MISFIRE_20260912.md#all-cylinder-cut-test-connector-and-empty-dtc-scan) |
+| `00013CA8..00013CE4` / `FFFFB1C4` | Native prefix converts effective pulse C0B8 and RPM into modeled fuel consumption; subsequent telemetry and pump demand consume it. | [Native execution](FUEL_PUMP_SCALING_20260912.md#native-dependency) |
+| `00072D54` | Separate float pulse-to-consumption coefficient; corrected from stock 4.59 to approximately 9.379054 in both rolling builds, inverse to injector duration scaling. | [Correction and exact words](FUEL_PUMP_SCALING_20260912.md#correction) |
+| `0002A910` / `FFFFC29C`, `FFFFC2A0`, `FFFFC2A4` | Conditional native pump-demand mode selector. B1C4*3.6, BE40-dependent offset and 0.99-current-weight filter precede threshold comparisons. | [Execution and limits](FUEL_PUMP_SCALING_20260912.md) |
+| `00060204/00060220` / `FFFFB2A4` | Raw-u16 pump thresholds with float scale; axes are ABB4 battery voltage and processed relative pressure B2A4, distinct from logged SD ABC4. | [Descriptor and log-fixture scope](FUEL_PUMP_SCALING_20260912.md) |
+| `0002A53A` / `FFFFC298` | Discrete pump command publication 0/33.3/66.7/100; C2AD/01 overrides to zero, DEAA receives the ratio. | [Pump execution](../../tests/test_fuel_pump_demand_execution.py) |
+| `0003F5F0` / `FFFFCD50` mask `80` | Ignition-switch-off timeout feeding native spark inhibit; old radiator-fan name is misleading. MCP naming update is pending. | [Spark-permission follow-up](V2_AVLS_MISFIRE_20260912.md#follow-up-spark-permission-and-dwell) |
+| `0002564C` / `FFFFBF91` / `FFFFBF92` | RPM/pedal diagnostic-cut classification; direct `C6F7/40` and other faults can request partial/all-six cuts independently of the isolated 3000-RPM latch. `6508E` reads the separate `D26F/20` P0519 status. | [Limp-response execution and limits](V2_AVLS_MISFIRE_20260912.md#follow-up-other-factory-limp-responses-remain-possible) |
+| `0005F470` / `00076AC8` | Pressure compensation of the separate supplemental tip-in pulse at `23D34`; older generic “fuel pressure gain” wording does not mean global correction of normal pulse width. | [MCP comment](evidence/native_fault_cut_20260912.json) |
+
 | Classification | Candidates |
 |---|---:|
 | donor image address | 8 |
@@ -1095,8 +1112,8 @@ Claims removed or rewritten during this audit are retained from commit `2d95301`
 | `0007D4A4` | rom location or numeric literal | Engine-run gating hysteresis is 510/512 RPM, unchanged in all images. — verified static | [docs/archive/research/D2WD610H_RE_notes.md](../../docs/archive/research/D2WD610H_RE_notes.md) line 286 at 46bfc52 |
 | `0007D4A8` | rom location or numeric literal | Engine-run gating hysteresis is 510/512 RPM, unchanged in all images. — verified static | [docs/archive/research/D2WD610H_RE_notes.md](../../docs/archive/research/D2WD610H_RE_notes.md) line 286 at 46bfc52 |
 | `0007D4AC` | rom location or numeric literal | Actuation RPM gate 3000 in stock/main/v2. This alone does not establish solenoid energization or committed high lift. — verified static | [docs/archive/research/D2WD610H_RE_notes.md](../../docs/archive/research/D2WD610H_RE_notes.md) line 285 at 46bfc52 |
-| `0007D4B0` | rom location or numeric literal | Fallback pedal thresholds are 15 percent in stock but 110 percent in current main/v2. The SD policy suppresses normal pedal-triggered switching to use the fixed RPM band. — verified build contract | [docs/archive/research/D2WD610H_RE_notes.md](../../docs/archive/research/D2WD610H_RE_notes.md) line 288 at 46bfc52 |
-| `0007D4B4` | rom location or numeric literal | Fallback pedal thresholds are 15 percent in stock but 110 percent in current main/v2. The SD policy suppresses normal pedal-triggered switching to use the fixed RPM band. — verified build contract | [docs/archive/research/D2WD610H_RE_notes.md](../../docs/archive/research/D2WD610H_RE_notes.md) line 288 at 46bfc52 |
+| `0007D4B0` | ROM float; degrees C | Stationary AVLS oil threshold A, selected when B51C/80 is set; compared to CF94 at 403C4. Stock/current 15 C. The former 110-percent pedal identity is retracted. — corrected by native execution | [September 12 neutral review](V2_AVLS_NEUTRAL_20260912.md), finding C35 |
+| `0007D4B4` | ROM float; degrees C | Stationary AVLS oil threshold B, selected when B51C/80 is clear; compared to CF94 at 403C4. Stock/current 15 C. The former 110-percent pedal identity is retracted. — corrected by native execution | [September 12 neutral review](V2_AVLS_NEUTRAL_20260912.md), finding C35 |
 | `0007D4B8` | rom location or numeric literal; XML address declaration | Hard high-lift release threshold: stock 3800 RPM, main/v2 3000 RPM. — verified build contract | [docs/archive/research/D2WD610H_RE_notes.md](../../docs/archive/research/D2WD610H_RE_notes.md) line 282 at 46bfc52 |
 | `0007D4BC` | rom location or numeric literal; XML address declaration | Hard high-lift engage threshold: stock 4000 RPM, main/v2 3200 RPM. — verified build contract | [docs/archive/research/D2WD610H_RE_notes.md](../../docs/archive/research/D2WD610H_RE_notes.md) line 281 at 46bfc52 |
 | `0007D660` | rom location or numeric literal | Axis 1 of Normal AVLS switch pedal threshold by RPM, descriptor 00060F58; 7 float32 knots. This address is an axis, not table output data. Exact image-specific knots are retained in documented_data.json. — verified static | [docs/archive/research/D2WD610H_RE_notes.md](../../docs/archive/research/D2WD610H_RE_notes.md) line 278 at 46bfc52 |

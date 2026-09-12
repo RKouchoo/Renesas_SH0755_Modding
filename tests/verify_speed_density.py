@@ -628,9 +628,9 @@ def main(argv: list[str] | None = None) -> None:
     for address in (patch.AVLS_NORMAL_PEDAL_DATA_ADDR, patch.AVLS_HOT_PEDAL_DATA_ADDR):
         if struct.unpack_from(">7f", image, address) != patch.AVLS_PEDAL_DISABLED:
             raise SystemExit("FAIL: pedal-based AVLS request remains active")
-    for address in (patch.AVLS_FIXED_PEDAL_A_ADDR, patch.AVLS_FIXED_PEDAL_B_ADDR):
-        if struct.unpack_from(">f", image, address)[0] != patch.AVLS_PEDAL_DISABLED_VALUE:
-            raise SystemExit("FAIL: fixed/fallback AVLS pedal request remains active")
+    for address in (patch.AVLS_STATIONARY_OIL_A_ADDR, patch.AVLS_STATIONARY_OIL_B_ADDR):
+        if struct.unpack_from(">f", image, address)[0] != 15.0:
+            raise SystemExit("FAIL: native stationary AVLS oil gate changed")
     if tuple(
         struct.unpack_from(">f", image, address)[0]
         for address in (

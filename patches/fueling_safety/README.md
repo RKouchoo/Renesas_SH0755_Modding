@@ -17,6 +17,14 @@ The lean wrapper first calls the existing composed stock-rev-limit and hard-
 overboost wrapper. It can add a cut but cannot suppress either existing cut.
 Both protections default on and have exact-`01` RomRaider enable switches.
 
+The integration can override these component defaults. Current v2 arms at
+**+2.5 psi** and releases at **+1.5 psi**, with a **12.8 AFR** threshold. The
+release guard accepts negative, zero or positive reset pressure provided it
+is strictly below the arm pressure. The former negative-only check prevented
+v2 from releasing a latched cut even in vacuum; the September 12 correction
+changes this check without changing either integration's pressure calibration.
+`tests/test_lean_cut_hysteresis_execution.py` executes the release behavior.
+
 The component reclaims `0xFFFFC85C` (counter) and `0xFFFFC860` (state) from the
 deleted rear-O2 response integrator. Every traced runtime rear-O2 task is
 bypassed by the required master wideband component. Because the stock startup

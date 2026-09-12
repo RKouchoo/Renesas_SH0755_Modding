@@ -1,8 +1,13 @@
 # Rotational-Idle Component and Master Integration
 
 Target: D2WD610H / ECU ID `3C5A387116`, Renesas SH7055. The guarded component is
-integrated into `master_patch` and defaults OFF. It remains absent only from the historical
-combined patch.
+integrated into `master_patch` (v1) and defaults OFF. It is excluded from the current
+`master_patch_v2` build and definition, and from the historical combined patch.
+
+V2 calls the stock final-timing task directly: pointer `0x11E30` holds `0x279CC`.
+The former component allocation `0x7DB40..0x7DCFF` is erased (`FF`), and the v2
+definition exposes no rotational-idle controls. The v2 verifier checks both the
+direct stock path and the erased allocation.
 
 ## What it does
 
@@ -67,8 +72,8 @@ retains the original stock angle. The patch does not add hysteresis or retain st
 |---|---|
 | `patches/core/patch_rotational_idle.py` | Reusable guarded component API; can still build a local standalone test image |
 | `tests/verify_rotational_idle.py` | Standalone opcode, policy, and ownership audit |
-| `master_patch/D2WD610H_master_patch.bin` | Only committed flashable generated image; includes this component OFF |
-| `master_patch/D2WD610H_master_patch.xml` | Current definition containing all rotational-idle controls |
+| `master_patch/D2WD610H_master_patch.bin` | V1 generated image; includes this component OFF |
+| `master_patch/D2WD610H_master_patch.xml` | V1 definition containing all rotational-idle controls |
 
 From the repository root:
 

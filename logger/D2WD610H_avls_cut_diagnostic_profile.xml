@@ -1,0 +1,76 @@
+<?xml version='1.0' encoding='ISO-8859-1'?>
+<profile protocol="SSM">
+    <!-- D2WD610H: at most 43 byte addresses per request. Load one capture at a time. Inactive entries clear the other capture and old selections. -->
+    <parameters>
+        <parameter id="P2" livedata="selected" dash="selected" units="C" />
+        <parameter id="P3" units="%" />
+        <parameter id="P4" units="%" />
+        <parameter id="P5" units="%" />
+        <parameter id="P6" units="%" />
+        <parameter id="P7" units="kPa" />
+        <parameter id="P8" livedata="selected" dash="selected" units="rpm" />
+        <parameter id="P9" livedata="selected" dash="selected" units="km/h" />
+        <parameter id="P10" livedata="selected" dash="selected" units="degrees" />
+        <parameter id="P11" units="C" />
+        <parameter id="P12" units="g/s" />
+        <parameter id="P13" livedata="selected" dash="selected" units="%" />
+        <parameter id="P17" units="V" />
+        <parameter id="P21" livedata="selected" dash="selected" units="ms" />
+        <parameter id="P24" units="mmHg" />
+        <parameter id="P30" livedata="selected" dash="selected" units="%" />
+        <parameter id="P38" units="%" />
+        <parameter id="P47" units="%" />
+        <parameter id="P92" units="%" />
+        <parameter id="P122" livedata="selected" dash="selected" units="C" />
+        <parameter id="P123" livedata="selected" dash="selected" units="%" />
+        <parameter id="P124" livedata="selected" dash="selected" units="%" />
+        <parameter id="P125" livedata="selected" dash="selected" units="mA" />
+        <parameter id="P126" livedata="selected" dash="selected" units="mA" />
+        <parameter id="E31" livedata="selected" dash="selected" units="multiplier" />
+        <parameter id="E32" units="g/rev" />
+        <parameter id="E33" units="status" />
+        <parameter id="E39" livedata="selected" dash="selected" units="degrees" />
+        <parameter id="E40" units="degrees" />
+        <parameter id="E41" livedata="selected" dash="selected" units="degrees" />
+        <parameter id="E50" units="ms" />
+        <parameter id="E51" units="kPa absolute" />
+        <parameter id="E60" units="ms" />
+        <parameter id="E81" units="%" />
+        <parameter id="E84" units="estimated AFR" />
+        <parameter id="E105" units="%" />
+        <parameter id="E123" units="estimated AFR" />
+        <parameter id="E500" livedata="selected" dash="selected" units="estimated AFR (14.64 stoich)" />
+        <parameter id="E501" units="ADC counts" />
+        <parameter id="E502" units="ready metric" />
+        <parameter id="E503" livedata="selected" dash="selected" units="AVLS mode (1 low; 3 high)" />
+        <parameter id="E504" livedata="selected" dash="selected" units="state (0 idle; 1 delay; 2 monitor; 3 cut)" />
+        <parameter id="E505" units="task calls" />
+        <parameter id="E506" units="raw flags" />
+        <parameter id="E507" units="task calls" />
+        <parameter id="E508" units="raw additive factor" />
+        <parameter id="E509" units="raw additive factor" />
+        <parameter id="E510" units="raw additive factor" />
+        <parameter id="E511" units="raw additive factor" />
+        <parameter id="E512" units="raw additive factor" />
+        <parameter id="E513" units="raw additive factor" />
+        <parameter id="E514" units="rpm" />
+        <parameter id="E515" units="%" />
+        <parameter id="E516" units="raw flags" />
+        <parameter id="E517" units="raw flags" />
+        <parameter id="E518" livedata="selected" dash="selected" units="kPa absolute" />
+        <parameter id="E519" units="Volts" />
+        <parameter id="E520" livedata="selected" dash="selected" units="kPa absolute" />
+        <parameter id="E521" units="raw flags" />
+        <parameter id="E522" units="raw flags" />
+        <parameter id="E523" units="raw flags" />
+        <parameter id="E524" units="%" />
+        <parameter id="E525" livedata="selected" dash="selected" units="raw inhibit word" />
+        <parameter id="E526" livedata="selected" dash="selected" units="AVLS mode (1 low; 3 high)" />
+        <parameter id="E527" livedata="selected" dash="selected" units="AVLS mode (1 low; 3 high)" />
+    </parameters>
+    <switches>
+        <switch id="S4" />
+        <switch id="S5" />
+        <switch id="S11" />
+    </switches>
+</profile>

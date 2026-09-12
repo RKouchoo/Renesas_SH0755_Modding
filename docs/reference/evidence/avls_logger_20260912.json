@@ -1,0 +1,209 @@
+{
+  "date": "2026-09-12",
+  "description": "Native AVLS logger callbacks and capability verification; offline only. No ECU connection.",
+  "native_checks": {
+    "sha256": "c6528704472f396cf57c3d18b5e6ef14e46b6da376e9cf19f58f8739ca5c66bc",
+    "same_as_stock_ranges": [
+      [
+        9612,
+        9660
+      ],
+      [
+        61738,
+        62484
+      ],
+      [
+        206140,
+        206316
+      ],
+      [
+        209590,
+        209692
+      ],
+      [
+        310088,
+        310136
+      ],
+      [
+        312408,
+        312632
+      ],
+      [
+        507301,
+        507357
+      ]
+    ],
+    "callbacks": [
+      {
+        "callback": "3254A",
+        "source": "FFFFCDF8",
+        "input": 20,
+        "output_byte": 51
+      },
+      {
+        "callback": "32558",
+        "source": "FFFFCDFC",
+        "input": 80,
+        "output_byte": 204
+      },
+      {
+        "callback": "32566",
+        "source": "FFFFB11C",
+        "input": 0.32,
+        "output_byte": 10
+      },
+      {
+        "callback": "3257C",
+        "source": "FFFFB120",
+        "input": 0.64,
+        "output_byte": 20
+      },
+      {
+        "callback": "3253C",
+        "source": "FFFFB124",
+        "input": 80,
+        "output_byte": 120
+      }
+    ],
+    "capabilities": [
+      {
+        "index": 42,
+        "source": "7BDCF",
+        "value": 255,
+        "required_mask": 31
+      },
+      {
+        "index": 43,
+        "source": "7BDD0",
+        "value": 2,
+        "required_mask": 2
+      }
+    ]
+  },
+  "definition_sha256": "ea00d00a7fbe174c8292f4090bc01d939018725cb1637dcb11beaa52cfe5971f",
+  "profile": "logger/D2WD610H_avls_cut_diagnostic_profile.xml",
+  "profile_channels": 23,
+  "address_bytes": 43,
+  "request_frame_bytes": 136,
+  "definition_migration": {
+    "preserved_signal_addresses_conversions_targets": 123,
+    "canonicalized_existing_parameter": "E524",
+    "added_parameters": [
+      "E525",
+      "E526",
+      "E527"
+    ]
+  },
+  "validation": {
+    "main_verifier": "PASS",
+    "v2_verifier": "5 groups PASS",
+    "native_ssm_receive": "4 groups PASS",
+    "romraider_offline_query_reload": "AVLS/cut, recovery and road profiles: valid 136-byte request and checksum"
+  },
+  "ghidra_comments": [
+    {
+      "address": "0x3254A",
+      "comment": "2026-09-12: SSM 0x114 / P123 OSV Duty (Right). Reads float CDF8 percent, packs with 258C using step 0.392156839 (100/255) and offset 0. Matches output bank index 0 in 40CE6 -> F12A. This is commanded duty, not hydraulic feedback or proof of harness-side assignment. Callback confirmed against raw stock/current-v2 bytes.",
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "Comment set successfully"
+          }
+        ],
+        "isError": false
+      }
+    },
+    {
+      "address": "0x32558",
+      "comment": "2026-09-12: SSM 0x115 / P124 OSV Duty (Left). Reads float CDFC percent, packs with 258C using step 0.392156839 (100/255) and offset 0. Matches output bank index 1 in 40CE6 -> F12A. Commanded duty, not measured lift.",
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "Comment set successfully"
+          }
+        ],
+        "isError": false
+      }
+    },
+    {
+      "address": "0x32566",
+      "comment": "2026-09-12: SSM 0x116 / P125 OSV Current (Right). Calls F298 with bank index 0, reading float B11C amperes; 258C packs A / 0.0319999978 into u8. Logger x*32 displays mA. B11C is ADC-derived through F39C, not a commanded-current setpoint. Electrical current alone does not prove hydraulic lift.",
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "Comment set successfully"
+          }
+        ],
+        "isError": false
+      }
+    },
+    {
+      "address": "0x3257C",
+      "comment": "2026-09-12: SSM 0x117 / P126 OSV Current (Left). Calls F298 with bank index 1, reading float B120 amperes; 258C packs A / 0.0319999978 into u8. Logger x*32 displays mA. B120 is ADC-derived through F39C.",
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "Comment set successfully"
+          }
+        ],
+        "isError": false
+      }
+    },
+    {
+      "address": "0xF39C",
+      "comment": "2026-09-12: OSV current conversion for two software bank indices. Copies raw words AB24/AB1E to B118/B11A, then produces B11C/B120 = max(0, raw * scalar[72858] * (5/65536) + offset[7285C]); current constants ~0.334 A/V and -0.035 A. F298(index) reads B11C+4*index. Native P125/P126 map index 0/1 to upstream Right/Left labels; physical harness assignment not independently proved.",
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "Comment set successfully"
+          }
+        ],
+        "isError": false
+      }
+    },
+    {
+      "address": "0x332B6",
+      "comment": "2026-09-12: Standard SSM init response copies 56 bytes via pointer table 4C458, four bytes per update. Table indices 0..55 point to 7BDA5..7BDDC. ECU ID occupies response data indices 3..7. RomRaider capability index 42 reads 7BDCF=FF, supporting P122-P126 bits 4..0; index 43 reads 7BDD0=02, supporting P127 bit 1.",
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "Comment set successfully"
+          }
+        ],
+        "isError": false
+      }
+    }
+  ],
+  "ghidra_readback": [
+    {
+      "address": "0xF39C",
+      "result": [
+        {
+          "type": "text",
+          "text": "0000f39c: mov.l r13,@-r15 ; 2026-09-12: OSV current conversion for two software bank indices. Copies raw words AB24/AB1E to B118/B11A, then produces B11C/B120 = max(0, raw * scalar[72858] * (5/65536) + offset[7285C]); current constants ~0.334 A/V and -0.035 A. F298(index) reads B11C+4*index. Native P125/P126 map index 0/1 to upstream Right/Left labels; physical harness assignment not independently proved."
+        }
+      ]
+    },
+    {
+      "address": "0x332B6",
+      "result": [
+        {
+          "type": "text",
+          "text": "000332b6: mov #0x38,r2 ; 2026-09-12: Standard SSM init response copies 56 bytes via pointer table 4C458, four bytes per update. Table indices 0..55 point to 7BDA5..7BDDC. ECU ID occupies response data indices 3..7. RomRaider capability index 42 reads 7BDCF=FF, supporting P122-P126 bits 4..0; index 43 reads 7BDD0=02, supporting P127 bit 1."
+        }
+      ]
+    }
+  ],
+  "limits": [
+    "Native callback checks supplied distinct known RAM inputs; no hardware current or hydraulic valve motion was measured.",
+    "Bank indices map to the upstream Right/Left logger labels; harness pin assignment is not independently established.",
+    "The profile does not latch events or make byte/float reads atomic.",
+    "The 3000-RPM loaded misfire remains unresolved."
+  ]
+}

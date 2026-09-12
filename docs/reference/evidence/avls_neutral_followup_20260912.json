@@ -1,0 +1,40 @@
+{
+  "date": "2026-09-12",
+  "capture": "logs/romraiderlog_avlslog2_20260912_133746.csv",
+  "captured_rom_sha256": "4808414b01f3ede952197422f75a791f5325595a27bc810ca610b82d3954d67e",
+  "native_207ac_208f0_identical_to_stock": true,
+  "stock_and_v2_counter_bounds": {
+    "75E62": 0,
+    "75E64": 0
+  },
+  "mcp_comment_readback": [
+    {
+      "address": "00022570",
+      "result": {
+        "isError": false,
+        "content": [
+          {
+            "type": "text",
+            "text": "00022570: mov.l 0x00022688,r4 ; 2026-09-12 AVLS follow-up: this primary fuel lookup passes saved B438 load in FR4 and B544 RPM in FR5 to descriptor 5FA9C, then 5FAB8 at 2257C. A/B are not directly indexed by CD86 here. Current-v2 numerical comparison is in V2_AVLS_NEUTRAL_20260912.md; the 13:37 log omits B438, CL/OL state and composed fuel factor, so illustrative raw-SD-load table results are NOT a measured target AFR."
+          }
+        ]
+      }
+    },
+    {
+      "address": "0002084E",
+      "result": {
+        "isError": false,
+        "content": [
+          {
+            "type": "text",
+            "text": "0002084e: cmp/eq #0x1,r0 ; 2026-09-12 AVLS/fueling check: stack byte is committed CD86, captured at 207C6/207CA. Mode 1 is required for the auxiliary lookup to B908. However stock AND current v2 have 75E62=75E64=0: preceding unsigned-counter gates require B68A > lower AND B68A < upper, an empty interval. This routine therefore writes zero at 20862..20866 under those calibrations; it cannot explain this capture's high-lift rich step. No native code/calibration change applied."
+          }
+        ]
+      }
+    }
+  ],
+  "limits": [
+    "Ghidra program contains the stock ROM; current calibration comparisons used the SHA-pinned local v2 image.",
+    "Primary table illustrations use raw modeled load at fixed IAT fixtures, not measured conditioned load or a reconstructed live target."
+  ]
+}

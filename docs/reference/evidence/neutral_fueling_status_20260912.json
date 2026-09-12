@@ -1,0 +1,364 @@
+{
+  "date": "2026-09-12",
+  "purpose": "Correct interpretation of E33 in warm stationary fueling capture; no ROM changes",
+  "source_log": "logs/romraiderlog_neutralfuelingtest_20260912_141321.csv",
+  "rom_sha256": "4808414b01f3ede952197422f75a791f5325595a27bc810ca610b82d3954d67e",
+  "interpretation": "2026-09-12 neutral-fueling audit: updates second-bank fuel-system status at FFFFDA4E (logger E33 adds 6). Reads B91F active-CL flag, 1A256/B52C bit 7 predicate, 65038/D26D bit 6 fault predicate and previous DA4E. B52C predicate true -> raw 1; otherwise B91F == 1 -> raw 2; otherwise previous raw 1 remains 1; otherwise fault absent -> raw 4, fault present -> raw 8. Hence displayed 7 can persist after warm-up until first CL entry and is not a direct ECT measurement. This status does not report learned trims or the other bank. See docs/reference/V2_AVLS_NEUTRAL_20260912.md (14:13 capture).",
+  "before": {
+    "status": "fulfilled",
+    "value": {
+      "content": [
+        {
+          "type": "text",
+          "text": "0004ef96: sts.l PR,@-r15 "
+        },
+        {
+          "type": "text",
+          "text": "0004ef98: mov.l 0x0004f00c,r3 "
+        },
+        {
+          "type": "text",
+          "text": "0004ef9a: add #-0x8,r15 "
+        },
+        {
+          "type": "text",
+          "text": "0004ef9c: jsr @r3 "
+        },
+        {
+          "type": "text",
+          "text": "0004ef9e: _nop "
+        },
+        {
+          "type": "text",
+          "text": "0004efa0: mov.b r0,@(0x4,r15) "
+        },
+        {
+          "type": "text",
+          "text": "0004efa2: mov.w 0x0004efee,r2 "
+        },
+        {
+          "type": "text",
+          "text": "0004efa4: mov.l 0x0004f004,r1 "
+        },
+        {
+          "type": "text",
+          "text": "0004efa6: mov.b @r2,r3 "
+        },
+        {
+          "type": "text",
+          "text": "0004efa8: jsr @r1 "
+        },
+        {
+          "type": "text",
+          "text": "0004efaa: _mov.b r3,@r15 "
+        },
+        {
+          "type": "text",
+          "text": "0004efac: mov.l 0x0004f010,r7 "
+        },
+        {
+          "type": "text",
+          "text": "0004efae: mov r0,r4 "
+        },
+        {
+          "type": "text",
+          "text": "0004efb0: mov.b @r7,r5 "
+        },
+        {
+          "type": "text",
+          "text": "0004efb2: extu.b r4,r0 "
+        },
+        {
+          "type": "text",
+          "text": "0004efb4: cmp/eq #0x1,r0 "
+        },
+        {
+          "type": "text",
+          "text": "0004efb6: bt/s 0x0004efd0 "
+        },
+        {
+          "type": "text",
+          "text": "0004efb8: _mov #0x1,r6 "
+        },
+        {
+          "type": "text",
+          "text": "0004efba: mov.b @r15,r0 "
+        },
+        {
+          "type": "text",
+          "text": "0004efbc: extu.b r0,r0 "
+        },
+        {
+          "type": "text",
+          "text": "0004efbe: cmp/eq #0x1,r0 "
+        },
+        {
+          "type": "text",
+          "text": "0004efc0: bf/s 0x0004efc8 "
+        },
+        {
+          "type": "text",
+          "text": "0004efc2: _nop "
+        },
+        {
+          "type": "text",
+          "text": "0004efc4: bra 0x0004efe2 "
+        },
+        {
+          "type": "text",
+          "text": "0004efc6: _mov #0x2,r4 "
+        },
+        {
+          "type": "text",
+          "text": "0004efc8: extu.b r5,r0 "
+        },
+        {
+          "type": "text",
+          "text": "0004efca: cmp/eq #0x1,r0 "
+        },
+        {
+          "type": "text",
+          "text": "0004efcc: bf/s 0x0004efd4 "
+        },
+        {
+          "type": "text",
+          "text": "0004efce: _nop "
+        },
+        {
+          "type": "text",
+          "text": "0004efd0: bra 0x0004efe2 "
+        },
+        {
+          "type": "text",
+          "text": "0004efd2: _mov r6,r4 "
+        },
+        {
+          "type": "text",
+          "text": "0004efd4: mov.b @(0x4,r15),r0 "
+        },
+        {
+          "type": "text",
+          "text": "0004efd6: tst r0,r0 "
+        },
+        {
+          "type": "text",
+          "text": "0004efd8: bf/s 0x0004efe0 "
+        },
+        {
+          "type": "text",
+          "text": "0004efda: _nop "
+        },
+        {
+          "type": "text",
+          "text": "0004efdc: bra 0x0004efe2 "
+        },
+        {
+          "type": "text",
+          "text": "0004efde: _mov #0x4,r4 "
+        },
+        {
+          "type": "text",
+          "text": "0004efe0: mov #0x8,r4 "
+        },
+        {
+          "type": "text",
+          "text": "0004efe2: mov.b r4,@r7 "
+        },
+        {
+          "type": "text",
+          "text": "0004efe4: add #0x8,r15 "
+        },
+        {
+          "type": "text",
+          "text": "0004efe6: lds.l @r15+,PR "
+        },
+        {
+          "type": "text",
+          "text": "0004efe8: rts "
+        },
+        {
+          "type": "text",
+          "text": "0004efea: _nop "
+        }
+      ],
+      "isError": false
+    }
+  },
+  "after": {
+    "content": [
+      {
+        "type": "text",
+        "text": "0004ef96: sts.l PR,@-r15 ; 2026-09-12 neutral-fueling audit: updates second-bank fuel-system status at FFFFDA4E (logger E33 adds 6). Reads B91F active-CL flag, 1A256/B52C bit 7 predicate, 65038/D26D bit 6 fault predicate and previous DA4E. B52C predicate true -> raw 1; otherwise B91F == 1 -> raw 2; otherwise previous raw 1 remains 1; otherwise fault absent -> raw 4, fault present -> raw 8. Hence displayed 7 can persist after warm-up until first CL entry and is not a direct ECT measurement. This status does not report learned trims or the other bank. See docs/reference/V2_AVLS_NEUTRAL_20260912.md (14:13 capture)."
+      },
+      {
+        "type": "text",
+        "text": "0004ef98: mov.l 0x0004f00c,r3 "
+      },
+      {
+        "type": "text",
+        "text": "0004ef9a: add #-0x8,r15 "
+      },
+      {
+        "type": "text",
+        "text": "0004ef9c: jsr @r3 "
+      },
+      {
+        "type": "text",
+        "text": "0004ef9e: _nop "
+      },
+      {
+        "type": "text",
+        "text": "0004efa0: mov.b r0,@(0x4,r15) "
+      },
+      {
+        "type": "text",
+        "text": "0004efa2: mov.w 0x0004efee,r2 "
+      },
+      {
+        "type": "text",
+        "text": "0004efa4: mov.l 0x0004f004,r1 "
+      },
+      {
+        "type": "text",
+        "text": "0004efa6: mov.b @r2,r3 "
+      },
+      {
+        "type": "text",
+        "text": "0004efa8: jsr @r1 "
+      },
+      {
+        "type": "text",
+        "text": "0004efaa: _mov.b r3,@r15 "
+      },
+      {
+        "type": "text",
+        "text": "0004efac: mov.l 0x0004f010,r7 "
+      },
+      {
+        "type": "text",
+        "text": "0004efae: mov r0,r4 "
+      },
+      {
+        "type": "text",
+        "text": "0004efb0: mov.b @r7,r5 "
+      },
+      {
+        "type": "text",
+        "text": "0004efb2: extu.b r4,r0 "
+      },
+      {
+        "type": "text",
+        "text": "0004efb4: cmp/eq #0x1,r0 "
+      },
+      {
+        "type": "text",
+        "text": "0004efb6: bt/s 0x0004efd0 "
+      },
+      {
+        "type": "text",
+        "text": "0004efb8: _mov #0x1,r6 "
+      },
+      {
+        "type": "text",
+        "text": "0004efba: mov.b @r15,r0 "
+      },
+      {
+        "type": "text",
+        "text": "0004efbc: extu.b r0,r0 "
+      },
+      {
+        "type": "text",
+        "text": "0004efbe: cmp/eq #0x1,r0 "
+      },
+      {
+        "type": "text",
+        "text": "0004efc0: bf/s 0x0004efc8 "
+      },
+      {
+        "type": "text",
+        "text": "0004efc2: _nop "
+      },
+      {
+        "type": "text",
+        "text": "0004efc4: bra 0x0004efe2 "
+      },
+      {
+        "type": "text",
+        "text": "0004efc6: _mov #0x2,r4 "
+      },
+      {
+        "type": "text",
+        "text": "0004efc8: extu.b r5,r0 "
+      },
+      {
+        "type": "text",
+        "text": "0004efca: cmp/eq #0x1,r0 "
+      },
+      {
+        "type": "text",
+        "text": "0004efcc: bf/s 0x0004efd4 "
+      },
+      {
+        "type": "text",
+        "text": "0004efce: _nop "
+      },
+      {
+        "type": "text",
+        "text": "0004efd0: bra 0x0004efe2 "
+      },
+      {
+        "type": "text",
+        "text": "0004efd2: _mov r6,r4 "
+      },
+      {
+        "type": "text",
+        "text": "0004efd4: mov.b @(0x4,r15),r0 "
+      },
+      {
+        "type": "text",
+        "text": "0004efd6: tst r0,r0 "
+      },
+      {
+        "type": "text",
+        "text": "0004efd8: bf/s 0x0004efe0 "
+      },
+      {
+        "type": "text",
+        "text": "0004efda: _nop "
+      },
+      {
+        "type": "text",
+        "text": "0004efdc: bra 0x0004efe2 "
+      },
+      {
+        "type": "text",
+        "text": "0004efde: _mov #0x4,r4 "
+      },
+      {
+        "type": "text",
+        "text": "0004efe0: mov #0x8,r4 "
+      },
+      {
+        "type": "text",
+        "text": "0004efe2: mov.b r4,@r7 "
+      },
+      {
+        "type": "text",
+        "text": "0004efe4: add #0x8,r15 "
+      },
+      {
+        "type": "text",
+        "text": "0004efe6: lds.l @r15+,PR "
+      },
+      {
+        "type": "text",
+        "text": "0004efe8: rts "
+      },
+      {
+        "type": "text",
+        "text": "0004efea: _nop "
+      }
+    ],
+    "isError": false
+  }
+}

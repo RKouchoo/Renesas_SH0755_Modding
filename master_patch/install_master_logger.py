@@ -28,7 +28,7 @@ FRAGMENT = LOGGER_DIR / "D2WD610H_master_logger_ecuparams.xml"
 ECU_ID = "3C5A387116"
 TRANSPORT_ID = "iso9141"
 MODULE_ID = "ecu"
-PARAMETER_IDS = {f"E{number}" for number in range(500, 524)}
+PARAMETER_IDS = {f"E{number}" for number in range(500, 528)}
 
 # The upstream logger contains a global catalogue for many Subaru ECUs, TCMs,
 # diesel engines, and DCCD controllers.  Standard SSM parameters do not carry
@@ -192,6 +192,12 @@ def build_definition(source_text: str) -> tuple[str, int]:
         "estimate in whole kPa through this standard SSM channel. It is not an "
         "independent barometric measurement. E520 records the selected native "
         "float estimate at CFBC without the standard channel's whole-kPa rounding.")
+
+    pedal = standard_parameters.find("parameter[@id='P30']")
+    if pedal is None:
+        fail("source is missing the standard accelerator-pedal channel P30")
+    # Preserve the ECU-only correction when regenerating from upstream v370.
+    pedal.set("target", "1")
 
     standard_switches = protocol.find("switches")
     if standard_switches is None:
@@ -397,7 +403,7 @@ def main(argv: list[str] | None = None) -> None:
         "  always-visible stock  : "
         f"{len(ALWAYS_VISIBLE_STOCK_PARAMETER_IDS)}"
     )
-    print("  project params         : E500 through E523 (always visible)")
+    print("  project params         : E500 through E527 (always visible)")
     print(f"  ECU-specific records   : {ECU_ID} only")
 
 

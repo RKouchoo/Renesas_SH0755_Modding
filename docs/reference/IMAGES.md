@@ -2,7 +2,86 @@
 
 [Reference home](README.md) · [Original audit evidence](evidence/image_contracts.json) · [V2 repair](V2_LOAD_FALLBACK_FIX.md)
 
-## Current saved images
+## Current v2 image
+
+The rolling [v2 BIN](../../master_patch_v2/D2WD610H_master_patch_v2.bin) now has
+SHA-256 `8ab70f32dce51857652fc2ab24e340dea9399f12d7042cf8f9afab851e0df6d5`
+and checksum `4295EB4B`. The [fuel-pump demand scaling repair](FUEL_PUMP_SCALING_20260912.md)
+pairs the separate pulse-to-consumption coefficient with the installed injector
+calibration. Only `72D54` and the checksum word changed: eight byte positions
+relative to the 14:42 drive image below. All ten v2 verifier groups pass.
+The loaded bog remains unresolved; this repair has not been flashed or logged.
+
+The rolling [main BIN](../../master_patch/D2WD610H_master_patch.bin) has the same
+coefficient repair: SHA-256
+`697b9f3a48a95027cc048ed68967520e2de4692314d88cf1768564ef15471d3a`, checksum
+`B3311F6C`. Its change is seven byte positions across the same two words.
+The [word-level evidence](evidence/fuel_pump_scaling_20260912.json) reconstructs
+the exact preceding images for historical log analysis.
+
+## September 12 adjusted-VE drive image
+
+The 14:42 drive used v2
+SHA-256 `fd795813febf817c845fc922e81e498539a539efeeb6e4d11822af47098094a2`
+and checksum `43191A9F`. The requested
+[warm fueling adjustment](V2_AVLS_NEUTRAL_20260912.md#requested-idle-and-high-lift-fueling-adjustment)
+adds 5% to four idle VE cells and removes 12% from six high-lift vacuum cells.
+It changes 34 byte positions across those ten floats and the checksum;
+all other bytes match the captured image below. The independent calibration
+check and all nine then-current v2 verifier groups passed. The
+[14:42 driving follow-up](V2_AVLS_MISFIRE_20260912.md#1442-adjusted-ve-drive-loaded-fault-persists)
+matches this historical image and reproduces the loaded bog; offline checks are not
+a driving clearance. The earlier [lean-reset correction](V2_AVLS_MISFIRE_20260912.md),
+stationary oil-gate repair and rotational-idle removal are retained.
+
+## September 12 oil-gate and warm fueling capture image
+
+Both **13:37** and **14:13** captures use the pre-adjustment image with SHA-256
+`4808414b01f3ede952197422f75a791f5325595a27bc810ca610b82d3954d67e`,
+checksum `42B2F389`. All 16 pre-capture FastECU post-flash block CRCs at
+13:37:18 match it. The [neutral follow-up](V2_AVLS_NEUTRAL_20260912.md)
+records two stationary high-lift command/current transitions, then a warm
+capture confirms the sustained rich high-lift hold and lean idle baseline.
+
+This captured image restored two misidentified stationary AVLS oil thresholds
+from 110 C to stock 15 C. That repair changed six bytes across `7D4B0/B4`
+and the checksum relative to the 13:16 capture image. Its RPM thresholds,
+pedal curves, VE, timing and other fueling calibration were identical.
+
+The main image at the oil-gate repair was:
+SHA-256 `db33aad398d6335411c36f5c0e0f1338095b89821a4111370f5d16101fcf6089`,
+checksum `B3B44EC0`. It received the same six-byte oil-gate correction. Its
+other code/calibration and default-off rotational-idle component are unchanged.
+It does not receive the later v2-only VE adjustment.
+
+## September 12 neutral capture image
+
+The 13:16 neutral capture used v2 SHA-256
+`c6528704472f396cf57c3d18b5e6ef14e46b6da376e9cf19f58f8739ca5c66bc`,
+checksum `3FDAF389`; all 16 recorded 13:15 post-flash block CRCs match. This
+was the separate lean-reset repair: 75 changed bytes in the wrapper/checksum
+relative to the rotational-delete image below. The stationary oil thresholds
+were still erroneous at 110 C. Its dependent v1 image was
+`42b516c80e95a531834ce090c4da4713fd60538e9e6e9bffe3951caa805d0f30`,
+checksum `B0DC4EC0`.
+
+## September 12 rotational-delete capture image
+
+The September 12 rolling [v2 BIN](../../master_patch_v2/D2WD610H_master_patch_v2.bin)
+used for the rotational-delete capture had SHA-256 `ca4516f5a3737cffc172e9f1771a78a1a4ee966703136281d65d275d77dad7ef`
+and additive checksum `A5F4DFD6`. Rotational idle is removed: task pointer
+`11E30` calls stock `279CC` directly, and `7DB40..7DCFF` is erased. Its matching
+[v2 definition](../../master_patch_v2/D2WD610H_master_patch_v2.xml) omits the
+12 rotational-idle controls.
+
+Compared with the preceding v2 image at `5f0ba2a` (SHA-256
+`c8d858135df670f2730d5abca727c2f40a6736183049edef8a17d31c200311ed`),
+changes are confined to that pointer, the former component allocation and the
+checksum word. All other code and calibration bytes are identical. The earlier
+image produced the September 12 `road1` log. The rotational-delete image was
+subsequently flashed and produced `romraiderlog_rotationaldelete_20260912_122651.csv`.
+
+## September 9 saved images
 
 All three images are 512 KiB and share CALID D2WD610H. CALID alone cannot
 identify a patch revision. V2 below includes the September 9 load-fallback repair.
@@ -23,7 +102,7 @@ The original audit at `2d95301` used v2 SHA-256
 and Git. The later repair changes only the local pointer and checksum; no
 calibration or definition XML changes.
 
-## Main and v2 are different calibration and control contracts
+## September 9 calibration comparison
 
 Values below are decoded from the saved bytes, rounded for display.
 
@@ -36,7 +115,7 @@ Values below are decoded from the saved bytes, rounded for display.
 | `73968`, conditioned-load response | 0.06 per update | Same |
 | `76030`, slow-negative transient gain | 0.04 | Same |
 | `7D4B8/7D4BC`, AVLS release/engage | 3000/3200 RPM | Same; stock is 3800/4000 |
-| `7D4B0/7D4B4`, AVLS fallback pedal thresholds | 110 percent | Same; stock is 15 percent |
+| `7D4B0/7D4B4`, stationary AVLS oil thresholds | Erroneously 110 C in these saved images | Same; both restored to stock 15 C in the September 12 follow-up |
 | `76050`, falling transient history response | 0.01 | 0.08 |
 | `76AC8`, tip-in MRP factors | Retained stock pressure-dependent curve | Eight unity factors |
 | `7963C`, native air-decay decrement | About 0.6, stock | About 0.15, already present in v2 |
@@ -108,8 +187,10 @@ python3 -B tools/audit_image_contracts.py
 
 The first command rebuilds in memory and checks main's saved image, ownership,
 calibration, definitions, logger, arithmetic and retained-routine fixtures.
-V2's verifier checks its checksum/layout/definition contract plus five local
-load-fallback regression groups; coverage is still narrower than main's.
+V2's nine verifier groups cover checksum, layout, definition, rotational-idle
+removal, lean-cut hysteresis, AVLS oil gates, primary fueling, injector
+scheduling and the separate native diagnostic cut. Coverage remains narrower
+than main's. Load-fallback execution also has its own focused test script.
 The image-audit command reproduces the pre-fix evidence from Git at `2d95301`.
 Build commands remain
 `python3 -B master_patch/build_master_patch.py` and the corresponding v2 script;

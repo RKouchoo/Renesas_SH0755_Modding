@@ -249,8 +249,12 @@ def build_lean_cut_wrapper() -> bytes:
     a.fcmpgt(4, 3).bt("set_cut")
     a.fsub(3, 2)
     a.movl_pool(1, LEAN_RESET_DELTA_ADDR).fmov_load(3, 1)
-    a.fcmpeq(3, 3).bf("set_cut")
-    a.fldi0(4).fcmpgt(3, 4).bf("set_cut")  # reset delta must be < 0
+    # Reset may be below or above atmospheric pressure. Validate hysteresis
+    # against the arm threshold; requiring a negative reset traps v2's valid
+    # +1.5 psi calibration in the latched state even after MAP falls to vacuum.
+    # The ordered comparison also rejects NaN in either calibration.
+    a.movl_pool(1, LEAN_ARM_DELTA_ADDR).fmov_load(4, 1)
+    a.fcmpgt(3, 4).bf("set_cut")        # reset must be strictly below arm
     a.fcmpgt(3, 2).bf("disarm")          # release when delta <= reset
 
     a.label("set_cut")

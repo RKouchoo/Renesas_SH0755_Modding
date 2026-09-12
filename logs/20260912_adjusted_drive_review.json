@@ -1,0 +1,2565 @@
+{
+  "log": "logs/romraiderlog_adjustedvedrive_20260912_144204.csv",
+  "log_sha256": "347d10ce5e5c70d64f478e4bb6d124453697af07b1e074271ecbe1830d7efb33",
+  "captured_rom_sha256": "fd795813febf817c845fc922e81e498539a539efeeb6e4d11822af47098094a2",
+  "flash_verified_at": "2026-09-12 14:41:30.926",
+  "flash_identity": {
+    "available": true,
+    "path": "/Users/regan/.config/FastECU/0.1.0-beta.5/syslogs/log_fastecu_2026-09-12_11h31m48s.txt",
+    "matches_candidate": true,
+    "blocks": [
+      {
+        "block": 0,
+        "start": 0,
+        "length": 4096,
+        "crc": "0xC133D601"
+      },
+      {
+        "block": 1,
+        "start": 4096,
+        "length": 4096,
+        "crc": "0x840A76BF"
+      },
+      {
+        "block": 2,
+        "start": 8192,
+        "length": 4096,
+        "crc": "0xF1C48D21"
+      },
+      {
+        "block": 3,
+        "start": 12288,
+        "length": 4096,
+        "crc": "0xB56C5182"
+      },
+      {
+        "block": 4,
+        "start": 16384,
+        "length": 4096,
+        "crc": "0xCD616FA9"
+      },
+      {
+        "block": 5,
+        "start": 20480,
+        "length": 4096,
+        "crc": "0xAC3913AC"
+      },
+      {
+        "block": 6,
+        "start": 24576,
+        "length": 4096,
+        "crc": "0xBB1A48A4"
+      },
+      {
+        "block": 7,
+        "start": 28672,
+        "length": 4096,
+        "crc": "0x999FB0E5"
+      },
+      {
+        "block": 8,
+        "start": 32768,
+        "length": 32768,
+        "crc": "0xF49252F3"
+      },
+      {
+        "block": 9,
+        "start": 65536,
+        "length": 65536,
+        "crc": "0xF66A0335"
+      },
+      {
+        "block": 10,
+        "start": 131072,
+        "length": 65536,
+        "crc": "0xFFE4BF89"
+      },
+      {
+        "block": 11,
+        "start": 196608,
+        "length": 65536,
+        "crc": "0xCF8D8B68"
+      },
+      {
+        "block": 12,
+        "start": 262144,
+        "length": 65536,
+        "crc": "0xC3E145D2"
+      },
+      {
+        "block": 13,
+        "start": 327680,
+        "length": 65536,
+        "crc": "0xA4CBA2FB"
+      },
+      {
+        "block": 14,
+        "start": 393216,
+        "length": 65536,
+        "crc": "0xFFBC5EC1"
+      },
+      {
+        "block": 15,
+        "start": 458752,
+        "length": 65536,
+        "crc": "0xF4C23EA5"
+      }
+    ]
+  },
+  "samples": 2747,
+  "duration_seconds": 285.779,
+  "idle_10_30s": {
+    "time": {
+      "min": 10.086,
+      "median": 20.0195,
+      "max": 29.951
+    },
+    "pedal": {
+      "min": 0.0,
+      "median": 0.0,
+      "max": 0.0
+    },
+    "mode": {
+      "min": 1.0,
+      "median": 1.0,
+      "max": 1.0
+    },
+    "ect": {
+      "min": 65.0,
+      "median": 66.0,
+      "max": 68.0
+    },
+    "rpm": {
+      "min": 812.0,
+      "median": 846.0,
+      "max": 883.0
+    },
+    "afr": {
+      "min": 13.85,
+      "median": 14.56,
+      "max": 15.52
+    },
+    "fbkc": {
+      "min": 0.0,
+      "median": 0.0,
+      "max": 0.0
+    },
+    "flkc": {
+      "min": 0.0,
+      "median": 0.0,
+      "max": 0.0
+    },
+    "pw": {
+      "min": 2.3,
+      "median": 2.3,
+      "max": 2.56
+    },
+    "iam": {
+      "min": 0.0,
+      "median": 1.0,
+      "max": 1.0
+    },
+    "timing": {
+      "min": 15.0,
+      "median": 15.0,
+      "max": 15.0
+    },
+    "map": {
+      "min": 30.673,
+      "median": 32.103,
+      "max": 33.85
+    },
+    "throttle": {
+      "min": 4.31,
+      "median": 4.31,
+      "max": 4.71
+    },
+    "speed": {
+      "min": 0.0,
+      "median": 0.0,
+      "max": 0.0
+    },
+    "state": {
+      "min": 7.0,
+      "median": 7.0,
+      "max": 7.0
+    },
+    "load": {
+      "min": 0.49,
+      "median": 0.51,
+      "max": 0.54
+    },
+    "factor": {
+      "min": 1.0,
+      "median": 1.01,
+      "max": 1.03
+    },
+    "iat": {
+      "min": 42.0,
+      "median": 42.0,
+      "max": 45.0
+    },
+    "trans": {
+      "min": 0.0,
+      "median": 0.0,
+      "max": 0.0
+    }
+  },
+  "fueling_status_values": [
+    7.0
+  ],
+  "loaded_windows": [
+    {
+      "requested_time_range": [
+        68,
+        72.3
+      ],
+      "samples": 40,
+      "logged": {
+        "time": {
+          "min": 68.042,
+          "median": 70.07050000000001,
+          "max": 72.103
+        },
+        "pedal": {
+          "min": 45.88,
+          "median": 60.39,
+          "max": 69.41
+        },
+        "mode": {
+          "min": 1.0,
+          "median": 1.0,
+          "max": 3.0
+        },
+        "ect": {
+          "min": 66.0,
+          "median": 67.0,
+          "max": 67.0
+        },
+        "rpm": {
+          "min": 2318.0,
+          "median": 2763.5,
+          "max": 3258.0
+        },
+        "afr": {
+          "min": 11.11,
+          "median": 12.11,
+          "max": 12.35
+        },
+        "fbkc": {
+          "min": -0.35,
+          "median": 0.0,
+          "max": 0.0
+        },
+        "flkc": {
+          "min": 0.0,
+          "median": 0.0,
+          "max": 0.0
+        },
+        "pw": {
+          "min": 7.68,
+          "median": 7.94,
+          "max": 10.75
+        },
+        "iam": {
+          "min": 1.0,
+          "median": 1.0,
+          "max": 1.0
+        },
+        "timing": {
+          "min": 15.5,
+          "median": 17.0,
+          "max": 17.0
+        },
+        "map": {
+          "min": 99.927,
+          "median": 103.5805,
+          "max": 112.952
+        },
+        "throttle": {
+          "min": 54.9,
+          "median": 71.37,
+          "max": 81.57
+        },
+        "speed": {
+          "min": 31.0,
+          "median": 36.5,
+          "max": 42.0
+        },
+        "state": {
+          "min": 7.0,
+          "median": 7.0,
+          "max": 7.0
+        },
+        "load": {
+          "min": 1.8,
+          "median": 1.9049999999999998,
+          "max": 2.4
+        },
+        "factor": {
+          "min": 1.17,
+          "median": 1.18,
+          "max": 1.29
+        },
+        "iat": {
+          "min": 37.0,
+          "median": 38.0,
+          "max": 38.0
+        },
+        "trans": {
+          "min": 0.0013,
+          "median": 0.0023,
+          "max": 0.0215
+        }
+      },
+      "derived": {
+        "raw_sd_load_g_rev": {
+          "min": 1.7816374215541413,
+          "median": 1.8982647608303778,
+          "max": 2.428131152864878
+        },
+        "load_error_g_rev": {
+          "min": -0.10629822381652199,
+          "median": 0.0020472707796993506,
+          "max": 0.10813115286487829
+        },
+        "factor_minus_primary_and_transient": {
+          "min": -0.024787499999999966,
+          "median": -0.0011046868364327118,
+          "max": 0.018812500000000086
+        },
+        "gross_pulse_residual_ms": {
+          "min": 0.5710787603027336,
+          "median": 0.7190820523071291,
+          "max": 0.9735182951171879
+        },
+        "afr_equivalent_of_additive_factor": {
+          "min": 11.348837209302326,
+          "median": 12.40677966101695,
+          "max": 12.512820512820515
+        }
+      }
+    },
+    {
+      "requested_time_range": [
+        77,
+        85.8
+      ],
+      "samples": 81,
+      "logged": {
+        "time": {
+          "min": 77.003,
+          "median": 81.171,
+          "max": 85.439
+        },
+        "pedal": {
+          "min": 35.29,
+          "median": 58.82,
+          "max": 80.0
+        },
+        "mode": {
+          "min": 1.0,
+          "median": 1.0,
+          "max": 1.0
+        },
+        "ect": {
+          "min": 66.0,
+          "median": 67.0,
+          "max": 67.0
+        },
+        "rpm": {
+          "min": 2502.0,
+          "median": 2707.0,
+          "max": 2876.0
+        },
+        "afr": {
+          "min": 11.06,
+          "median": 11.58,
+          "max": 12.17
+        },
+        "fbkc": {
+          "min": 0.0,
+          "median": 0.0,
+          "max": 0.0
+        },
+        "flkc": {
+          "min": 0.0,
+          "median": 0.0,
+          "max": 0.0
+        },
+        "pw": {
+          "min": 7.94,
+          "median": 8.45,
+          "max": 9.47
+        },
+        "iam": {
+          "min": 1.0,
+          "median": 1.0,
+          "max": 1.0
+        },
+        "timing": {
+          "min": 15.5,
+          "median": 16.5,
+          "max": 17.0
+        },
+        "map": {
+          "min": 102.151,
+          "median": 105.328,
+          "max": 110.093
+        },
+        "throttle": {
+          "min": 45.1,
+          "median": 69.02,
+          "max": 91.76
+        },
+        "speed": {
+          "min": 45.0,
+          "median": 48.0,
+          "max": 51.0
+        },
+        "state": {
+          "min": 7.0,
+          "median": 7.0,
+          "max": 7.0
+        },
+        "load": {
+          "min": 1.89,
+          "median": 1.98,
+          "max": 2.22
+        },
+        "factor": {
+          "min": 1.14,
+          "median": 1.18,
+          "max": 1.23
+        },
+        "iat": {
+          "min": 36.0,
+          "median": 37.0,
+          "max": 37.0
+        },
+        "trans": {
+          "min": -0.0292,
+          "median": 0.0011,
+          "max": 0.0115
+        }
+      },
+      "derived": {
+        "raw_sd_load_g_rev": {
+          "min": 1.8513605425257225,
+          "median": 1.9629769179722565,
+          "max": 2.217573932150136
+        },
+        "load_error_g_rev": {
+          "min": -0.08418656950687198,
+          "median": -0.020025710068739766,
+          "max": 0.05485527179399097
+        },
+        "factor_minus_primary_and_transient": {
+          "min": -0.014862500000000115,
+          "median": 0.0014703126047737498,
+          "max": 0.029928125209547535
+        },
+        "gross_pulse_residual_ms": {
+          "min": 0.45319860546874935,
+          "median": 0.6733986892089847,
+          "max": 0.8864586374267587
+        },
+        "afr_equivalent_of_additive_factor": {
+          "min": 11.902439024390244,
+          "median": 12.40677966101695,
+          "max": 12.842105263157896
+        }
+      }
+    },
+    {
+      "requested_time_range": [
+        107,
+        111
+      ],
+      "samples": 33,
+      "logged": {
+        "time": {
+          "min": 107.084,
+          "median": 108.747,
+          "max": 110.415
+        },
+        "pedal": {
+          "min": 30.2,
+          "median": 40.39,
+          "max": 42.35
+        },
+        "mode": {
+          "min": 1.0,
+          "median": 1.0,
+          "max": 1.0
+        },
+        "ect": {
+          "min": 68.0,
+          "median": 68.0,
+          "max": 68.0
+        },
+        "rpm": {
+          "min": 2332.0,
+          "median": 2712.0,
+          "max": 3100.0
+        },
+        "afr": {
+          "min": 11.87,
+          "median": 12.11,
+          "max": 12.8
+        },
+        "fbkc": {
+          "min": -0.35,
+          "median": 0.0,
+          "max": 0.0
+        },
+        "flkc": {
+          "min": 0.0,
+          "median": 0.0,
+          "max": 0.0
+        },
+        "pw": {
+          "min": 7.42,
+          "median": 7.68,
+          "max": 8.7
+        },
+        "iam": {
+          "min": 1.0,
+          "median": 1.0,
+          "max": 1.0
+        },
+        "timing": {
+          "min": 16.5,
+          "median": 17.0,
+          "max": 17.0
+        },
+        "map": {
+          "min": 97.386,
+          "median": 101.198,
+          "max": 106.281
+        },
+        "throttle": {
+          "min": 43.92,
+          "median": 50.59,
+          "max": 52.94
+        },
+        "speed": {
+          "min": 31.0,
+          "median": 36.0,
+          "max": 41.0
+        },
+        "state": {
+          "min": 7.0,
+          "median": 7.0,
+          "max": 7.0
+        },
+        "load": {
+          "min": 1.75,
+          "median": 1.83,
+          "max": 2.04
+        },
+        "factor": {
+          "min": 1.17,
+          "median": 1.18,
+          "max": 1.19
+        },
+        "iat": {
+          "min": 35.0,
+          "median": 36.0,
+          "max": 36.0
+        },
+        "trans": {
+          "min": 0.0019,
+          "median": 0.0026,
+          "max": 0.0178
+        }
+      },
+      "derived": {
+        "raw_sd_load_g_rev": {
+          "min": 1.743499982194936,
+          "median": 1.8136956300528795,
+          "max": 2.0789334204889114
+        },
+        "load_error_g_rev": {
+          "min": -0.07915889427472766,
+          "median": -0.005722247661272606,
+          "max": 0.0689334204889116
+        },
+        "factor_minus_primary_and_transient": {
+          "min": -0.012975000000000016,
+          "median": -6.874930150811221e-05,
+          "max": 0.011189063303265717
+        },
+        "gross_pulse_residual_ms": {
+          "min": 0.5198386170898424,
+          "median": 0.6357854835937502,
+          "max": 0.9521186488769535
+        },
+        "afr_equivalent_of_additive_factor": {
+          "min": 12.302521008403362,
+          "median": 12.40677966101695,
+          "max": 12.512820512820515
+        }
+      }
+    },
+    {
+      "requested_time_range": [
+        115,
+        117.8
+      ],
+      "samples": 23,
+      "logged": {
+        "time": {
+          "min": 115.099,
+          "median": 116.246,
+          "max": 117.704
+        },
+        "pedal": {
+          "min": 41.96,
+          "median": 56.86,
+          "max": 66.67
+        },
+        "mode": {
+          "min": 1.0,
+          "median": 1.0,
+          "max": 3.0
+        },
+        "ect": {
+          "min": 69.0,
+          "median": 69.0,
+          "max": 69.0
+        },
+        "rpm": {
+          "min": 2668.0,
+          "median": 3029.0,
+          "max": 3252.0
+        },
+        "afr": {
+          "min": 11.57,
+          "median": 12.54,
+          "max": 13.75
+        },
+        "fbkc": {
+          "min": 0.0,
+          "median": 0.0,
+          "max": 0.0
+        },
+        "flkc": {
+          "min": 0.0,
+          "median": 0.0,
+          "max": 0.0
+        },
+        "pw": {
+          "min": 7.68,
+          "median": 8.7,
+          "max": 10.24
+        },
+        "iam": {
+          "min": 1.0,
+          "median": 1.0,
+          "max": 1.0
+        },
+        "timing": {
+          "min": 15.5,
+          "median": 17.0,
+          "max": 17.5
+        },
+        "map": {
+          "min": 99.927,
+          "median": 106.916,
+          "max": 111.681
+        },
+        "throttle": {
+          "min": 51.76,
+          "median": 68.63,
+          "max": 79.61
+        },
+        "speed": {
+          "min": 35.0,
+          "median": 40.0,
+          "max": 43.0
+        },
+        "state": {
+          "min": 7.0,
+          "median": 7.0,
+          "max": 7.0
+        },
+        "load": {
+          "min": 1.8,
+          "median": 2.03,
+          "max": 2.33
+        },
+        "factor": {
+          "min": 1.18,
+          "median": 1.2,
+          "max": 1.27
+        },
+        "iat": {
+          "min": 35.0,
+          "median": 35.0,
+          "max": 35.0
+        },
+        "trans": {
+          "min": -0.0129,
+          "median": 0.0067,
+          "max": 0.0282
+        }
+      },
+      "derived": {
+        "raw_sd_load_g_rev": {
+          "min": 1.7954741996982466,
+          "median": 2.106952283121879,
+          "max": 2.361827374429339
+        },
+        "load_error_g_rev": {
+          "min": -0.05164423788439754,
+          "median": 0.026810153728359598,
+          "max": 0.1390137259282751
+        },
+        "factor_minus_primary_and_transient": {
+          "min": -0.009912500000000058,
+          "median": 0.001749999999999986,
+          "max": 0.012900000000000023
+        },
+        "gross_pulse_residual_ms": {
+          "min": 0.5718251585449217,
+          "median": 0.710358561376955,
+          "max": 1.037498440551758
+        },
+        "afr_equivalent_of_additive_factor": {
+          "min": 11.527559055118111,
+          "median": 12.200000000000001,
+          "max": 12.40677966101695
+        }
+      }
+    },
+    {
+      "requested_time_range": [
+        133.5,
+        137.3
+      ],
+      "samples": 25,
+      "logged": {
+        "time": {
+          "min": 134.68,
+          "median": 135.932,
+          "max": 137.181
+        },
+        "pedal": {
+          "min": 38.43,
+          "median": 70.98,
+          "max": 100.0
+        },
+        "mode": {
+          "min": 1.0,
+          "median": 1.0,
+          "max": 1.0
+        },
+        "ect": {
+          "min": 70.0,
+          "median": 70.0,
+          "max": 70.0
+        },
+        "rpm": {
+          "min": 2836.0,
+          "median": 2927.0,
+          "max": 3052.0
+        },
+        "afr": {
+          "min": 11.33,
+          "median": 12.11,
+          "max": 13.59
+        },
+        "fbkc": {
+          "min": 0.0,
+          "median": 0.0,
+          "max": 0.0
+        },
+        "flkc": {
+          "min": 0.0,
+          "median": 0.0,
+          "max": 0.0
+        },
+        "pw": {
+          "min": 7.42,
+          "median": 9.22,
+          "max": 10.75
+        },
+        "iam": {
+          "min": 1.0,
+          "median": 1.0,
+          "max": 1.0
+        },
+        "timing": {
+          "min": 15.0,
+          "median": 16.0,
+          "max": 18.0
+        },
+        "map": {
+          "min": 98.021,
+          "median": 108.187,
+          "max": 113.905
+        },
+        "throttle": {
+          "min": 47.06,
+          "median": 85.1,
+          "max": 100.0
+        },
+        "speed": {
+          "min": 50.0,
+          "median": 52.0,
+          "max": 53.0
+        },
+        "state": {
+          "min": 7.0,
+          "median": 7.0,
+          "max": 7.0
+        },
+        "load": {
+          "min": 1.7,
+          "median": 2.14,
+          "max": 2.43
+        },
+        "factor": {
+          "min": 1.18,
+          "median": 1.22,
+          "max": 1.28
+        },
+        "iat": {
+          "min": 34.0,
+          "median": 34.0,
+          "max": 34.0
+        },
+        "trans": {
+          "min": 0.0035,
+          "median": 0.0128,
+          "max": 0.0289
+        }
+      },
+      "derived": {
+        "raw_sd_load_g_rev": {
+          "min": 1.7649661065493047,
+          "median": 2.1601940086816005,
+          "max": 2.4688564281367777
+        },
+        "load_error_g_rev": {
+          "min": 0.0004266885773294149,
+          "median": 0.0369239870707192,
+          "max": 0.09019400868160066
+        },
+        "factor_minus_primary_and_transient": {
+          "min": -0.011912499441206474,
+          "median": -0.0009687493015080942,
+          "max": 0.011200000000000014
+        },
+        "gross_pulse_residual_ms": {
+          "min": 0.506611590624999,
+          "median": 0.7509384795166021,
+          "max": 0.8798718789306648
+        },
+        "afr_equivalent_of_additive_factor": {
+          "min": 11.4375,
+          "median": 12.0,
+          "max": 12.40677966101695
+        }
+      }
+    },
+    {
+      "requested_time_range": [
+        177,
+        181
+      ],
+      "samples": 37,
+      "logged": {
+        "time": {
+          "min": 177.148,
+          "median": 179.127,
+          "max": 180.999
+        },
+        "pedal": {
+          "min": 38.43,
+          "median": 60.78,
+          "max": 68.24
+        },
+        "mode": {
+          "min": 1.0,
+          "median": 1.0,
+          "max": 1.0
+        },
+        "ect": {
+          "min": 72.0,
+          "median": 72.0,
+          "max": 72.0
+        },
+        "rpm": {
+          "min": 2382.0,
+          "median": 2816.0,
+          "max": 3120.0
+        },
+        "afr": {
+          "min": 11.15,
+          "median": 11.57,
+          "max": 12.21
+        },
+        "fbkc": {
+          "min": 0.0,
+          "median": 0.0,
+          "max": 0.0
+        },
+        "flkc": {
+          "min": 0.0,
+          "median": 0.0,
+          "max": 0.0
+        },
+        "pw": {
+          "min": 6.91,
+          "median": 8.7,
+          "max": 11.26
+        },
+        "iam": {
+          "min": 1.0,
+          "median": 1.0,
+          "max": 1.0
+        },
+        "timing": {
+          "min": 15.0,
+          "median": 16.5,
+          "max": 17.5
+        },
+        "map": {
+          "min": 95.797,
+          "median": 106.916,
+          "max": 117.399
+        },
+        "throttle": {
+          "min": 36.47,
+          "median": 72.55,
+          "max": 79.61
+        },
+        "speed": {
+          "min": 31.0,
+          "median": 37.0,
+          "max": 41.0
+        },
+        "state": {
+          "min": 7.0,
+          "median": 7.0,
+          "max": 7.0
+        },
+        "load": {
+          "min": 1.62,
+          "median": 2.07,
+          "max": 2.53
+        },
+        "factor": {
+          "min": 1.18,
+          "median": 1.2,
+          "max": 1.29
+        },
+        "iat": {
+          "min": 33.0,
+          "median": 33.0,
+          "max": 33.0
+        },
+        "trans": {
+          "min": 0.0026,
+          "median": 0.0053,
+          "max": 0.0283
+        }
+      },
+      "derived": {
+        "raw_sd_load_g_rev": {
+          "min": 1.7318053943841527,
+          "median": 2.088871544057673,
+          "max": 2.580044896979081
+        },
+        "load_error_g_rev": {
+          "min": -0.03545248391263045,
+          "median": 0.024828339007399114,
+          "max": 0.1118053943841526
+        },
+        "factor_minus_primary_and_transient": {
+          "min": -0.008912500000000049,
+          "median": 0.00017187534924593094,
+          "max": 0.014325000000000003
+        },
+        "gross_pulse_residual_ms": {
+          "min": 0.573604980981445,
+          "median": 0.711945362597656,
+          "max": 0.861678498828125
+        },
+        "afr_equivalent_of_additive_factor": {
+          "min": 11.348837209302326,
+          "median": 12.200000000000001,
+          "max": 12.40677966101695
+        }
+      }
+    },
+    {
+      "requested_time_range": [
+        185,
+        198
+      ],
+      "samples": 70,
+      "logged": {
+        "time": {
+          "min": 185.059,
+          "median": 191.8675,
+          "max": 197.959
+        },
+        "pedal": {
+          "min": 28.63,
+          "median": 36.08,
+          "max": 100.0
+        },
+        "mode": {
+          "min": 1.0,
+          "median": 1.0,
+          "max": 1.0
+        },
+        "ect": {
+          "min": 72.0,
+          "median": 72.0,
+          "max": 72.0
+        },
+        "rpm": {
+          "min": 2259.0,
+          "median": 2406.0,
+          "max": 2493.0
+        },
+        "afr": {
+          "min": 11.27,
+          "median": 11.57,
+          "max": 12.64
+        },
+        "fbkc": {
+          "min": 0.0,
+          "median": 0.0,
+          "max": 0.0
+        },
+        "flkc": {
+          "min": 0.0,
+          "median": 0.0,
+          "max": 0.0
+        },
+        "pw": {
+          "min": 6.91,
+          "median": 7.94,
+          "max": 8.45
+        },
+        "iam": {
+          "min": 1.0,
+          "median": 1.0,
+          "max": 1.0
+        },
+        "timing": {
+          "min": 16.0,
+          "median": 16.5,
+          "max": 17.5
+        },
+        "map": {
+          "min": 96.115,
+          "median": 102.62700000000001,
+          "max": 105.645
+        },
+        "throttle": {
+          "min": 33.73,
+          "median": 45.1,
+          "max": 100.0
+        },
+        "speed": {
+          "min": 40.0,
+          "median": 43.0,
+          "max": 44.0
+        },
+        "state": {
+          "min": 7.0,
+          "median": 7.0,
+          "max": 7.0
+        },
+        "load": {
+          "min": 1.63,
+          "median": 1.8849999999999998,
+          "max": 1.98
+        },
+        "factor": {
+          "min": 1.17,
+          "median": 1.18,
+          "max": 1.19
+        },
+        "iat": {
+          "min": 32.0,
+          "median": 33.0,
+          "max": 33.0
+        },
+        "trans": {
+          "min": 0.0,
+          "median": 0.0015,
+          "max": 0.0283
+        }
+      },
+      "derived": {
+        "raw_sd_load_g_rev": {
+          "min": 1.7448530257887143,
+          "median": 1.8814624075045407,
+          "max": 1.9850830994033972
+        },
+        "load_error_g_rev": {
+          "min": -0.06315246182455758,
+          "median": -0.01695170256613876,
+          "max": 0.11485302578871437
+        },
+        "factor_minus_primary_and_transient": {
+          "min": -0.008224999161809715,
+          "median": 0.0038281252095475338,
+          "max": 0.012914062744472156
+        },
+        "gross_pulse_residual_ms": {
+          "min": 0.5103187497070305,
+          "median": 0.6932254029296887,
+          "max": 0.8892788611328122
+        },
+        "afr_equivalent_of_additive_factor": {
+          "min": 12.302521008403362,
+          "median": 12.40677966101695,
+          "max": 12.512820512820515
+        }
+      }
+    },
+    {
+      "requested_time_range": [
+        230,
+        233.7
+      ],
+      "samples": 26,
+      "logged": {
+        "time": {
+          "min": 230.745,
+          "median": 232.04500000000002,
+          "max": 233.658
+        },
+        "pedal": {
+          "min": 34.9,
+          "median": 39.805,
+          "max": 42.35
+        },
+        "mode": {
+          "min": 1.0,
+          "median": 1.0,
+          "max": 3.0
+        },
+        "ect": {
+          "min": 74.0,
+          "median": 74.0,
+          "max": 75.0
+        },
+        "rpm": {
+          "min": 2702.0,
+          "median": 3055.0,
+          "max": 3253.0
+        },
+        "afr": {
+          "min": 11.56,
+          "median": 12.594999999999999,
+          "max": 15.6
+        },
+        "fbkc": {
+          "min": 0.0,
+          "median": 0.0,
+          "max": 0.0
+        },
+        "flkc": {
+          "min": 0.0,
+          "median": 0.0,
+          "max": 0.0
+        },
+        "pw": {
+          "min": 7.17,
+          "median": 8.45,
+          "max": 10.24
+        },
+        "iam": {
+          "min": 1.0,
+          "median": 1.0,
+          "max": 1.0
+        },
+        "timing": {
+          "min": 15.5,
+          "median": 17.0,
+          "max": 18.0
+        },
+        "map": {
+          "min": 94.844,
+          "median": 104.851,
+          "max": 111.363
+        },
+        "throttle": {
+          "min": 44.31,
+          "median": 50.785,
+          "max": 53.73
+        },
+        "speed": {
+          "min": 48.0,
+          "median": 54.0,
+          "max": 58.0
+        },
+        "state": {
+          "min": 7.0,
+          "median": 7.0,
+          "max": 7.0
+        },
+        "load": {
+          "min": 1.7,
+          "median": 1.98,
+          "max": 2.34
+        },
+        "factor": {
+          "min": 1.18,
+          "median": 1.19,
+          "max": 1.27
+        },
+        "iat": {
+          "min": 32.0,
+          "median": 32.0,
+          "max": 32.0
+        },
+        "trans": {
+          "min": -0.0012,
+          "median": 0.010499999999999999,
+          "max": 0.0279
+        }
+      },
+      "derived": {
+        "raw_sd_load_g_rev": {
+          "min": 1.7156574731391179,
+          "median": 2.0210275304905254,
+          "max": 2.362949504926511
+        },
+        "load_error_g_rev": {
+          "min": -0.07885634061549007,
+          "median": 0.028937662302389366,
+          "max": 0.16386922416282435
+        },
+        "factor_minus_primary_and_transient": {
+          "min": -0.029962499999999986,
+          "median": 0.002810156442085243,
+          "max": 0.015575000838190302
+        },
+        "gross_pulse_residual_ms": {
+          "min": 0.5778783604003923,
+          "median": 0.7155253405517583,
+          "max": 0.9879985644531253
+        },
+        "afr_equivalent_of_additive_factor": {
+          "min": 11.527559055118111,
+          "median": 12.302521008403362,
+          "max": 12.40677966101695
+        }
+      }
+    },
+    {
+      "requested_time_range": [
+        247,
+        252
+      ],
+      "samples": 34,
+      "logged": {
+        "time": {
+          "min": 247.506,
+          "median": 249.221,
+          "max": 250.939
+        },
+        "pedal": {
+          "min": 32.94,
+          "median": 55.69,
+          "max": 75.29
+        },
+        "mode": {
+          "min": 1.0,
+          "median": 1.0,
+          "max": 1.0
+        },
+        "ect": {
+          "min": 75.0,
+          "median": 75.0,
+          "max": 75.0
+        },
+        "rpm": {
+          "min": 2318.0,
+          "median": 2463.0,
+          "max": 2622.0
+        },
+        "afr": {
+          "min": 11.15,
+          "median": 11.57,
+          "max": 12.57
+        },
+        "fbkc": {
+          "min": 0.0,
+          "median": 0.0,
+          "max": 0.0
+        },
+        "flkc": {
+          "min": 0.0,
+          "median": 0.0,
+          "max": 0.0
+        },
+        "pw": {
+          "min": 7.68,
+          "median": 8.45,
+          "max": 8.7
+        },
+        "iam": {
+          "min": 1.0,
+          "median": 1.0,
+          "max": 1.0
+        },
+        "timing": {
+          "min": 16.0,
+          "median": 16.0,
+          "max": 16.5
+        },
+        "map": {
+          "min": 100.245,
+          "median": 105.328,
+          "max": 107.869
+        },
+        "throttle": {
+          "min": 47.84,
+          "median": 65.88,
+          "max": 86.67
+        },
+        "speed": {
+          "min": 42.0,
+          "median": 44.0,
+          "max": 46.0
+        },
+        "state": {
+          "min": 7.0,
+          "median": 7.0,
+          "max": 7.0
+        },
+        "load": {
+          "min": 1.8,
+          "median": 2.02,
+          "max": 2.08
+        },
+        "factor": {
+          "min": 1.18,
+          "median": 1.19,
+          "max": 1.2
+        },
+        "iat": {
+          "min": 32.0,
+          "median": 32.0,
+          "max": 32.0
+        },
+        "trans": {
+          "min": 0.0005,
+          "median": 0.0026499999999999996,
+          "max": 0.0235
+        }
+      },
+      "derived": {
+        "raw_sd_load_g_rev": {
+          "min": 1.824494313385527,
+          "median": 1.9899455563240802,
+          "max": 2.1037852900524707
+        },
+        "load_error_g_rev": {
+          "min": -0.07249625738862009,
+          "median": -0.010801201696732599,
+          "max": 0.035622858388598244
+        },
+        "factor_minus_primary_and_transient": {
+          "min": -0.006984374511055699,
+          "median": 0.00201249999999994,
+          "max": 0.009129687954019724
+        },
+        "gross_pulse_residual_ms": {
+          "min": 0.5463985781250003,
+          "median": 0.6720420441040043,
+          "max": 0.8563053424316402
+        },
+        "afr_equivalent_of_additive_factor": {
+          "min": 12.200000000000001,
+          "median": 12.302521008403362,
+          "max": 12.40677966101695
+        }
+      }
+    }
+  ],
+  "avls_transitions": [
+    {
+      "previous": {
+        "time": 71.79,
+        "pedal": 63.92,
+        "mode": 1.0,
+        "ect": 66.0,
+        "rpm": 3193.0,
+        "afr": 11.56,
+        "fbkc": 0.0,
+        "flkc": 0.0,
+        "pw": 9.73,
+        "iam": 1.0,
+        "timing": 16.0,
+        "map": 110.093,
+        "throttle": 76.47,
+        "speed": 42.0,
+        "state": 7.0,
+        "load": 2.24,
+        "factor": 1.25,
+        "iat": 37.0,
+        "trans": 0.0117
+      },
+      "sample": {
+        "time": 71.894,
+        "pedal": 63.92,
+        "mode": 3.0,
+        "ect": 66.0,
+        "rpm": 3258.0,
+        "afr": 11.57,
+        "fbkc": 0.0,
+        "flkc": 0.0,
+        "pw": 9.98,
+        "iam": 1.0,
+        "timing": 16.0,
+        "map": 110.728,
+        "throttle": 76.47,
+        "speed": 42.0,
+        "state": 7.0,
+        "load": 2.28,
+        "factor": 1.25,
+        "iat": 37.0,
+        "trans": 0.005
+      }
+    },
+    {
+      "previous": {
+        "time": 72.624,
+        "pedal": 0.0,
+        "mode": 3.0,
+        "ect": 66.0,
+        "rpm": 3196.0,
+        "afr": 13.35,
+        "fbkc": 0.0,
+        "flkc": 0.0,
+        "pw": 6.14,
+        "iam": 1.0,
+        "timing": 18.0,
+        "map": 81.502,
+        "throttle": 20.0,
+        "speed": 41.0,
+        "state": 7.0,
+        "load": 1.81,
+        "factor": 1.04,
+        "iat": 37.0,
+        "trans": -0.0921
+      },
+      "sample": {
+        "time": 72.728,
+        "pedal": 0.0,
+        "mode": 1.0,
+        "ect": 66.0,
+        "rpm": 2899.0,
+        "afr": 11.33,
+        "fbkc": 0.0,
+        "flkc": 0.0,
+        "pw": 3.84,
+        "iam": 1.0,
+        "timing": 20.0,
+        "map": 47.51,
+        "throttle": 8.24,
+        "speed": 40.0,
+        "state": 7.0,
+        "load": 1.5,
+        "factor": 0.71,
+        "iat": 37.0,
+        "trans": -0.358
+      }
+    },
+    {
+      "previous": {
+        "time": 102.92,
+        "pedal": 35.29,
+        "mode": 1.0,
+        "ect": 68.0,
+        "rpm": 3256.0,
+        "afr": 13.12,
+        "fbkc": 0.0,
+        "flkc": 0.0,
+        "pw": 7.42,
+        "iam": 1.0,
+        "timing": 18.0,
+        "map": 100.88,
+        "throttle": 46.67,
+        "speed": 27.0,
+        "state": 7.0,
+        "load": 1.79,
+        "factor": 1.17,
+        "iat": 36.0,
+        "trans": 0.001
+      },
+      "sample": {
+        "time": 103.023,
+        "pedal": 29.41,
+        "mode": 3.0,
+        "ect": 68.0,
+        "rpm": 3262.0,
+        "afr": 13.37,
+        "fbkc": 0.0,
+        "flkc": 0.0,
+        "pw": 7.42,
+        "iam": 1.0,
+        "timing": 18.5,
+        "map": 101.833,
+        "throttle": 44.71,
+        "speed": 28.0,
+        "state": 7.0,
+        "load": 1.76,
+        "factor": 1.17,
+        "iat": 36.0,
+        "trans": 0.0
+      }
+    },
+    {
+      "previous": {
+        "time": 103.231,
+        "pedal": 0.0,
+        "mode": 3.0,
+        "ect": 68.0,
+        "rpm": 3030.0,
+        "afr": 13.12,
+        "fbkc": 0.0,
+        "flkc": 0.0,
+        "pw": 4.61,
+        "iam": 1.0,
+        "timing": 18.5,
+        "map": 60.217,
+        "throttle": 12.16,
+        "speed": 28.0,
+        "state": 7.0,
+        "load": 1.65,
+        "factor": 0.79,
+        "iat": 36.0,
+        "trans": -0.2841
+      },
+      "sample": {
+        "time": 103.335,
+        "pedal": 0.0,
+        "mode": 1.0,
+        "ect": 68.0,
+        "rpm": 2912.0,
+        "afr": 12.11,
+        "fbkc": 0.0,
+        "flkc": 0.0,
+        "pw": 0.77,
+        "iam": 1.0,
+        "timing": 22.5,
+        "map": 40.839,
+        "throttle": 9.02,
+        "speed": 28.0,
+        "state": 7.0,
+        "load": 1.27,
+        "factor": 0.76,
+        "iat": 36.0,
+        "trans": -0.4129
+      }
+    },
+    {
+      "previous": {
+        "time": 110.934,
+        "pedal": 1.57,
+        "mode": 1.0,
+        "ect": 68.0,
+        "rpm": 3016.0,
+        "afr": 11.87,
+        "fbkc": 0.0,
+        "flkc": 0.0,
+        "pw": 0.77,
+        "iam": 1.0,
+        "timing": 25.5,
+        "map": 35.121,
+        "throttle": 10.98,
+        "speed": 42.0,
+        "state": 7.0,
+        "load": 1.1,
+        "factor": 0.69,
+        "iat": 36.0,
+        "trans": -0.4199
+      },
+      "sample": {
+        "time": 111.039,
+        "pedal": 1.18,
+        "mode": 3.0,
+        "ect": 68.0,
+        "rpm": 3243.0,
+        "afr": 12.56,
+        "fbkc": 0.0,
+        "flkc": 0.0,
+        "pw": 0.77,
+        "iam": 1.0,
+        "timing": 34.5,
+        "map": 26.226,
+        "throttle": 10.2,
+        "speed": 41.0,
+        "state": 7.0,
+        "load": 0.77,
+        "factor": 0.73,
+        "iat": 36.0,
+        "trans": -0.2624
+      }
+    },
+    {
+      "previous": {
+        "time": 111.246,
+        "pedal": 0.0,
+        "mode": 3.0,
+        "ect": 68.0,
+        "rpm": 2954.0,
+        "afr": 14.64,
+        "fbkc": 0.0,
+        "flkc": 0.0,
+        "pw": 0.77,
+        "iam": 1.0,
+        "timing": 39.0,
+        "map": 27.814,
+        "throttle": 9.41,
+        "speed": 41.0,
+        "state": 7.0,
+        "load": 0.47,
+        "factor": 0.95,
+        "iat": 36.0,
+        "trans": -0.0667
+      },
+      "sample": {
+        "time": 111.351,
+        "pedal": 0.0,
+        "mode": 1.0,
+        "ect": 68.0,
+        "rpm": 3124.0,
+        "afr": 14.11,
+        "fbkc": 0.0,
+        "flkc": 0.0,
+        "pw": 0.77,
+        "iam": 1.0,
+        "timing": 39.0,
+        "map": 25.273,
+        "throttle": 9.02,
+        "speed": 40.0,
+        "state": 7.0,
+        "load": 0.44,
+        "factor": 1.01,
+        "iat": 36.0,
+        "trans": 0.0
+      }
+    },
+    {
+      "previous": {
+        "time": 116.455,
+        "pedal": 63.53,
+        "mode": 1.0,
+        "ect": 69.0,
+        "rpm": 3170.0,
+        "afr": 12.1,
+        "fbkc": 0.0,
+        "flkc": 0.0,
+        "pw": 9.22,
+        "iam": 1.0,
+        "timing": 16.5,
+        "map": 107.551,
+        "throttle": 70.2,
+        "speed": 41.0,
+        "state": 7.0,
+        "load": 2.11,
+        "factor": 1.22,
+        "iat": 35.0,
+        "trans": 0.0145
+      },
+      "sample": {
+        "time": 116.558,
+        "pedal": 66.67,
+        "mode": 3.0,
+        "ect": 69.0,
+        "rpm": 3247.0,
+        "afr": 12.12,
+        "fbkc": 0.0,
+        "flkc": 0.0,
+        "pw": 9.22,
+        "iam": 1.0,
+        "timing": 16.5,
+        "map": 109.457,
+        "throttle": 78.04,
+        "speed": 42.0,
+        "state": 7.0,
+        "load": 2.15,
+        "factor": 1.23,
+        "iat": 35.0,
+        "trans": 0.0192
+      }
+    },
+    {
+      "previous": {
+        "time": 118.017,
+        "pedal": 0.0,
+        "mode": 3.0,
+        "ect": 69.0,
+        "rpm": 3086.0,
+        "afr": 12.64,
+        "fbkc": 0.0,
+        "flkc": 0.0,
+        "pw": 4.35,
+        "iam": 1.0,
+        "timing": 17.5,
+        "map": 60.853,
+        "throttle": 12.16,
+        "speed": 41.0,
+        "state": 7.0,
+        "load": 1.84,
+        "factor": 0.69,
+        "iat": 35.0,
+        "trans": -0.4332
+      },
+      "sample": {
+        "time": 118.122,
+        "pedal": 0.0,
+        "mode": 1.0,
+        "ect": 69.0,
+        "rpm": 2906.0,
+        "afr": 13.56,
+        "fbkc": 0.0,
+        "flkc": 0.0,
+        "pw": 0.77,
+        "iam": 1.0,
+        "timing": 21.5,
+        "map": 41.475,
+        "throttle": 9.02,
+        "speed": 42.0,
+        "state": 7.0,
+        "load": 1.34,
+        "factor": 0.6,
+        "iat": 35.0,
+        "trans": -0.5191
+      }
+    },
+    {
+      "previous": {
+        "time": 128.947,
+        "pedal": 100.0,
+        "mode": 1.0,
+        "ect": 70.0,
+        "rpm": 3230.0,
+        "afr": 14.09,
+        "fbkc": 0.0,
+        "flkc": 0.0,
+        "pw": 6.4,
+        "iam": 1.0,
+        "timing": 13.0,
+        "map": 94.844,
+        "throttle": 100.0,
+        "speed": 54.0,
+        "state": 7.0,
+        "load": 1.04,
+        "factor": 1.43,
+        "iat": 35.0,
+        "trans": 0.4799
+      },
+      "sample": {
+        "time": 129.052,
+        "pedal": 0.0,
+        "mode": 3.0,
+        "ect": 70.0,
+        "rpm": 3533.0,
+        "afr": 15.31,
+        "fbkc": 0.0,
+        "flkc": 0.0,
+        "pw": 6.66,
+        "iam": 1.0,
+        "timing": 6.5,
+        "map": 92.62,
+        "throttle": 65.88,
+        "speed": 54.0,
+        "state": 7.0,
+        "load": 1.43,
+        "factor": 1.24,
+        "iat": 35.0,
+        "trans": 0.1054
+      }
+    },
+    {
+      "previous": {
+        "time": 132.702,
+        "pedal": 0.0,
+        "mode": 3.0,
+        "ect": 70.0,
+        "rpm": 3054.0,
+        "afr": 13.12,
+        "fbkc": 0.0,
+        "flkc": 0.0,
+        "pw": 0.77,
+        "iam": 1.0,
+        "timing": 33.0,
+        "map": 30.356,
+        "throttle": 10.2,
+        "speed": 52.0,
+        "state": 7.0,
+        "load": 0.47,
+        "factor": 1.01,
+        "iat": 35.0,
+        "trans": 0.0
+      },
+      "sample": {
+        "time": 132.807,
+        "pedal": 0.0,
+        "mode": 1.0,
+        "ect": 70.0,
+        "rpm": 2778.0,
+        "afr": 13.58,
+        "fbkc": 0.0,
+        "flkc": 0.0,
+        "pw": 0.77,
+        "iam": 1.0,
+        "timing": 30.0,
+        "map": 28.45,
+        "throttle": 9.41,
+        "speed": 51.0,
+        "state": 7.0,
+        "load": 0.47,
+        "factor": 1.01,
+        "iat": 35.0,
+        "trans": 0.0
+      }
+    },
+    {
+      "previous": {
+        "time": 225.229,
+        "pedal": 20.39,
+        "mode": 1.0,
+        "ect": 74.0,
+        "rpm": 3186.0,
+        "afr": 13.11,
+        "fbkc": 0.0,
+        "flkc": 0.0,
+        "pw": 6.66,
+        "iam": 1.0,
+        "timing": 19.5,
+        "map": 87.538,
+        "throttle": 30.59,
+        "speed": 42.0,
+        "state": 7.0,
+        "load": 1.57,
+        "factor": 1.16,
+        "iat": 32.0,
+        "trans": 0.0006
+      },
+      "sample": {
+        "time": 225.334,
+        "pedal": 24.31,
+        "mode": 3.0,
+        "ect": 74.0,
+        "rpm": 3308.0,
+        "afr": 13.05,
+        "fbkc": 0.0,
+        "flkc": 0.0,
+        "pw": 6.4,
+        "iam": 1.0,
+        "timing": 20.0,
+        "map": 89.761,
+        "throttle": 30.59,
+        "speed": 43.0,
+        "state": 7.0,
+        "load": 1.53,
+        "factor": 1.11,
+        "iat": 32.0,
+        "trans": -0.0527
+      }
+    },
+    {
+      "previous": {
+        "time": 226.27,
+        "pedal": 0.0,
+        "mode": 3.0,
+        "ect": 74.0,
+        "rpm": 3101.0,
+        "afr": 11.57,
+        "fbkc": 0.0,
+        "flkc": 0.0,
+        "pw": 0.77,
+        "iam": 1.0,
+        "timing": 19.5,
+        "map": 44.016,
+        "throttle": 9.41,
+        "speed": 45.0,
+        "state": 7.0,
+        "load": 1.55,
+        "factor": 0.66,
+        "iat": 32.0,
+        "trans": -0.384
+      },
+      "sample": {
+        "time": 226.375,
+        "pedal": 0.0,
+        "mode": 1.0,
+        "ect": 74.0,
+        "rpm": 2902.0,
+        "afr": 13.84,
+        "fbkc": 0.0,
+        "flkc": 0.0,
+        "pw": 0.77,
+        "iam": 1.0,
+        "timing": 24.5,
+        "map": 34.168,
+        "throttle": 9.41,
+        "speed": 45.0,
+        "state": 7.0,
+        "load": 1.04,
+        "factor": 0.73,
+        "iat": 32.0,
+        "trans": -0.4134
+      }
+    },
+    {
+      "previous": {
+        "time": 232.513,
+        "pedal": 40.39,
+        "mode": 1.0,
+        "ect": 74.0,
+        "rpm": 3191.0,
+        "afr": 12.4,
+        "fbkc": 0.0,
+        "flkc": 0.0,
+        "pw": 9.22,
+        "iam": 1.0,
+        "timing": 16.5,
+        "map": 107.234,
+        "throttle": 51.76,
+        "speed": 56.0,
+        "state": 7.0,
+        "load": 2.13,
+        "factor": 1.22,
+        "iat": 32.0,
+        "trans": 0.0119
+      },
+      "sample": {
+        "time": 232.618,
+        "pedal": 40.39,
+        "mode": 3.0,
+        "ect": 74.0,
+        "rpm": 3253.0,
+        "afr": 12.11,
+        "fbkc": 0.0,
+        "flkc": 0.0,
+        "pw": 9.22,
+        "iam": 1.0,
+        "timing": 16.5,
+        "map": 108.187,
+        "throttle": 51.76,
+        "speed": 57.0,
+        "state": 7.0,
+        "load": 2.16,
+        "factor": 1.22,
+        "iat": 32.0,
+        "trans": 0.004
+      }
+    },
+    {
+      "previous": {
+        "time": 234.179,
+        "pedal": 0.0,
+        "mode": 3.0,
+        "ect": 75.0,
+        "rpm": 3099.0,
+        "afr": 13.86,
+        "fbkc": 0.0,
+        "flkc": 0.0,
+        "pw": 0.77,
+        "iam": 1.0,
+        "timing": 22.0,
+        "map": 41.157,
+        "throttle": 9.41,
+        "speed": 58.0,
+        "state": 7.0,
+        "load": 1.33,
+        "factor": 0.7,
+        "iat": 32.0,
+        "trans": -0.3986
+      },
+      "sample": {
+        "time": 234.284,
+        "pedal": 0.0,
+        "mode": 1.0,
+        "ect": 75.0,
+        "rpm": 2988.0,
+        "afr": 15.57,
+        "fbkc": 0.0,
+        "flkc": 0.0,
+        "pw": 0.77,
+        "iam": 1.0,
+        "timing": 35.0,
+        "map": 33.533,
+        "throttle": 9.41,
+        "speed": 58.0,
+        "state": 7.0,
+        "load": 0.91,
+        "factor": 0.72,
+        "iat": 32.0,
+        "trans": -0.326
+      }
+    },
+    {
+      "previous": {
+        "time": 236.99,
+        "pedal": 0.0,
+        "mode": 1.0,
+        "ect": 75.0,
+        "rpm": 3190.0,
+        "afr": 15.12,
+        "fbkc": 0.0,
+        "flkc": 0.0,
+        "pw": 0.77,
+        "iam": 1.0,
+        "timing": 20.0,
+        "map": 14.154,
+        "throttle": 8.63,
+        "speed": 56.0,
+        "state": 7.0,
+        "load": 0.31,
+        "factor": 0.91,
+        "iat": 32.0,
+        "trans": -0.1042
+      },
+      "sample": {
+        "time": 237.095,
+        "pedal": 0.0,
+        "mode": 3.0,
+        "ect": 75.0,
+        "rpm": 3119.0,
+        "afr": 15.22,
+        "fbkc": 0.0,
+        "flkc": 0.0,
+        "pw": 0.77,
+        "iam": 1.0,
+        "timing": 20.0,
+        "map": 15.425,
+        "throttle": 9.02,
+        "speed": 56.0,
+        "state": 7.0,
+        "load": 0.26,
+        "factor": 1.01,
+        "iat": 32.0,
+        "trans": -0.0624
+      }
+    },
+    {
+      "previous": {
+        "time": 237.718,
+        "pedal": 0.0,
+        "mode": 3.0,
+        "ect": 75.0,
+        "rpm": 3039.0,
+        "afr": 16.61,
+        "fbkc": 0.0,
+        "flkc": 0.0,
+        "pw": 0.77,
+        "iam": 1.0,
+        "timing": 20.0,
+        "map": 21.143,
+        "throttle": 9.02,
+        "speed": 54.0,
+        "state": 7.0,
+        "load": 0.34,
+        "factor": 1.01,
+        "iat": 32.0,
+        "trans": 0.0
+      },
+      "sample": {
+        "time": 237.822,
+        "pedal": 0.0,
+        "mode": 1.0,
+        "ect": 75.0,
+        "rpm": 2996.0,
+        "afr": 16.7,
+        "fbkc": 0.0,
+        "flkc": 0.0,
+        "pw": 0.77,
+        "iam": 1.0,
+        "timing": 20.0,
+        "map": 21.461,
+        "throttle": 9.02,
+        "speed": 53.0,
+        "state": 7.0,
+        "load": 0.34,
+        "factor": 1.01,
+        "iat": 32.0,
+        "trans": 0.0
+      }
+    },
+    {
+      "previous": {
+        "time": 239.279,
+        "pedal": 0.0,
+        "mode": 1.0,
+        "ect": 75.0,
+        "rpm": 3173.0,
+        "afr": 15.62,
+        "fbkc": 0.0,
+        "flkc": 0.0,
+        "pw": 0.77,
+        "iam": 1.0,
+        "timing": 22.0,
+        "map": 30.673,
+        "throttle": 9.02,
+        "speed": 48.0,
+        "state": 7.0,
+        "load": 1.31,
+        "factor": 0.6,
+        "iat": 32.0,
+        "trans": -0.4612
+      },
+      "sample": {
+        "time": 239.383,
+        "pedal": 0.78,
+        "mode": 3.0,
+        "ect": 75.0,
+        "rpm": 3137.0,
+        "afr": 14.18,
+        "fbkc": 0.0,
+        "flkc": 0.0,
+        "pw": 2.3,
+        "iam": 1.0,
+        "timing": 24.0,
+        "map": 22.732,
+        "throttle": 9.8,
+        "speed": 48.0,
+        "state": 7.0,
+        "load": 0.81,
+        "factor": 0.67,
+        "iat": 32.0,
+        "trans": -0.4264
+      }
+    },
+    {
+      "previous": {
+        "time": 243.03,
+        "pedal": 0.0,
+        "mode": 3.0,
+        "ect": 75.0,
+        "rpm": 3002.0,
+        "afr": 14.04,
+        "fbkc": 0.0,
+        "flkc": 0.0,
+        "pw": 0.77,
+        "iam": 1.0,
+        "timing": 20.0,
+        "map": 44.016,
+        "throttle": 9.41,
+        "speed": 42.0,
+        "state": 7.0,
+        "load": 1.47,
+        "factor": 0.67,
+        "iat": 32.0,
+        "trans": -0.4147
+      },
+      "sample": {
+        "time": 243.135,
+        "pedal": 0.0,
+        "mode": 1.0,
+        "ect": 75.0,
+        "rpm": 2753.0,
+        "afr": 16.1,
+        "fbkc": 0.0,
+        "flkc": 0.0,
+        "pw": 0.77,
+        "iam": 1.0,
+        "timing": 23.0,
+        "map": 32.262,
+        "throttle": 8.63,
+        "speed": 41.0,
+        "state": 7.0,
+        "load": 1.01,
+        "factor": 0.77,
+        "iat": 32.0,
+        "trans": -0.2953
+      }
+    }
+  ],
+  "isolated_map_outliers": [
+    {
+      "sample": {
+        "time": 47.222,
+        "pedal": 8.63,
+        "mode": 1.0,
+        "ect": 65.0,
+        "rpm": 1672.0,
+        "afr": 12.9,
+        "fbkc": 0.0,
+        "flkc": 0.0,
+        "pw": 5.89,
+        "iam": 1.0,
+        "timing": 20.5,
+        "map": 271.367,
+        "throttle": 16.47,
+        "speed": 9.0,
+        "state": 7.0,
+        "load": 1.32,
+        "factor": 1.2,
+        "iat": 40.0,
+        "trans": 0.0
+      },
+      "previous": {
+        "time": 47.118,
+        "pedal": 8.63,
+        "mode": 1.0,
+        "ect": 65.0,
+        "rpm": 1810.0,
+        "afr": 13.34,
+        "fbkc": 0.0,
+        "flkc": 0.0,
+        "pw": 5.89,
+        "iam": 1.0,
+        "timing": 20.0,
+        "map": 69.748,
+        "throttle": 16.86,
+        "speed": 8.0,
+        "state": 7.0,
+        "load": 1.36,
+        "factor": 1.2,
+        "iat": 40.0,
+        "trans": 0.0
+      },
+      "next": {
+        "time": 47.327,
+        "pedal": 8.63,
+        "mode": 1.0,
+        "ect": 65.0,
+        "rpm": 1548.0,
+        "afr": 13.12,
+        "fbkc": 0.0,
+        "flkc": 0.0,
+        "pw": 5.89,
+        "iam": 1.0,
+        "timing": 20.5,
+        "map": 70.383,
+        "throttle": 16.08,
+        "speed": 10.0,
+        "state": 7.0,
+        "load": 1.3,
+        "factor": 1.21,
+        "iat": 40.0,
+        "trans": 0.0
+      },
+      "quarter_of_reported_map_kpa": 67.84175,
+      "interpretation": "Compatible with mixed bytes across a float exponent boundary; not established as a physical pressure spike."
+    },
+    {
+      "sample": {
+        "time": 213.781,
+        "pedal": 10.98,
+        "mode": 1.0,
+        "ect": 73.0,
+        "rpm": 1614.0,
+        "afr": 18.6,
+        "fbkc": 0.0,
+        "flkc": 0.0,
+        "pw": 5.38,
+        "iam": 1.0,
+        "timing": 24.5,
+        "map": 270.096,
+        "throttle": 16.47,
+        "speed": 21.0,
+        "state": 7.0,
+        "load": 1.13,
+        "factor": 1.21,
+        "iat": 32.0,
+        "trans": 0.1039
+      },
+      "previous": {
+        "time": 213.678,
+        "pedal": 9.8,
+        "mode": 1.0,
+        "ect": 73.0,
+        "rpm": 1591.0,
+        "afr": 18.59,
+        "fbkc": 0.0,
+        "flkc": 0.0,
+        "pw": 4.86,
+        "iam": 1.0,
+        "timing": 21.0,
+        "map": 67.206,
+        "throttle": 15.69,
+        "speed": 21.0,
+        "state": 7.0,
+        "load": 1.03,
+        "factor": 1.22,
+        "iat": 32.0,
+        "trans": 0.1325
+      },
+      "next": {
+        "time": 213.885,
+        "pedal": 13.73,
+        "mode": 1.0,
+        "ect": 73.0,
+        "rpm": 1619.0,
+        "afr": 18.58,
+        "fbkc": 0.0,
+        "flkc": 0.0,
+        "pw": 5.63,
+        "iam": 1.0,
+        "timing": 23.0,
+        "map": 73.242,
+        "throttle": 18.43,
+        "speed": 21.0,
+        "state": 7.0,
+        "load": 1.21,
+        "factor": 1.21,
+        "iat": 32.0,
+        "trans": 0.0892
+      },
+      "quarter_of_reported_map_kpa": 67.524,
+      "interpretation": "Compatible with mixed bytes across a float exponent boundary; not established as a physical pressure spike."
+    },
+    {
+      "sample": {
+        "time": 216.9,
+        "pedal": 10.98,
+        "mode": 1.0,
+        "ect": 73.0,
+        "rpm": 2218.0,
+        "afr": 12.1,
+        "fbkc": 0.0,
+        "flkc": 0.0,
+        "pw": 5.38,
+        "iam": 1.0,
+        "timing": 22.0,
+        "map": 272.637,
+        "throttle": 18.43,
+        "speed": 29.0,
+        "state": 7.0,
+        "load": 1.29,
+        "factor": 1.13,
+        "iat": 32.0,
+        "trans": -0.001
+      },
+      "previous": {
+        "time": 216.797,
+        "pedal": 10.98,
+        "mode": 1.0,
+        "ect": 73.0,
+        "rpm": 2192.0,
+        "afr": 11.57,
+        "fbkc": 0.0,
+        "flkc": 0.0,
+        "pw": 5.38,
+        "iam": 1.0,
+        "timing": 22.0,
+        "map": 69.748,
+        "throttle": 18.43,
+        "speed": 29.0,
+        "state": 7.0,
+        "load": 1.3,
+        "factor": 1.13,
+        "iat": 32.0,
+        "trans": -0.0148
+      },
+      "next": {
+        "time": 217.005,
+        "pedal": 10.98,
+        "mode": 1.0,
+        "ect": 73.0,
+        "rpm": 2215.0,
+        "afr": 12.07,
+        "fbkc": 0.0,
+        "flkc": 0.0,
+        "pw": 5.38,
+        "iam": 1.0,
+        "timing": 22.5,
+        "map": 69.748,
+        "throttle": 18.82,
+        "speed": 29.0,
+        "state": 7.0,
+        "load": 1.28,
+        "factor": 1.13,
+        "iat": 32.0,
+        "trans": -0.0007
+      },
+      "quarter_of_reported_map_kpa": 68.15925,
+      "interpretation": "Compatible with mixed bytes across a float exponent boundary; not established as a physical pressure spike."
+    },
+    {
+      "sample": {
+        "time": 242.926,
+        "pedal": 0.0,
+        "mode": 3.0,
+        "ect": 75.0,
+        "rpm": 3101.0,
+        "afr": 12.26,
+        "fbkc": 0.0,
+        "flkc": 0.0,
+        "pw": 4.86,
+        "iam": 1.0,
+        "timing": 17.0,
+        "map": 263.742,
+        "throttle": 12.55,
+        "speed": 42.0,
+        "state": 7.0,
+        "load": 1.99,
+        "factor": 0.78,
+        "iat": 32.0,
+        "trans": -0.3387
+      },
+      "previous": {
+        "time": 242.82,
+        "pedal": 2.35,
+        "mode": 3.0,
+        "ect": 75.0,
+        "rpm": 3150.0,
+        "afr": 12.82,
+        "fbkc": 0.0,
+        "flkc": 0.0,
+        "pw": 9.22,
+        "iam": 1.0,
+        "timing": 16.5,
+        "map": 104.375,
+        "throttle": 49.41,
+        "speed": 42.0,
+        "state": 7.0,
+        "load": 2.19,
+        "factor": 1.22,
+        "iat": 32.0,
+        "trans": 0.0009
+      },
+      "next": {
+        "time": 243.03,
+        "pedal": 0.0,
+        "mode": 3.0,
+        "ect": 75.0,
+        "rpm": 3002.0,
+        "afr": 14.04,
+        "fbkc": 0.0,
+        "flkc": 0.0,
+        "pw": 0.77,
+        "iam": 1.0,
+        "timing": 20.0,
+        "map": 44.016,
+        "throttle": 9.41,
+        "speed": 42.0,
+        "state": 7.0,
+        "load": 1.47,
+        "factor": 0.67,
+        "iat": 32.0,
+        "trans": -0.4147
+      },
+      "quarter_of_reported_map_kpa": 65.9355,
+      "interpretation": "Compatible with mixed bytes across a float exponent boundary; not established as a physical pressure spike."
+    }
+  ],
+  "fresh_cut_sweep": {
+    "fixtures": 240,
+    "baro_fixtures_kpa": [
+      90,
+      94.6855,
+      100
+    ],
+    "fresh_cuts": 0,
+    "stock_fault_flags": "clear fixtures"
+  },
+  "native_3000_rpm_cut_replay": {
+    "routine": "000253A8",
+    "request": "FFFFD273 mask 02 forced active fixture",
+    "trip_rpm": 3000,
+    "release_below_rpm": 2500,
+    "all_six_inhibit_word": "003F",
+    "loaded_77_85_25s_samples": 80,
+    "loaded_77_85_25s_cut_samples": 0,
+    "release_near_73s": [
+      {
+        "time": 73.041,
+        "rpm": 2554.0,
+        "inhibit_word": 63
+      },
+      {
+        "time": 73.146,
+        "rpm": 2377.0,
+        "inhibit_word": 0
+      },
+      {
+        "time": 73.249,
+        "rpm": 2335.0,
+        "inhibit_word": 0
+      }
+    ],
+    "limit": "Observed RPM samples cannot establish the live cut history; unlogged faults and between-sample excursions remain unobserved."
+  },
+  "other_native_diagnostic_cut_replays": {
+    "fixtures": [
+      {
+        "received_fault_fixture": "C6F7/40",
+        "D271_D272_D273_D274": [
+          "00",
+          "00",
+          "00",
+          "00"
+        ],
+        "loaded_77_85_25s_inhibit_words": {
+          "0000": 26,
+          "0015": 54
+        },
+        "logged_p21_ms_at_fixture_cut_samples": {
+          "min": 7.94,
+          "median": 8.19,
+          "max": 8.7
+        },
+        "above_69_percent_pedal_samples": 24,
+        "above_69_percent_pedal_cut_samples": 0
+      },
+      {
+        "received_fault_fixture": "C6FA/02",
+        "D271_D272_D273_D274": [
+          "80",
+          "C2",
+          "27",
+          "00"
+        ],
+        "loaded_77_85_25s_inhibit_words": {
+          "0000": 26,
+          "0015": 54
+        },
+        "logged_p21_ms_at_fixture_cut_samples": {
+          "min": 7.94,
+          "median": 8.19,
+          "max": 8.7
+        },
+        "above_69_percent_pedal_samples": 24,
+        "above_69_percent_pedal_cut_samples": 0
+      },
+      {
+        "received_fault_fixture": "C6F8/01",
+        "D271_D272_D273_D274": [
+          "00",
+          "40",
+          "27",
+          "00"
+        ],
+        "loaded_77_85_25s_inhibit_words": {
+          "003F": 80
+        },
+        "logged_p21_ms_at_fixture_cut_samples": {
+          "min": 7.94,
+          "median": 8.19,
+          "max": 9.47
+        },
+        "above_69_percent_pedal_samples": 24,
+        "above_69_percent_pedal_cut_samples": 24
+      }
+    ],
+    "limit": "Received faults are held active deliberately, not observed on the vehicle. Other diagnostic cuts can outlast the 3000/2500 latch. All nonzero masks in these fixtures include the P21 channel, so sustained operation would still reduce its scheduled-pulse term after scheduler convergence."
+  },
+  "limits": [
+    "User reports persistent loaded misfire/bog and requests no more logs until a cause is fixed.",
+    "Recorded commands and code explain fuel duration; they do not identify the physical cause of poor combustion/torque.",
+    "B7DC is an additive factor, not all bank corrections; pulse residual is not independently measured latency.",
+    "No runtime baro, actual cut state, measured cam lift, fuel pressure or electrical ignition capture.",
+    "Fresh-cut sweep holds sampled values; it cannot rule out faults or excursions between samples, or a previously latched cut.",
+    "An arbitrary boost VE reduction is not proven corrective; VE need not be constant with boost, and lowering load also changes the primary table target."
+  ]
+}

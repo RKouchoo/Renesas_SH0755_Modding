@@ -54,11 +54,13 @@ import test_idle_air_override_execution as idle_override_test  # noqa: E402
 import test_throttle_link_execution as throttle_link_test  # noqa: E402
 import test_dbw_table_execution as dbw_table_test  # noqa: E402
 import test_pedal_patch_dependencies as pedal_dependencies_test  # noqa: E402
+import test_avls_oil_gate_execution as avls_oil_test  # noqa: E402
 import test_sh2e_fpu as fpu_test  # noqa: E402
 import test_injector_cut_execution as injector_cut_test  # noqa: E402
 import test_injector_scheduler_execution as injector_scheduler_test  # noqa: E402
 import test_cut_interrupt_execution as cut_interrupt_test  # noqa: E402
 import test_ssm_receive_execution as ssm_receive_test  # noqa: E402
+import test_fuel_pump_demand_execution as pump_demand_test  # noqa: E402
 import test_map_boundary_execution as map_boundary_test  # noqa: E402
 import logger_profiles as capture_profiles  # noqa: E402
 
@@ -69,8 +71,11 @@ LOGGER_DIR = ROOT / "logger"
 LOGGER_FRAGMENT = LOGGER_DIR / "D2WD610H_master_logger_ecuparams.xml"
 LOGGER_DEFINITION = LOGGER_DIR / "D2WD610H_master_logger.xml"
 LOGGER_PROFILE = LOGGER_DIR / "D2WD610H_idle_diagnostic_profile.xml"
-EXPECTED_OUTPUT_SHA256 = "154760a5f2fdadbf6d9221480595f58dc77c6a4eccc492f50899c815aca79e4d"
-EXPECTED_LOGGER_SHA256 = "595ab35b02e995aec3a82f017a028c7a839c9c4df6ae2fa307caf62fdd8eaff8"
+# September 12: lean-reset repair, then six-byte stationary oil-gate repair
+# confined to 7D4B0/B4 and checksum. Both oil thresholds return to stock 15 C.
+EXPECTED_OUTPUT_SHA256 = "697b9f3a48a95027cc048ed68967520e2de4692314d88cf1768564ef15471d3a"
+# Canonical E524 plus AVLS/cut diagnostics; prior 123 signal conversions retained.
+EXPECTED_LOGGER_SHA256 = "ea00d00a7fbe174c8292f4090bc01d939018725cb1637dcb11beaa52cfe5971f"
 
 
 def fail(message: str) -> None:
@@ -349,9 +354,9 @@ def verify_avls_dual_ve(image: bytes) -> None:
         actual = struct.unpack_from(">7f", image, address)
         if actual != speed_density.AVLS_PEDAL_DISABLED:
             fail(f"master retains a pedal-based AVLS request at 0x{address:05X}")
-    for address in (speed_density.AVLS_FIXED_PEDAL_A_ADDR, speed_density.AVLS_FIXED_PEDAL_B_ADDR):
-        if struct.unpack_from(">f", image, address)[0] != speed_density.AVLS_PEDAL_DISABLED_VALUE:
-            fail(f"master retains a fixed/fallback pedal request at 0x{address:05X}")
+    for address in (speed_density.AVLS_STATIONARY_OIL_A_ADDR, speed_density.AVLS_STATIONARY_OIL_B_ADDR):
+        if struct.unpack_from(">f", image, address)[0] != 15.0:
+            fail(f"master changed the native stationary AVLS oil gate at 0x{address:05X}")
     actual_rpm_policy = tuple(
         struct.unpack_from(">f", image, address)[0]
         for address in (
@@ -877,6 +882,10 @@ def verify_logger_fragment() -> None:
         "E521": ("0xFFD26C", "1", "uint8", {"x"}),
         "E522": ("0xFFD26F", "1", "uint8", {"x"}),
         "E523": ("0xFFCFD0", "1", "uint8", {"x"}),
+        "E524": ("0xFFB46C", "4", "float", {"x"}),
+        "E525": ("0xFFB744", "2", "uint16", {"x"}),
+        "E526": ("0xFFCD89", "1", "uint8", {"x"}),
+        "E527": ("0xFFCD8A", "1", "uint8", {"x"}),
     }
     parameters = list(root.findall("ecuparam"))
     by_id = {parameter.get("id"): parameter for parameter in parameters}
@@ -1032,7 +1041,9 @@ def verify_logger_profile() -> None:
         # not partly overlapping byte ranges. Count actual requested bytes.
         requested_queries = set()
         for parameter_id in expected_selected:
-            addresses = logger_parameters[parameter_id].findall("./address")
+            parameter = logger_parameters[parameter_id]
+            addresses = parameter.findall("./address") or parameter.findall(
+                './ecu[@id="3C5A387116"]/address')
             if not addresses:
                 fail(f"cannot budget SSM addresses for {parameter_id}")
             query = []
@@ -1258,10 +1269,12 @@ def main() -> None:
     throttle_link_test.verify_execution(image)
     dbw_table_test.verify_execution(image)
     pedal_dependencies_test.verify_execution(image)
+    print(f"  AVLS oil gates: {avls_oil_test.verify_execution(image)} execution groups passed")
     injector_cut_test.verify_execution(image)
     injector_scheduler_test.verify_execution(image)
     cut_interrupt_test.verify_execution(image)
     ssm_receive_test.verify_execution(image)
+    print(f"  Fuel-pump demand: {pump_demand_test.verify_execution(image)} execution groups passed")
     try:
         fueling_safety_verify.verify_image(image)
     except AssertionError as exc:
@@ -1312,7 +1325,8 @@ def main() -> None:
     print("  fueling safety    : pressure-forced OL ON; 13.0-AFR delayed/latched cut ON")
     print("  guard execution   : cuts, native IRQ/context restore, locks and injector queues PASS")
     print("  logger            : complete D2WD610H-only SSM definition and fragment validated")
-    print("  capture profiles  : all five profiles, including MAP-source, within native 43-address limit")
+    print(f"  capture profiles  : all {len(capture_profiles.PROFILE_SELECTIONS)} profiles "
+          "within native 43-address limit")
     print("  provenance        : root stock, base copy, and SRF payload remain byte-identical")
 
 

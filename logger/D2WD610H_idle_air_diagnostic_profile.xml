@@ -9,6 +9,7 @@
         <parameter id="P6" units="%" />
         <parameter id="P7" livedata="selected" dash="selected" units="kPa" />
         <parameter id="P8" livedata="selected" dash="selected" units="rpm" />
+        <parameter id="P9" units="km/h" />
         <parameter id="P10" livedata="selected" dash="selected" units="degrees" />
         <parameter id="P11" livedata="selected" dash="selected" units="C" />
         <parameter id="P12" livedata="selected" dash="selected" units="g/s" />
@@ -20,8 +21,17 @@
         <parameter id="P38" units="%" />
         <parameter id="P47" units="%" />
         <parameter id="P92" units="%" />
+        <parameter id="P122" units="C" />
+        <parameter id="P123" units="%" />
+        <parameter id="P124" units="%" />
+        <parameter id="P125" units="mA" />
+        <parameter id="P126" units="mA" />
+        <parameter id="E31" units="multiplier" />
         <parameter id="E32" livedata="selected" dash="selected" units="g/rev" />
         <parameter id="E33" livedata="selected" dash="selected" units="status" />
+        <parameter id="E39" units="degrees" />
+        <parameter id="E40" units="degrees" />
+        <parameter id="E41" units="degrees" />
         <parameter id="E50" units="ms" />
         <parameter id="E51" units="kPa absolute" />
         <parameter id="E60" livedata="selected" dash="selected" units="ms" />
@@ -53,6 +63,10 @@
         <parameter id="E521" units="raw flags" />
         <parameter id="E522" units="raw flags" />
         <parameter id="E523" units="raw flags" />
+        <parameter id="E524" units="%" />
+        <parameter id="E525" units="raw inhibit word" />
+        <parameter id="E526" units="AVLS mode (1 low; 3 high)" />
+        <parameter id="E527" units="AVLS mode (1 low; 3 high)" />
     </parameters>
     <switches>
         <switch id="S4" />

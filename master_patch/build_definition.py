@@ -348,9 +348,11 @@ AVCS_DESCRIPTIONS = {
 
 PREDICTABLE_AVLS_DESCRIPTIONS = {
     "AVLS High Cam Engage RPM": (
-        "Predictable committed-state high-lift engagement threshold. Master "
-        "defaults to 3200 RPM. The former pedal/oil-band request tables "
-        "are fixed unreachable and omitted; keep engage above release."
+        "High-lift RPM-latch threshold; master defaults to 3200 RPM. "
+        "Native stationary, oil-temperature and fault gates still apply. "
+        "The actual pedal request curves are held at unreachable 110 percent. "
+        "Stationary oil gates at 0x7D4B0/0x7D4B4 retain stock 15 degrees C; "
+        "these are not pedal thresholds. Keep engage above release."
     ),
     "AVLS High Cam Release RPM": (
         "Predictable high-lift release threshold. Master defaults to 3000 RPM, "
@@ -660,7 +662,7 @@ def add_rotational_idle_tables(target: ET.Element) -> None:
 
 
 def add_fuel_pump_tables(target: ET.Element) -> None:
-    """Expose the three verified discrete FPCU commands used by stock code."""
+    """Expose pump commands and the injector-dependent demand coefficient."""
     specs = (
         (
             FUEL_PUMP_NAMES[0],
@@ -714,6 +716,22 @@ def add_fuel_pump_tables(target: ET.Element) -> None:
             },
         )
         set_description(table, description)
+
+    table = ET.SubElement(target, "table", {
+        "type": "1D", "name": "Fuel Consumption Injector Coefficient",
+        "category": CAT_FUEL_PUMP, "storagetype": "float", "endian": "big",
+        "sizey": "1", "userlevel": "2", "storageaddress": "0x72D54",
+    })
+    ET.SubElement(table, "scaling", {
+        "units": "coefficient", "expression": "x", "to_byte": "x",
+        "format": "0.000000", "fineincrement": "0.001", "coarseincrement": "0.01",
+    })
+    set_description(table,
+        "Pulse-to-fuel-use coefficient used by native fuel-pump demand and telemetry. "
+        "Keep inversely proportional to the raw Injector Flow Scaling value: "
+        "coefficient = stock 4.59 * stock raw flow 6675 / current raw flow. "
+        "Approximately 9.379054 for the installed 550cc calibration. This does not "
+        "change injector pulse, force full pump speed or bypass the pump-off gate.")
 
 
 def add_fueling_safety_templates(parent: ET.Element, target: ET.Element) -> None:

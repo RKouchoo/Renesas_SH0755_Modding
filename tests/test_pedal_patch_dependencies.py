@@ -92,9 +92,11 @@ class PedalDependencyTests(unittest.TestCase):
                                  (component, name))
         # Existing AVLS modification intentionally makes pedal engagement
         # unreachable below the RPM override; it does not command 110% pedal.
-        for address, count in ((0x7D67C, 7), (0x7D6B4, 7), (0x7D4B0, 2)):
+        for address, count in ((0x7D67C, 7), (0x7D6B4, 7)):
             values = struct.unpack_from('>'+'f'*count, self.image, address)
             self.assertTrue(all(v > 100 for v in values))
+        # 7D4B0/B4 are stationary oil-temperature gates, not pedal thresholds.
+        self.assertEqual(struct.unpack_from('>2f', self.image, 0x7D4B0), (15.0, 15.0))
 
     def test_standard_pedal_and_vehicle_speed_channels_are_distinct(self):
         cpu = IdleAirMachine(self.image)

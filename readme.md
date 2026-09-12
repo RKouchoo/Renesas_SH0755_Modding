@@ -31,7 +31,7 @@ calibration tables.
 | [Overboost protection](patches/core/patch_boost.py) | Adds a hard-overboost fuel cut alongside the stock rev limiter. Boost regulation uses the mechanical wastegate spring. |
 | [Fueling protection](patches/fueling_safety/README.md) | Requests open loop near atmospheric pressure and adds a delayed, latched lean fuel cut under boost. Added cuts publish native injector inhibition under the scheduler lock. |
 | [Purge removal](patches/purge_delete/purge_delete_component.py) | Zeros CPC purge duty, modeled purge airflow and both banks' purge fuel subtractions. |
-| [Rotational idle](patches/core/ROTATIONAL_IDLE.md) | Applies bounded, per-cylinder ignition retard after the stock final-timing calculation, gated by idle conditions. Installed with its enable switch off. |
+| [Rotational idle](patches/core/ROTATIONAL_IDLE.md) | Optional per-cylinder idle retard retained in `master_patch/`, default off. Removed from `master_patch_v2/`; v2 calls the stock final-timing task directly. |
 | [Integrated calibration](master_patch/CALIBRATION.md) | Supplies MAP/IAT transfers, injector characterization, load axes, fuel and timing tables, and the AVLS switching policy. |
 
 ## How the patches fit together
@@ -95,7 +95,7 @@ These are shared native allocations, with the listed patch interfaces:
 | `0xFFFFAE70`, `0xFFFFAE74` | Two floats | Synthetic bank sensor-readiness values. |
 | `0xFFFFB098`, `0xFFFFB09C` | Two floats | Wideband lambda mirrors for logging. |
 | `0xFFFFBF6C`, `0xFFFFB744` | `uint8` flags / `uint16` inhibit | Native fuel-cut flag and injector-inhibit publication. |
-| `0xFFFFC0EC–0xFFFFC103` | Six floats, 24 bytes | Final per-cylinder ignition angles used by rotational idle. |
+| `0xFFFFC0EC–0xFFFFC103` | Six floats, 24 bytes | Stock final per-cylinder ignition angles. The optional v1 rotational-idle component also uses these outputs. |
 | `0xFFFFCD86` | `uint8` | Committed AVLS mode used to select the VE surface. |
 
 Other inputs and purge-state destinations are listed in the
@@ -114,7 +114,7 @@ The erased patch window starts at `0x0007D790`. Major component regions are:
 | Region | Contents |
 |---|---|
 | `0x0007D790–0x0007D91F` | Overboost protection, architecture signature and retained reservations. |
-| `0x0007DB40–0x0007DCEB` | Rotational-idle calibration and wrapper. |
+| `0x0007DB40–0x0007DCFF` | Former rotational-idle reservation, erased in v2. v1 retains its calibration and wrapper through `0x0007DCEB`. |
 | `0x0007DD00–0x0007E3FF` | Speed-density calibration, lookup descriptors and airflow wrapper reservation. |
 | `0x0007E400–0x0007E63F` | Wideband conversion, closed-loop inhibit helper and reserved space. |
 | `0x0007E640–0x0007EAC7` | Dual-VE descriptors, RPM axes and table data. |
@@ -156,7 +156,7 @@ in the [test guide](tests/README.md). Exact artifact identities are kept in the
 [image reference](docs/reference/IMAGES.md).
 
 Use the shared [logger definition and capture profiles](logger/README.md) with
-either integration. The five generated captures each use 43 byte addresses,
+either integration. The seven generated captures each use 43 byte addresses,
 producing a 136-byte SSM request. Hardware assumptions and vehicle validation
 procedures are documented in [calibration](master_patch/CALIBRATION.md),
 [wiring](master_patch/WIRING.md) and [commissioning](master_patch/COMMISSIONING.md).

@@ -11,6 +11,7 @@ from io import StringIO
 from pathlib import Path
 import sys
 import unittest
+import xml.etree.ElementTree as ET
 
 from test_injector_scheduler_execution import SchedulerMachine, ROOT
 import logger_profiles as profiles
@@ -84,7 +85,7 @@ class SSMReceiveTests(unittest.TestCase):
             self.assertEqual(cpu.read(RX_INDEX, 1), 0)
 
     def test_native_receiver_cannot_reach_oversized_request_checksum(self):
-        for count in (44, 79, 81, 83, 84):
+        for count in (44, 59, 79, 81, 83, 84):
             cpu = ReceiveMachine(self.image)
             cpu.feed(request(count))
             self.assertEqual(cpu.accepted, [])
@@ -92,6 +93,26 @@ class SSMReceiveTests(unittest.TestCase):
             self.assertEqual(cpu.read(RX_INDEX, 1), 137)
             with self.assertRaisesRegex(ValueError, 'native receive index stops at 137'):
                 profiles.request_sizes(count)
+
+    def test_recovery_profile_and_generator_stay_within_native_limit(self):
+        profile = ET.parse(profiles.RECOVERY_PROFILE).getroot()
+        selected = {item.get('id') for item in profile.findall('./parameters/parameter')
+                    if any(item.get(view) == 'selected'
+                           for view in ('livedata', 'dash', 'graph'))}
+        self.assertEqual(selected, profiles.RECOVERY_PARAMETERS)
+        count = profiles.address_count(selected)
+        self.assertEqual(count, 43)
+        cpu = ReceiveMachine(self.image)
+        packet = request(count)
+        cpu.feed(packet)
+        self.assertEqual(cpu.accepted, [packet[:-1]])
+
+        # September 12 failure: three added knock floats plus injector latency
+        # took the saved recovery selection to 59 bytes / a 184-byte A8 frame.
+        oversized = selected | {'E39', 'E40', 'E41', 'E50'}
+        self.assertEqual(profiles.address_count(oversized), 59)
+        with self.assertRaisesRegex(ValueError, '59 SSM addresses'):
+            profiles.profile_bytes(oversized)
 
     def test_bad_checksum_or_destination_is_rejected(self):
         for wrong_header in (False, True):

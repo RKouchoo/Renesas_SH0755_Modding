@@ -3,11 +3,40 @@
 These CSVs are preserved outside `master_patch` as diagnostic inputs. They are
 not generated patch artifacts and must not be treated as calibration approval.
 
+The [14:42 adjusted-VE drive](../docs/reference/V2_AVLS_MISFIRE_20260912.md#1442-adjusted-ve-drive-loaded-fault-persists)
+reproduces the loaded bog on the verified `fd795813…` image. Its
+[derived evidence](20260912_adjusted_drive_review.json) records the low-lift
+loaded event, fuel arithmetic and conditional cut replay. No new road
+capture is requested, and no cure has been established.
+
+The [14:13 warm fueling review](../docs/reference/V2_AVLS_NEUTRAL_20260912.md#1413-warm-fueling-sustained-enrichment-follows-calculated-load)
+records lean idle and sustained rich high-lift holds with reported OL status.
+The resulting [VE adjustment evidence](20260912_fueling_adjustment_review.json)
+contains the ten edited cells, original words for capture reconstruction,
+and conditional replay estimates. Those estimates are not a new engine log.
+
+The [13:37 neutral follow-up](../docs/reference/V2_AVLS_NEUTRAL_20260912.md#1337-follow-up-changeover-now-occurs)
+verifies the corrected v2 flash and two stationary high-lift entries with both
+solenoids responding and no pedal-applied fuel cut. The driver reports it felt
+fine. Its [JSON](20260912_avls_neutral_followup_review.json) also records the
+repeatable richening and an explicitly conditional airflow/table replay.
+
+The [13:16 neutral AVLS review](../docs/reference/V2_AVLS_NEUTRAL_20260912.md#1316-baseline-capture-and-firmware-identity)
+checks the complete AVLS/cut capture and its flashed image. It stayed in low
+lift and exposed the stationary oil-gate calibration error now corrected in
+both rolling builds. Its JSON contains derived summaries and flash evidence.
+
+The [September 12 rotational-delete review](../docs/reference/V2_AVLS_MISFIRE_20260912.md)
+matches the flashed image and compares three loaded AVLS transitions. Its
+[chart](20260912_rotationaldelete_review.png) and JSON are derived artifacts.
+The review separates the high-lift-associated disturbance from the confirmed
+lean-cut reset defect corrected after this capture.
+
 The [September 11 v2 driving-bog review](20260911_drive2_review.md) examines
 the new drive2 capture, matches the flashed image, and separates the sustained
 rich bog from a confirmed mistake in the newest warning-light hook.
 
-The [September 8 evening review](20260908_dashpot_review.md) covers the
+The [September 8 evening review](archive/20260908_dashpot_review.md) covers the
 18:01, 18:11 and 18:15 dashpot captures, with matched recorded flash CRCs,
 timing execution and a tip-in pressure multiplier that can suppress added fuel.
 The report distinguishes both versions of the user's reused BIN filename.
@@ -25,12 +54,12 @@ Its JSON and PNG are derived review artifacts, not new measurements.
   samples on the user-confirmed 10:30 BIN. It captures improved steady idle
   followed by near-stall RPM and lean recovery after throttle blips. The user
   reports the physical gauge followed RomRaider. See
-  [the numerical review and chart](20260908_idle_review.md).
+  [the numerical review and chart](archive/20260908_idle_review.md).
 - `romraiderlog_idle_diagnostic2_20260908_141335.csv` contains 2,510 samples
   and 19 channels on the `6af0d1...` candidate, verified against recorded flash
   CRCs. Settled fueling improves, but blips nearly stall the engine. The user
   confirms intentional key-off at the end. Its AVLS units label contains an
-  unquoted comma; the [analysis](20260908_recovery_review.md) normalizes that
+  unquoted comma; the [analysis](archive/20260908_recovery_review.md) normalizes that
   exact header in memory without changing the source CSV.
 
 `20260908_recovery_review.json` contains summaries and explicitly conditional
