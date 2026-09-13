@@ -11,10 +11,10 @@
         <parameter id="P8" livedata="selected" dash="selected" units="rpm" />
         <parameter id="P9" livedata="selected" dash="selected" units="km/h" />
         <parameter id="P10" livedata="selected" dash="selected" units="degrees" />
-        <parameter id="P11" livedata="selected" dash="selected" units="C" />
+        <parameter id="P11" units="C" />
         <parameter id="P12" units="g/s" />
         <parameter id="P13" livedata="selected" dash="selected" units="%" />
-        <parameter id="P17" units="V" />
+        <parameter id="P17" livedata="selected" dash="selected" units="V" />
         <parameter id="P21" livedata="selected" dash="selected" units="ms" />
         <parameter id="P24" units="mmHg" />
         <parameter id="P30" livedata="selected" dash="selected" units="%" />
@@ -33,8 +33,8 @@
         <parameter id="P125" units="mA" />
         <parameter id="P126" units="mA" />
         <parameter id="E31" livedata="selected" dash="selected" units="multiplier" />
-        <parameter id="E32" livedata="selected" dash="selected" units="g/rev" />
-        <parameter id="E33" livedata="selected" dash="selected" units="status" />
+        <parameter id="E32" units="g/rev" />
+        <parameter id="E33" units="status" />
         <parameter id="E39" livedata="selected" dash="selected" units="degrees" />
         <parameter id="E40" units="degrees" />
         <parameter id="E41" livedata="selected" dash="selected" units="degrees" />
@@ -44,19 +44,19 @@
         <parameter id="E81" units="%" />
         <parameter id="E84" units="estimated AFR" />
         <parameter id="E105" units="%" />
-        <parameter id="E123" livedata="selected" dash="selected" units="fuel-air equivalence ratio" />
+        <parameter id="E123" units="estimated AFR" />
         <parameter id="E500" livedata="selected" dash="selected" units="estimated AFR (14.64 stoich)" />
         <parameter id="E501" units="ADC counts" />
         <parameter id="E502" units="ready metric" />
         <parameter id="E503" livedata="selected" dash="selected" units="AVLS mode (1 low; 3 high)" />
-        <parameter id="E504" units="state (0 idle; 1 delay; 2 monitor; 3 cut)" />
+        <parameter id="E504" livedata="selected" dash="selected" units="state (0 idle; 1 delay; 2 monitor; 3 cut)" />
         <parameter id="E505" units="task calls" />
         <parameter id="E506" units="raw flags" />
         <parameter id="E507" units="task calls" />
         <parameter id="E508" units="raw additive factor" />
         <parameter id="E509" units="raw additive factor" />
         <parameter id="E510" units="raw additive factor" />
-        <parameter id="E511" livedata="selected" dash="selected" units="raw additive factor" />
+        <parameter id="E511" units="raw additive factor" />
         <parameter id="E512" units="raw additive factor" />
         <parameter id="E513" units="raw additive factor" />
         <parameter id="E514" units="rpm" />
@@ -70,19 +70,19 @@
         <parameter id="E522" units="raw flags" />
         <parameter id="E523" units="raw flags" />
         <parameter id="E524" units="%" />
-        <parameter id="E525" units="raw inhibit word" />
+        <parameter id="E525" livedata="selected" dash="selected" units="raw inhibit word" />
         <parameter id="E526" units="AVLS mode (1 low; 3 high)" />
         <parameter id="E527" units="AVLS mode (1 low; 3 high)" />
         <parameter id="E528" units="%" />
         <parameter id="E529" units="%" />
-        <parameter id="E530" units="raw inhibit word" />
-        <parameter id="E531" units="raw mode" />
-        <parameter id="E532" units="raw inhibit word" />
-        <parameter id="E533" units="raw state" />
-        <parameter id="E534" units="raw flags" />
-        <parameter id="E535" units="missed activations" />
-        <parameter id="E536" units="missed activations" />
-        <parameter id="E537" units="raw state" />
+        <parameter id="E530" livedata="selected" dash="selected" units="raw inhibit word" />
+        <parameter id="E531" livedata="selected" dash="selected" units="raw mode" />
+        <parameter id="E532" livedata="selected" dash="selected" units="raw inhibit word" />
+        <parameter id="E533" livedata="selected" dash="selected" units="raw state" />
+        <parameter id="E534" livedata="selected" dash="selected" units="raw flags" />
+        <parameter id="E535" livedata="selected" dash="selected" units="missed activations" />
+        <parameter id="E536" livedata="selected" dash="selected" units="missed activations" />
+        <parameter id="E537" livedata="selected" dash="selected" units="raw state" />
     </parameters>
     <switches>
         <switch id="S4" />

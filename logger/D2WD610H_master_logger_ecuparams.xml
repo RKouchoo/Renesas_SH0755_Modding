@@ -209,4 +209,36 @@
     <ecu id="3C5A387116"><address length="4">0xFFC920</address></ecu>
     <conversions><conversion units="%" storagetype="float" expr="x" format="0.00" gauge_min="0" gauge_max="100" gauge_step="10" /></conversions>
   </ecuparam>
+  <ecuparam id="E530" name="Spark Inhibit Word (D2WD610H diagnostic)*" desc="Native C0DC word from 27090. Six configured cylinder inhibits are duplicated across twelve logical spark slots; CD50 mask128 or CE28 mask1 forces65535. Independent of injector mask B744. Effective scheduler mask is C290 OR (C0E1 nonzero ? C0DC :65535). Read with E531/E532; a zero C0DC alone does not establish spark delivery. Two SSM byte reads may straddle an update." target="1">
+    <ecu id="3C5A387116"><address length="2">0xFFC0DC</address></ecu>
+    <conversions><conversion units="raw inhibit word" storagetype="uint16" expr="x" format="0" gauge_min="0" gauge_max="65535" gauge_step="8192" /></conversions>
+  </ecuparam>
+  <ecuparam id="E531" name="Ignition Scheduler Mode (D2WD610H diagnostic)*" desc="Native C0E1 byte. 2716C selects0/1/2 for inhibited/start-charge/running states; 27330 resets it to0 when B52C mask128 indicates engine timeout/stopped state. Effective mask getter2A262 inhibits all slots when this byte is0 regardless of C0DC. This is a sampled mode rather than a latched record of every interruption." target="1">
+    <ecu id="3C5A387116"><address length="1">0xFFC0E1</address></ecu>
+    <conversions><conversion units="raw mode" storagetype="uint8" expr="x" format="0" gauge_min="0" gauge_max="2" gauge_step="1" /></conversions>
+  </ecuparam>
+  <ecuparam id="E532" name="Auxiliary Spark Inhibit Word (D2WD610H diagnostic)*" desc="Native C290 word from2A214/2A242. Normal synchronized operation uses4032 (0x0FC0) to suppress the six secondary spark slots; this normal nonzero value is not an all-coil cut. Current cam-diagnostic request B52C mask32 permits both phase halves by clearing this word. Combined with C0DC and C0E1 by2A262. Two SSM byte reads may straddle an update." target="1">
+    <ecu id="3C5A387116"><address length="2">0xFFC290</address></ecu>
+    <conversions><conversion units="raw inhibit word" storagetype="uint16" expr="x" format="0" gauge_min="0" gauge_max="65535" gauge_step="8192" /></conversions>
+  </ecuparam>
+  <ecuparam id="E533" name="Crank Synchronization State (D2WD610H diagnostic)*" desc="Native AC16 byte. 87F2 sets1 on synchronization acquisition and publishes stable phase work while it remains1;87CE clears it on loss. Synchronization-loss callbacks can cancel pending injector and spark requests independently of B744. Instantaneous sample only; brief losses between logger reads can be missed." target="1">
+    <ecu id="3C5A387116"><address length="1">0xFFAC16</address></ecu>
+    <conversions><conversion units="raw state" storagetype="uint8" expr="x" format="0" gauge_min="0" gauge_max="1" gauge_step="1" /></conversions>
+  </ecuparam>
+  <ecuparam id="E534" name="Engine Signal Runtime Flags (D2WD610H diagnostic)*" desc="Native B52C byte. Mask128 is the stopped/timeout publication from AC0C through1A16E and is cleared by engine-event19F9C;mask32 selects current cam-fault secondary spark behavior. Mask64 is a distinct warmup-state flag. Decode bits rather than treating the full byte as a fault boolean. Sampled value does not retain every transition." target="1">
+    <ecu id="3C5A387116"><address length="1">0xFFB52C</address></ecu>
+    <conversions><conversion units="raw flags" storagetype="uint8" expr="x" format="0" gauge_min="0" gauge_max="255" gauge_step="16" /></conversions>
+  </ecuparam>
+  <ecuparam id="E535" name="Missed Crank Output Task Activations (D2WD610H diagnostic)*" desc="Native saturating byte B00C. CF58 requests task5;failed activation callsD156 with5 and increments B007+5 instead of enqueueing that phase. Counts missed activation requests rather than crank sensor edges or physical misfires. Compare increases with the event;255 is saturated and cannot count further losses. ECU startup RAM initialization clears the counter; reading it does not reset it." target="1">
+    <ecu id="3C5A387116"><address length="1">0xFFB00C</address></ecu>
+    <conversions><conversion units="missed activations" storagetype="uint8" expr="x" format="0" gauge_min="0" gauge_max="255" gauge_step="16" /></conversions>
+  </ecuparam>
+  <ecuparam id="E536" name="Missed Airflow Task Activations (D2WD610H diagnostic)*" desc="Native saturating byte B00D. CF7E requests task6 for mapped phases;failed activation callsD156 with6 and increments B007+6 instead of enqueueing that work. Task6 contains the SD/cut path. An increase identifies missed activation requests rather than proving why they were missed or that combustion stopped.255 is saturated;startup RAM initialization clears it. Reading does not reset it." target="1">
+    <ecu id="3C5A387116"><address length="1">0xFFB00D</address></ecu>
+    <conversions><conversion units="missed activations" storagetype="uint8" expr="x" format="0" gauge_min="0" gauge_max="255" gauge_step="16" /></conversions>
+  </ecuparam>
+  <ecuparam id="E537" name="Engine Signal Timeout State (D2WD610H diagnostic)*" desc="Native AC0C selected engine-signal timeout latch.8AC0 initializes1;8AD6 updates from the selected timeout source and8B2E clears on a primary event outside mode2. Native startup/current-cam-fault selectors use mode0/1 and the timer10A primary timeout. A new timeout resets internal engine state and queues reset callbacks; recovery can clear it between samples. B52C mask128 is its later runtime publication." target="1">
+    <ecu id="3C5A387116"><address length="1">0xFFAC0C</address></ecu>
+    <conversions><conversion units="raw state" storagetype="uint8" expr="x" format="0" gauge_min="0" gauge_max="1" gauge_step="1" /></conversions>
+  </ecuparam>
 </ecuparams>

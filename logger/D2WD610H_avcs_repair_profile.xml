@@ -75,6 +75,14 @@
         <parameter id="E527" units="AVLS mode (1 low; 3 high)" />
         <parameter id="E528" livedata="selected" dash="selected" units="%" />
         <parameter id="E529" livedata="selected" dash="selected" units="%" />
+        <parameter id="E530" units="raw inhibit word" />
+        <parameter id="E531" units="raw mode" />
+        <parameter id="E532" units="raw inhibit word" />
+        <parameter id="E533" units="raw state" />
+        <parameter id="E534" units="raw flags" />
+        <parameter id="E535" units="missed activations" />
+        <parameter id="E536" units="missed activations" />
+        <parameter id="E537" units="raw state" />
     </parameters>
     <switches>
         <switch id="S4" />

@@ -16,6 +16,7 @@ MAP_SOURCE_PROFILE = PROFILE_DIR / 'D2WD610H_map_source_diagnostic_profile.xml'
 ROAD_PROFILE = PROFILE_DIR / 'D2WD610H_road_tuning_profile.xml'
 AVLS_CUT_PROFILE = PROFILE_DIR / 'D2WD610H_avls_cut_diagnostic_profile.xml'
 AVCS_PROFILE = PROFILE_DIR / 'D2WD610H_avcs_repair_profile.xml'
+CUT_PROFILE = PROFILE_DIR / 'D2WD610H_cut_trace_profile.xml'
 IDLE_PARAMETERS = {
     'P2', 'P3', 'P4', 'P5', 'P6', 'P8', 'P10', 'P11', 'P12', 'P13',
     'P17', 'P21', 'P24', 'P47', 'E32', 'E33', 'E50', 'E51', 'E60',
@@ -60,6 +61,13 @@ AVCS_PARAMETERS = {
     'P48', 'P49', 'P52', 'P53',
     'E31', 'E39', 'E41', 'E500', 'E504', 'E518', 'E525', 'E528', 'E529',
 }
+# Read the separate spark gate, synchronization and native loss counters.
+# All 24 channels fit 43 addresses; no ROM instrumentation is required.
+CUT_PARAMETERS = {
+    'P2', 'P8', 'P9', 'P10', 'P13', 'P17', 'P21', 'P30',
+    'E31', 'E39', 'E41', 'E500', 'E503', 'E504', 'E518', 'E525',
+    'E530', 'E531', 'E532', 'E533', 'E534', 'E535', 'E536', 'E537',
+}
 PROFILE_SELECTIONS = {
     IDLE_PROFILE: IDLE_PARAMETERS,
     AFTERSTART_PROFILE: AFTERSTART_PARAMETERS,
@@ -69,6 +77,7 @@ PROFILE_SELECTIONS = {
     ROAD_PROFILE: ROAD_PARAMETERS,
     AVLS_CUT_PROFILE: AVLS_CUT_PARAMETERS,
     AVCS_PROFILE: AVCS_PARAMETERS,
+    CUT_PROFILE: CUT_PARAMETERS,
 }
 UNIT_OVERRIDES = {path: {'E123': 'fuel-air equivalence ratio'}
                   for path in (RECOVERY_PROFILE, IDLE_AIR_PROFILE, ROAD_PROFILE)}
@@ -96,6 +105,10 @@ UNITS = {
     'E525': 'raw inhibit word',
     'E526': 'AVLS mode (1 low; 3 high)', 'E527': 'AVLS mode (1 low; 3 high)',
     'E528': '%', 'E529': '%',
+    'E530': 'raw inhibit word', 'E531': 'raw mode',
+    'E532': 'raw inhibit word', 'E533': 'raw state', 'E534': 'raw flags',
+    'E535': 'missed activations', 'E536': 'missed activations',
+    'E537': 'raw state',
 }
 SWITCHES = {'S4', 'S5', 'S11'}
 

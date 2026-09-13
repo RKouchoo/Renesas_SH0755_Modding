@@ -1,0 +1,3619 @@
+{
+  "date": "2026-09-13",
+  "source_log": "logs/romraiderlog_AVCSREPAIR1_20260913_132958.csv",
+  "review": "docs/reference/AVCS_REPAIR_CAPTURE_20260913.md",
+  "rom_sha256": "fabceb54359aca76e6e15835a51aa5cfd008e570dc002e886eaa62a6cb020ce5",
+  "user_confirms_cut_persists": true,
+  "captures": [
+    {
+      "group": "avcs_log_followup_mcp",
+      "address": "0x34304",
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "00034304: mov.l r14,@-r15 ; 2026-09-13 process-flow audit: descriptor stage after34208. Actual angle C8C8+4*bank=max(0,C8B0+4*bank - protected learned float8264+8*bank). Publishes filtered actual C8D0/D4, RPM-scaled delta C8D8/DC and mean derivative C8E0/E4. 344A8 initializes protected offsets to40; 345F4 learns them in qualified rest state. Do not confuse intermediate C8B0/B4 with final actual-angle channels C8C8/CC."
+          },
+          {
+            "type": "text",
+            "text": "00034306: fldi0 fr5 "
+          },
+          {
+            "type": "text",
+            "text": "00034308: mov.l 0x00034440,r0 "
+          },
+          {
+            "type": "text",
+            "text": "0003430a: mov r4,r14 "
+          },
+          {
+            "type": "text",
+            "text": "0003430c: mov.w 0x00034428,r3 "
+          },
+          {
+            "type": "text",
+            "text": "0003430e: mov.l r8,@-r15 "
+          },
+          {
+            "type": "text",
+            "text": "00034310: fmov.s fr15,@-r15 "
+          },
+          {
+            "type": "text",
+            "text": "00034312: fmov.s fr14,@-r15 "
+          },
+          {
+            "type": "text",
+            "text": "00034314: fmov.s fr13,@-r15 "
+          },
+          {
+            "type": "text",
+            "text": "00034316: sts.l PR,@-r15 "
+          },
+          {
+            "type": "text",
+            "text": "00034318: add #-0x8,r15 "
+          },
+          {
+            "type": "text",
+            "text": "0003431a: mov.l r5,@(0x4,r15) "
+          },
+          {
+            "type": "text",
+            "text": "0003431c: fmov.s @r3,fr13 "
+          },
+          {
+            "type": "text",
+            "text": "0003431e: mov.l @(0x14,r14),r2 "
+          },
+          {
+            "type": "text",
+            "text": "00034320: mov.l r2,@r15 "
+          },
+          {
+            "type": "text",
+            "text": "00034322: mov r2,r8 "
+          },
+          {
+            "type": "text",
+            "text": "00034324: fmov.s @r2,fr14 "
+          },
+          {
+            "type": "text",
+            "text": "00034326: mov.l @(0x1c,r14),r1 "
+          },
+          {
+            "type": "text",
+            "text": "00034328: mov.l @(0x8,r14),r2 "
+          },
+          {
+            "type": "text",
+            "text": "0003432a: fmov.s @r1,fr15 "
+          },
+          {
+            "type": "text",
+            "text": "0003432c: mov.l @(0x4,r15),r1 "
+          },
+          {
+            "type": "text",
+            "text": "0003432e: shll2 r1 "
+          },
+          {
+            "type": "text",
+            "text": "00034330: mov.l @(r0,r1),r1 "
+          },
+          {
+            "type": "text",
+            "text": "00034332: fmov.s @r1,fr3 "
+          },
+          {
+            "type": "text",
+            "text": "00034334: fmov.s @r2,fr4 "
+          },
+          {
+            "type": "text",
+            "text": "00034336: mov.l 0x00034444,r2 "
+          },
+          {
+            "type": "text",
+            "text": "00034338: jsr @r2 "
+          },
+          {
+            "type": "text",
+            "text": "0003433a: _fsub fr3,fr4 "
+          },
+          {
+            "type": "text",
+            "text": "0003433c: fmov.s fr0,@r8 "
+          },
+          {
+            "type": "text",
+            "text": "0003433e: mov.l @(0x18,r14),r3 "
+          },
+          {
+            "type": "text",
+            "text": "00034340: mova 0x00034448,r0 "
+          },
+          {
+            "type": "text",
+            "text": "00034342: mov r3,r8 "
+          },
+          {
+            "type": "text",
+            "text": "00034344: mov.l r3,@r15 "
+          },
+          {
+            "type": "text",
+            "text": "00034346: fmov.s @r0,fr7 "
+          },
+          {
+            "type": "text",
+            "text": "00034348: mov.l 0x0003444c,r3 "
+          },
+          {
+            "type": "text",
+            "text": "0003434a: fmov.s @r3,fr6 "
+          },
+          {
+            "type": "text",
+            "text": "0003434c: mov.l @r15,r2 "
+          },
+          {
+            "type": "text",
+            "text": "0003434e: fmov.s @r2,fr5 "
+          },
+          {
+            "type": "text",
+            "text": "00034350: mov.l @(0x14,r14),r1 "
+          },
+          {
+            "type": "text",
+            "text": "00034352: mov.l 0x00034430,r2 "
+          },
+          {
+            "type": "text",
+            "text": "00034354: jsr @r2 "
+          },
+          {
+            "type": "text",
+            "text": "00034356: _fmov.s @r1,fr4 "
+          },
+          {
+            "type": "text",
+            "text": "00034358: fmov.s fr0,@r8 "
+          },
+          {
+            "type": "text",
+            "text": "0003435a: mov.l @(0x1c,r14),r3 "
+          },
+          {
+            "type": "text",
+            "text": "0003435c: mov.l @(0x14,r14),r2 "
+          },
+          {
+            "type": "text",
+            "text": "0003435e: fmov.s @r2,fr3 "
+          },
+          {
+            "type": "text",
+            "text": "00034360: mova 0x00034450,r0 "
+          },
+          {
+            "type": "text",
+            "text": "00034362: fsub fr14,fr3 "
+          },
+          {
+            "type": "text",
+            "text": "00034364: fmov.s @r0,fr2 "
+          },
+          {
+            "type": "text",
+            "text": "00034366: fdiv fr2,fr13 "
+          },
+          {
+            "type": "text",
+            "text": "00034368: fmov fr13,fr13 "
+          },
+          {
+            "type": "text",
+            "text": "0003436a: fmul fr13,fr3 "
+          },
+          {
+            "type": "text",
+            "text": "0003436c: fmov.s fr3,@r3 "
+          },
+          {
+            "type": "text",
+            "text": "0003436e: mov.l @(0x20,r14),r3 "
+          },
+          {
+            "type": "text",
+            "text": "00034370: mov.l @(0x1c,r14),r2 "
+          },
+          {
+            "type": "text",
+            "text": "00034372: fmov.s @r2,fr3 "
+          },
+          {
+            "type": "text",
+            "text": "00034374: mova 0x00034454,r0 "
+          },
+          {
+            "type": "text",
+            "text": "00034376: fadd fr15,fr3 "
+          },
+          {
+            "type": "text",
+            "text": "00034378: fmov.s @r0,fr1 "
+          },
+          {
+            "type": "text",
+            "text": "0003437a: fmul fr1,fr3 "
+          },
+          {
+            "type": "text",
+            "text": "0003437c: fmov.s fr3,@r3 "
+          },
+          {
+            "type": "text",
+            "text": "0003437e: add #0x8,r15 "
+          },
+          {
+            "type": "text",
+            "text": "00034380: lds.l @r15+,PR "
+          },
+          {
+            "type": "text",
+            "text": "00034382: fmov.s @r15+,fr13 "
+          },
+          {
+            "type": "text",
+            "text": "00034384: fmov.s @r15+,fr14 "
+          },
+          {
+            "type": "text",
+            "text": "00034386: fmov.s @r15+,fr15 "
+          },
+          {
+            "type": "text",
+            "text": "00034388: mov.l @r15+,r8 "
+          },
+          {
+            "type": "text",
+            "text": "0003438a: rts "
+          },
+          {
+            "type": "text",
+            "text": "0003438c: _mov.l @r15+,r14 "
+          }
+        ],
+        "isError": false
+      }
+    },
+    {
+      "group": "avcs_log_followup_mcp",
+      "address": "0x31938",
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "No function found at or containing address 0x31938"
+          }
+        ],
+        "isError": false
+      }
+    },
+    {
+      "group": "avcs_log_followup_mcp",
+      "address": "0xE0D0",
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "0000e0d0: mov.l r13,@-r15 ; 2026-09-13 correction: native AVCS OCV-current conversion, NOT rear O2. AB20/AB0C u16 -> B094/B096 -> B098/B09C = max(0, counts*(5/65536)*72848 + 7284C); stock gain .334 and offset -.035. Consumer 33AAC is in AVCS duty feedback; 69568 reports P2088/P2089/P2092/P2093. Earlier master bypass was a defect; current repair preserves these bytes."
+          },
+          {
+            "type": "text",
+            "text": "0000e0d2: mov #0x20,r0 "
+          },
+          {
+            "type": "text",
+            "text": "0000e0d4: mov.l 0x0000e15c,r5 "
+          },
+          {
+            "type": "text",
+            "text": "0000e0d6: mov #0x0,r7 "
+          },
+          {
+            "type": "text",
+            "text": "0000e0d8: mov.l 0x0000e160,r4 "
+          },
+          {
+            "type": "text",
+            "text": "0000e0da: mov #0x0,r6 "
+          },
+          {
+            "type": "text",
+            "text": "0000e0dc: mov.l r12,@-r15 "
+          },
+          {
+            "type": "text",
+            "text": "0000e0de: fldi0 fr5 "
+          },
+          {
+            "type": "text",
+            "text": "0000e0e0: mov.l 0x0000e16c,r13 "
+          },
+          {
+            "type": "text",
+            "text": "0000e0e2: mov #0x2,r1 "
+          },
+          {
+            "type": "text",
+            "text": "0000e0e4: mov.l 0x0000e168,r12 "
+          },
+          {
+            "type": "text",
+            "text": "0000e0e6: add #-0x4,r15 "
+          },
+          {
+            "type": "text",
+            "text": "0000e0e8: mov.w @(r0,r5),r3 "
+          },
+          {
+            "type": "text",
+            "text": "0000e0ea: add r4,r6 "
+          },
+          {
+            "type": "text",
+            "text": "0000e0ec: mov.w r3,@r4 "
+          },
+          {
+            "type": "text",
+            "text": "0000e0ee: mov.w @(0xc,r5),r0 "
+          },
+          {
+            "type": "text",
+            "text": "0000e0f0: mov.l 0x0000e164,r5 "
+          },
+          {
+            "type": "text",
+            "text": "0000e0f2: mov.w r0,@(0x2,r4) "
+          },
+          {
+            "type": "text",
+            "text": "0000e0f4: mov.l r5,@r15 "
+          },
+          {
+            "type": "text",
+            "text": "0000e0f6: mov r5,r4 "
+          },
+          {
+            "type": "text",
+            "text": "0000e0f8: mova 0x0000e170,r0 "
+          },
+          {
+            "type": "text",
+            "text": "0000e0fa: fmov.s @r0,fr4 "
+          },
+          {
+            "type": "text",
+            "text": "0000e0fc: mov.w @r6,r3 "
+          },
+          {
+            "type": "text",
+            "text": "0000e0fe: extu.w r3,r3 "
+          },
+          {
+            "type": "text",
+            "text": "0000e100: fmov.s @r13,fr0 "
+          },
+          {
+            "type": "text",
+            "text": "0000e102: lds r3,FPUL "
+          },
+          {
+            "type": "text",
+            "text": "0000e104: fmov.s @r12,fr2 "
+          },
+          {
+            "type": "text",
+            "text": "0000e106: float FPUL,fr3 "
+          },
+          {
+            "type": "text",
+            "text": "0000e108: fmul fr0,fr3 "
+          },
+          {
+            "type": "text",
+            "text": "0000e10a: fmov fr4,fr0 "
+          },
+          {
+            "type": "text",
+            "text": "0000e10c: fmac fr0,fr3,fr2 "
+          },
+          {
+            "type": "text",
+            "text": "0000e10e: fldi0 fr3 "
+          },
+          {
+            "type": "text",
+            "text": "0000e110: fcmp/gt fr2,fr3 "
+          },
+          {
+            "type": "text",
+            "text": "0000e112: bf/s 0x0000e118 "
+          },
+          {
+            "type": "text",
+            "text": "0000e114: _fmov.s fr2,@r4 "
+          },
+          {
+            "type": "text",
+            "text": "0000e116: fmov.s fr5,@r5 "
+          },
+          {
+            "type": "text",
+            "text": "0000e118: add #0x1,r7 "
+          },
+          {
+            "type": "text",
+            "text": "0000e11a: add #0x4,r5 "
+          },
+          {
+            "type": "text",
+            "text": "0000e11c: add #0x2,r6 "
+          },
+          {
+            "type": "text",
+            "text": "0000e11e: extu.b r7,r2 "
+          },
+          {
+            "type": "text",
+            "text": "0000e120: cmp/ge r1,r2 "
+          },
+          {
+            "type": "text",
+            "text": "0000e122: bf/s 0x0000e0fc "
+          },
+          {
+            "type": "text",
+            "text": "0000e124: _add #0x4,r4 "
+          },
+          {
+            "type": "text",
+            "text": "0000e126: add #0x4,r15 "
+          },
+          {
+            "type": "text",
+            "text": "0000e128: mov.l @r15+,r12 "
+          },
+          {
+            "type": "text",
+            "text": "0000e12a: rts "
+          },
+          {
+            "type": "text",
+            "text": "0000e12c: _mov.l @r15+,r13 "
+          }
+        ],
+        "isError": false
+      }
+    },
+    {
+      "group": "avcs_log_angle_xrefs",
+      "address": "0xFFFFC8CC",
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "From 000498ce in avcs_target_deficit_for_iam_timing_update [READ]"
+          },
+          {
+            "type": "text",
+            "text": "From 0002c1da in FUN_0002c1c4 [READ]"
+          },
+          {
+            "type": "text",
+            "text": "From 00033f42 in intake_avcs_runtime_temperature_permission_update [READ]"
+          },
+          {
+            "type": "text",
+            "text": "From 00035918 in intake_avcs_tracking_control_update [READ]"
+          },
+          {
+            "type": "text",
+            "text": "From 00028374 in ign_avcs_tracking_blend_factor_update [READ]"
+          },
+          {
+            "type": "text",
+            "text": "From 0003193a [READ]"
+          }
+        ],
+        "isError": false
+      }
+    },
+    {
+      "group": "avcs_log_angle_xrefs",
+      "address": "0xFFFFB0B4",
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "From 00034242 in avcs_cam_capture_filter_update [READ]"
+          }
+        ],
+        "isError": false
+      }
+    },
+    {
+      "group": "avcs_log_angle_xrefs",
+      "address": "0xFFFF826C",
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "From 000344b6 in FUN_000344a8 [PARAM]"
+          },
+          {
+            "type": "text",
+            "text": "From 00034512 in FUN_000344fe [PARAM]"
+          },
+          {
+            "type": "text",
+            "text": "From 0003489a in avcs_rest_learning_convergence_update [READ]"
+          },
+          {
+            "type": "text",
+            "text": "From 000346b2 in FUN_000345f4 [READ]"
+          },
+          {
+            "type": "text",
+            "text": "From 000346f4 in FUN_000345f4 [PARAM]"
+          },
+          {
+            "type": "text",
+            "text": "From 00071b2c in avcs_cam_performance_failure_update [READ]"
+          },
+          {
+            "type": "text",
+            "text": "From 00071d50 in avcs_cam_performance_healthy_update [READ]"
+          },
+          {
+            "type": "text",
+            "text": "From 000344de in FUN_000344d0 [PARAM]"
+          }
+        ],
+        "isError": false
+      }
+    },
+    {
+      "group": "avcs_log_bank0_xrefs",
+      "address": "0xFFFFC8C8",
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "From 000498ca in avcs_target_deficit_for_iam_timing_update [READ]"
+          },
+          {
+            "type": "text",
+            "text": "From 0002c1d6 in FUN_0002c1c4 [READ]"
+          },
+          {
+            "type": "text",
+            "text": "From 00033f36 in intake_avcs_runtime_temperature_permission_update [READ]"
+          },
+          {
+            "type": "text",
+            "text": "From 000358a0 in intake_avcs_tracking_control_update [READ]"
+          },
+          {
+            "type": "text",
+            "text": "From 0002836e in ign_avcs_tracking_blend_factor_update [READ]"
+          },
+          {
+            "type": "text",
+            "text": "From 0003192e [READ]"
+          }
+        ],
+        "isError": false
+      }
+    },
+    {
+      "group": "avcs_log_bank0_xrefs",
+      "address": "0xFFFF8264",
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "From 000344ac in FUN_000344a8 [PARAM]"
+          },
+          {
+            "type": "text",
+            "text": "From 00034502 in FUN_000344fe [PARAM]"
+          },
+          {
+            "type": "text",
+            "text": "From 00034890 in avcs_rest_learning_convergence_update [READ]"
+          },
+          {
+            "type": "text",
+            "text": "From 00034660 in FUN_000345f4 [READ]"
+          },
+          {
+            "type": "text",
+            "text": "From 000346a4 in FUN_000345f4 [PARAM]"
+          },
+          {
+            "type": "text",
+            "text": "From 00071b26 in avcs_cam_performance_failure_update [READ]"
+          },
+          {
+            "type": "text",
+            "text": "From 00071d4a in avcs_cam_performance_healthy_update [READ]"
+          },
+          {
+            "type": "text",
+            "text": "From 000344d4 in FUN_000344d0 [PARAM]"
+          },
+          {
+            "type": "text",
+            "text": "From 0004c680 [DATA]"
+          }
+        ],
+        "isError": false
+      }
+    },
+    {
+      "group": "new_cut_ignition_mcp",
+      "address": "0x2716C",
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "0002716c: mov.l r14,@-r15 "
+          },
+          {
+            "type": "text",
+            "text": "0002716e: mov.l r13,@-r15 "
+          },
+          {
+            "type": "text",
+            "text": "00027170: fmov.s fr15,@-r15 "
+          },
+          {
+            "type": "text",
+            "text": "00027172: fmov.s fr14,@-r15 "
+          },
+          {
+            "type": "text",
+            "text": "00027174: mov.w 0x0002725a,r3 "
+          },
+          {
+            "type": "text",
+            "text": "00027176: sts.l PR,@-r15 "
+          },
+          {
+            "type": "text",
+            "text": "00027178: mov.l 0x00027268,r2 "
+          },
+          {
+            "type": "text",
+            "text": "0002717a: add #-0x4,r15 "
+          },
+          {
+            "type": "text",
+            "text": "0002717c: jsr @r2 "
+          },
+          {
+            "type": "text",
+            "text": "0002717e: _fmov.s @r3,fr14 "
+          },
+          {
+            "type": "text",
+            "text": "00027180: mov.b r0,@r15 "
+          },
+          {
+            "type": "text",
+            "text": "00027182: mov.w 0x0002725c,r3 "
+          },
+          {
+            "type": "text",
+            "text": "00027184: mov.w 0x0002725e,r2 "
+          },
+          {
+            "type": "text",
+            "text": "00027186: mov.b @r3,r4 "
+          },
+          {
+            "type": "text",
+            "text": "00027188: fmov.s @r2,fr15 "
+          },
+          {
+            "type": "text",
+            "text": "0002718a: extu.b r4,r13 "
+          },
+          {
+            "type": "text",
+            "text": "0002718c: mov.w 0x00027260,r1 "
+          },
+          {
+            "type": "text",
+            "text": "0002718e: mov r13,r0 "
+          },
+          {
+            "type": "text",
+            "text": "00027190: cmp/eq #0x2,r0 "
+          },
+          {
+            "type": "text",
+            "text": "00027192: bf/s 0x000271aa "
+          },
+          {
+            "type": "text",
+            "text": "00027194: _mov.b @r1,r14 "
+          },
+          {
+            "type": "text",
+            "text": "00027196: mov #0x1,r5 "
+          },
+          {
+            "type": "text",
+            "text": "00027198: mov.l 0x0002726c,r3 "
+          },
+          {
+            "type": "text",
+            "text": "0002719a: jsr @r3 "
+          },
+          {
+            "type": "text",
+            "text": "0002719c: _mov r14,r4 "
+          },
+          {
+            "type": "text",
+            "text": "0002719e: mov r0,r14 "
+          },
+          {
+            "type": "text",
+            "text": "000271a0: mov.l 0x00027270,r2 "
+          },
+          {
+            "type": "text",
+            "text": "000271a2: jsr @r2 "
+          },
+          {
+            "type": "text",
+            "text": "000271a4: _mov r0,r4 "
+          },
+          {
+            "type": "text",
+            "text": "000271a6: mov.w 0x00027260,r3 "
+          },
+          {
+            "type": "text",
+            "text": "000271a8: mov.w r0,@r3 "
+          },
+          {
+            "type": "text",
+            "text": "000271aa: tst r13,r13 "
+          },
+          {
+            "type": "text",
+            "text": "000271ac: bf/s 0x00027236 "
+          },
+          {
+            "type": "text",
+            "text": "000271ae: _nop "
+          },
+          {
+            "type": "text",
+            "text": "000271b0: mov.l 0x00027274,r6 "
+          },
+          {
+            "type": "text",
+            "text": "000271b2: mov.l 0x00027278,r5 "
+          },
+          {
+            "type": "text",
+            "text": "000271b4: mov.l 0x0002727c,r3 "
+          },
+          {
+            "type": "text",
+            "text": "000271b6: fmov.s @r3,fr3 "
+          },
+          {
+            "type": "text",
+            "text": "000271b8: fcmp/gt fr14,fr3 "
+          },
+          {
+            "type": "text",
+            "text": "000271ba: bf/s 0x000271c8 "
+          },
+          {
+            "type": "text",
+            "text": "000271bc: _nop "
+          },
+          {
+            "type": "text",
+            "text": "000271be: mov.l 0x00027280,r2 "
+          },
+          {
+            "type": "text",
+            "text": "000271c0: mov.l 0x00027284,r1 "
+          },
+          {
+            "type": "text",
+            "text": "000271c2: fmov.s @r2,fr2 "
+          },
+          {
+            "type": "text",
+            "text": "000271c4: bra 0x000271d0 "
+          },
+          {
+            "type": "text",
+            "text": "000271c6: _fmov.s fr2,@r6 "
+          },
+          {
+            "type": "text",
+            "text": "000271c8: mov.l 0x00027288,r2 "
+          },
+          {
+            "type": "text",
+            "text": "000271ca: fmov.s @r2,fr2 "
+          },
+          {
+            "type": "text",
+            "text": "000271cc: fmov.s fr2,@r6 "
+          },
+          {
+            "type": "text",
+            "text": "000271ce: mov.l 0x0002728c,r1 "
+          },
+          {
+            "type": "text",
+            "text": "000271d0: fmov.s @r1,fr3 "
+          },
+          {
+            "type": "text",
+            "text": "000271d2: mov.w 0x00027262,r4 "
+          },
+          {
+            "type": "text",
+            "text": "000271d4: fcmp/gt fr15,fr3 "
+          },
+          {
+            "type": "text",
+            "text": "000271d6: bt/s 0x000271e2 "
+          },
+          {
+            "type": "text",
+            "text": "000271d8: _fmov.s fr3,@r5 "
+          },
+          {
+            "type": "text",
+            "text": "000271da: mov.b @r4,r0 "
+          },
+          {
+            "type": "text",
+            "text": "000271dc: and #0xbf,r0 "
+          },
+          {
+            "type": "text",
+            "text": "000271de: bra 0x000271f0 "
+          },
+          {
+            "type": "text",
+            "text": "000271e0: _mov.b r0,@r4 "
+          },
+          {
+            "type": "text",
+            "text": "000271e2: fmov.s @r6,fr3 "
+          },
+          {
+            "type": "text",
+            "text": "000271e4: fcmp/gt fr15,fr3 "
+          },
+          {
+            "type": "text",
+            "text": "000271e6: bf/s 0x000271f0 "
+          },
+          {
+            "type": "text",
+            "text": "000271e8: _nop "
+          },
+          {
+            "type": "text",
+            "text": "000271ea: mov.b @r4,r0 "
+          },
+          {
+            "type": "text",
+            "text": "000271ec: or #0x40,r0 "
+          },
+          {
+            "type": "text",
+            "text": "000271ee: mov.b r0,@r4 "
+          },
+          {
+            "type": "text",
+            "text": "000271f0: mov.w 0x00027264,r5 "
+          },
+          {
+            "type": "text",
+            "text": "000271f2: mov r4,r0 "
+          },
+          {
+            "type": "text",
+            "text": "000271f4: mov.b @r0,r0 "
+          },
+          {
+            "type": "text",
+            "text": "000271f6: tst #0x40,r0 "
+          },
+          {
+            "type": "text",
+            "text": "000271f8: movt r0 "
+          },
+          {
+            "type": "text",
+            "text": "000271fa: add #-0x1,r0 "
+          },
+          {
+            "type": "text",
+            "text": "000271fc: neg r0,r0 "
+          },
+          {
+            "type": "text",
+            "text": "000271fe: cmp/eq #0x1,r0 "
+          },
+          {
+            "type": "text",
+            "text": "00027200: bf/s 0x00027232 "
+          },
+          {
+            "type": "text",
+            "text": "00027202: _nop "
+          },
+          {
+            "type": "text",
+            "text": "00027204: mov.w 0x00027266,r3 "
+          },
+          {
+            "type": "text",
+            "text": "00027206: extu.b r14,r14 "
+          },
+          {
+            "type": "text",
+            "text": "00027208: mov.b @r3,r2 "
+          },
+          {
+            "type": "text",
+            "text": "0002720a: extu.b r2,r2 "
+          },
+          {
+            "type": "text",
+            "text": "0002720c: cmp/ge r2,r14 "
+          },
+          {
+            "type": "text",
+            "text": "0002720e: bt/s 0x0002722c "
+          },
+          {
+            "type": "text",
+            "text": "00027210: _nop "
+          },
+          {
+            "type": "text",
+            "text": "00027212: mov.b @r15,r0 "
+          },
+          {
+            "type": "text",
+            "text": "00027214: extu.b r0,r0 "
+          },
+          {
+            "type": "text",
+            "text": "00027216: cmp/eq #0x1,r0 "
+          },
+          {
+            "type": "text",
+            "text": "00027218: bf/s 0x0002722c "
+          },
+          {
+            "type": "text",
+            "text": "0002721a: _nop "
+          },
+          {
+            "type": "text",
+            "text": "0002721c: mov.l 0x00027290,r2 "
+          },
+          {
+            "type": "text",
+            "text": "0002721e: fmov.s @r2,fr3 "
+          },
+          {
+            "type": "text",
+            "text": "00027220: fcmp/gt fr14,fr3 "
+          },
+          {
+            "type": "text",
+            "text": "00027222: bf/s 0x0002722c "
+          },
+          {
+            "type": "text",
+            "text": "00027224: _nop "
+          },
+          {
+            "type": "text",
+            "text": "00027226: mov #0x0,r3 "
+          },
+          {
+            "type": "text",
+            "text": "00027228: bra 0x00027236 "
+          },
+          {
+            "type": "text",
+            "text": "0002722a: _mov.b r3,@r5 "
+          },
+          {
+            "type": "text",
+            "text": "0002722c: mov #0x1,r1 "
+          },
+          {
+            "type": "text",
+            "text": "0002722e: bra 0x00027236 "
+          },
+          {
+            "type": "text",
+            "text": "00027230: _mov.b r1,@r5 "
+          },
+          {
+            "type": "text",
+            "text": "00027232: mov #0x2,r2 "
+          },
+          {
+            "type": "text",
+            "text": "00027234: mov.b r2,@r5 "
+          },
+          {
+            "type": "text",
+            "text": "00027236: add #0x4,r15 "
+          },
+          {
+            "type": "text",
+            "text": "00027238: lds.l @r15+,PR "
+          },
+          {
+            "type": "text",
+            "text": "0002723a: fmov.s @r15+,fr14 "
+          },
+          {
+            "type": "text",
+            "text": "0002723c: fmov.s @r15+,fr15 "
+          },
+          {
+            "type": "text",
+            "text": "0002723e: mov.l @r15+,r13 "
+          },
+          {
+            "type": "text",
+            "text": "00027240: rts "
+          },
+          {
+            "type": "text",
+            "text": "00027242: _mov.l @r15+,r14 "
+          }
+        ],
+        "isError": false
+      }
+    },
+    {
+      "group": "new_cut_ignition_mcp",
+      "address": "0x27090",
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "00027090: sts.l PR,@-r15 "
+          },
+          {
+            "type": "text",
+            "text": "00027092: add #-0x14,r15 "
+          },
+          {
+            "type": "text",
+            "text": "00027094: mov.l 0x00027150,r3 "
+          },
+          {
+            "type": "text",
+            "text": "00027096: jsr @r3 "
+          },
+          {
+            "type": "text",
+            "text": "00027098: _nop "
+          },
+          {
+            "type": "text",
+            "text": "0002709a: mov r15,r1 "
+          },
+          {
+            "type": "text",
+            "text": "0002709c: mov.l 0x00027154,r3 "
+          },
+          {
+            "type": "text",
+            "text": "0002709e: add #0x10,r1 "
+          },
+          {
+            "type": "text",
+            "text": "000270a0: jsr @r3 "
+          },
+          {
+            "type": "text",
+            "text": "000270a2: _mov.b r0,@r1 "
+          },
+          {
+            "type": "text",
+            "text": "000270a4: mov.l 0x00027158,r3 "
+          },
+          {
+            "type": "text",
+            "text": "000270a6: jsr @r3 "
+          },
+          {
+            "type": "text",
+            "text": "000270a8: _mov.b r0,@(0xc,r15) "
+          },
+          {
+            "type": "text",
+            "text": "000270aa: mov.l 0x0002715c,r3 "
+          },
+          {
+            "type": "text",
+            "text": "000270ac: jsr @r3 "
+          },
+          {
+            "type": "text",
+            "text": "000270ae: _mov.b r0,@(0x8,r15) "
+          },
+          {
+            "type": "text",
+            "text": "000270b0: mov.l 0x00027160,r3 "
+          },
+          {
+            "type": "text",
+            "text": "000270b2: jsr @r3 "
+          },
+          {
+            "type": "text",
+            "text": "000270b4: _mov.b r0,@(0x4,r15) "
+          },
+          {
+            "type": "text",
+            "text": "000270b6: mov.l 0x00027164,r3 "
+          },
+          {
+            "type": "text",
+            "text": "000270b8: jsr @r3 "
+          },
+          {
+            "type": "text",
+            "text": "000270ba: _mov.b r0,@r15 "
+          },
+          {
+            "type": "text",
+            "text": "000270bc: mov r0,r5 "
+          },
+          {
+            "type": "text",
+            "text": "000270be: mov.w 0x0002713e,r0 "
+          },
+          {
+            "type": "text",
+            "text": "000270c0: mov.b @r0,r0 "
+          },
+          {
+            "type": "text",
+            "text": "000270c2: tst #0x80,r0 "
+          },
+          {
+            "type": "text",
+            "text": "000270c4: movt r0 "
+          },
+          {
+            "type": "text",
+            "text": "000270c6: add #-0x1,r0 "
+          },
+          {
+            "type": "text",
+            "text": "000270c8: neg r0,r0 "
+          },
+          {
+            "type": "text",
+            "text": "000270ca: cmp/eq #0x1,r0 "
+          },
+          {
+            "type": "text",
+            "text": "000270cc: bt/s 0x000270dc "
+          },
+          {
+            "type": "text",
+            "text": "000270ce: _mov #0x0,r4 "
+          },
+          {
+            "type": "text",
+            "text": "000270d0: mov.w 0x00027140,r0 "
+          },
+          {
+            "type": "text",
+            "text": "000270d2: mov.b @r0,r0 "
+          },
+          {
+            "type": "text",
+            "text": "000270d4: and #0x1,r0 "
+          },
+          {
+            "type": "text",
+            "text": "000270d6: cmp/eq #0x1,r0 "
+          },
+          {
+            "type": "text",
+            "text": "000270d8: bf/s 0x000270e2 "
+          },
+          {
+            "type": "text",
+            "text": "000270da: _nop "
+          },
+          {
+            "type": "text",
+            "text": "000270dc: mov.l 0x00027168,r4 "
+          },
+          {
+            "type": "text",
+            "text": "000270de: bra 0x00027132 "
+          },
+          {
+            "type": "text",
+            "text": "000270e0: _nop "
+          },
+          {
+            "type": "text",
+            "text": "000270e2: mov #0x10,r0 "
+          },
+          {
+            "type": "text",
+            "text": "000270e4: mov.b @(r0,r15),r0 "
+          },
+          {
+            "type": "text",
+            "text": "000270e6: extu.b r0,r0 "
+          },
+          {
+            "type": "text",
+            "text": "000270e8: cmp/eq #0x1,r0 "
+          },
+          {
+            "type": "text",
+            "text": "000270ea: bf/s 0x000270f0 "
+          },
+          {
+            "type": "text",
+            "text": "000270ec: _nop "
+          },
+          {
+            "type": "text",
+            "text": "000270ee: mov #0x41,r4 "
+          },
+          {
+            "type": "text",
+            "text": "000270f0: mov.b @(0xc,r15),r0 "
+          },
+          {
+            "type": "text",
+            "text": "000270f2: extu.b r0,r0 "
+          },
+          {
+            "type": "text",
+            "text": "000270f4: cmp/eq #0x1,r0 "
+          },
+          {
+            "type": "text",
+            "text": "000270f6: bf/s 0x000270fe "
+          },
+          {
+            "type": "text",
+            "text": "000270f8: _nop "
+          },
+          {
+            "type": "text",
+            "text": "000270fa: mov.w 0x00027142,r2 "
+          },
+          {
+            "type": "text",
+            "text": "000270fc: or r2,r4 "
+          },
+          {
+            "type": "text",
+            "text": "000270fe: mov.b @(0x8,r15),r0 "
+          },
+          {
+            "type": "text",
+            "text": "00027100: extu.b r0,r0 "
+          },
+          {
+            "type": "text",
+            "text": "00027102: cmp/eq #0x1,r0 "
+          },
+          {
+            "type": "text",
+            "text": "00027104: bf/s 0x0002710c "
+          },
+          {
+            "type": "text",
+            "text": "00027106: _nop "
+          },
+          {
+            "type": "text",
+            "text": "00027108: mov.w 0x00027144,r2 "
+          },
+          {
+            "type": "text",
+            "text": "0002710a: or r2,r4 "
+          },
+          {
+            "type": "text",
+            "text": "0002710c: mov.b @(0x4,r15),r0 "
+          },
+          {
+            "type": "text",
+            "text": "0002710e: extu.b r0,r0 "
+          },
+          {
+            "type": "text",
+            "text": "00027110: cmp/eq #0x1,r0 "
+          },
+          {
+            "type": "text",
+            "text": "00027112: bf/s 0x0002711a "
+          },
+          {
+            "type": "text",
+            "text": "00027114: _nop "
+          },
+          {
+            "type": "text",
+            "text": "00027116: mov.w 0x00027146,r2 "
+          },
+          {
+            "type": "text",
+            "text": "00027118: or r2,r4 "
+          },
+          {
+            "type": "text",
+            "text": "0002711a: mov.b @r15,r0 "
+          },
+          {
+            "type": "text",
+            "text": "0002711c: extu.b r0,r0 "
+          },
+          {
+            "type": "text",
+            "text": "0002711e: cmp/eq #0x1,r0 "
+          },
+          {
+            "type": "text",
+            "text": "00027120: bf/s 0x00027128 "
+          },
+          {
+            "type": "text",
+            "text": "00027122: _extu.b r5,r0 "
+          },
+          {
+            "type": "text",
+            "text": "00027124: mov.w 0x00027148,r2 "
+          },
+          {
+            "type": "text",
+            "text": "00027126: or r2,r4 "
+          },
+          {
+            "type": "text",
+            "text": "00027128: cmp/eq #0x1,r0 "
+          },
+          {
+            "type": "text",
+            "text": "0002712a: bf/s 0x00027132 "
+          },
+          {
+            "type": "text",
+            "text": "0002712c: _nop "
+          },
+          {
+            "type": "text",
+            "text": "0002712e: mov.w 0x0002714a,r2 "
+          },
+          {
+            "type": "text",
+            "text": "00027130: or r2,r4 "
+          },
+          {
+            "type": "text",
+            "text": "00027132: mov.w 0x0002714c,r3 "
+          },
+          {
+            "type": "text",
+            "text": "00027134: mov.w r4,@r3 "
+          },
+          {
+            "type": "text",
+            "text": "00027136: add #0x14,r15 "
+          },
+          {
+            "type": "text",
+            "text": "00027138: lds.l @r15+,PR "
+          },
+          {
+            "type": "text",
+            "text": "0002713a: rts "
+          },
+          {
+            "type": "text",
+            "text": "0002713c: _nop "
+          }
+        ],
+        "isError": false
+      }
+    },
+    {
+      "group": "new_cut_spark_sources_mcp",
+      "kind": "xref",
+      "address": "0xFFFFCE28",
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "From 000270d2 in FUN_00027090 [READ]"
+          },
+          {
+            "type": "text",
+            "text": "From 000416ce in FUN_00041698 [READ]"
+          },
+          {
+            "type": "text",
+            "text": "From 000416d4 in FUN_00041698 [WRITE]"
+          },
+          {
+            "type": "text",
+            "text": "From 000416b0 in FUN_00041698 [PARAM]"
+          },
+          {
+            "type": "text",
+            "text": "From 000416d6 in FUN_00041698 [READ]"
+          },
+          {
+            "type": "text",
+            "text": "From 000416da in FUN_00041698 [WRITE]"
+          }
+        ],
+        "isError": false
+      }
+    },
+    {
+      "group": "new_cut_spark_sources_mcp",
+      "kind": "xref",
+      "address": "0xFFFFCE54",
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "From 00041b02 in FUN_000419b8 [READ]"
+          },
+          {
+            "type": "text",
+            "text": "From 00041b06 in FUN_000419b8 [WRITE]"
+          },
+          {
+            "type": "text",
+            "text": "From 00041b76 in FUN_000419b8 [READ]"
+          },
+          {
+            "type": "text",
+            "text": "From 00041b7a in FUN_000419b8 [WRITE]"
+          },
+          {
+            "type": "text",
+            "text": "From 00042742 in FUN_0004273c [READ]"
+          },
+          {
+            "type": "text",
+            "text": "From 00042748 in FUN_0004273c [WRITE]"
+          },
+          {
+            "type": "text",
+            "text": "From 0004273e in FUN_0004273c [PARAM]"
+          },
+          {
+            "type": "text",
+            "text": "From 00042872 in FUN_00042856 [READ]"
+          },
+          {
+            "type": "text",
+            "text": "From 0004287a in FUN_00042856 [WRITE]"
+          },
+          {
+            "type": "text",
+            "text": "From 00042870 in FUN_00042856 [PARAM]"
+          },
+          {
+            "type": "text",
+            "text": "From 00042832 in FUN_00042798 [READ]"
+          },
+          {
+            "type": "text",
+            "text": "From 00042836 in FUN_00042798 [WRITE]"
+          },
+          {
+            "type": "text",
+            "text": "From 00044036 in FUN_00043f80 [READ]"
+          },
+          {
+            "type": "text",
+            "text": "From 0004403e in FUN_00043f80 [WRITE]"
+          },
+          {
+            "type": "text",
+            "text": "From 0004256e in FUN_00042480 [READ]"
+          },
+          {
+            "type": "text",
+            "text": "From 00041c9c in FUN_00041bf0 [READ]"
+          },
+          {
+            "type": "text",
+            "text": "From 00041ca0 in FUN_00041bf0 [WRITE]"
+          },
+          {
+            "type": "text",
+            "text": "From 00041c9a in FUN_00041bf0 [PARAM]"
+          },
+          {
+            "type": "text",
+            "text": "From 00042734 in FUN_000426ee [READ]"
+          },
+          {
+            "type": "text",
+            "text": "From 0004273a in FUN_000426ee [WRITE]"
+          },
+          {
+            "type": "text",
+            "text": "From 00043522 in FUN_000430f4 [READ]"
+          },
+          {
+            "type": "text",
+            "text": "From 0004352a in FUN_000430f4 [WRITE]"
+          },
+          {
+            "type": "text",
+            "text": "From 00043520 in FUN_000430f4 [PARAM]"
+          },
+          {
+            "type": "text",
+            "text": "From 000433de in FUN_000430f4 [READ]"
+          },
+          {
+            "type": "text",
+            "text": "From 000433e2 in FUN_000430f4 [WRITE]"
+          },
+          {
+            "type": "text",
+            "text": "From 000432d6 in FUN_000430f4 [READ]"
+          },
+          {
+            "type": "text",
+            "text": "From 000432da in FUN_000430f4 [WRITE]"
+          },
+          {
+            "type": "text",
+            "text": "From 0004323c in FUN_000430f4 [READ]"
+          },
+          {
+            "type": "text",
+            "text": "From 00043240 in FUN_000430f4 [WRITE]"
+          },
+          {
+            "type": "text",
+            "text": "From 00044a10 in FUN_00044a0c [READ]"
+          },
+          {
+            "type": "text",
+            "text": "From 00044a22 in FUN_00044a0c [READ]"
+          }
+        ],
+        "isError": false
+      }
+    },
+    {
+      "group": "new_cut_spark_sources_mcp",
+      "kind": "xref",
+      "address": "0xFFFF8546",
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "From 00044982 in FUN_0004497e [WRITE]"
+          },
+          {
+            "type": "text",
+            "text": "From 00044966 in FUN_00044962 [WRITE]"
+          },
+          {
+            "type": "text",
+            "text": "From 000447ce in FUN_000447ba [READ]"
+          },
+          {
+            "type": "text",
+            "text": "From 000447e2 in FUN_000447ba [READ]"
+          },
+          {
+            "type": "text",
+            "text": "From 00041aea in FUN_000419b8 [READ]"
+          },
+          {
+            "type": "text",
+            "text": "From 00041b58 in FUN_000419b8 [READ]"
+          },
+          {
+            "type": "text",
+            "text": "From 000424b2 in FUN_00042480 [READ]"
+          },
+          {
+            "type": "text",
+            "text": "From 0004251a in FUN_00042480 [READ]"
+          },
+          {
+            "type": "text",
+            "text": "From 00043156 in FUN_000430f4 [READ]"
+          },
+          {
+            "type": "text",
+            "text": "From 00043154 in FUN_000430f4 [PARAM]"
+          },
+          {
+            "type": "text",
+            "text": "From 0004316c in FUN_000430f4 [READ]"
+          },
+          {
+            "type": "text",
+            "text": "From 000431bc in FUN_000430f4 [READ]"
+          },
+          {
+            "type": "text",
+            "text": "From 00044a00 in FUN_000449fe [READ]"
+          }
+        ],
+        "isError": false
+      }
+    },
+    {
+      "group": "new_cut_spark_sources_mcp",
+      "kind": "asm",
+      "address": "0x41698",
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "00041698: sts.l PR,@-r15 "
+          },
+          {
+            "type": "text",
+            "text": "0004169a: add #-0x8,r15 "
+          },
+          {
+            "type": "text",
+            "text": "0004169c: mov.l 0x000416e8,r3 "
+          },
+          {
+            "type": "text",
+            "text": "0004169e: jsr @r3 "
+          },
+          {
+            "type": "text",
+            "text": "000416a0: _nop "
+          },
+          {
+            "type": "text",
+            "text": "000416a2: mov.l 0x000416ec,r3 "
+          },
+          {
+            "type": "text",
+            "text": "000416a4: jsr @r3 "
+          },
+          {
+            "type": "text",
+            "text": "000416a6: _mov.b r0,@r15 "
+          },
+          {
+            "type": "text",
+            "text": "000416a8: mov.l 0x000416f0,r3 "
+          },
+          {
+            "type": "text",
+            "text": "000416aa: jsr @r3 "
+          },
+          {
+            "type": "text",
+            "text": "000416ac: _mov.b r0,@(0x4,r15) "
+          },
+          {
+            "type": "text",
+            "text": "000416ae: mov r0,r5 "
+          },
+          {
+            "type": "text",
+            "text": "000416b0: mov.w 0x000416e4,r4 "
+          },
+          {
+            "type": "text",
+            "text": "000416b2: extu.b r5,r0 "
+          },
+          {
+            "type": "text",
+            "text": "000416b4: cmp/eq #0x1,r0 "
+          },
+          {
+            "type": "text",
+            "text": "000416b6: bf/s 0x000416d6 "
+          },
+          {
+            "type": "text",
+            "text": "000416b8: _nop "
+          },
+          {
+            "type": "text",
+            "text": "000416ba: mov.b @r15,r0 "
+          },
+          {
+            "type": "text",
+            "text": "000416bc: extu.b r0,r0 "
+          },
+          {
+            "type": "text",
+            "text": "000416be: cmp/eq #0x1,r0 "
+          },
+          {
+            "type": "text",
+            "text": "000416c0: bt/s 0x000416ce "
+          },
+          {
+            "type": "text",
+            "text": "000416c2: _nop "
+          },
+          {
+            "type": "text",
+            "text": "000416c4: mov.b @(0x4,r15),r0 "
+          },
+          {
+            "type": "text",
+            "text": "000416c6: extu.b r0,r0 "
+          },
+          {
+            "type": "text",
+            "text": "000416c8: cmp/eq #0x1,r0 "
+          },
+          {
+            "type": "text",
+            "text": "000416ca: bf/s 0x000416d6 "
+          },
+          {
+            "type": "text",
+            "text": "000416cc: _nop "
+          },
+          {
+            "type": "text",
+            "text": "000416ce: mov.b @r4,r0 "
+          },
+          {
+            "type": "text",
+            "text": "000416d0: or #0x1,r0 "
+          },
+          {
+            "type": "text",
+            "text": "000416d2: bra 0x000416dc "
+          },
+          {
+            "type": "text",
+            "text": "000416d4: _mov.b r0,@r4 "
+          },
+          {
+            "type": "text",
+            "text": "000416d6: mov.b @r4,r0 "
+          },
+          {
+            "type": "text",
+            "text": "000416d8: and #0xfe,r0 "
+          },
+          {
+            "type": "text",
+            "text": "000416da: mov.b r0,@r4 "
+          },
+          {
+            "type": "text",
+            "text": "000416dc: mov.l 0x000416f4,r2 "
+          },
+          {
+            "type": "text",
+            "text": "000416de: add #0x8,r15 "
+          },
+          {
+            "type": "text",
+            "text": "000416e0: jmp @r2 "
+          },
+          {
+            "type": "text",
+            "text": "000416e2: _lds.l @r15+,PR "
+          }
+        ],
+        "isError": false
+      }
+    },
+    {
+      "group": "new_cut_spark_sources_mcp",
+      "kind": "asm",
+      "address": "0x449FE",
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "000449fe: mov.w 0x00044acc,r0 "
+          },
+          {
+            "type": "text",
+            "text": "00044a00: mov.b @r0,r0 "
+          },
+          {
+            "type": "text",
+            "text": "00044a02: extu.b r0,r0 "
+          },
+          {
+            "type": "text",
+            "text": "00044a04: cmp/eq #0x1,r0 "
+          },
+          {
+            "type": "text",
+            "text": "00044a06: movt r0 "
+          },
+          {
+            "type": "text",
+            "text": "00044a08: rts "
+          },
+          {
+            "type": "text",
+            "text": "00044a0a: _nop "
+          }
+        ],
+        "isError": false
+      }
+    },
+    {
+      "group": "new_cut_spark_sources_mcp",
+      "kind": "asm",
+      "address": "0x44A0C",
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "00044a0c: mov.w 0x00044ada,r4 "
+          },
+          {
+            "type": "text",
+            "text": "00044a0e: mov r4,r0 "
+          },
+          {
+            "type": "text",
+            "text": "00044a10: mov.b @r0,r0 "
+          },
+          {
+            "type": "text",
+            "text": "00044a12: tst #0x2,r0 "
+          },
+          {
+            "type": "text",
+            "text": "00044a14: movt r0 "
+          },
+          {
+            "type": "text",
+            "text": "00044a16: add #-0x1,r0 "
+          },
+          {
+            "type": "text",
+            "text": "00044a18: neg r0,r0 "
+          },
+          {
+            "type": "text",
+            "text": "00044a1a: cmp/eq #0x1,r0 "
+          },
+          {
+            "type": "text",
+            "text": "00044a1c: bt/s 0x00044a32 "
+          },
+          {
+            "type": "text",
+            "text": "00044a1e: _nop "
+          },
+          {
+            "type": "text",
+            "text": "00044a20: mov r4,r0 "
+          },
+          {
+            "type": "text",
+            "text": "00044a22: mov.b @r0,r0 "
+          },
+          {
+            "type": "text",
+            "text": "00044a24: tst #0x4,r0 "
+          },
+          {
+            "type": "text",
+            "text": "00044a26: movt r0 "
+          },
+          {
+            "type": "text",
+            "text": "00044a28: add #-0x1,r0 "
+          },
+          {
+            "type": "text",
+            "text": "00044a2a: neg r0,r0 "
+          },
+          {
+            "type": "text",
+            "text": "00044a2c: cmp/eq #0x1,r0 "
+          },
+          {
+            "type": "text",
+            "text": "00044a2e: bf/s 0x00044a36 "
+          },
+          {
+            "type": "text",
+            "text": "00044a30: _nop "
+          },
+          {
+            "type": "text",
+            "text": "00044a32: rts "
+          },
+          {
+            "type": "text",
+            "text": "00044a34: _mov #0x1,r0 "
+          },
+          {
+            "type": "text",
+            "text": "00044a36: mov #0x0,r0 "
+          },
+          {
+            "type": "text",
+            "text": "00044a38: rts "
+          },
+          {
+            "type": "text",
+            "text": "00044a3a: _nop "
+          }
+        ],
+        "isError": false
+      }
+    },
+    {
+      "group": "new_cut_shared_security_mcp",
+      "kind": "xref",
+      "address": "0x4162C",
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "From 000112b0 in diagnostic_monitor_update_dispatch [COMPUTED_CALL]"
+          },
+          {
+            "type": "text",
+            "text": "From 00011420 [DATA]"
+          }
+        ],
+        "isError": false
+      }
+    },
+    {
+      "group": "new_cut_shared_security_mcp",
+      "kind": "xref",
+      "address": "0x41698",
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "From 00010c6c in engine_control_periodic_task_dispatch [COMPUTED_CALL]"
+          },
+          {
+            "type": "text",
+            "text": "From 00010df4 [DATA]"
+          }
+        ],
+        "isError": false
+      }
+    },
+    {
+      "group": "new_cut_shared_security_mcp",
+      "kind": "asm",
+      "address": "0x4162C",
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "0004162c: sts.l PR,@-r15 "
+          },
+          {
+            "type": "text",
+            "text": "0004162e: add #-0x8,r15 "
+          },
+          {
+            "type": "text",
+            "text": "00041630: mov.l 0x00041688,r3 "
+          },
+          {
+            "type": "text",
+            "text": "00041632: jsr @r3 "
+          },
+          {
+            "type": "text",
+            "text": "00041634: _nop "
+          },
+          {
+            "type": "text",
+            "text": "00041636: mov.l 0x0004168c,r3 "
+          },
+          {
+            "type": "text",
+            "text": "00041638: jsr @r3 "
+          },
+          {
+            "type": "text",
+            "text": "0004163a: _mov.b r0,@r15 "
+          },
+          {
+            "type": "text",
+            "text": "0004163c: mov.l 0x00041690,r3 "
+          },
+          {
+            "type": "text",
+            "text": "0004163e: jsr @r3 "
+          },
+          {
+            "type": "text",
+            "text": "00041640: _mov.b r0,@(0x4,r15) "
+          },
+          {
+            "type": "text",
+            "text": "00041642: mov r0,r5 "
+          },
+          {
+            "type": "text",
+            "text": "00041644: mov.w 0x00041686,r4 "
+          },
+          {
+            "type": "text",
+            "text": "00041646: extu.b r5,r0 "
+          },
+          {
+            "type": "text",
+            "text": "00041648: cmp/eq #0x1,r0 "
+          },
+          {
+            "type": "text",
+            "text": "0004164a: bf/s 0x0004166a "
+          },
+          {
+            "type": "text",
+            "text": "0004164c: _nop "
+          },
+          {
+            "type": "text",
+            "text": "0004164e: mov.b @r15,r0 "
+          },
+          {
+            "type": "text",
+            "text": "00041650: extu.b r0,r0 "
+          },
+          {
+            "type": "text",
+            "text": "00041652: cmp/eq #0x1,r0 "
+          },
+          {
+            "type": "text",
+            "text": "00041654: bt/s 0x00041662 "
+          },
+          {
+            "type": "text",
+            "text": "00041656: _nop "
+          },
+          {
+            "type": "text",
+            "text": "00041658: mov.b @(0x4,r15),r0 "
+          },
+          {
+            "type": "text",
+            "text": "0004165a: extu.b r0,r0 "
+          },
+          {
+            "type": "text",
+            "text": "0004165c: cmp/eq #0x1,r0 "
+          },
+          {
+            "type": "text",
+            "text": "0004165e: bf/s 0x0004166a "
+          },
+          {
+            "type": "text",
+            "text": "00041660: _nop "
+          },
+          {
+            "type": "text",
+            "text": "00041662: mov.b @r4,r0 "
+          },
+          {
+            "type": "text",
+            "text": "00041664: or #0x1,r0 "
+          },
+          {
+            "type": "text",
+            "text": "00041666: bra 0x00041670 "
+          },
+          {
+            "type": "text",
+            "text": "00041668: _mov.b r0,@r4 "
+          },
+          {
+            "type": "text",
+            "text": "0004166a: mov.b @r4,r0 "
+          },
+          {
+            "type": "text",
+            "text": "0004166c: and #0xfe,r0 "
+          },
+          {
+            "type": "text",
+            "text": "0004166e: mov.b r0,@r4 "
+          },
+          {
+            "type": "text",
+            "text": "00041670: mov.l 0x00041694,r2 "
+          },
+          {
+            "type": "text",
+            "text": "00041672: add #0x8,r15 "
+          },
+          {
+            "type": "text",
+            "text": "00041674: jmp @r2 "
+          },
+          {
+            "type": "text",
+            "text": "00041676: _lds.l @r15+,PR "
+          }
+        ],
+        "isError": false
+      }
+    },
+    {
+      "group": "new_cut_ignition_state_xrefs",
+      "kind": "xref",
+      "address": "0xFFFFC0E0",
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "From 000272be in FUN_00027244 [WRITE]"
+          },
+          {
+            "type": "text",
+            "text": "From 000272c4 in FUN_00027244 [WRITE]"
+          },
+          {
+            "type": "text",
+            "text": "From 00027208 in FUN_0002716c [READ]"
+          }
+        ],
+        "isError": false
+      }
+    },
+    {
+      "group": "new_cut_ignition_state_xrefs",
+      "kind": "xref",
+      "address": "0xFFFFC0E1",
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "From 0002734a in FUN_00027330 [WRITE]"
+          },
+          {
+            "type": "text",
+            "text": "From 0002a264 in ignition_effective_inhibit_mask [READ]"
+          },
+          {
+            "type": "text",
+            "text": "From 0002a286 in FUN_0002a282 [READ]"
+          },
+          {
+            "type": "text",
+            "text": "From 0002722a in FUN_0002716c [WRITE]"
+          },
+          {
+            "type": "text",
+            "text": "From 00027230 in FUN_0002716c [WRITE]"
+          },
+          {
+            "type": "text",
+            "text": "From 00027234 in FUN_0002716c [WRITE]"
+          }
+        ],
+        "isError": false
+      }
+    },
+    {
+      "group": "new_cut_ignition_state_xrefs",
+      "kind": "xref",
+      "address": "0xFFFFC0E2",
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "From 0002736e in FUN_00027330 [READ]"
+          },
+          {
+            "type": "text",
+            "text": "From 00027374 in FUN_00027330 [WRITE]"
+          },
+          {
+            "type": "text",
+            "text": "From 00027376 in FUN_00027330 [READ]"
+          },
+          {
+            "type": "text",
+            "text": "From 0002737a in FUN_00027330 [WRITE]"
+          },
+          {
+            "type": "text",
+            "text": "From 00027444 in FUN_00027442 [READ]"
+          },
+          {
+            "type": "text",
+            "text": "From 00027328 in FUN_00027326 [READ]"
+          },
+          {
+            "type": "text",
+            "text": "From 0002732e in FUN_00027326 [WRITE]"
+          }
+        ],
+        "isError": false
+      }
+    },
+    {
+      "group": "new_cut_ignition_state_xrefs",
+      "kind": "xref",
+      "address": "0xFFFFC290",
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "From 0002a240 in ignition_auxiliary_mask_update [WRITE]"
+          },
+          {
+            "type": "text",
+            "text": "From 0002a23c in ignition_auxiliary_mask_update [READ]"
+          },
+          {
+            "type": "text",
+            "text": "From 0002a260 in FUN_0002a242 [WRITE]"
+          },
+          {
+            "type": "text",
+            "text": "From 0002a27a in ignition_effective_inhibit_mask [READ]"
+          }
+        ],
+        "isError": false
+      }
+    },
+    {
+      "group": "new_cut_ignition_state_xrefs",
+      "kind": "xref",
+      "address": "0xFFFFCD50",
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "From 000270c0 in FUN_00027090 [READ]"
+          },
+          {
+            "type": "text",
+            "text": "From 0003f614 in ignition_switch_off_spark_inhibit_update [READ]"
+          },
+          {
+            "type": "text",
+            "text": "From 0003f618 in ignition_switch_off_spark_inhibit_update [WRITE]"
+          },
+          {
+            "type": "text",
+            "text": "From 0003f628 in ignition_switch_off_spark_inhibit_update [READ]"
+          },
+          {
+            "type": "text",
+            "text": "From 0003f62c in ignition_switch_off_spark_inhibit_update [WRITE]"
+          },
+          {
+            "type": "text",
+            "text": "From 0003f600 in ignition_switch_off_spark_inhibit_update [PARAM]"
+          }
+        ],
+        "isError": false
+      }
+    },
+    {
+      "group": "new_cut_mode_producer_mcp",
+      "address": "0x27330",
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "00027330: fmov.s fr15,@-r15 "
+          },
+          {
+            "type": "text",
+            "text": "00027332: sts.l PR,@-r15 "
+          },
+          {
+            "type": "text",
+            "text": "00027334: mov.w 0x000273ae,r3 "
+          },
+          {
+            "type": "text",
+            "text": "00027336: mov.l 0x000273d8,r2 "
+          },
+          {
+            "type": "text",
+            "text": "00027338: jsr @r2 "
+          },
+          {
+            "type": "text",
+            "text": "0002733a: _fmov.s @r3,fr15 "
+          },
+          {
+            "type": "text",
+            "text": "0002733c: mov r0,r4 "
+          },
+          {
+            "type": "text",
+            "text": "0002733e: extu.b r4,r0 "
+          },
+          {
+            "type": "text",
+            "text": "00027340: cmp/eq #0x1,r0 "
+          },
+          {
+            "type": "text",
+            "text": "00027342: bf/s 0x0002737c "
+          },
+          {
+            "type": "text",
+            "text": "00027344: _nop "
+          },
+          {
+            "type": "text",
+            "text": "00027346: mov #0x0,r2 "
+          },
+          {
+            "type": "text",
+            "text": "00027348: mov.w 0x000273b0,r3 "
+          },
+          {
+            "type": "text",
+            "text": "0002734a: mov.b r2,@r3 "
+          },
+          {
+            "type": "text",
+            "text": "0002734c: mov.w 0x000273b2,r4 "
+          },
+          {
+            "type": "text",
+            "text": "0002734e: mov.b @r4,r0 "
+          },
+          {
+            "type": "text",
+            "text": "00027350: mov.l 0x000273dc,r2 "
+          },
+          {
+            "type": "text",
+            "text": "00027352: or #0x40,r0 "
+          },
+          {
+            "type": "text",
+            "text": "00027354: mov.w 0x000273b4,r1 "
+          },
+          {
+            "type": "text",
+            "text": "00027356: mov.b r0,@r4 "
+          },
+          {
+            "type": "text",
+            "text": "00027358: mov.w 0x000273ac,r4 "
+          },
+          {
+            "type": "text",
+            "text": "0002735a: mov.w @r2,r3 "
+          },
+          {
+            "type": "text",
+            "text": "0002735c: extu.w r3,r3 "
+          },
+          {
+            "type": "text",
+            "text": "0002735e: cmp/ge r1,r3 "
+          },
+          {
+            "type": "text",
+            "text": "00027360: bf/s 0x0002736e "
+          },
+          {
+            "type": "text",
+            "text": "00027362: _nop "
+          },
+          {
+            "type": "text",
+            "text": "00027364: mov.l 0x000273e0,r3 "
+          },
+          {
+            "type": "text",
+            "text": "00027366: fmov.s @r3,fr3 "
+          },
+          {
+            "type": "text",
+            "text": "00027368: fcmp/gt fr15,fr3 "
+          },
+          {
+            "type": "text",
+            "text": "0002736a: bf/s 0x00027376 "
+          },
+          {
+            "type": "text",
+            "text": "0002736c: _nop "
+          },
+          {
+            "type": "text",
+            "text": "0002736e: mov.b @r4,r0 "
+          },
+          {
+            "type": "text",
+            "text": "00027370: and #0x7f,r0 "
+          },
+          {
+            "type": "text",
+            "text": "00027372: bra 0x0002737c "
+          },
+          {
+            "type": "text",
+            "text": "00027374: _mov.b r0,@r4 "
+          },
+          {
+            "type": "text",
+            "text": "00027376: mov.b @r4,r0 "
+          },
+          {
+            "type": "text",
+            "text": "00027378: or #0x80,r0 "
+          },
+          {
+            "type": "text",
+            "text": "0002737a: mov.b r0,@r4 "
+          },
+          {
+            "type": "text",
+            "text": "0002737c: lds.l @r15+,PR "
+          },
+          {
+            "type": "text",
+            "text": "0002737e: rts "
+          },
+          {
+            "type": "text",
+            "text": "00027380: _fmov.s @r15+,fr15 "
+          }
+        ],
+        "isError": false
+      }
+    },
+    {
+      "group": "new_cut_mode_producer_mcp",
+      "address": "0x27244",
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "00027244: mov.w 0x0002725a,r3 "
+          },
+          {
+            "type": "text",
+            "text": "00027246: fmov.s @r3,fr4 "
+          },
+          {
+            "type": "text",
+            "text": "00027248: mov.w 0x00027266,r4 "
+          },
+          {
+            "type": "text",
+            "text": "0002724a: mov.l 0x00027294,r2 "
+          },
+          {
+            "type": "text",
+            "text": "0002724c: fmov.s @r2,fr3 "
+          },
+          {
+            "type": "text",
+            "text": "0002724e: fcmp/gt fr4,fr3 "
+          },
+          {
+            "type": "text",
+            "text": "00027250: bf/s 0x0002729c "
+          },
+          {
+            "type": "text",
+            "text": "00027252: _nop "
+          },
+          {
+            "type": "text",
+            "text": "00027254: mov.l 0x00027298,r1 "
+          },
+          {
+            "type": "text",
+            "text": "00027256: bra 0x000272bc "
+          },
+          {
+            "type": "text",
+            "text": "00027258: _mov.b @r1,r0 "
+          },
+          {
+            "type": "text",
+            "text": "0002729c: mov.l 0x000273b8,r1 "
+          },
+          {
+            "type": "text",
+            "text": "0002729e: fmov.s @r1,fr2 "
+          },
+          {
+            "type": "text",
+            "text": "000272a0: fcmp/gt fr4,fr2 "
+          },
+          {
+            "type": "text",
+            "text": "000272a2: bf/s 0x000272ae "
+          },
+          {
+            "type": "text",
+            "text": "000272a4: _nop "
+          },
+          {
+            "type": "text",
+            "text": "000272a6: mov.l 0x000273bc,r3 "
+          },
+          {
+            "type": "text",
+            "text": "000272a8: mov.b @r3,r0 "
+          },
+          {
+            "type": "text",
+            "text": "000272aa: bra 0x000272bc "
+          },
+          {
+            "type": "text",
+            "text": "000272ac: _nop "
+          },
+          {
+            "type": "text",
+            "text": "000272ae: mov.l 0x000273c0,r3 "
+          },
+          {
+            "type": "text",
+            "text": "000272b0: fmov.s @r3,fr1 "
+          },
+          {
+            "type": "text",
+            "text": "000272b2: fcmp/gt fr4,fr1 "
+          },
+          {
+            "type": "text",
+            "text": "000272b4: bf/s 0x000272c0 "
+          },
+          {
+            "type": "text",
+            "text": "000272b6: _nop "
+          },
+          {
+            "type": "text",
+            "text": "000272b8: mov.l 0x000273c4,r2 "
+          },
+          {
+            "type": "text",
+            "text": "000272ba: mov.b @r2,r0 "
+          },
+          {
+            "type": "text",
+            "text": "000272bc: bra 0x000272c6 "
+          },
+          {
+            "type": "text",
+            "text": "000272be: _mov.b r0,@r4 "
+          },
+          {
+            "type": "text",
+            "text": "000272c0: mov.l 0x000273c8,r0 "
+          },
+          {
+            "type": "text",
+            "text": "000272c2: mov.b @r0,r2 "
+          },
+          {
+            "type": "text",
+            "text": "000272c4: mov.b r2,@r4 "
+          },
+          {
+            "type": "text",
+            "text": "000272c6: rts "
+          },
+          {
+            "type": "text",
+            "text": "000272c8: _nop "
+          }
+        ],
+        "isError": false
+      }
+    },
+    {
+      "group": "new_cut_mode_parent_mcp",
+      "kind": "xref",
+      "address": "0x27330",
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "From 0002739e in FUN_00027382 [UNCONDITIONAL_CALL]"
+          },
+          {
+            "type": "text",
+            "text": "From 00011630 in diagnostic_task_list_dispatcher [COMPUTED_CALL]"
+          },
+          {
+            "type": "text",
+            "text": "From 000117e4 [DATA]"
+          }
+        ],
+        "isError": false
+      }
+    },
+    {
+      "group": "new_cut_mode_parent_mcp",
+      "kind": "xref",
+      "address": "0x27244",
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "From 000273a2 in FUN_00027382 [UNCONDITIONAL_CALL]"
+          },
+          {
+            "type": "text",
+            "text": "From 00011636 in diagnostic_task_list_dispatcher [COMPUTED_CALL]"
+          },
+          {
+            "type": "text",
+            "text": "From 000117e8 [DATA]"
+          }
+        ],
+        "isError": false
+      }
+    },
+    {
+      "group": "new_cut_stopped_mode_mcp",
+      "address": "0x1A256",
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "0001a256: mov.w 0x0001a26a,r0 "
+          },
+          {
+            "type": "text",
+            "text": "0001a258: mov.b @r0,r0 "
+          },
+          {
+            "type": "text",
+            "text": "0001a25a: tst #0x80,r0 "
+          },
+          {
+            "type": "text",
+            "text": "0001a25c: movt r0 "
+          },
+          {
+            "type": "text",
+            "text": "0001a25e: add #-0x1,r0 "
+          },
+          {
+            "type": "text",
+            "text": "0001a260: neg r0,r0 "
+          },
+          {
+            "type": "text",
+            "text": "0001a262: cmp/eq #0x1,r0 "
+          },
+          {
+            "type": "text",
+            "text": "0001a264: movt r0 "
+          },
+          {
+            "type": "text",
+            "text": "0001a266: rts "
+          },
+          {
+            "type": "text",
+            "text": "0001a268: _nop "
+          }
+        ],
+        "isError": false
+      }
+    },
+    {
+      "group": "new_cut_stopped_mode_mcp",
+      "address": "0x2A282",
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "0002a282: sts.l PR,@-r15 "
+          },
+          {
+            "type": "text",
+            "text": "0002a284: mov.w 0x0002a2d8,r3 "
+          },
+          {
+            "type": "text",
+            "text": "0002a286: mov.b @r3,r4 "
+          },
+          {
+            "type": "text",
+            "text": "0002a288: extu.b r4,r2 "
+          },
+          {
+            "type": "text",
+            "text": "0002a28a: tst r2,r2 "
+          },
+          {
+            "type": "text",
+            "text": "0002a28c: bf/s 0x0002a298 "
+          },
+          {
+            "type": "text",
+            "text": "0002a28e: _nop "
+          },
+          {
+            "type": "text",
+            "text": "0002a290: mov.l 0x0002a2e8,r2 "
+          },
+          {
+            "type": "text",
+            "text": "0002a292: jsr @r2 "
+          },
+          {
+            "type": "text",
+            "text": "0002a294: _nop "
+          },
+          {
+            "type": "text",
+            "text": "0002a296: mov r0,r4 "
+          },
+          {
+            "type": "text",
+            "text": "0002a298: lds.l @r15+,PR "
+          },
+          {
+            "type": "text",
+            "text": "0002a29a: rts "
+          },
+          {
+            "type": "text",
+            "text": "0002a29c: _mov r4,r0 "
+          }
+        ],
+        "isError": false
+      }
+    },
+    {
+      "group": "new_cut_stopped_mode_mcp",
+      "address": "0x27382",
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "00027382: sts.l PR,@-r15 "
+          },
+          {
+            "type": "text",
+            "text": "00027384: mov.w 0x000273aa,r2 "
+          },
+          {
+            "type": "text",
+            "text": "00027386: mov.l 0x000273e4,r3 "
+          },
+          {
+            "type": "text",
+            "text": "00027388: jsr @r3 "
+          },
+          {
+            "type": "text",
+            "text": "0002738a: _mov #0x2,r1 "
+          },
+          {
+            "type": "text",
+            "text": "0002738c: and #0x1,r0 "
+          },
+          {
+            "type": "text",
+            "text": "0002738e: cmp/eq #0x1,r0 "
+          },
+          {
+            "type": "text",
+            "text": "00027390: bf/s 0x0002739e "
+          },
+          {
+            "type": "text",
+            "text": "00027392: _nop "
+          },
+          {
+            "type": "text",
+            "text": "00027394: mov.l 0x000273e8,r3 "
+          },
+          {
+            "type": "text",
+            "text": "00027396: jsr @r3 "
+          },
+          {
+            "type": "text",
+            "text": "00027398: _mov #0x0,r4 "
+          },
+          {
+            "type": "text",
+            "text": "0002739a: mov.w 0x000273b6,r2 "
+          },
+          {
+            "type": "text",
+            "text": "0002739c: mov.w r0,@r2 "
+          },
+          {
+            "type": "text",
+            "text": "0002739e: bsr 0x00027330 "
+          },
+          {
+            "type": "text",
+            "text": "000273a0: _nop "
+          },
+          {
+            "type": "text",
+            "text": "000273a2: bra 0x00027244 "
+          },
+          {
+            "type": "text",
+            "text": "000273a4: _lds.l @r15+,PR "
+          }
+        ],
+        "isError": false
+      }
+    },
+    {
+      "group": "new_cut_sync_xrefs",
+      "kind": "xref",
+      "address": "0xFFFFB52C",
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "From 0001a258 in FUN_0001a256 [READ]"
+          },
+          {
+            "type": "text",
+            "text": "From 0001ad5e in FUN_0001ad5c [READ]"
+          },
+          {
+            "type": "text",
+            "text": "From 0001773c in maf_airflow_limit_update [READ]"
+          },
+          {
+            "type": "text",
+            "text": "From 00018e9c in front_af_sensor_lambda_condition_filter [READ]"
+          },
+          {
+            "type": "text",
+            "text": "From 0001a188 in engine_runtime_b52c_bit7_update_from_ac0c [READ]"
+          },
+          {
+            "type": "text",
+            "text": "From 0001a192 in engine_runtime_b52c_bit7_update_from_ac0c [WRITE]"
+          },
+          {
+            "type": "text",
+            "text": "From 0001a196 in engine_runtime_b52c_bit7_update_from_ac0c [READ]"
+          },
+          {
+            "type": "text",
+            "text": "From 0001a1a6 in engine_runtime_b52c_bit7_update_from_ac0c [READ]"
+          },
+          {
+            "type": "text",
+            "text": "From 0001a1ac in engine_runtime_b52c_bit7_update_from_ac0c [WRITE]"
+          },
+          {
+            "type": "text",
+            "text": "From 0001a18e in engine_runtime_b52c_bit7_update_from_ac0c [READ]"
+          },
+          {
+            "type": "text",
+            "text": "From 0001a786 in FUN_0001a782 [READ]"
+          },
+          {
+            "type": "text",
+            "text": "From 00017864 in airflow_state_coolant_initialization [READ]"
+          },
+          {
+            "type": "text",
+            "text": "From 000480ce in FUN_000480b8 [READ]"
+          },
+          {
+            "type": "text",
+            "text": "From 00017944 in knock_sample_event_reset [READ]"
+          },
+          {
+            "type": "text",
+            "text": "From 00047eb2 in atmospheric_pressure_map_sample_gate_update [READ]"
+          },
+          {
+            "type": "text",
+            "text": "From 0001a22e in engine_runtime_b52c_bit5_diagnostic_gate_update [READ]"
+          },
+          {
+            "type": "text",
+            "text": "From 0001a238 in engine_runtime_b52c_bit5_diagnostic_gate_update [WRITE]"
+          },
+          {
+            "type": "text",
+            "text": "From 0001a234 in engine_runtime_b52c_bit5_diagnostic_gate_update [READ]"
+          },
+          {
+            "type": "text",
+            "text": "From 000191e4 in front_af_lambda_and_status_flags_update [READ]"
+          },
+          {
+            "type": "text",
+            "text": "From 0002a216 in ignition_auxiliary_mask_update [READ]"
+          },
+          {
+            "type": "text",
+            "text": "From 0004700e in engine_oil_temperature_fallback_select [READ]"
+          },
+          {
+            "type": "text",
+            "text": "From 0002a244 in FUN_0002a242 [READ]"
+          },
+          {
+            "type": "text",
+            "text": "From 00016b1c in engine_coolant_temperature_condition_update [READ]"
+          },
+          {
+            "type": "text",
+            "text": "From 00019fb2 in crank_event_state_publish_and_clear_b52c_bit7 [READ]"
+          },
+          {
+            "type": "text",
+            "text": "From 00019fb8 in crank_event_state_publish_and_clear_b52c_bit7 [WRITE]"
+          },
+          {
+            "type": "text",
+            "text": "From 0001a102 in engine_runtime_b52c_bit6_warmup_gate_update [READ]"
+          },
+          {
+            "type": "text",
+            "text": "From 0001a108 in engine_runtime_b52c_bit6_warmup_gate_update [WRITE]"
+          },
+          {
+            "type": "text",
+            "text": "From 0001a13e in engine_runtime_b52c_bit6_warmup_gate_update [READ]"
+          },
+          {
+            "type": "text",
+            "text": "From 0001a144 in engine_runtime_b52c_bit6_warmup_gate_update [WRITE]"
+          },
+          {
+            "type": "text",
+            "text": "From 000171a4 in FUN_00017198 [READ]"
+          }
+        ],
+        "isError": false
+      }
+    }
+  ],
+  "annotations": [
+    {
+      "address": "0x3192A",
+      "comment": "SSM P48 / parameter003C: native258C encodes C8C8 actual bank0 cam angle with scale1 and bias-50; display byte-50 degrees. Bank0 matches upstream Right label. Capability14 at7BDB3 supports this callback. Verified native callback and complete AVCS profile exchange on main/v2/captured. AVCSREPAIR1 20260913 records Right=0 in all268 moving/pedal>=30/RPM2500..3500 samples while Bank0 C91C output and P52 B098 current are nonzero in most. C8C8 is post-learned-offset/clamped; targets, raw capture and offset8264 are unlogged. This is not proof of a stuck physical solenoid or the cause of the persisting cut.",
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "Comment set successfully"
+          }
+        ],
+        "isError": false
+      }
+    },
+    {
+      "address": "0x27090",
+      "comment": "Native spark inhibit publisher: CD50/80 or CE28/01 forces C0DC=FFFF; otherwise six D94C/D94D configured bits map into duplicated12-slot masks. Independent of injector word B744. Existing ignition permission/device native tests cover this path. AVCSREPAIR1 20260913 records B744=0 during the user-confirmed loaded cut, but does not log C0DC/C0E1/C290 or coil timer outputs; no hardware-firing conclusion follows from B744 or P10 alone.",
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "Comment set successfully"
+          }
+        ],
+        "isError": false
+      }
+    },
+    {
+      "address": "0x27330",
+      "comment": "Native stopped/timeout ignition-mode reset. 1A256 reads B52C/80; when set this routine writes C0E1=0 and C0E3|40, and updates C0E2/80 from 7B27A and coolant75FF0. Read back from stock via MCP 20260913; caller117E4 remains stock in repairedv2. B52C/80 is published from AC0C by1A16E and cleared by19F9C. 2716C is the separate phase-task running-mode update. These states are not in AVCSREPAIR1; do not infer this reset occurred from the loaded cut.",
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "Comment set successfully"
+          }
+        ],
+        "isError": false
+      }
+    }
+  ],
+  "readback": [
+    {
+      "address": "0x27090",
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "00027090: sts.l PR,@-r15 ; Native spark inhibit publisher: CD50/80 or CE28/01 forces C0DC=FFFF; otherwise six D94C/D94D configured bits map into duplicated12-slot masks. Independent of injector word B744. Existing ignition permission/device native tests cover this path. AVCSREPAIR1 20260913 records B744=0 during the user-confirmed loaded cut, but does not log C0DC/C0E1/C290 or coil timer outputs; no hardware-firing conclusion follows from B744 or P10 alone."
+          },
+          {
+            "type": "text",
+            "text": "00027092: add #-0x14,r15 "
+          },
+          {
+            "type": "text",
+            "text": "00027094: mov.l 0x00027150,r3 "
+          },
+          {
+            "type": "text",
+            "text": "00027096: jsr @r3 "
+          },
+          {
+            "type": "text",
+            "text": "00027098: _nop "
+          },
+          {
+            "type": "text",
+            "text": "0002709a: mov r15,r1 "
+          },
+          {
+            "type": "text",
+            "text": "0002709c: mov.l 0x00027154,r3 "
+          },
+          {
+            "type": "text",
+            "text": "0002709e: add #0x10,r1 "
+          },
+          {
+            "type": "text",
+            "text": "000270a0: jsr @r3 "
+          },
+          {
+            "type": "text",
+            "text": "000270a2: _mov.b r0,@r1 "
+          },
+          {
+            "type": "text",
+            "text": "000270a4: mov.l 0x00027158,r3 "
+          },
+          {
+            "type": "text",
+            "text": "000270a6: jsr @r3 "
+          },
+          {
+            "type": "text",
+            "text": "000270a8: _mov.b r0,@(0xc,r15) "
+          },
+          {
+            "type": "text",
+            "text": "000270aa: mov.l 0x0002715c,r3 "
+          },
+          {
+            "type": "text",
+            "text": "000270ac: jsr @r3 "
+          },
+          {
+            "type": "text",
+            "text": "000270ae: _mov.b r0,@(0x8,r15) "
+          },
+          {
+            "type": "text",
+            "text": "000270b0: mov.l 0x00027160,r3 "
+          },
+          {
+            "type": "text",
+            "text": "000270b2: jsr @r3 "
+          },
+          {
+            "type": "text",
+            "text": "000270b4: _mov.b r0,@(0x4,r15) "
+          },
+          {
+            "type": "text",
+            "text": "000270b6: mov.l 0x00027164,r3 "
+          },
+          {
+            "type": "text",
+            "text": "000270b8: jsr @r3 "
+          },
+          {
+            "type": "text",
+            "text": "000270ba: _mov.b r0,@r15 "
+          },
+          {
+            "type": "text",
+            "text": "000270bc: mov r0,r5 "
+          },
+          {
+            "type": "text",
+            "text": "000270be: mov.w 0x0002713e,r0 "
+          },
+          {
+            "type": "text",
+            "text": "000270c0: mov.b @r0,r0 "
+          },
+          {
+            "type": "text",
+            "text": "000270c2: tst #0x80,r0 "
+          },
+          {
+            "type": "text",
+            "text": "000270c4: movt r0 "
+          },
+          {
+            "type": "text",
+            "text": "000270c6: add #-0x1,r0 "
+          },
+          {
+            "type": "text",
+            "text": "000270c8: neg r0,r0 "
+          },
+          {
+            "type": "text",
+            "text": "000270ca: cmp/eq #0x1,r0 "
+          },
+          {
+            "type": "text",
+            "text": "000270cc: bt/s 0x000270dc "
+          },
+          {
+            "type": "text",
+            "text": "000270ce: _mov #0x0,r4 "
+          },
+          {
+            "type": "text",
+            "text": "000270d0: mov.w 0x00027140,r0 "
+          },
+          {
+            "type": "text",
+            "text": "000270d2: mov.b @r0,r0 "
+          },
+          {
+            "type": "text",
+            "text": "000270d4: and #0x1,r0 "
+          },
+          {
+            "type": "text",
+            "text": "000270d6: cmp/eq #0x1,r0 "
+          },
+          {
+            "type": "text",
+            "text": "000270d8: bf/s 0x000270e2 "
+          },
+          {
+            "type": "text",
+            "text": "000270da: _nop "
+          },
+          {
+            "type": "text",
+            "text": "000270dc: mov.l 0x00027168,r4 "
+          },
+          {
+            "type": "text",
+            "text": "000270de: bra 0x00027132 "
+          },
+          {
+            "type": "text",
+            "text": "000270e0: _nop "
+          },
+          {
+            "type": "text",
+            "text": "000270e2: mov #0x10,r0 "
+          },
+          {
+            "type": "text",
+            "text": "000270e4: mov.b @(r0,r15),r0 "
+          },
+          {
+            "type": "text",
+            "text": "000270e6: extu.b r0,r0 "
+          },
+          {
+            "type": "text",
+            "text": "000270e8: cmp/eq #0x1,r0 "
+          },
+          {
+            "type": "text",
+            "text": "000270ea: bf/s 0x000270f0 "
+          },
+          {
+            "type": "text",
+            "text": "000270ec: _nop "
+          },
+          {
+            "type": "text",
+            "text": "000270ee: mov #0x41,r4 "
+          },
+          {
+            "type": "text",
+            "text": "000270f0: mov.b @(0xc,r15),r0 "
+          },
+          {
+            "type": "text",
+            "text": "000270f2: extu.b r0,r0 "
+          },
+          {
+            "type": "text",
+            "text": "000270f4: cmp/eq #0x1,r0 "
+          },
+          {
+            "type": "text",
+            "text": "000270f6: bf/s 0x000270fe "
+          },
+          {
+            "type": "text",
+            "text": "000270f8: _nop "
+          },
+          {
+            "type": "text",
+            "text": "000270fa: mov.w 0x00027142,r2 "
+          },
+          {
+            "type": "text",
+            "text": "000270fc: or r2,r4 "
+          },
+          {
+            "type": "text",
+            "text": "000270fe: mov.b @(0x8,r15),r0 "
+          },
+          {
+            "type": "text",
+            "text": "00027100: extu.b r0,r0 "
+          },
+          {
+            "type": "text",
+            "text": "00027102: cmp/eq #0x1,r0 "
+          },
+          {
+            "type": "text",
+            "text": "00027104: bf/s 0x0002710c "
+          },
+          {
+            "type": "text",
+            "text": "00027106: _nop "
+          },
+          {
+            "type": "text",
+            "text": "00027108: mov.w 0x00027144,r2 "
+          },
+          {
+            "type": "text",
+            "text": "0002710a: or r2,r4 "
+          },
+          {
+            "type": "text",
+            "text": "0002710c: mov.b @(0x4,r15),r0 "
+          },
+          {
+            "type": "text",
+            "text": "0002710e: extu.b r0,r0 "
+          },
+          {
+            "type": "text",
+            "text": "00027110: cmp/eq #0x1,r0 "
+          },
+          {
+            "type": "text",
+            "text": "00027112: bf/s 0x0002711a "
+          },
+          {
+            "type": "text",
+            "text": "00027114: _nop "
+          },
+          {
+            "type": "text",
+            "text": "00027116: mov.w 0x00027146,r2 "
+          },
+          {
+            "type": "text",
+            "text": "00027118: or r2,r4 "
+          },
+          {
+            "type": "text",
+            "text": "0002711a: mov.b @r15,r0 "
+          },
+          {
+            "type": "text",
+            "text": "0002711c: extu.b r0,r0 "
+          },
+          {
+            "type": "text",
+            "text": "0002711e: cmp/eq #0x1,r0 "
+          },
+          {
+            "type": "text",
+            "text": "00027120: bf/s 0x00027128 "
+          },
+          {
+            "type": "text",
+            "text": "00027122: _extu.b r5,r0 "
+          },
+          {
+            "type": "text",
+            "text": "00027124: mov.w 0x00027148,r2 "
+          },
+          {
+            "type": "text",
+            "text": "00027126: or r2,r4 "
+          },
+          {
+            "type": "text",
+            "text": "00027128: cmp/eq #0x1,r0 "
+          },
+          {
+            "type": "text",
+            "text": "0002712a: bf/s 0x00027132 "
+          },
+          {
+            "type": "text",
+            "text": "0002712c: _nop "
+          },
+          {
+            "type": "text",
+            "text": "0002712e: mov.w 0x0002714a,r2 "
+          },
+          {
+            "type": "text",
+            "text": "00027130: or r2,r4 "
+          },
+          {
+            "type": "text",
+            "text": "00027132: mov.w 0x0002714c,r3 "
+          },
+          {
+            "type": "text",
+            "text": "00027134: mov.w r4,@r3 "
+          },
+          {
+            "type": "text",
+            "text": "00027136: add #0x14,r15 "
+          },
+          {
+            "type": "text",
+            "text": "00027138: lds.l @r15+,PR "
+          },
+          {
+            "type": "text",
+            "text": "0002713a: rts "
+          },
+          {
+            "type": "text",
+            "text": "0002713c: _nop "
+          }
+        ],
+        "isError": false
+      }
+    },
+    {
+      "address": "0x27330",
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "00027330: fmov.s fr15,@-r15 ; Native stopped/timeout ignition-mode reset. 1A256 reads B52C/80; when set this routine writes C0E1=0 and C0E3|40, and updates C0E2/80 from 7B27A and coolant75FF0. Read back from stock via MCP 20260913; caller117E4 remains stock in repairedv2. B52C/80 is published from AC0C by1A16E and cleared by19F9C. 2716C is the separate phase-task running-mode update. These states are not in AVCSREPAIR1; do not infer this reset occurred from the loaded cut."
+          },
+          {
+            "type": "text",
+            "text": "00027332: sts.l PR,@-r15 "
+          },
+          {
+            "type": "text",
+            "text": "00027334: mov.w 0x000273ae,r3 "
+          },
+          {
+            "type": "text",
+            "text": "00027336: mov.l 0x000273d8,r2 "
+          },
+          {
+            "type": "text",
+            "text": "00027338: jsr @r2 "
+          },
+          {
+            "type": "text",
+            "text": "0002733a: _fmov.s @r3,fr15 "
+          },
+          {
+            "type": "text",
+            "text": "0002733c: mov r0,r4 "
+          },
+          {
+            "type": "text",
+            "text": "0002733e: extu.b r4,r0 "
+          },
+          {
+            "type": "text",
+            "text": "00027340: cmp/eq #0x1,r0 "
+          },
+          {
+            "type": "text",
+            "text": "00027342: bf/s 0x0002737c "
+          },
+          {
+            "type": "text",
+            "text": "00027344: _nop "
+          },
+          {
+            "type": "text",
+            "text": "00027346: mov #0x0,r2 "
+          },
+          {
+            "type": "text",
+            "text": "00027348: mov.w 0x000273b0,r3 "
+          },
+          {
+            "type": "text",
+            "text": "0002734a: mov.b r2,@r3 "
+          },
+          {
+            "type": "text",
+            "text": "0002734c: mov.w 0x000273b2,r4 "
+          },
+          {
+            "type": "text",
+            "text": "0002734e: mov.b @r4,r0 "
+          },
+          {
+            "type": "text",
+            "text": "00027350: mov.l 0x000273dc,r2 "
+          },
+          {
+            "type": "text",
+            "text": "00027352: or #0x40,r0 "
+          },
+          {
+            "type": "text",
+            "text": "00027354: mov.w 0x000273b4,r1 "
+          },
+          {
+            "type": "text",
+            "text": "00027356: mov.b r0,@r4 "
+          },
+          {
+            "type": "text",
+            "text": "00027358: mov.w 0x000273ac,r4 "
+          },
+          {
+            "type": "text",
+            "text": "0002735a: mov.w @r2,r3 "
+          },
+          {
+            "type": "text",
+            "text": "0002735c: extu.w r3,r3 "
+          },
+          {
+            "type": "text",
+            "text": "0002735e: cmp/ge r1,r3 "
+          },
+          {
+            "type": "text",
+            "text": "00027360: bf/s 0x0002736e "
+          },
+          {
+            "type": "text",
+            "text": "00027362: _nop "
+          },
+          {
+            "type": "text",
+            "text": "00027364: mov.l 0x000273e0,r3 "
+          },
+          {
+            "type": "text",
+            "text": "00027366: fmov.s @r3,fr3 "
+          },
+          {
+            "type": "text",
+            "text": "00027368: fcmp/gt fr15,fr3 "
+          },
+          {
+            "type": "text",
+            "text": "0002736a: bf/s 0x00027376 "
+          },
+          {
+            "type": "text",
+            "text": "0002736c: _nop "
+          },
+          {
+            "type": "text",
+            "text": "0002736e: mov.b @r4,r0 "
+          },
+          {
+            "type": "text",
+            "text": "00027370: and #0x7f,r0 "
+          },
+          {
+            "type": "text",
+            "text": "00027372: bra 0x0002737c "
+          },
+          {
+            "type": "text",
+            "text": "00027374: _mov.b r0,@r4 "
+          },
+          {
+            "type": "text",
+            "text": "00027376: mov.b @r4,r0 "
+          },
+          {
+            "type": "text",
+            "text": "00027378: or #0x80,r0 "
+          },
+          {
+            "type": "text",
+            "text": "0002737a: mov.b r0,@r4 "
+          },
+          {
+            "type": "text",
+            "text": "0002737c: lds.l @r15+,PR "
+          },
+          {
+            "type": "text",
+            "text": "0002737e: rts "
+          },
+          {
+            "type": "text",
+            "text": "00027380: _fmov.s @r15+,fr15 "
+          }
+        ],
+        "isError": false
+      }
+    }
+  ],
+  "limits": [
+    "Stock Ghidra program; saved patched bytes checked separately.",
+    "No function body exposed for3192A; its comment acceptance is not independent readback.",
+    "No ECU communication or live RAM evidence.",
+    "These are additional reads, not new test groups or proof of the cut cause."
+  ]
+}

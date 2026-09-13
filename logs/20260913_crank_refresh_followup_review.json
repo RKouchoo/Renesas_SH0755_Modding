@@ -1,0 +1,1773 @@
+{
+  "source_log_sha256": "3e62ab07eb7ee184ab43162debd7d97c3f829085399cf87742ca6c8997d85390",
+  "rom_sha256": "fabceb54359aca76e6e15835a51aa5cfd008e570dc002e886eaa62a6cb020ce5",
+  "user_confirmation": "Stock EZ30R coils, wiring and plugs; measured gap not supplied.",
+  "scope": "Bounded native producer-to-refresh follow-up; no ECU I/O or ROM edits.",
+  "native_order": [
+    "19F9C",
+    "1C920 ->1C972",
+    "2716C",
+    "26E64 ->1D228 ->2705E"
+  ],
+  "stock_identical_ranges": [
+    [
+      "0x11958",
+      "0x119dc"
+    ],
+    [
+      "0x11a7c",
+      "0x11ad0"
+    ],
+    [
+      "0x19f9c",
+      "0x1a02c"
+    ],
+    [
+      "0x1a082",
+      "0x1a0a8"
+    ],
+    [
+      "0x1c920",
+      "0x1ca38"
+    ],
+    [
+      "0x1d228",
+      "0x1d23c"
+    ],
+    [
+      "0x1d296",
+      "0x1d298"
+    ],
+    [
+      "0x26e64",
+      "0x26e80"
+    ],
+    [
+      "0x26ef4",
+      "0x26ef8"
+    ],
+    [
+      "0x2705e",
+      "0x27080"
+    ],
+    [
+      "0x2716c",
+      "0x27294"
+    ],
+    [
+      "0x5f134",
+      "0x5f140"
+    ],
+    [
+      "0x5f498",
+      "0x5f4c0"
+    ],
+    [
+      "0x76ae0",
+      "0x76af8"
+    ],
+    [
+      "0x76648",
+      "0x76658"
+    ]
+  ],
+  "sampled_points": [
+    {
+      "csv_line": 555,
+      "seconds": 57.524,
+      "rpm": 3233.0,
+      "ect_c": 58.0,
+      "event_delay": 0,
+      "refresh_calls_from_forced_crank_by_start_mod4": [
+        0,
+        3,
+        2,
+        1
+      ]
+    },
+    {
+      "csv_line": 556,
+      "seconds": 57.628,
+      "rpm": 3083.0,
+      "ect_c": 58.0,
+      "event_delay": 0,
+      "refresh_calls_from_forced_crank_by_start_mod4": [
+        0,
+        3,
+        2,
+        1
+      ]
+    },
+    {
+      "csv_line": 557,
+      "seconds": 57.732,
+      "rpm": 3106.0,
+      "ect_c": 58.0,
+      "event_delay": 0,
+      "refresh_calls_from_forced_crank_by_start_mod4": [
+        0,
+        3,
+        2,
+        1
+      ]
+    },
+    {
+      "csv_line": 558,
+      "seconds": 57.835,
+      "rpm": 3180.0,
+      "ect_c": 58.0,
+      "event_delay": 0,
+      "refresh_calls_from_forced_crank_by_start_mod4": [
+        0,
+        3,
+        2,
+        1
+      ]
+    },
+    {
+      "csv_line": 559,
+      "seconds": 57.94,
+      "rpm": 3126.0,
+      "ect_c": 58.0,
+      "event_delay": 0,
+      "refresh_calls_from_forced_crank_by_start_mod4": [
+        0,
+        3,
+        2,
+        1
+      ]
+    },
+    {
+      "csv_line": 560,
+      "seconds": 58.044,
+      "rpm": 3037.0,
+      "ect_c": 58.0,
+      "event_delay": 0,
+      "refresh_calls_from_forced_crank_by_start_mod4": [
+        0,
+        3,
+        2,
+        1
+      ]
+    },
+    {
+      "csv_line": 605,
+      "seconds": 62.731,
+      "rpm": 2502.0,
+      "ect_c": 58.0,
+      "event_delay": 0,
+      "refresh_calls_from_forced_crank_by_start_mod4": [
+        0,
+        3,
+        2,
+        1
+      ]
+    },
+    {
+      "csv_line": 606,
+      "seconds": 62.834,
+      "rpm": 2530.0,
+      "ect_c": 58.0,
+      "event_delay": 0,
+      "refresh_calls_from_forced_crank_by_start_mod4": [
+        0,
+        3,
+        2,
+        1
+      ]
+    },
+    {
+      "csv_line": 607,
+      "seconds": 62.939,
+      "rpm": 2520.0,
+      "ect_c": 58.0,
+      "event_delay": 0,
+      "refresh_calls_from_forced_crank_by_start_mod4": [
+        0,
+        3,
+        2,
+        1
+      ]
+    },
+    {
+      "csv_line": 608,
+      "seconds": 63.044,
+      "rpm": 2548.0,
+      "ect_c": 58.0,
+      "event_delay": 0,
+      "refresh_calls_from_forced_crank_by_start_mod4": [
+        0,
+        3,
+        2,
+        1
+      ]
+    },
+    {
+      "csv_line": 609,
+      "seconds": 63.148,
+      "rpm": 2615.0,
+      "ect_c": 58.0,
+      "event_delay": 0,
+      "refresh_calls_from_forced_crank_by_start_mod4": [
+        0,
+        3,
+        2,
+        1
+      ]
+    },
+    {
+      "csv_line": 611,
+      "seconds": 63.355,
+      "rpm": 2595.0,
+      "ect_c": 58.0,
+      "event_delay": 0,
+      "refresh_calls_from_forced_crank_by_start_mod4": [
+        0,
+        3,
+        2,
+        1
+      ]
+    },
+    {
+      "csv_line": 612,
+      "seconds": 63.461,
+      "rpm": 2514.0,
+      "ect_c": 58.0,
+      "event_delay": 0,
+      "refresh_calls_from_forced_crank_by_start_mod4": [
+        0,
+        3,
+        2,
+        1
+      ]
+    },
+    {
+      "csv_line": 613,
+      "seconds": 63.564,
+      "rpm": 2607.0,
+      "ect_c": 58.0,
+      "event_delay": 0,
+      "refresh_calls_from_forced_crank_by_start_mod4": [
+        0,
+        3,
+        2,
+        1
+      ]
+    },
+    {
+      "csv_line": 614,
+      "seconds": 63.668,
+      "rpm": 2600.0,
+      "ect_c": 58.0,
+      "event_delay": 0,
+      "refresh_calls_from_forced_crank_by_start_mod4": [
+        0,
+        3,
+        2,
+        1
+      ]
+    },
+    {
+      "csv_line": 615,
+      "seconds": 63.773,
+      "rpm": 2581.0,
+      "ect_c": 58.0,
+      "event_delay": 0,
+      "refresh_calls_from_forced_crank_by_start_mod4": [
+        0,
+        3,
+        2,
+        1
+      ]
+    },
+    {
+      "csv_line": 616,
+      "seconds": 63.876,
+      "rpm": 2569.0,
+      "ect_c": 58.0,
+      "event_delay": 0,
+      "refresh_calls_from_forced_crank_by_start_mod4": [
+        0,
+        3,
+        2,
+        1
+      ]
+    },
+    {
+      "csv_line": 617,
+      "seconds": 63.981,
+      "rpm": 2564.0,
+      "ect_c": 58.0,
+      "event_delay": 0,
+      "refresh_calls_from_forced_crank_by_start_mod4": [
+        0,
+        3,
+        2,
+        1
+      ]
+    },
+    {
+      "csv_line": 618,
+      "seconds": 64.085,
+      "rpm": 2585.0,
+      "ect_c": 58.0,
+      "event_delay": 0,
+      "refresh_calls_from_forced_crank_by_start_mod4": [
+        0,
+        3,
+        2,
+        1
+      ]
+    },
+    {
+      "csv_line": 619,
+      "seconds": 64.19,
+      "rpm": 2572.0,
+      "ect_c": 58.0,
+      "event_delay": 0,
+      "refresh_calls_from_forced_crank_by_start_mod4": [
+        0,
+        3,
+        2,
+        1
+      ]
+    },
+    {
+      "csv_line": 620,
+      "seconds": 64.295,
+      "rpm": 2565.0,
+      "ect_c": 58.0,
+      "event_delay": 0,
+      "refresh_calls_from_forced_crank_by_start_mod4": [
+        0,
+        3,
+        2,
+        1
+      ]
+    },
+    {
+      "csv_line": 621,
+      "seconds": 64.399,
+      "rpm": 2612.0,
+      "ect_c": 58.0,
+      "event_delay": 0,
+      "refresh_calls_from_forced_crank_by_start_mod4": [
+        0,
+        3,
+        2,
+        1
+      ]
+    },
+    {
+      "csv_line": 622,
+      "seconds": 64.503,
+      "rpm": 2668.0,
+      "ect_c": 58.0,
+      "event_delay": 0,
+      "refresh_calls_from_forced_crank_by_start_mod4": [
+        0,
+        3,
+        2,
+        1
+      ]
+    },
+    {
+      "csv_line": 623,
+      "seconds": 64.607,
+      "rpm": 2606.0,
+      "ect_c": 58.0,
+      "event_delay": 0,
+      "refresh_calls_from_forced_crank_by_start_mod4": [
+        0,
+        3,
+        2,
+        1
+      ]
+    },
+    {
+      "csv_line": 624,
+      "seconds": 64.712,
+      "rpm": 2686.0,
+      "ect_c": 58.0,
+      "event_delay": 0,
+      "refresh_calls_from_forced_crank_by_start_mod4": [
+        0,
+        3,
+        2,
+        1
+      ]
+    },
+    {
+      "csv_line": 625,
+      "seconds": 64.816,
+      "rpm": 2566.0,
+      "ect_c": 58.0,
+      "event_delay": 0,
+      "refresh_calls_from_forced_crank_by_start_mod4": [
+        0,
+        3,
+        2,
+        1
+      ]
+    },
+    {
+      "csv_line": 626,
+      "seconds": 64.92,
+      "rpm": 2674.0,
+      "ect_c": 58.0,
+      "event_delay": 0,
+      "refresh_calls_from_forced_crank_by_start_mod4": [
+        0,
+        3,
+        2,
+        1
+      ]
+    },
+    {
+      "csv_line": 627,
+      "seconds": 65.025,
+      "rpm": 2655.0,
+      "ect_c": 58.0,
+      "event_delay": 0,
+      "refresh_calls_from_forced_crank_by_start_mod4": [
+        0,
+        3,
+        2,
+        1
+      ]
+    },
+    {
+      "csv_line": 628,
+      "seconds": 65.13,
+      "rpm": 2688.0,
+      "ect_c": 58.0,
+      "event_delay": 0,
+      "refresh_calls_from_forced_crank_by_start_mod4": [
+        0,
+        3,
+        2,
+        1
+      ]
+    },
+    {
+      "csv_line": 629,
+      "seconds": 65.234,
+      "rpm": 2684.0,
+      "ect_c": 58.0,
+      "event_delay": 0,
+      "refresh_calls_from_forced_crank_by_start_mod4": [
+        0,
+        3,
+        2,
+        1
+      ]
+    },
+    {
+      "csv_line": 630,
+      "seconds": 65.339,
+      "rpm": 2673.0,
+      "ect_c": 58.0,
+      "event_delay": 0,
+      "refresh_calls_from_forced_crank_by_start_mod4": [
+        0,
+        3,
+        2,
+        1
+      ]
+    },
+    {
+      "csv_line": 631,
+      "seconds": 65.442,
+      "rpm": 2634.0,
+      "ect_c": 58.0,
+      "event_delay": 0,
+      "refresh_calls_from_forced_crank_by_start_mod4": [
+        0,
+        3,
+        2,
+        1
+      ]
+    },
+    {
+      "csv_line": 632,
+      "seconds": 65.546,
+      "rpm": 2678.0,
+      "ect_c": 58.0,
+      "event_delay": 0,
+      "refresh_calls_from_forced_crank_by_start_mod4": [
+        0,
+        3,
+        2,
+        1
+      ]
+    },
+    {
+      "csv_line": 633,
+      "seconds": 65.653,
+      "rpm": 2654.0,
+      "ect_c": 58.0,
+      "event_delay": 0,
+      "refresh_calls_from_forced_crank_by_start_mod4": [
+        0,
+        3,
+        2,
+        1
+      ]
+    },
+    {
+      "csv_line": 1009,
+      "seconds": 104.796,
+      "rpm": 3241.0,
+      "ect_c": 61.0,
+      "event_delay": 0,
+      "refresh_calls_from_forced_crank_by_start_mod4": [
+        0,
+        3,
+        2,
+        1
+      ]
+    },
+    {
+      "csv_line": 1010,
+      "seconds": 104.899,
+      "rpm": 3368.0,
+      "ect_c": 61.0,
+      "event_delay": 0,
+      "refresh_calls_from_forced_crank_by_start_mod4": [
+        0,
+        3,
+        2,
+        1
+      ]
+    },
+    {
+      "csv_line": 1011,
+      "seconds": 105.003,
+      "rpm": 3084.0,
+      "ect_c": 61.0,
+      "event_delay": 0,
+      "refresh_calls_from_forced_crank_by_start_mod4": [
+        0,
+        3,
+        2,
+        1
+      ]
+    },
+    {
+      "csv_line": 1012,
+      "seconds": 105.107,
+      "rpm": 3218.0,
+      "ect_c": 61.0,
+      "event_delay": 0,
+      "refresh_calls_from_forced_crank_by_start_mod4": [
+        0,
+        3,
+        2,
+        1
+      ]
+    },
+    {
+      "csv_line": 1013,
+      "seconds": 105.212,
+      "rpm": 3285.0,
+      "ect_c": 61.0,
+      "event_delay": 0,
+      "refresh_calls_from_forced_crank_by_start_mod4": [
+        0,
+        3,
+        2,
+        1
+      ]
+    },
+    {
+      "csv_line": 1014,
+      "seconds": 105.317,
+      "rpm": 3217.0,
+      "ect_c": 61.0,
+      "event_delay": 0,
+      "refresh_calls_from_forced_crank_by_start_mod4": [
+        0,
+        3,
+        2,
+        1
+      ]
+    },
+    {
+      "csv_line": 1015,
+      "seconds": 105.422,
+      "rpm": 3257.0,
+      "ect_c": 61.0,
+      "event_delay": 0,
+      "refresh_calls_from_forced_crank_by_start_mod4": [
+        0,
+        3,
+        2,
+        1
+      ]
+    },
+    {
+      "csv_line": 1016,
+      "seconds": 105.525,
+      "rpm": 3382.0,
+      "ect_c": 61.0,
+      "event_delay": 0,
+      "refresh_calls_from_forced_crank_by_start_mod4": [
+        0,
+        3,
+        2,
+        1
+      ]
+    },
+    {
+      "csv_line": 1045,
+      "seconds": 108.548,
+      "rpm": 2756.0,
+      "ect_c": 61.0,
+      "event_delay": 0,
+      "refresh_calls_from_forced_crank_by_start_mod4": [
+        0,
+        3,
+        2,
+        1
+      ]
+    },
+    {
+      "csv_line": 1046,
+      "seconds": 108.653,
+      "rpm": 2869.0,
+      "ect_c": 61.0,
+      "event_delay": 0,
+      "refresh_calls_from_forced_crank_by_start_mod4": [
+        0,
+        3,
+        2,
+        1
+      ]
+    },
+    {
+      "csv_line": 1047,
+      "seconds": 108.757,
+      "rpm": 2818.0,
+      "ect_c": 61.0,
+      "event_delay": 0,
+      "refresh_calls_from_forced_crank_by_start_mod4": [
+        0,
+        3,
+        2,
+        1
+      ]
+    },
+    {
+      "csv_line": 1048,
+      "seconds": 108.86,
+      "rpm": 2854.0,
+      "ect_c": 61.0,
+      "event_delay": 0,
+      "refresh_calls_from_forced_crank_by_start_mod4": [
+        0,
+        3,
+        2,
+        1
+      ]
+    },
+    {
+      "csv_line": 1049,
+      "seconds": 108.964,
+      "rpm": 2942.0,
+      "ect_c": 61.0,
+      "event_delay": 0,
+      "refresh_calls_from_forced_crank_by_start_mod4": [
+        0,
+        3,
+        2,
+        1
+      ]
+    },
+    {
+      "csv_line": 1050,
+      "seconds": 109.068,
+      "rpm": 2894.0,
+      "ect_c": 61.0,
+      "event_delay": 0,
+      "refresh_calls_from_forced_crank_by_start_mod4": [
+        0,
+        3,
+        2,
+        1
+      ]
+    },
+    {
+      "csv_line": 1051,
+      "seconds": 109.171,
+      "rpm": 3004.0,
+      "ect_c": 61.0,
+      "event_delay": 0,
+      "refresh_calls_from_forced_crank_by_start_mod4": [
+        0,
+        3,
+        2,
+        1
+      ]
+    },
+    {
+      "csv_line": 1052,
+      "seconds": 109.276,
+      "rpm": 2960.0,
+      "ect_c": 61.0,
+      "event_delay": 0,
+      "refresh_calls_from_forced_crank_by_start_mod4": [
+        0,
+        3,
+        2,
+        1
+      ]
+    },
+    {
+      "csv_line": 1053,
+      "seconds": 109.379,
+      "rpm": 2978.0,
+      "ect_c": 61.0,
+      "event_delay": 0,
+      "refresh_calls_from_forced_crank_by_start_mod4": [
+        0,
+        3,
+        2,
+        1
+      ]
+    },
+    {
+      "csv_line": 1054,
+      "seconds": 109.484,
+      "rpm": 2967.0,
+      "ect_c": 61.0,
+      "event_delay": 0,
+      "refresh_calls_from_forced_crank_by_start_mod4": [
+        0,
+        3,
+        2,
+        1
+      ]
+    },
+    {
+      "csv_line": 1055,
+      "seconds": 109.588,
+      "rpm": 3013.0,
+      "ect_c": 61.0,
+      "event_delay": 0,
+      "refresh_calls_from_forced_crank_by_start_mod4": [
+        0,
+        3,
+        2,
+        1
+      ]
+    },
+    {
+      "csv_line": 1056,
+      "seconds": 109.692,
+      "rpm": 3130.0,
+      "ect_c": 61.0,
+      "event_delay": 0,
+      "refresh_calls_from_forced_crank_by_start_mod4": [
+        0,
+        3,
+        2,
+        1
+      ]
+    },
+    {
+      "csv_line": 1057,
+      "seconds": 109.796,
+      "rpm": 3102.0,
+      "ect_c": 61.0,
+      "event_delay": 0,
+      "refresh_calls_from_forced_crank_by_start_mod4": [
+        0,
+        3,
+        2,
+        1
+      ]
+    },
+    {
+      "csv_line": 1058,
+      "seconds": 109.899,
+      "rpm": 3112.0,
+      "ect_c": 61.0,
+      "event_delay": 0,
+      "refresh_calls_from_forced_crank_by_start_mod4": [
+        0,
+        3,
+        2,
+        1
+      ]
+    },
+    {
+      "csv_line": 1059,
+      "seconds": 110.004,
+      "rpm": 3193.0,
+      "ect_c": 61.0,
+      "event_delay": 0,
+      "refresh_calls_from_forced_crank_by_start_mod4": [
+        0,
+        3,
+        2,
+        1
+      ]
+    },
+    {
+      "csv_line": 1060,
+      "seconds": 110.109,
+      "rpm": 3169.0,
+      "ect_c": 61.0,
+      "event_delay": 0,
+      "refresh_calls_from_forced_crank_by_start_mod4": [
+        0,
+        3,
+        2,
+        1
+      ]
+    },
+    {
+      "csv_line": 1061,
+      "seconds": 110.215,
+      "rpm": 3152.0,
+      "ect_c": 61.0,
+      "event_delay": 0,
+      "refresh_calls_from_forced_crank_by_start_mod4": [
+        0,
+        3,
+        2,
+        1
+      ]
+    },
+    {
+      "csv_line": 1062,
+      "seconds": 110.319,
+      "rpm": 3249.0,
+      "ect_c": 61.0,
+      "event_delay": 0,
+      "refresh_calls_from_forced_crank_by_start_mod4": [
+        0,
+        3,
+        2,
+        1
+      ]
+    },
+    {
+      "csv_line": 1063,
+      "seconds": 110.424,
+      "rpm": 3016.0,
+      "ect_c": 61.0,
+      "event_delay": 0,
+      "refresh_calls_from_forced_crank_by_start_mod4": [
+        0,
+        3,
+        2,
+        1
+      ]
+    },
+    {
+      "csv_line": 1064,
+      "seconds": 110.527,
+      "rpm": 3265.0,
+      "ect_c": 61.0,
+      "event_delay": 0,
+      "refresh_calls_from_forced_crank_by_start_mod4": [
+        0,
+        3,
+        2,
+        1
+      ]
+    },
+    {
+      "csv_line": 1065,
+      "seconds": 110.632,
+      "rpm": 3139.0,
+      "ect_c": 61.0,
+      "event_delay": 0,
+      "refresh_calls_from_forced_crank_by_start_mod4": [
+        0,
+        3,
+        2,
+        1
+      ]
+    },
+    {
+      "csv_line": 1066,
+      "seconds": 110.736,
+      "rpm": 3155.0,
+      "ect_c": 61.0,
+      "event_delay": 0,
+      "refresh_calls_from_forced_crank_by_start_mod4": [
+        0,
+        3,
+        2,
+        1
+      ]
+    },
+    {
+      "csv_line": 1067,
+      "seconds": 110.84,
+      "rpm": 3262.0,
+      "ect_c": 61.0,
+      "event_delay": 0,
+      "refresh_calls_from_forced_crank_by_start_mod4": [
+        0,
+        3,
+        2,
+        1
+      ]
+    },
+    {
+      "csv_line": 1068,
+      "seconds": 110.944,
+      "rpm": 3199.0,
+      "ect_c": 61.0,
+      "event_delay": 0,
+      "refresh_calls_from_forced_crank_by_start_mod4": [
+        0,
+        3,
+        2,
+        1
+      ]
+    },
+    {
+      "csv_line": 1069,
+      "seconds": 111.048,
+      "rpm": 3258.0,
+      "ect_c": 61.0,
+      "event_delay": 0,
+      "refresh_calls_from_forced_crank_by_start_mod4": [
+        0,
+        3,
+        2,
+        1
+      ]
+    },
+    {
+      "csv_line": 1070,
+      "seconds": 111.152,
+      "rpm": 3192.0,
+      "ect_c": 61.0,
+      "event_delay": 0,
+      "refresh_calls_from_forced_crank_by_start_mod4": [
+        0,
+        3,
+        2,
+        1
+      ]
+    },
+    {
+      "csv_line": 1071,
+      "seconds": 111.255,
+      "rpm": 3176.0,
+      "ect_c": 61.0,
+      "event_delay": 0,
+      "refresh_calls_from_forced_crank_by_start_mod4": [
+        0,
+        3,
+        2,
+        1
+      ]
+    },
+    {
+      "csv_line": 1072,
+      "seconds": 111.36,
+      "rpm": 3196.0,
+      "ect_c": 61.0,
+      "event_delay": 0,
+      "refresh_calls_from_forced_crank_by_start_mod4": [
+        0,
+        3,
+        2,
+        1
+      ]
+    },
+    {
+      "csv_line": 1073,
+      "seconds": 111.463,
+      "rpm": 3176.0,
+      "ect_c": 61.0,
+      "event_delay": 0,
+      "refresh_calls_from_forced_crank_by_start_mod4": [
+        0,
+        3,
+        2,
+        1
+      ]
+    },
+    {
+      "csv_line": 1074,
+      "seconds": 111.568,
+      "rpm": 3244.0,
+      "ect_c": 61.0,
+      "event_delay": 0,
+      "refresh_calls_from_forced_crank_by_start_mod4": [
+        0,
+        3,
+        2,
+        1
+      ]
+    },
+    {
+      "csv_line": 1075,
+      "seconds": 111.673,
+      "rpm": 3258.0,
+      "ect_c": 61.0,
+      "event_delay": 0,
+      "refresh_calls_from_forced_crank_by_start_mod4": [
+        0,
+        3,
+        2,
+        1
+      ]
+    },
+    {
+      "csv_line": 1076,
+      "seconds": 111.777,
+      "rpm": 3151.0,
+      "ect_c": 61.0,
+      "event_delay": 0,
+      "refresh_calls_from_forced_crank_by_start_mod4": [
+        0,
+        3,
+        2,
+        1
+      ]
+    },
+    {
+      "csv_line": 1095,
+      "seconds": 113.752,
+      "rpm": 2527.0,
+      "ect_c": 62.0,
+      "event_delay": 0,
+      "refresh_calls_from_forced_crank_by_start_mod4": [
+        0,
+        3,
+        2,
+        1
+      ]
+    },
+    {
+      "csv_line": 1097,
+      "seconds": 113.959,
+      "rpm": 2532.0,
+      "ect_c": 62.0,
+      "event_delay": 0,
+      "refresh_calls_from_forced_crank_by_start_mod4": [
+        0,
+        3,
+        2,
+        1
+      ]
+    },
+    {
+      "csv_line": 1098,
+      "seconds": 114.063,
+      "rpm": 2504.0,
+      "ect_c": 62.0,
+      "event_delay": 0,
+      "refresh_calls_from_forced_crank_by_start_mod4": [
+        0,
+        3,
+        2,
+        1
+      ]
+    },
+    {
+      "csv_line": 1099,
+      "seconds": 114.167,
+      "rpm": 2521.0,
+      "ect_c": 62.0,
+      "event_delay": 0,
+      "refresh_calls_from_forced_crank_by_start_mod4": [
+        0,
+        3,
+        2,
+        1
+      ]
+    },
+    {
+      "csv_line": 1100,
+      "seconds": 114.271,
+      "rpm": 2530.0,
+      "ect_c": 62.0,
+      "event_delay": 0,
+      "refresh_calls_from_forced_crank_by_start_mod4": [
+        0,
+        3,
+        2,
+        1
+      ]
+    },
+    {
+      "csv_line": 1101,
+      "seconds": 114.375,
+      "rpm": 2535.0,
+      "ect_c": 62.0,
+      "event_delay": 0,
+      "refresh_calls_from_forced_crank_by_start_mod4": [
+        0,
+        3,
+        2,
+        1
+      ]
+    },
+    {
+      "csv_line": 1119,
+      "seconds": 116.251,
+      "rpm": 3105.0,
+      "ect_c": 62.0,
+      "event_delay": 0,
+      "refresh_calls_from_forced_crank_by_start_mod4": [
+        0,
+        3,
+        2,
+        1
+      ]
+    },
+    {
+      "csv_line": 1120,
+      "seconds": 116.356,
+      "rpm": 3212.0,
+      "ect_c": 62.0,
+      "event_delay": 0,
+      "refresh_calls_from_forced_crank_by_start_mod4": [
+        0,
+        3,
+        2,
+        1
+      ]
+    },
+    {
+      "csv_line": 1121,
+      "seconds": 116.46,
+      "rpm": 3140.0,
+      "ect_c": 62.0,
+      "event_delay": 0,
+      "refresh_calls_from_forced_crank_by_start_mod4": [
+        0,
+        3,
+        2,
+        1
+      ]
+    },
+    {
+      "csv_line": 1122,
+      "seconds": 116.565,
+      "rpm": 3243.0,
+      "ect_c": 62.0,
+      "event_delay": 0,
+      "refresh_calls_from_forced_crank_by_start_mod4": [
+        0,
+        3,
+        2,
+        1
+      ]
+    },
+    {
+      "csv_line": 1123,
+      "seconds": 116.668,
+      "rpm": 3151.0,
+      "ect_c": 62.0,
+      "event_delay": 0,
+      "refresh_calls_from_forced_crank_by_start_mod4": [
+        0,
+        3,
+        2,
+        1
+      ]
+    },
+    {
+      "csv_line": 1124,
+      "seconds": 116.772,
+      "rpm": 3214.0,
+      "ect_c": 62.0,
+      "event_delay": 0,
+      "refresh_calls_from_forced_crank_by_start_mod4": [
+        0,
+        3,
+        2,
+        1
+      ]
+    },
+    {
+      "csv_line": 1125,
+      "seconds": 116.877,
+      "rpm": 3180.0,
+      "ect_c": 62.0,
+      "event_delay": 0,
+      "refresh_calls_from_forced_crank_by_start_mod4": [
+        0,
+        3,
+        2,
+        1
+      ]
+    },
+    {
+      "csv_line": 1126,
+      "seconds": 116.981,
+      "rpm": 3205.0,
+      "ect_c": 62.0,
+      "event_delay": 0,
+      "refresh_calls_from_forced_crank_by_start_mod4": [
+        0,
+        3,
+        2,
+        1
+      ]
+    },
+    {
+      "csv_line": 1127,
+      "seconds": 117.084,
+      "rpm": 3146.0,
+      "ect_c": 62.0,
+      "event_delay": 0,
+      "refresh_calls_from_forced_crank_by_start_mod4": [
+        0,
+        3,
+        2,
+        1
+      ]
+    },
+    {
+      "csv_line": 1128,
+      "seconds": 117.188,
+      "rpm": 3247.0,
+      "ect_c": 62.0,
+      "event_delay": 0,
+      "refresh_calls_from_forced_crank_by_start_mod4": [
+        0,
+        3,
+        2,
+        1
+      ]
+    },
+    {
+      "csv_line": 1129,
+      "seconds": 117.292,
+      "rpm": 3176.0,
+      "ect_c": 62.0,
+      "event_delay": 0,
+      "refresh_calls_from_forced_crank_by_start_mod4": [
+        0,
+        3,
+        2,
+        1
+      ]
+    },
+    {
+      "csv_line": 1130,
+      "seconds": 117.397,
+      "rpm": 3148.0,
+      "ect_c": 62.0,
+      "event_delay": 0,
+      "refresh_calls_from_forced_crank_by_start_mod4": [
+        0,
+        3,
+        2,
+        1
+      ]
+    },
+    {
+      "csv_line": 1131,
+      "seconds": 117.501,
+      "rpm": 3184.0,
+      "ect_c": 62.0,
+      "event_delay": 0,
+      "refresh_calls_from_forced_crank_by_start_mod4": [
+        0,
+        3,
+        2,
+        1
+      ]
+    },
+    {
+      "csv_line": 1132,
+      "seconds": 117.604,
+      "rpm": 3138.0,
+      "ect_c": 62.0,
+      "event_delay": 0,
+      "refresh_calls_from_forced_crank_by_start_mod4": [
+        0,
+        3,
+        2,
+        1
+      ]
+    },
+    {
+      "csv_line": 1133,
+      "seconds": 117.709,
+      "rpm": 3134.0,
+      "ect_c": 62.0,
+      "event_delay": 0,
+      "refresh_calls_from_forced_crank_by_start_mod4": [
+        0,
+        3,
+        2,
+        1
+      ]
+    },
+    {
+      "csv_line": 1134,
+      "seconds": 117.813,
+      "rpm": 3092.0,
+      "ect_c": 62.0,
+      "event_delay": 0,
+      "refresh_calls_from_forced_crank_by_start_mod4": [
+        0,
+        3,
+        2,
+        1
+      ]
+    },
+    {
+      "csv_line": 1140,
+      "seconds": 118.437,
+      "rpm": 2833.0,
+      "ect_c": 62.0,
+      "event_delay": 0,
+      "refresh_calls_from_forced_crank_by_start_mod4": [
+        0,
+        3,
+        2,
+        1
+      ]
+    },
+    {
+      "csv_line": 1141,
+      "seconds": 118.542,
+      "rpm": 3200.0,
+      "ect_c": 62.0,
+      "event_delay": 0,
+      "refresh_calls_from_forced_crank_by_start_mod4": [
+        0,
+        3,
+        2,
+        1
+      ]
+    },
+    {
+      "csv_line": 1155,
+      "seconds": 120.0,
+      "rpm": 3632.0,
+      "ect_c": 62.0,
+      "event_delay": 0,
+      "refresh_calls_from_forced_crank_by_start_mod4": [
+        0,
+        3,
+        2,
+        1
+      ]
+    },
+    {
+      "csv_line": 1156,
+      "seconds": 120.103,
+      "rpm": 3733.0,
+      "ect_c": 62.0,
+      "event_delay": 0,
+      "refresh_calls_from_forced_crank_by_start_mod4": [
+        0,
+        3,
+        2,
+        1
+      ]
+    },
+    {
+      "csv_line": 1157,
+      "seconds": 120.208,
+      "rpm": 3732.0,
+      "ect_c": 62.0,
+      "event_delay": 0,
+      "refresh_calls_from_forced_crank_by_start_mod4": [
+        0,
+        3,
+        2,
+        1
+      ]
+    },
+    {
+      "csv_line": 1158,
+      "seconds": 120.313,
+      "rpm": 3764.0,
+      "ect_c": 62.0,
+      "event_delay": 0,
+      "refresh_calls_from_forced_crank_by_start_mod4": [
+        0,
+        3,
+        2,
+        1
+      ]
+    },
+    {
+      "csv_line": 1159,
+      "seconds": 120.417,
+      "rpm": 3721.0,
+      "ect_c": 62.0,
+      "event_delay": 0,
+      "refresh_calls_from_forced_crank_by_start_mod4": [
+        0,
+        3,
+        2,
+        1
+      ]
+    },
+    {
+      "csv_line": 1160,
+      "seconds": 120.522,
+      "rpm": 3726.0,
+      "ect_c": 62.0,
+      "event_delay": 0,
+      "refresh_calls_from_forced_crank_by_start_mod4": [
+        0,
+        3,
+        2,
+        1
+      ]
+    },
+    {
+      "csv_line": 1161,
+      "seconds": 120.626,
+      "rpm": 3800.0,
+      "ect_c": 62.0,
+      "event_delay": 0,
+      "refresh_calls_from_forced_crank_by_start_mod4": [
+        0,
+        3,
+        2,
+        1
+      ]
+    },
+    {
+      "csv_line": 1162,
+      "seconds": 120.731,
+      "rpm": 3659.0,
+      "ect_c": 62.0,
+      "event_delay": 0,
+      "refresh_calls_from_forced_crank_by_start_mod4": [
+        0,
+        3,
+        2,
+        1
+      ]
+    },
+    {
+      "csv_line": 1163,
+      "seconds": 120.835,
+      "rpm": 3600.0,
+      "ect_c": 62.0,
+      "event_delay": 0,
+      "refresh_calls_from_forced_crank_by_start_mod4": [
+        0,
+        3,
+        2,
+        1
+      ]
+    },
+    {
+      "csv_line": 1164,
+      "seconds": 120.94,
+      "rpm": 3700.0,
+      "ect_c": 62.0,
+      "event_delay": 0,
+      "refresh_calls_from_forced_crank_by_start_mod4": [
+        0,
+        3,
+        2,
+        1
+      ]
+    },
+    {
+      "csv_line": 1165,
+      "seconds": 121.044,
+      "rpm": 3651.0,
+      "ect_c": 62.0,
+      "event_delay": 0,
+      "refresh_calls_from_forced_crank_by_start_mod4": [
+        0,
+        3,
+        2,
+        1
+      ]
+    },
+    {
+      "csv_line": 1166,
+      "seconds": 121.148,
+      "rpm": 3644.0,
+      "ect_c": 62.0,
+      "event_delay": 0,
+      "refresh_calls_from_forced_crank_by_start_mod4": [
+        0,
+        3,
+        2,
+        1
+      ]
+    },
+    {
+      "csv_line": 1185,
+      "seconds": 123.125,
+      "rpm": 3218.0,
+      "ect_c": 62.0,
+      "event_delay": 0,
+      "refresh_calls_from_forced_crank_by_start_mod4": [
+        0,
+        3,
+        2,
+        1
+      ]
+    },
+    {
+      "csv_line": 1186,
+      "seconds": 123.229,
+      "rpm": 3304.0,
+      "ect_c": 62.0,
+      "event_delay": 0,
+      "refresh_calls_from_forced_crank_by_start_mod4": [
+        0,
+        3,
+        2,
+        1
+      ]
+    },
+    {
+      "csv_line": 1187,
+      "seconds": 123.332,
+      "rpm": 3313.0,
+      "ect_c": 62.0,
+      "event_delay": 0,
+      "refresh_calls_from_forced_crank_by_start_mod4": [
+        0,
+        3,
+        2,
+        1
+      ]
+    },
+    {
+      "csv_line": 1188,
+      "seconds": 123.436,
+      "rpm": 3283.0,
+      "ect_c": 62.0,
+      "event_delay": 0,
+      "refresh_calls_from_forced_crank_by_start_mod4": [
+        0,
+        3,
+        2,
+        1
+      ]
+    },
+    {
+      "csv_line": 1189,
+      "seconds": 123.54,
+      "rpm": 3318.0,
+      "ect_c": 62.0,
+      "event_delay": 0,
+      "refresh_calls_from_forced_crank_by_start_mod4": [
+        0,
+        3,
+        2,
+        1
+      ]
+    },
+    {
+      "csv_line": 1190,
+      "seconds": 123.645,
+      "rpm": 3301.0,
+      "ect_c": 62.0,
+      "event_delay": 0,
+      "refresh_calls_from_forced_crank_by_start_mod4": [
+        0,
+        3,
+        2,
+        1
+      ]
+    },
+    {
+      "csv_line": 1191,
+      "seconds": 123.748,
+      "rpm": 3273.0,
+      "ect_c": 62.0,
+      "event_delay": 0,
+      "refresh_calls_from_forced_crank_by_start_mod4": [
+        0,
+        3,
+        2,
+        1
+      ]
+    },
+    {
+      "csv_line": 1192,
+      "seconds": 123.853,
+      "rpm": 3305.0,
+      "ect_c": 62.0,
+      "event_delay": 0,
+      "refresh_calls_from_forced_crank_by_start_mod4": [
+        0,
+        3,
+        2,
+        1
+      ]
+    },
+    {
+      "csv_line": 1193,
+      "seconds": 123.957,
+      "rpm": 3307.0,
+      "ect_c": 62.0,
+      "event_delay": 0,
+      "refresh_calls_from_forced_crank_by_start_mod4": [
+        0,
+        3,
+        2,
+        1
+      ]
+    },
+    {
+      "csv_line": 1194,
+      "seconds": 124.062,
+      "rpm": 3308.0,
+      "ect_c": 62.0,
+      "event_delay": 0,
+      "refresh_calls_from_forced_crank_by_start_mod4": [
+        0,
+        3,
+        2,
+        1
+      ]
+    },
+    {
+      "csv_line": 1195,
+      "seconds": 124.166,
+      "rpm": 3137.0,
+      "ect_c": 62.0,
+      "event_delay": 0,
+      "refresh_calls_from_forced_crank_by_start_mod4": [
+        0,
+        3,
+        2,
+        1
+      ]
+    },
+    {
+      "csv_line": 1196,
+      "seconds": 124.27,
+      "rpm": 3250.0,
+      "ect_c": 62.0,
+      "event_delay": 0,
+      "refresh_calls_from_forced_crank_by_start_mod4": [
+        0,
+        3,
+        2,
+        1
+      ]
+    },
+    {
+      "csv_line": 1197,
+      "seconds": 124.375,
+      "rpm": 3259.0,
+      "ect_c": 62.0,
+      "event_delay": 0,
+      "refresh_calls_from_forced_crank_by_start_mod4": [
+        0,
+        3,
+        2,
+        1
+      ]
+    },
+    {
+      "csv_line": 1198,
+      "seconds": 124.479,
+      "rpm": 3252.0,
+      "ect_c": 62.0,
+      "event_delay": 0,
+      "refresh_calls_from_forced_crank_by_start_mod4": [
+        0,
+        3,
+        2,
+        1
+      ]
+    },
+    {
+      "csv_line": 1199,
+      "seconds": 124.584,
+      "rpm": 3186.0,
+      "ect_c": 62.0,
+      "event_delay": 0,
+      "refresh_calls_from_forced_crank_by_start_mod4": [
+        0,
+        3,
+        2,
+        1
+      ]
+    }
+  ],
+  "starting_phase_fixtures": 500,
+  "supplied_phase_calls": 4000,
+  "cold_positive_controls": [
+    {
+      "imposed_ect_c": 20,
+      "events": 0,
+      "phase": 0,
+      "crank_flag": true,
+      "ignition_mode": 2,
+      "all_six_refresh_flags_written": true
+    },
+    {
+      "imposed_ect_c": 20,
+      "events": 9,
+      "phase": 0,
+      "crank_flag": true,
+      "ignition_mode": 2,
+      "all_six_refresh_flags_written": true
+    },
+    {
+      "imposed_ect_c": 20,
+      "events": 10,
+      "phase": 0,
+      "crank_flag": false,
+      "ignition_mode": 2,
+      "all_six_refresh_flags_written": false
+    }
+  ],
+  "pending_duration_consumer_controls": [
+    {
+      "imposed_refresh_flag": 0,
+      "resulting_effective_counts": [
+        4000,
+        4400,
+        4800,
+        5200,
+        5600,
+        6000
+      ],
+      "native_update_calls": 0,
+      "cancel_calls": 0
+    },
+    {
+      "imposed_refresh_flag": 1,
+      "resulting_effective_counts": [
+        8000,
+        8400,
+        8800,
+        9200,
+        9600,
+        10000
+      ],
+      "native_update_calls": 6,
+      "cancel_calls": 0
+    }
+  ],
+  "conclusions": [
+    "Record+06 requests duration refresh, not scheduler reset or cylinder inhibition: 263EE ->26E9A ->26C50 ->90F8 updates all six pending durations in the positive control without cancellation, then clears the requests.",
+    "Ignition mode2 can coexist with B748/80 and all-six injector refresh requests.",
+    "At all125 recorded open-plate demand RPM/ECT points, native delay is zero even with C0AC=0; the next phase divisible by4 clears both start flags.",
+    "Forced stale crank state persists for at most three supplied phase calls before that clearing; it does not reassert over the remaining supplied phases.",
+    "This path does not reproduce the sustained cut with those inputs."
+  ],
+  "limits": [
+    "B748, C0AC, refresh flags and actual per-phase execution are not captured.",
+    "Recorded RPM/ECT are quantized samples, not simultaneous per-phase RAM values.",
+    "Selected native entries execute in installed relative order; this is not the complete11958 payload, real dispatch, elapsed-time or electrical simulation.",
+    "Setting a refresh request is not itself proof of a missed delivered pulse.",
+    "The pending-consumer controls use the existing bounded integer-division model; enqueue/update routines execute native instructions, but timer completion and electrical fuel delivery are not simulated.",
+    "The already documented native crank producer is reused; the additional connection here is to26E64 and its six computed record stores.",
+    "No new registered regression groups; cumulative355-group total unchanged."
+  ]
+}

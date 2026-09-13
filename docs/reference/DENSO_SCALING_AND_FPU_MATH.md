@@ -51,6 +51,42 @@ V2 removes that allocation. Matching shared wrapper bytes establishes their
 instruction identity, but does not make every main fixture a v2 calibration
 or whole-scheduler test.
 
+## Paired stock/v2 task comparison, September 13
+
+The [paired analysis](../../tools/analysis/analyze_20260913_patch_workload.py)
+executes the complete native airflow task `172A4` on stock, current v2 and
+an in-memory v2 control with only call pointers `173FC/1743C` restored.
+That control is never written as a flashable artifact. All 72 control
+instruction traces match stock, isolating the added work at these two calls.
+
+The explicit grid covers 2,500–4,144 RPM, both lift selections and MAP
+300/760/810 mmHg, with IAT 37 C, ECT 61 C and prior airflow histories of
+105 g/s. Outputs need not match between MAF and SD; this is a workload
+comparison at supplied inputs, not a vehicle replay. V2 adds **382–494
+executed instructions** per call. The supplied incoming interrupt mask 0
+remains 0 throughout every airflow case.
+
+| Example: 3,152 RPM, high lift, 810 mmHg | Stock | V2 |
+|---|---:|---:|
+| Complete airflow-task instructions | 938 | 1,403 |
+| Executed `FDIV` instructions | 7 | 10 |
+| Local stack depth from task entry | 108 bytes | 120 bytes |
+
+The paired `B62A -> B690` comparison first executes native `B49A`
+initialization, then supplies counter `AED0=0/255` and ADC `0/30000/65535`.
+Stock executes **401 or 564 instructions at mask 9**; v2 executes **57–82**,
+with no division in its masked section. These cases use incoming mask 2
+to isolate publication from final unlock-to-zero task dispatch. That mask
+is a fixture, not a measurement of the running sensor task.
+
+This identifies added SD work and a smaller sampled WB masked instruction
+count. It does **not** establish available CPU time, worst-case stack
+headroom, actual interrupt delay, a cut cause or a cure. The complete task
+schedule still needs bounds; passing value checks do not clear that gap.
+[Results](../../logs/20260913_patch_workload_review.json) and
+[MCP evidence with verified annotations](evidence/patch_workload_20260913.json)
+preserve the comparison. No ROM, calibration or logger profile changed.
+
 ## Integer storage and native lookup results
 
 A 16-bit table element is not proof of integer-only runtime arithmetic.

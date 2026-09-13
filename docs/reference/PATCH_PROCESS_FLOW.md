@@ -2,7 +2,24 @@
 
 [Reference home](README.md) · [Every build assignment](PATCH_TOUCHPOINT_REGISTER.md) · [Loaded-cut evidence](V2_AVLS_MISFIRE_20260912.md)
 
-**This broader process-flow audit is in progress. A real AVCS output defect has been repaired; the loaded cut is not yet proven cured.**
+**This broader process-flow audit is incomplete. A real AVCS output defect has been repaired; the loaded cut persists in the first repaired-v2 vehicle test.**
+
+The [September 13 capture review](AVCS_REPAIR_CAPTURE_20260913.md) records the
+user's confirmation, exact flash identity, absent sampled B744/knock inhibition
+under high demand, and the remaining independent spark/scheduler boundaries.
+The [14:36 cut-trace capture](CUT_TRACE_CAPTURE_20260913.md) now records
+normal sampled spark/synchronization permissions and zero missed-task5/task6
+counts during repeated user-confirmed cuts. It also records rich AFR at the
+first sharp RPM drop in the 110-s event. No new software cure is established;
+downstream scheduling and actual ignition delivery remain distinct boundaries.
+It supersedes the earlier vehicle-untested status; the historical captures and
+offline fixture limits below remain distinct.
+
+The later [offline ignition follow-up](CUT_TRACE_CAPTURE_20260913.md#offline-ignition-follow-up-after-the-cost-constraint)
+checks actual native dwell lookup instructions at the logged voltages and
+confirms ordinary per-cylinder corrections clear at RPM >= 2,000. It found
+no new cut mechanism. The user declined paid dyno testing; no paid test is
+a prerequisite for further work.
 
 Work is paused at the user's request. Continue from the
 [September 13 resume checkpoint](AUDIT_RESUME_20260913.md), including its
@@ -310,6 +327,15 @@ resynchronization can clear `C0AC`; its normal `26944` updater saturating-
 increments it. At the capture's zero delay, a counter reset alone cannot
 re-enter cranking when RPM remains above 500. This does not prove that
 hardware crank events or task execution remained continuous during the cut.
+
+The [later cut-trace follow-up](CUT_TRACE_CAPTURE_20260913.md#injector-refresh-requests-and-the-separate-cranking-flag)
+connects this producer to `26E64 -> 2705E`, which marks offset `+06` of all
+six 40-byte injector records when B748/80 is set. This flag is independent
+of logged ignition mode C0E1. All 125 high-demand/open-plate points in the
+newer 14:36 capture (ECT 58–62 °C) also have zero native event delay, so
+even a forced stale crank state clears at the next phase divisible by four.
+The selected native entries execute in installed relative order with strict
+write bounds; complete task timing and actual pulse delivery remain open.
 
 ## MAP and barometric state transitions
 
@@ -624,6 +650,13 @@ Existing tests check register preservation, local frame balance and selected
 IRQ/resumption cases. Their 512-byte model stack is a fixture, not a measured
 ECU allocation or worst-case depth. SD's extra native-call depth is bounded
 locally, but total scheduler headroom remains open.
+
+The subsequent [paired stock/v2 workload analysis](DENSO_SCALING_AND_FPU_MATH.md#paired-stockv2-task-comparison-september-13)
+executes the complete airflow task over 72 input combinations and the WB
+publication parent over six initialized cases. SD adds 382–494 instructions
+without raising the supplied mask; the tested WB priority-9 instruction
+count is lower than stock. Counts are not elapsed times. The actual task
+occupancy and stack-headroom gaps above remain unresolved.
 
 ## Retained wideband and diagnostic dependencies
 
@@ -1732,7 +1765,7 @@ all unrelated tasks in `11958` or model its dispatch deadlines.
 | Timing conversion | Running-mode `2A2BC` selects the relevant two final floats from `C0EC..C100`, writes `(timing-10)*65536` into record offsets `18/28`, and respects the alternate logical phase-half ordering. `29C62` later combines relative timing, current phase and its own offset; the intermediate subtraction alone is not final spark timing. |
 | Phase update | `29794` tracks `C28C` modulo 24, uses three paired records and the mode descriptors at `4B6D8/4B6E8`. A phase increment other than one invokes `29AA8` to cancel pending requests and rebuild phase distances, mode, mask and timing. Mode changes go through `29D04`; changed masks go through `29E14`. |
 | Queue callbacks | Initial-charge callback `2A018` uses `9952`. Running callback `2A0C0` converts through `29C62` and enqueues with `997A`, or updates an existing pending angle in `AD14+8*n`. Inhibited slots are skipped. Running release predicate `2A17A` includes dwell and `AC08` period before allowing restart. |
-| Dwell | `9FEC` passes battery `ABB4` and RPM `AC00` to raw-u16 descriptor `60998`, writing `AD5C`. At the explicit 14 V fixture, 2500/2800/3000/3500 RPM produce 752/713/688/624 counts. `2A3C0` returns those counts times 16. Battery voltage was not logged during the cut. |
+| Dwell | `9FEC` passes battery `ABB4` and RPM `AC00` to raw-u16 descriptor `60998`, writing `AD5C`. At the explicit 14 V fixture, 2500/2800/3000/3500 RPM produce 752/713/688/624 counts. `2A3C0` returns those counts times 16. The later cut-trace capture logs ECU battery voltage; actual dwell and coil voltage/current remain unlogged. |
 | Device snapshots | `9BCC` copies crank angle `AC18` to `AD64`, timer snapshot `AC1C >> 4` to `AD6C`, and `AC08/4` to `AD68`. It services six eight-byte states at `AD14..AD43`. Mode 1 uses `9C54`; mode 2 uses `9D3A`. |
 | Prepare/program | `9F9C` initially places start/end comparisons away from the current counter and loads the down-counter through `D744`. `9D3A/9E58` use angle distance, dwell, period and snapshot to write the actual comparisons. Late start clamps to counter+3; the reviewed late-end branch retains at least half of requested dwell. |
 | Cancellation | `99E0` distinguishes idle, pending-unarmed and armed states. `99B4` clears pending mode only before arming. An armed event remains until timer completion; a subsequent `9D3A` poll observes zero down-counter and clears its state. `29E14` checks both paired subrecords before permitting cancellation. |
@@ -2387,6 +2420,16 @@ cut wrappers use mask 1. Native priority-14 critical sections, higher-priority
 interrupts, synchronization gates and task backlog still require timing
 bounds. None has been shown to produce the imposed stale condition in the
 loaded capture; changing the native branch is not yet a cut fix.
+
+The [individual-cylinder fuel follow-up](CUT_TRACE_CAPTURE_20260913.md#individual-cylinder-fuel-terms-and-active-pulse-updates)
+also connects the normal `26E80` refresh publisher to the scheduler/device
+update after `1DD04 ->1CA38`. The three identified per-cylinder modifier
+families clear above 2,000 RPM, reset to unity under installed selector
+75E2B=0, or publish one of five bounded 0.90–1.05 patterns. Fifteen native
+connected fixtures cover pending and active updates without cancellation;
+near-complete pulses finish only after their supplied elapsed time exceeds
+the shorter revised target. This does not reconstruct bank history, task
+interleavings or actual delivered fuel.
 
 ## Supplemental tip-in through the immediate device callback
 

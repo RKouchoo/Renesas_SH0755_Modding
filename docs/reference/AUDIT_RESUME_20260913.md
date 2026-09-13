@@ -3,6 +3,52 @@
 [Reference home](README.md) · [Full flow register](PATCH_PROCESS_FLOW.md) · [Repair](AVCS_OCV_REPAIR_20260913.md)
 
 **Paused at the user's request. The broader audit is incomplete and the loaded cut is not proven cured.**
+Later vehicle follow-up: the [September 13 repaired-v2 capture](AVCS_REPAIR_CAPTURE_20260913.md)
+and user confirmation establish that the cut **persists**. The focused review
+records B744=0 in the high-demand samples, a separate Right-cam discrepancy,
+and the still-unobserved spark/synchronization/scheduler state. It supersedes
+the earlier vehicle-untested status, not the incomplete audit checklist below.
+
+The user then asked for the next step. A [cut-specific logger](CUT_TRACE_LOGGER_20260913.md)
+is now built and verified. It reads existing native spark/synchronization
+state and loss counters with E530–E537, retaining IAM and knock. No reflash
+is required. There are now nine generated profiles; the broader audit and
+vehicle cut remain unresolved.
+
+The [14:36 cut-trace capture](CUT_TRACE_CAPTURE_20260913.md) is now reviewed.
+The user confirms repeated hard cuts. All 125 high-demand/open-plate samples
+have normal fuel/primary-spark permissions; all 1,590 rows have zero missed
+task5/task6 counts. The first sharp RPM drop at 110.424 s still reads AFR11.57.
+Three loaded AVLS mode-only wrapper comparisons change airflow by less than
+0.1%. No new runtime change or cure is established; actual ignition output
+remains unmeasured. This bounded follow-up does not resume the full audit.
+
+The user subsequently declined paid dyno testing. Continue within that cost
+constraint; a dyno is not a prerequisite. The bounded
+[offline ignition follow-up](CUT_TRACE_CAPTURE_20260913.md#offline-ignition-follow-up-after-the-cost-constraint)
+executes the native dwell lookup at 125 logged points, 1,500 late-start device
+cases, P10's single-element visibility and the ordinary per-cylinder
+correction clearing above 2,000 RPM. No new causal defect or runtime change
+was found. Physical outputs and the remaining full-audit gaps are still open.
+
+The user then confirmed **stock coils, wiring and plugs**; measured plug gap
+is not supplied. The [injector-refresh follow-up](CUT_TRACE_CAPTURE_20260913.md#injector-refresh-requests-and-the-separate-cranking-flag)
+connects native crank-state production to `26E64/2705E`. Ignition mode 2
+alone does not exclude these refresh requests, but all 125 logged demand
+RPM/ECT pairs clear forced stale cranking at the next eligible phase even
+with event count zero. The 500 bounded fixtures did not reproduce a
+sustained start-flag assertion. The record marks request duration refresh,
+not scheduler reset. No ROM change or vehicle cure was established.
+
+The next [individual-cylinder fuel pass](CUT_TRACE_CAPTURE_20260913.md#individual-cylinder-fuel-terms-and-active-pulse-updates)
+connects `3CBC0/23864/D050` modifiers through `1DD04 ->1CA38 ->26E80`
+and the native scheduler/device update. The six additive offsets clear at
+RPM>=2,000, the installed selector resets six scalars to unity, and all
+five pattern publishers emit only 0.90–1.05 multipliers. Fifteen connected
+state fixtures retain six positive targets and make no cancellation calls.
+Actual bank histories, task timing and physical output remain unproven;
+this pass changed no ROM or calibration.
+
 The repository was clean at commit `a6e217c` (`more firmware tests`) before
 this checkpoint. That commit includes the preceding audit work. This resume
 session changed no runtime source, calibration, BIN, logger definition or
@@ -46,7 +92,7 @@ See the [repair evidence](evidence/avcs_ocv_repair_20260913.json) for all
 | [Rolling v2](../../master_patch_v2/D2WD610H_master_patch_v2.bin) | `fabceb54359aca76e6e15835a51aa5cfd008e570dc002e886eaa62a6cb020ce5` |
 | [Rolling main](../../master_patch/D2WD610H_master_patch.bin) | `3e95b7508427f544e30a96c7aa78298b32560a6f3caf5c180e7949b8c2adc388` |
 | Captured loaded-drive v2, reconstructed by the pinned helper | `fd795813febf817c845fc922e81e498539a539efeeb6e4d11822af47098094a2` |
-| [Complete logger definition](../../logger/D2WD610H_master_logger.xml) | `855b0af1620eb9efd6cc439945dec4fe5fc7dd957e9b79d506f8d1d1a099c71d` |
+| [Complete logger definition](../../logger/D2WD610H_master_logger.xml) | `ee8b217571b0b2a65ba4d0ccf0aec7e16f3d8eddd077e4596434e17c5344bc9d` |
 
 The repaired v2 Subaru checksum is `AA416B03`; main is `1ADC9F24`.
 The captured image must continue to be reconstructed using
@@ -196,6 +242,16 @@ All CPU callees in these exploratory probes use
 allowance must be replaced by precise output sets for formal tests. Restore
 proper image/byte pins, native parent order, positive/negative controls and
 explicit physical boundaries before registering any new suite.
+
+## Patch-focused continuation after the cut follow-ups
+
+The user maintains that the cut comes from a patch interaction. Keep that
+as the working hypothesis; the bounded checks have not established an
+external cause. The [paired workload follow-up](DENSO_SCALING_AND_FPU_MATH.md#paired-stockv2-task-comparison-september-13)
+adds 72 stock/v2 airflow comparisons and six WB comparisons. SD adds
+382–494 executed instructions; the sampled WB mask-9 section is smaller
+than stock. This does not settle full task timing or total stack headroom.
+The evidence and both MCP annotations are saved; no runtime change was made.
 
 ## Resume order and evidence limits
 

@@ -1,0 +1,824 @@
+{
+  "rom_sha256": "fabceb54359aca76e6e15835a51aa5cfd008e570dc002e886eaa62a6cb020ce5",
+  "context_log_sha256": "3e62ab07eb7ee184ab43162debd7d97c3f829085399cf87742ca6c8997d85390",
+  "scope": "Native individual-cylinder modifiers and connected duration refresh; no ECU I/O.",
+  "native_division_controls": [
+    {
+      "numerator": 0,
+      "divisor": 26700,
+      "result": 0
+    },
+    {
+      "numerator": 1,
+      "divisor": 26700,
+      "result": 2
+    },
+    {
+      "numerator": 32000,
+      "divisor": 26700,
+      "result": 78545
+    },
+    {
+      "numerator": 48000,
+      "divisor": 26700,
+      "result": 117817
+    },
+    {
+      "numerator": 41999,
+      "divisor": 25000,
+      "result": 110097
+    },
+    {
+      "numerator": 65535,
+      "divisor": 44444,
+      "result": 96636
+    },
+    {
+      "numerator": 500,
+      "divisor": 1000,
+      "result": 32768
+    },
+    {
+      "numerator": 12345,
+      "divisor": 6789,
+      "result": 119169
+    }
+  ],
+  "native_pattern_initializer_result": [
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    1.0
+  ],
+  "individual_offsets": [
+    {
+      "rpm_fixture": 1999,
+      "offsets": [
+        0.029999999329447746,
+        -0.029999999329447746,
+        0.029999999329447746,
+        -0.029999999329447746,
+        0.029999999329447746,
+        -0.029999999329447746
+      ]
+    },
+    {
+      "rpm_fixture": 2000,
+      "offsets": [
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ]
+    },
+    {
+      "rpm_fixture": 2500,
+      "offsets": [
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ]
+    },
+    {
+      "rpm_fixture": 2800,
+      "offsets": [
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ]
+    },
+    {
+      "rpm_fixture": 3016,
+      "offsets": [
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ]
+    },
+    {
+      "rpm_fixture": 3152,
+      "offsets": [
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ]
+    },
+    {
+      "rpm_fixture": 3500,
+      "offsets": [
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ]
+    },
+    {
+      "rpm_fixture": 3800,
+      "offsets": [
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ]
+    }
+  ],
+  "installed_selector_scale_cases": [
+    {
+      "crank_fixture": 0,
+      "speed_fixture": 0,
+      "counter_fixture": 0,
+      "multipliers": [
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0
+      ]
+    },
+    {
+      "crank_fixture": 0,
+      "speed_fixture": 0,
+      "counter_fixture": 65535,
+      "multipliers": [
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0
+      ]
+    },
+    {
+      "crank_fixture": 0,
+      "speed_fixture": 57,
+      "counter_fixture": 0,
+      "multipliers": [
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0
+      ]
+    },
+    {
+      "crank_fixture": 0,
+      "speed_fixture": 57,
+      "counter_fixture": 65535,
+      "multipliers": [
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0
+      ]
+    },
+    {
+      "crank_fixture": 128,
+      "speed_fixture": 0,
+      "counter_fixture": 0,
+      "multipliers": [
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0
+      ]
+    },
+    {
+      "crank_fixture": 128,
+      "speed_fixture": 0,
+      "counter_fixture": 65535,
+      "multipliers": [
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0
+      ]
+    },
+    {
+      "crank_fixture": 128,
+      "speed_fixture": 57,
+      "counter_fixture": 0,
+      "multipliers": [
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0
+      ]
+    },
+    {
+      "crank_fixture": 128,
+      "speed_fixture": 57,
+      "counter_fixture": 65535,
+      "multipliers": [
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0
+      ]
+    }
+  ],
+  "connected_cases": [
+    {
+      "pattern_entry": "0x48e32",
+      "device_state_fixture": "pending",
+      "multipliers": [
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0
+      ],
+      "effective_duration_us": [
+        10000.0,
+        10000.0,
+        10000.0,
+        10000.0,
+        10000.0,
+        10000.0
+      ],
+      "device_effective_counts": [
+        40000,
+        40000,
+        40000,
+        40000,
+        40000,
+        40000
+      ],
+      "remaining_counts": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "native_cancel_called": false
+    },
+    {
+      "pattern_entry": "0x48e32",
+      "device_state_fixture": "active",
+      "multipliers": [
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0
+      ],
+      "effective_duration_us": [
+        10000.0,
+        10000.0,
+        10000.0,
+        10000.0,
+        10000.0,
+        10000.0
+      ],
+      "device_effective_counts": [
+        40000,
+        40000,
+        40000,
+        40000,
+        40000,
+        40000
+      ],
+      "remaining_counts": [
+        2671,
+        2671,
+        2671,
+        2671,
+        2671,
+        2671
+      ],
+      "native_cancel_called": false
+    },
+    {
+      "pattern_entry": "0x48e32",
+      "device_state_fixture": "late",
+      "multipliers": [
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0
+      ],
+      "effective_duration_us": [
+        10000.0,
+        10000.0,
+        10000.0,
+        10000.0,
+        10000.0,
+        10000.0
+      ],
+      "device_effective_counts": [
+        40000,
+        40000,
+        40000,
+        40000,
+        40000,
+        40000
+      ],
+      "remaining_counts": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "native_cancel_called": false
+    },
+    {
+      "pattern_entry": "0x48e4e",
+      "device_state_fixture": "pending",
+      "multipliers": [
+        1.0,
+        1.0499999523162842,
+        0.8999999761581421,
+        1.0,
+        1.0,
+        1.0499999523162842
+      ],
+      "effective_duration_us": [
+        10000.0,
+        10499.9990234375,
+        8999.9990234375,
+        10000.0,
+        10000.0,
+        10499.9990234375
+      ],
+      "device_effective_counts": [
+        40000,
+        41999,
+        35999,
+        40000,
+        40000,
+        41999
+      ],
+      "remaining_counts": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "native_cancel_called": false
+    },
+    {
+      "pattern_entry": "0x48e4e",
+      "device_state_fixture": "active",
+      "multipliers": [
+        1.0,
+        1.0499999523162842,
+        0.8999999761581421,
+        1.0,
+        1.0,
+        1.0499999523162842
+      ],
+      "effective_duration_us": [
+        10000.0,
+        10499.9990234375,
+        8999.9990234375,
+        10000.0,
+        10000.0,
+        10499.9990234375
+      ],
+      "device_effective_counts": [
+        40000,
+        41999,
+        35999,
+        40000,
+        40000,
+        41999
+      ],
+      "remaining_counts": [
+        2671,
+        2796,
+        2421,
+        2671,
+        2671,
+        2796
+      ],
+      "native_cancel_called": false
+    },
+    {
+      "pattern_entry": "0x48e4e",
+      "device_state_fixture": "late",
+      "multipliers": [
+        1.0,
+        1.0499999523162842,
+        0.8999999761581421,
+        1.0,
+        1.0,
+        1.0499999523162842
+      ],
+      "effective_duration_us": [
+        10000.0,
+        10499.9990234375,
+        8999.9990234375,
+        10000.0,
+        10000.0,
+        10499.9990234375
+      ],
+      "device_effective_counts": [
+        40000,
+        41999,
+        35999,
+        40000,
+        40000,
+        41999
+      ],
+      "remaining_counts": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "native_cancel_called": false
+    },
+    {
+      "pattern_entry": "0x48e74",
+      "device_state_fixture": "pending",
+      "multipliers": [
+        1.0,
+        1.024999976158142,
+        0.949999988079071,
+        1.0,
+        1.0,
+        1.024999976158142
+      ],
+      "effective_duration_us": [
+        10000.0,
+        10249.9990234375,
+        9499.9990234375,
+        10000.0,
+        10000.0,
+        10249.9990234375
+      ],
+      "device_effective_counts": [
+        40000,
+        40999,
+        37999,
+        40000,
+        40000,
+        40999
+      ],
+      "remaining_counts": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "native_cancel_called": false
+    },
+    {
+      "pattern_entry": "0x48e74",
+      "device_state_fixture": "active",
+      "multipliers": [
+        1.0,
+        1.024999976158142,
+        0.949999988079071,
+        1.0,
+        1.0,
+        1.024999976158142
+      ],
+      "effective_duration_us": [
+        10000.0,
+        10249.9990234375,
+        9499.9990234375,
+        10000.0,
+        10000.0,
+        10249.9990234375
+      ],
+      "device_effective_counts": [
+        40000,
+        40999,
+        37999,
+        40000,
+        40000,
+        40999
+      ],
+      "remaining_counts": [
+        2671,
+        2734,
+        2546,
+        2671,
+        2671,
+        2734
+      ],
+      "native_cancel_called": false
+    },
+    {
+      "pattern_entry": "0x48e74",
+      "device_state_fixture": "late",
+      "multipliers": [
+        1.0,
+        1.024999976158142,
+        0.949999988079071,
+        1.0,
+        1.0,
+        1.024999976158142
+      ],
+      "effective_duration_us": [
+        10000.0,
+        10249.9990234375,
+        9499.9990234375,
+        10000.0,
+        10000.0,
+        10249.9990234375
+      ],
+      "device_effective_counts": [
+        40000,
+        40999,
+        37999,
+        40000,
+        40000,
+        40999
+      ],
+      "remaining_counts": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "native_cancel_called": false
+    },
+    {
+      "pattern_entry": "0x48e9a",
+      "device_state_fixture": "pending",
+      "multipliers": [
+        1.0499999523162842,
+        1.0499999523162842,
+        0.8999999761581421,
+        0.8999999761581421,
+        1.0499999523162842,
+        1.0499999523162842
+      ],
+      "effective_duration_us": [
+        10499.9990234375,
+        10499.9990234375,
+        8999.9990234375,
+        8999.9990234375,
+        10499.9990234375,
+        10499.9990234375
+      ],
+      "device_effective_counts": [
+        41999,
+        41999,
+        35999,
+        35999,
+        41999,
+        41999
+      ],
+      "remaining_counts": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "native_cancel_called": false
+    },
+    {
+      "pattern_entry": "0x48e9a",
+      "device_state_fixture": "active",
+      "multipliers": [
+        1.0499999523162842,
+        1.0499999523162842,
+        0.8999999761581421,
+        0.8999999761581421,
+        1.0499999523162842,
+        1.0499999523162842
+      ],
+      "effective_duration_us": [
+        10499.9990234375,
+        10499.9990234375,
+        8999.9990234375,
+        8999.9990234375,
+        10499.9990234375,
+        10499.9990234375
+      ],
+      "device_effective_counts": [
+        41999,
+        41999,
+        35999,
+        35999,
+        41999,
+        41999
+      ],
+      "remaining_counts": [
+        2796,
+        2796,
+        2421,
+        2421,
+        2796,
+        2796
+      ],
+      "native_cancel_called": false
+    },
+    {
+      "pattern_entry": "0x48e9a",
+      "device_state_fixture": "late",
+      "multipliers": [
+        1.0499999523162842,
+        1.0499999523162842,
+        0.8999999761581421,
+        0.8999999761581421,
+        1.0499999523162842,
+        1.0499999523162842
+      ],
+      "effective_duration_us": [
+        10499.9990234375,
+        10499.9990234375,
+        8999.9990234375,
+        8999.9990234375,
+        10499.9990234375,
+        10499.9990234375
+      ],
+      "device_effective_counts": [
+        41999,
+        41999,
+        35999,
+        35999,
+        41999,
+        41999
+      ],
+      "remaining_counts": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "native_cancel_called": false
+    },
+    {
+      "pattern_entry": "0x48ec4",
+      "device_state_fixture": "pending",
+      "multipliers": [
+        1.024999976158142,
+        1.024999976158142,
+        0.949999988079071,
+        0.949999988079071,
+        1.024999976158142,
+        1.024999976158142
+      ],
+      "effective_duration_us": [
+        10249.9990234375,
+        10249.9990234375,
+        9499.9990234375,
+        9499.9990234375,
+        10249.9990234375,
+        10249.9990234375
+      ],
+      "device_effective_counts": [
+        40999,
+        40999,
+        37999,
+        37999,
+        40999,
+        40999
+      ],
+      "remaining_counts": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "native_cancel_called": false
+    },
+    {
+      "pattern_entry": "0x48ec4",
+      "device_state_fixture": "active",
+      "multipliers": [
+        1.024999976158142,
+        1.024999976158142,
+        0.949999988079071,
+        0.949999988079071,
+        1.024999976158142,
+        1.024999976158142
+      ],
+      "effective_duration_us": [
+        10249.9990234375,
+        10249.9990234375,
+        9499.9990234375,
+        9499.9990234375,
+        10249.9990234375,
+        10249.9990234375
+      ],
+      "device_effective_counts": [
+        40999,
+        40999,
+        37999,
+        37999,
+        40999,
+        40999
+      ],
+      "remaining_counts": [
+        2734,
+        2734,
+        2546,
+        2546,
+        2734,
+        2734
+      ],
+      "native_cancel_called": false
+    },
+    {
+      "pattern_entry": "0x48ec4",
+      "device_state_fixture": "late",
+      "multipliers": [
+        1.024999976158142,
+        1.024999976158142,
+        0.949999988079071,
+        0.949999988079071,
+        1.024999976158142,
+        1.024999976158142
+      ],
+      "effective_duration_us": [
+        10249.9990234375,
+        10249.9990234375,
+        9499.9990234375,
+        9499.9990234375,
+        10249.9990234375,
+        10249.9990234375
+      ],
+      "device_effective_counts": [
+        40999,
+        40999,
+        37999,
+        37999,
+        40999,
+        40999
+      ],
+      "remaining_counts": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "native_cancel_called": false
+    }
+  ],
+  "case_count": 15,
+  "interpretation": [
+    "Native3CBC0 clears all six CC88 offsets atRPM>=2000; forced-enabled lower-RPM control clamps them to approximately +/-0.03.",
+    "Installed75E2B=0 makes23864 reset all six BECC multipliers to1 and BEB8/BEBC/BEC0 to0, even from deliberately nonneutral prior values.",
+    "All five identified D050 pattern publishers emit only0.9..1.05 multipliers. Initializer48D12 tails48E32 to set unity.",
+    "Selected producer/composer/selector/refresh/scheduler/device path preserves six nonzero duration targets and makes no cancellation call in15 connected fixtures.",
+    "An active pulse with only100 counts left terminates on a sufficiently shorter request because supplied elapsed time already exceeds the revised total; a positive logged target is not an instantaneous timer-active indication."
+  ],
+  "limits": [
+    "These are explicit input/state fixtures, not measured individual-cylinder values or an engine replay; no cause or cure is established.",
+    "Common/bank corrections are neutral fixtures; retained bank histories remain separate.",
+    "The pattern parent489E0/48D2C qualification and physical startup are not reconstructed.",
+    "The selected native chain is not the complete periodic/crank tasks or their interleavings.",
+    "Setup reuses the existing device fixture; all CPU callees in the connected PipelineMachine path execute natively, including fixed-point divide21CC.",
+    "Timer counts are supplied; electrical delivery, elapsed hardware and deadlines are not simulated. No new registered regression groups;355 total unchanged."
+  ]
+}

@@ -177,6 +177,16 @@ class SSMCommandProcessTests(unittest.TestCase):
             cpu = SSMCommandMachine(image)
             addresses = saved_queries(path)
             self.assertEqual(len(addresses), 43)
+            cut_values = ()
+            if path == profiles.CUT_PROFILE:
+                # Independent nonzero sentinels distinguish adjacent counters,
+                # byte flags and both bytes of the two spark masks. Native A8
+                # must return them unchanged without resetting any source.
+                cut_values = ((0xC0DC, 0x0410, 2), (0xC0E1, 2, 1),
+                    (0xC290, 0x0FC0, 2), (0xAC16, 1, 1), (0xB52C, 0xA0, 1),
+                    (0xB00C, 0x2D, 1), (0xB00D, 0x6B, 1), (0xAC0C, 1, 1))
+                for address, value, size in cut_values:
+                    cpu.write(RAM+address, value, size)
             retained = cpu.protected_bytes()
             raw_values = {a: cpu.read(0xFF000000+a, 1) for a in addresses if a & 0x800000}
             cpu.feed(read_packet(addresses))
@@ -184,6 +194,11 @@ class SSMCommandProcessTests(unittest.TestCase):
                 frame = cpu.response(len(addresses))
                 self.assertEqual(frame[:5], bytes((0x80, 0xF0, 0x10, 44, 0xE8)))
                 self.assertEqual(sum(frame[:-1]) & 255, frame[-1])
+                for address, value, size in cut_values:
+                    returned = bytes(frame[5+addresses.index(0xFF0000+address+i)]
+                                     for i in range(size))
+                    self.assertEqual(int.from_bytes(returned, 'big'), value)
+                    self.assertEqual(cpu.read(RAM+address, size), value)
                 for i, address in enumerate(addresses):
                     if address in raw_values:
                         self.assertEqual(frame[5+i], raw_values[address], hex(address))

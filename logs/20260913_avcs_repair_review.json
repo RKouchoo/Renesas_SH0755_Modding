@@ -1,0 +1,2553 @@
+{
+  "source_log": "logs/romraiderlog_AVCSREPAIR1_20260913_132958.csv",
+  "source_log_sha256": "190ede240179e3560e12f7cafe7fffd1f9d88d872648504d58748f6c4d18918b",
+  "rom": "master_patch_v2/D2WD610H_master_patch_v2.bin",
+  "rom_sha256": "fabceb54359aca76e6e15835a51aa5cfd008e570dc002e886eaa62a6cb020ce5",
+  "definition_sha256": "855b0af1620eb9efd6cc439945dec4fe5fc7dd957e9b79d506f8d1d1a099c71d",
+  "flash_identity": {
+    "available": true,
+    "path": "/Users/regan/.config/FastECU/0.1.0-beta.5/syslogs/log_fastecu_2026-09-13_13h00m52s.txt",
+    "blocks": [
+      {
+        "block": 0,
+        "start": 0,
+        "length": 4096,
+        "crc": "0xC133D601"
+      },
+      {
+        "block": 1,
+        "start": 4096,
+        "length": 4096,
+        "crc": "0x840A76BF"
+      },
+      {
+        "block": 2,
+        "start": 8192,
+        "length": 4096,
+        "crc": "0xF1C48D21"
+      },
+      {
+        "block": 3,
+        "start": 12288,
+        "length": 4096,
+        "crc": "0xB56C5182"
+      },
+      {
+        "block": 4,
+        "start": 16384,
+        "length": 4096,
+        "crc": "0xCD616FA9"
+      },
+      {
+        "block": 5,
+        "start": 20480,
+        "length": 4096,
+        "crc": "0xAC3913AC"
+      },
+      {
+        "block": 6,
+        "start": 24576,
+        "length": 4096,
+        "crc": "0xBB1A48A4"
+      },
+      {
+        "block": 7,
+        "start": 28672,
+        "length": 4096,
+        "crc": "0x999FB0E5"
+      },
+      {
+        "block": 8,
+        "start": 32768,
+        "length": 32768,
+        "crc": "0xD831F1BF"
+      },
+      {
+        "block": 9,
+        "start": 65536,
+        "length": 65536,
+        "crc": "0xD7091C18"
+      },
+      {
+        "block": 10,
+        "start": 131072,
+        "length": 65536,
+        "crc": "0xFFE4BF89"
+      },
+      {
+        "block": 11,
+        "start": 196608,
+        "length": 65536,
+        "crc": "0xCF8D8B68"
+      },
+      {
+        "block": 12,
+        "start": 262144,
+        "length": 65536,
+        "crc": "0xC3E145D2"
+      },
+      {
+        "block": 13,
+        "start": 327680,
+        "length": 65536,
+        "crc": "0xA4CBA2FB"
+      },
+      {
+        "block": 14,
+        "start": 393216,
+        "length": 65536,
+        "crc": "0xFFBC5EC1"
+      },
+      {
+        "block": 15,
+        "start": 458752,
+        "length": 65536,
+        "crc": "0xC2224C6A"
+      }
+    ],
+    "matches_saved_v2": true,
+    "syslog_sha256": "fee8b964f5351e12d04fe6143152f53bb8149282c9eb0e1e334872270a2fca1a",
+    "post_flash_completed_local": "2026-09-13 13:28:58.243"
+  },
+  "user_observations": [
+    "Test connectors disconnected.",
+    "No DTCs reported.",
+    "Cruise light flashing.",
+    "User confirms the over-3000 RPM cut persists."
+  ],
+  "headings": {
+    "time": "Time (msec)",
+    "duty_right": "AVCS Normal Output Duty Bank 0 (D2WD610H diagnostic)* (%)",
+    "duty_left": "AVCS Normal Output Duty Bank 1 (D2WD610H diagnostic)* (%)",
+    "pedal": "Accelerator Pedal Angle (%)",
+    "ect": "Coolant Temperature (C)",
+    "rpm": "Engine Speed (rpm)",
+    "afr": "External Wideband AFR (D2WD610H master)* (estimated AFR (14.64 stoich))",
+    "fbkc": "Feedback Knock Correction (4-byte)* (degrees)",
+    "flkc": "Fine Learning Knock Correction (4-byte)* (degrees)",
+    "pw": "Fuel Injector #1 Pulse Width (ms)",
+    "iam": "IAM (4-byte)* (multiplier)",
+    "timing": "Ignition Total Timing (degrees)",
+    "inhibit": "Injector Inhibit Word (D2WD610H diagnostic)* (raw inhibit word)",
+    "current_left": "Intake OCV Current Left (mA)",
+    "current_right": "Intake OCV Current Right (mA)",
+    "angle_left": "Intake VVT Advance Angle Left (degrees)",
+    "angle_right": "Intake VVT Advance Angle Right (degrees)",
+    "lean_state": "Lean Fuel Cut State (D2WD610H master)* (state (0 idle; 1 delay; 2 monitor; 3 cut))",
+    "map": "SD Native MAP Input (D2WD610H diagnostic)* (kPa absolute)",
+    "throttle": "Throttle Opening Angle (%)",
+    "speed": "Vehicle Speed (km/h)"
+  },
+  "bank_mapping": [
+    {
+      "software_bank": 0,
+      "definition_label": "Right",
+      "angle_id": "P48",
+      "current_id": "P52",
+      "angle_ram": "FFFFC8C8",
+      "current_ram": "FFFFB098",
+      "normal_duty_ram": "FFFFC91C"
+    },
+    {
+      "software_bank": 1,
+      "definition_label": "Left",
+      "angle_id": "P49",
+      "current_id": "P53",
+      "angle_ram": "FFFFC8CC",
+      "current_ram": "FFFFB09C",
+      "normal_duty_ram": "FFFFC920"
+    }
+  ],
+  "whole_capture": {
+    "samples": 7697,
+    "csv_lines": [
+      2,
+      7698
+    ],
+    "range": {
+      "time": {
+        "min": 0.0,
+        "median": 409.556,
+        "max": 809.843
+      },
+      "duty_right": {
+        "min": 0.0,
+        "median": 7.89,
+        "max": 52.17
+      },
+      "duty_left": {
+        "min": 0.0,
+        "median": 7.8,
+        "max": 46.6
+      },
+      "pedal": {
+        "min": 0.0,
+        "median": 0.0,
+        "max": 100.0
+      },
+      "ect": {
+        "min": 24.0,
+        "median": 53.0,
+        "max": 69.0
+      },
+      "rpm": {
+        "min": 0.0,
+        "median": 1021.0,
+        "max": 3331.0
+      },
+      "afr": {
+        "min": 0.0,
+        "median": 14.12,
+        "max": 18.93
+      },
+      "fbkc": {
+        "min": 0.0,
+        "median": 0.0,
+        "max": 0.0
+      },
+      "flkc": {
+        "min": 0.0,
+        "median": 0.0,
+        "max": 0.0
+      },
+      "pw": {
+        "min": 0.0,
+        "median": 2.56,
+        "max": 12.03
+      },
+      "iam": {
+        "min": 0.0,
+        "median": 1.0,
+        "max": 1.0
+      },
+      "timing": {
+        "min": 0.0,
+        "median": 15.0,
+        "max": 43.0
+      },
+      "inhibit": {
+        "min": 0.0,
+        "median": 0.0,
+        "max": 65535.0
+      },
+      "current_left": {
+        "min": 0.0,
+        "median": 64.0,
+        "max": 640.0
+      },
+      "current_right": {
+        "min": 0.0,
+        "median": 64.0,
+        "max": 1312.0
+      },
+      "angle_left": {
+        "min": 0.0,
+        "median": 0.0,
+        "max": 28.0
+      },
+      "angle_right": {
+        "min": 0.0,
+        "median": 0.0,
+        "max": 3.0
+      },
+      "lean_state": {
+        "min": 0.0,
+        "median": 0.0,
+        "max": 1.0
+      },
+      "map": {
+        "min": 14.79,
+        "median": 33.85,
+        "max": 120.576
+      },
+      "throttle": {
+        "min": 0.0,
+        "median": 5.88,
+        "max": 100.0
+      },
+      "speed": {
+        "min": 0.0,
+        "median": 0.0,
+        "max": 63.0
+      }
+    },
+    "valid_afr": {
+      "min": 11.1,
+      "median": 14.12,
+      "max": 18.93
+    },
+    "invalid_afr_samples": 128,
+    "inhibit_counts": {
+      "0000": 7445,
+      "0001": 24,
+      "0003": 15,
+      "0007": 9,
+      "000F": 7,
+      "001F": 12,
+      "002A": 12,
+      "003F": 121,
+      "FFFF": 52
+    },
+    "lean_state_counts": {
+      "0": 7696,
+      "1": 1
+    }
+  },
+  "windows": {
+    "moving": {
+      "samples": 1160,
+      "csv_lines": [
+        6428,
+        7595
+      ],
+      "range": {
+        "time": {
+          "min": 677.667,
+          "median": 738.808,
+          "max": 799.133
+        },
+        "duty_right": {
+          "min": 6.02,
+          "median": 46.63,
+          "max": 52.17
+        },
+        "duty_left": {
+          "min": 5.92,
+          "median": 38.76,
+          "max": 46.6
+        },
+        "pedal": {
+          "min": 0.0,
+          "median": 8.63,
+          "max": 100.0
+        },
+        "ect": {
+          "min": 64.0,
+          "median": 66.0,
+          "max": 69.0
+        },
+        "rpm": {
+          "min": 652.0,
+          "median": 2392.0,
+          "max": 3331.0
+        },
+        "afr": {
+          "min": 0.0,
+          "median": 13.12,
+          "max": 18.93
+        },
+        "fbkc": {
+          "min": 0.0,
+          "median": 0.0,
+          "max": 0.0
+        },
+        "flkc": {
+          "min": 0.0,
+          "median": 0.0,
+          "max": 0.0
+        },
+        "pw": {
+          "min": 0.77,
+          "median": 4.86,
+          "max": 12.03
+        },
+        "iam": {
+          "min": 1.0,
+          "median": 1.0,
+          "max": 1.0
+        },
+        "timing": {
+          "min": 2.5,
+          "median": 17.75,
+          "max": 43.0
+        },
+        "inhibit": {
+          "min": 0.0,
+          "median": 0.0,
+          "max": 63.0
+        },
+        "current_left": {
+          "min": 64.0,
+          "median": 576.0,
+          "max": 640.0
+        },
+        "current_right": {
+          "min": 64.0,
+          "median": 640.0,
+          "max": 1312.0
+        },
+        "angle_left": {
+          "min": 0.0,
+          "median": 17.0,
+          "max": 28.0
+        },
+        "angle_right": {
+          "min": 0.0,
+          "median": 0.0,
+          "max": 1.0
+        },
+        "lean_state": {
+          "min": 0.0,
+          "median": 0.0,
+          "max": 1.0
+        },
+        "map": {
+          "min": 14.79,
+          "median": 65.777,
+          "max": 120.576
+        },
+        "throttle": {
+          "min": 3.53,
+          "median": 16.86,
+          "max": 100.0
+        },
+        "speed": {
+          "min": 2.0,
+          "median": 38.0,
+          "max": 63.0
+        }
+      },
+      "valid_afr": {
+        "min": 11.1,
+        "median": 13.12,
+        "max": 18.93
+      },
+      "invalid_afr_samples": 42,
+      "inhibit_counts": {
+        "0000": 960,
+        "0001": 24,
+        "0003": 15,
+        "0007": 9,
+        "000F": 7,
+        "001F": 12,
+        "002A": 12,
+        "003F": 121
+      },
+      "lean_state_counts": {
+        "0": 1159,
+        "1": 1
+      }
+    },
+    "high_demand_2500_3500": {
+      "samples": 268,
+      "csv_lines": [
+        6728,
+        7499
+      ],
+      "range": {
+        "time": {
+          "min": 708.875,
+          "median": 761.3969999999999,
+          "max": 789.146
+        },
+        "duty_right": {
+          "min": 7.24,
+          "median": 47.495000000000005,
+          "max": 52.17
+        },
+        "duty_left": {
+          "min": 6.9,
+          "median": 39.015,
+          "max": 43.12
+        },
+        "pedal": {
+          "min": 30.2,
+          "median": 69.805,
+          "max": 100.0
+        },
+        "ect": {
+          "min": 66.0,
+          "median": 67.0,
+          "max": 69.0
+        },
+        "rpm": {
+          "min": 2500.0,
+          "median": 2704.5,
+          "max": 3331.0
+        },
+        "afr": {
+          "min": 0.0,
+          "median": 12.12,
+          "max": 18.09
+        },
+        "fbkc": {
+          "min": 0.0,
+          "median": 0.0,
+          "max": 0.0
+        },
+        "flkc": {
+          "min": 0.0,
+          "median": 0.0,
+          "max": 0.0
+        },
+        "pw": {
+          "min": 4.61,
+          "median": 8.7,
+          "max": 12.03
+        },
+        "iam": {
+          "min": 1.0,
+          "median": 1.0,
+          "max": 1.0
+        },
+        "timing": {
+          "min": 14.5,
+          "median": 16.0,
+          "max": 36.0
+        },
+        "inhibit": {
+          "min": 0.0,
+          "median": 0.0,
+          "max": 0.0
+        },
+        "current_left": {
+          "min": 64.0,
+          "median": 576.0,
+          "max": 640.0
+        },
+        "current_right": {
+          "min": 64.0,
+          "median": 672.0,
+          "max": 704.0
+        },
+        "angle_left": {
+          "min": 0.0,
+          "median": 18.0,
+          "max": 23.0
+        },
+        "angle_right": {
+          "min": 0.0,
+          "median": 0.0,
+          "max": 0.0
+        },
+        "lean_state": {
+          "min": 0.0,
+          "median": 0.0,
+          "max": 1.0
+        },
+        "map": {
+          "min": 72.607,
+          "median": 106.757,
+          "max": 120.576
+        },
+        "throttle": {
+          "min": 29.41,
+          "median": 82.155,
+          "max": 100.0
+        },
+        "speed": {
+          "min": 33.0,
+          "median": 46.0,
+          "max": 63.0
+        }
+      },
+      "valid_afr": {
+        "min": 11.1,
+        "median": 12.12,
+        "max": 18.09
+      },
+      "invalid_afr_samples": 1,
+      "inhibit_counts": {
+        "0000": 268
+      },
+      "lean_state_counts": {
+        "0": 267,
+        "1": 1
+      }
+    },
+    "high_demand_2800_3500": {
+      "samples": 109,
+      "csv_lines": [
+        6741,
+        7499
+      ],
+      "range": {
+        "time": {
+          "min": 710.228,
+          "median": 763.221,
+          "max": 789.146
+        },
+        "duty_right": {
+          "min": 47.22,
+          "median": 47.65,
+          "max": 52.17
+        },
+        "duty_left": {
+          "min": 37.75,
+          "median": 39.27,
+          "max": 43.12
+        },
+        "pedal": {
+          "min": 32.16,
+          "median": 73.33,
+          "max": 100.0
+        },
+        "ect": {
+          "min": 66.0,
+          "median": 67.0,
+          "max": 69.0
+        },
+        "rpm": {
+          "min": 2817.0,
+          "median": 3050.0,
+          "max": 3331.0
+        },
+        "afr": {
+          "min": 11.31,
+          "median": 12.59,
+          "max": 16.83
+        },
+        "fbkc": {
+          "min": 0.0,
+          "median": 0.0,
+          "max": 0.0
+        },
+        "flkc": {
+          "min": 0.0,
+          "median": 0.0,
+          "max": 0.0
+        },
+        "pw": {
+          "min": 4.61,
+          "median": 9.22,
+          "max": 12.03
+        },
+        "iam": {
+          "min": 1.0,
+          "median": 1.0,
+          "max": 1.0
+        },
+        "timing": {
+          "min": 14.5,
+          "median": 16.5,
+          "max": 36.0
+        },
+        "inhibit": {
+          "min": 0.0,
+          "median": 0.0,
+          "max": 0.0
+        },
+        "current_left": {
+          "min": 544.0,
+          "median": 576.0,
+          "max": 640.0
+        },
+        "current_right": {
+          "min": 640.0,
+          "median": 672.0,
+          "max": 704.0
+        },
+        "angle_left": {
+          "min": 6.0,
+          "median": 18.0,
+          "max": 20.0
+        },
+        "angle_right": {
+          "min": 0.0,
+          "median": 0.0,
+          "max": 0.0
+        },
+        "lean_state": {
+          "min": 0.0,
+          "median": 0.0,
+          "max": 1.0
+        },
+        "map": {
+          "min": 72.607,
+          "median": 108.504,
+          "max": 120.576
+        },
+        "throttle": {
+          "min": 29.41,
+          "median": 85.88,
+          "max": 100.0
+        },
+        "speed": {
+          "min": 37.0,
+          "median": 43.0,
+          "max": 56.0
+        }
+      },
+      "valid_afr": {
+        "min": 11.31,
+        "median": 12.59,
+        "max": 16.83
+      },
+      "invalid_afr_samples": 0,
+      "inhibit_counts": {
+        "0000": 109
+      },
+      "lean_state_counts": {
+        "0": 108,
+        "1": 1
+      }
+    },
+    "loaded_760_720_to_765_721": {
+      "samples": 49,
+      "csv_lines": [
+        7226,
+        7274
+      ],
+      "range": {
+        "time": {
+          "min": 760.72,
+          "median": 763.221,
+          "max": 765.721
+        },
+        "duty_right": {
+          "min": 47.53,
+          "median": 47.72,
+          "max": 48.04
+        },
+        "duty_left": {
+          "min": 37.05,
+          "median": 39.24,
+          "max": 40.48
+        },
+        "pedal": {
+          "min": 48.24,
+          "median": 95.29,
+          "max": 100.0
+        },
+        "ect": {
+          "min": 67.0,
+          "median": 67.0,
+          "max": 68.0
+        },
+        "rpm": {
+          "min": 2523.0,
+          "median": 3050.0,
+          "max": 3220.0
+        },
+        "afr": {
+          "min": 11.33,
+          "median": 12.33,
+          "max": 16.6
+        },
+        "fbkc": {
+          "min": 0.0,
+          "median": 0.0,
+          "max": 0.0
+        },
+        "flkc": {
+          "min": 0.0,
+          "median": 0.0,
+          "max": 0.0
+        },
+        "pw": {
+          "min": 7.42,
+          "median": 9.47,
+          "max": 12.03
+        },
+        "iam": {
+          "min": 1.0,
+          "median": 1.0,
+          "max": 1.0
+        },
+        "timing": {
+          "min": 14.5,
+          "median": 16.0,
+          "max": 17.5
+        },
+        "inhibit": {
+          "min": 0.0,
+          "median": 0.0,
+          "max": 0.0
+        },
+        "current_left": {
+          "min": 544.0,
+          "median": 576.0,
+          "max": 576.0
+        },
+        "current_right": {
+          "min": 640.0,
+          "median": 672.0,
+          "max": 672.0
+        },
+        "angle_left": {
+          "min": 17.0,
+          "median": 17.0,
+          "max": 22.0
+        },
+        "angle_right": {
+          "min": 0.0,
+          "median": 0.0,
+          "max": 0.0
+        },
+        "lean_state": {
+          "min": 0.0,
+          "median": 0.0,
+          "max": 1.0
+        },
+        "map": {
+          "min": 99.927,
+          "median": 108.822,
+          "max": 120.576
+        },
+        "throttle": {
+          "min": 60.78,
+          "median": 100.0,
+          "max": 100.0
+        },
+        "speed": {
+          "min": 45.0,
+          "median": 55.0,
+          "max": 56.0
+        }
+      },
+      "valid_afr": {
+        "min": 11.33,
+        "median": 12.33,
+        "max": 16.6
+      },
+      "invalid_afr_samples": 0,
+      "inhibit_counts": {
+        "0000": 49
+      },
+      "lean_state_counts": {
+        "0": 48,
+        "1": 1
+      }
+    },
+    "normal_output_withdrawal": {
+      "samples": 17,
+      "csv_lines": [
+        6950,
+        6966
+      ],
+      "range": {
+        "time": {
+          "min": 731.991,
+          "median": 732.823,
+          "max": 733.657
+        },
+        "duty_right": {
+          "min": 6.02,
+          "median": 7.26,
+          "max": 46.85
+        },
+        "duty_left": {
+          "min": 5.92,
+          "median": 6.93,
+          "max": 38.56
+        },
+        "pedal": {
+          "min": 3.92,
+          "median": 83.14,
+          "max": 100.0
+        },
+        "ect": {
+          "min": 66.0,
+          "median": 66.0,
+          "max": 66.0
+        },
+        "rpm": {
+          "min": 2435.0,
+          "median": 2550.0,
+          "max": 2591.0
+        },
+        "afr": {
+          "min": 11.55,
+          "median": 11.57,
+          "max": 13.35
+        },
+        "fbkc": {
+          "min": 0.0,
+          "median": 0.0,
+          "max": 0.0
+        },
+        "flkc": {
+          "min": 0.0,
+          "median": 0.0,
+          "max": 0.0
+        },
+        "pw": {
+          "min": 2.82,
+          "median": 8.7,
+          "max": 8.96
+        },
+        "iam": {
+          "min": 1.0,
+          "median": 1.0,
+          "max": 1.0
+        },
+        "timing": {
+          "min": 15.5,
+          "median": 15.5,
+          "max": 33.0
+        },
+        "inhibit": {
+          "min": 0.0,
+          "median": 0.0,
+          "max": 0.0
+        },
+        "current_left": {
+          "min": 64.0,
+          "median": 64.0,
+          "max": 576.0
+        },
+        "current_right": {
+          "min": 64.0,
+          "median": 64.0,
+          "max": 1312.0
+        },
+        "angle_left": {
+          "min": 0.0,
+          "median": 0.0,
+          "max": 18.0
+        },
+        "angle_right": {
+          "min": 0.0,
+          "median": 0.0,
+          "max": 0.0
+        },
+        "lean_state": {
+          "min": 0.0,
+          "median": 0.0,
+          "max": 0.0
+        },
+        "map": {
+          "min": 35.439,
+          "median": 107.234,
+          "max": 108.822
+        },
+        "throttle": {
+          "min": 10.98,
+          "median": 94.9,
+          "max": 100.0
+        },
+        "speed": {
+          "min": 44.0,
+          "median": 45.0,
+          "max": 46.0
+        }
+      },
+      "valid_afr": {
+        "min": 11.55,
+        "median": 11.57,
+        "max": 13.35
+      },
+      "invalid_afr_samples": 0,
+      "inhibit_counts": {
+        "0000": 17
+      },
+      "lean_state_counts": {
+        "0": 17
+      }
+    },
+    "inhibit_before_shutdown": {
+      "samples": 200,
+      "csv_lines": [
+        6560,
+        7521
+      ],
+      "range": {
+        "time": {
+          "min": 691.396,
+          "median": 748.9069999999999,
+          "max": 791.435
+        },
+        "duty_right": {
+          "min": 38.59,
+          "median": 43.730000000000004,
+          "max": 48.26
+        },
+        "duty_left": {
+          "min": 24.82,
+          "median": 38.805,
+          "max": 44.18
+        },
+        "pedal": {
+          "min": 0.0,
+          "median": 0.0,
+          "max": 45.88
+        },
+        "ect": {
+          "min": 64.0,
+          "median": 67.0,
+          "max": 69.0
+        },
+        "rpm": {
+          "min": 1331.0,
+          "median": 2387.0,
+          "max": 3172.0
+        },
+        "afr": {
+          "min": 0.0,
+          "median": 14.885,
+          "max": 18.93
+        },
+        "fbkc": {
+          "min": 0.0,
+          "median": 0.0,
+          "max": 0.0
+        },
+        "flkc": {
+          "min": 0.0,
+          "median": 0.0,
+          "max": 0.0
+        },
+        "pw": {
+          "min": 0.77,
+          "median": 0.77,
+          "max": 6.14
+        },
+        "iam": {
+          "min": 1.0,
+          "median": 1.0,
+          "max": 1.0
+        },
+        "timing": {
+          "min": 8.5,
+          "median": 21.0,
+          "max": 43.0
+        },
+        "inhibit": {
+          "min": 1.0,
+          "median": 63.0,
+          "max": 63.0
+        },
+        "current_left": {
+          "min": 416.0,
+          "median": 576.0,
+          "max": 640.0
+        },
+        "current_right": {
+          "min": 480.0,
+          "median": 608.0,
+          "max": 672.0
+        },
+        "angle_left": {
+          "min": 0.0,
+          "median": 1.0,
+          "max": 26.0
+        },
+        "angle_right": {
+          "min": 0.0,
+          "median": 0.0,
+          "max": 0.0
+        },
+        "lean_state": {
+          "min": 0.0,
+          "median": 0.0,
+          "max": 0.0
+        },
+        "map": {
+          "min": 15.425,
+          "median": 18.919,
+          "max": 89.444
+        },
+        "throttle": {
+          "min": 4.71,
+          "median": 7.45,
+          "max": 61.18
+        },
+        "speed": {
+          "min": 18.0,
+          "median": 40.0,
+          "max": 61.0
+        }
+      },
+      "valid_afr": {
+        "min": 11.56,
+        "median": 15.370000000000001,
+        "max": 18.93
+      },
+      "invalid_afr_samples": 14,
+      "inhibit_counts": {
+        "0001": 24,
+        "0003": 15,
+        "0007": 9,
+        "000F": 7,
+        "001F": 12,
+        "002A": 12,
+        "003F": 121
+      },
+      "lean_state_counts": {
+        "0": 200
+      }
+    },
+    "idle_iam_zero": {
+      "samples": 3372,
+      "csv_lines": [
+        30,
+        3401
+      ],
+      "range": {
+        "time": {
+          "min": 2.91,
+          "median": 187.525,
+          "max": 362.858
+        },
+        "duty_right": {
+          "min": 0.0,
+          "median": 7.79,
+          "max": 9.39
+        },
+        "duty_left": {
+          "min": 0.0,
+          "median": 7.69,
+          "max": 9.39
+        },
+        "pedal": {
+          "min": 0.0,
+          "median": 0.0,
+          "max": 0.0
+        },
+        "ect": {
+          "min": 24.0,
+          "median": 40.0,
+          "max": 51.0
+        },
+        "rpm": {
+          "min": 0.0,
+          "median": 1212.0,
+          "max": 1393.0
+        },
+        "afr": {
+          "min": 0.0,
+          "median": 14.12,
+          "max": 18.56
+        },
+        "fbkc": {
+          "min": 0.0,
+          "median": 0.0,
+          "max": 0.0
+        },
+        "flkc": {
+          "min": 0.0,
+          "median": 0.0,
+          "max": 0.0
+        },
+        "pw": {
+          "min": 1.28,
+          "median": 2.82,
+          "max": 12.03
+        },
+        "iam": {
+          "min": 0.0,
+          "median": 0.0,
+          "max": 0.0
+        },
+        "timing": {
+          "min": 4.5,
+          "median": 15.0,
+          "max": 16.5
+        },
+        "inhibit": {
+          "min": 0.0,
+          "median": 0.0,
+          "max": 0.0
+        },
+        "current_left": {
+          "min": 0.0,
+          "median": 64.0,
+          "max": 96.0
+        },
+        "current_right": {
+          "min": 0.0,
+          "median": 64.0,
+          "max": 96.0
+        },
+        "angle_left": {
+          "min": 0.0,
+          "median": 0.0,
+          "max": 0.0
+        },
+        "angle_right": {
+          "min": 0.0,
+          "median": 0.0,
+          "max": 0.0
+        },
+        "lean_state": {
+          "min": 0.0,
+          "median": 0.0,
+          "max": 0.0
+        },
+        "map": {
+          "min": 32.897,
+          "median": 36.709,
+          "max": 94.209
+        },
+        "throttle": {
+          "min": 5.1,
+          "median": 7.45,
+          "max": 10.59
+        },
+        "speed": {
+          "min": 0.0,
+          "median": 0.0,
+          "max": 0.0
+        }
+      },
+      "valid_afr": {
+        "min": 13.84,
+        "median": 14.12,
+        "max": 18.56
+      },
+      "invalid_afr_samples": 59,
+      "inhibit_counts": {
+        "0000": 3372
+      },
+      "lean_state_counts": {
+        "0": 3372
+      }
+    }
+  },
+  "sample_interval_ms": {
+    "min": 100.0,
+    "median": 104.0,
+    "max": 9404.0
+  },
+  "gaps_over_200ms": [
+    {
+      "from": 60.123,
+      "to": 69.527,
+      "ms": 9404.0
+    }
+  ],
+  "invalid_wb_moving": [
+    {
+      "time": 681.62,
+      "duty_right": 8.3,
+      "duty_left": 8.18,
+      "pedal": 1.18,
+      "ect": 64.0,
+      "rpm": 1078.0,
+      "afr": 0.0,
+      "fbkc": 0.0,
+      "flkc": 0.0,
+      "pw": 4.35,
+      "iam": 1.0,
+      "timing": 12.5,
+      "inhibit": 0.0,
+      "current_left": 64.0,
+      "current_right": 64.0,
+      "angle_left": 0.0,
+      "angle_right": 0.0,
+      "lean_state": 0.0,
+      "map": 59.582,
+      "throttle": 6.27,
+      "speed": 4.0,
+      "csv_line": 6466
+    },
+    {
+      "time": 685.365,
+      "duty_right": 37.91,
+      "duty_left": 37.26,
+      "pedal": 0.0,
+      "ect": 64.0,
+      "rpm": 1476.0,
+      "afr": 0.0,
+      "fbkc": 0.0,
+      "flkc": 0.0,
+      "pw": 4.35,
+      "iam": 1.0,
+      "timing": 23.0,
+      "inhibit": 0.0,
+      "current_left": 480.0,
+      "current_right": 480.0,
+      "angle_left": 0.0,
+      "angle_right": 0.0,
+      "lean_state": 0.0,
+      "map": 45.922,
+      "throttle": 5.88,
+      "speed": 5.0,
+      "csv_line": 6502
+    },
+    {
+      "time": 685.468,
+      "duty_right": 41.45,
+      "duty_left": 8.67,
+      "pedal": 0.78,
+      "ect": 64.0,
+      "rpm": 1366.0,
+      "afr": 0.0,
+      "fbkc": 0.0,
+      "flkc": 0.0,
+      "pw": 3.58,
+      "iam": 1.0,
+      "timing": 16.0,
+      "inhibit": 0.0,
+      "current_left": 544.0,
+      "current_right": 480.0,
+      "angle_left": 0.0,
+      "angle_right": 0.0,
+      "lean_state": 0.0,
+      "map": 38.933,
+      "throttle": 6.27,
+      "speed": 6.0,
+      "csv_line": 6503
+    },
+    {
+      "time": 701.905,
+      "duty_right": 45.68,
+      "duty_left": 42.23,
+      "pedal": 0.0,
+      "ect": 65.0,
+      "rpm": 2410.0,
+      "afr": 0.0,
+      "fbkc": 0.0,
+      "flkc": 0.0,
+      "pw": 0.77,
+      "iam": 1.0,
+      "timing": 21.0,
+      "inhibit": 1.0,
+      "current_left": 544.0,
+      "current_right": 576.0,
+      "angle_left": 1.0,
+      "angle_right": 0.0,
+      "lean_state": 0.0,
+      "map": 30.991,
+      "throttle": 7.84,
+      "speed": 42.0,
+      "csv_line": 6661
+    },
+    {
+      "time": 706.482,
+      "duty_right": 47.1,
+      "duty_left": 39.71,
+      "pedal": 9.8,
+      "ect": 65.0,
+      "rpm": 2178.0,
+      "afr": 0.0,
+      "fbkc": 0.0,
+      "flkc": 0.0,
+      "pw": 4.35,
+      "iam": 1.0,
+      "timing": 26.0,
+      "inhibit": 0.0,
+      "current_left": 576.0,
+      "current_right": 672.0,
+      "angle_left": 25.0,
+      "angle_right": 0.0,
+      "lean_state": 0.0,
+      "map": 55.77,
+      "throttle": 17.65,
+      "speed": 29.0,
+      "csv_line": 6705
+    },
+    {
+      "time": 746.983,
+      "duty_right": 7.31,
+      "duty_left": 6.98,
+      "pedal": 6.27,
+      "ect": 67.0,
+      "rpm": 895.0,
+      "afr": 0.0,
+      "fbkc": 0.0,
+      "flkc": 0.0,
+      "pw": 2.56,
+      "iam": 1.0,
+      "timing": 15.5,
+      "inhibit": 0.0,
+      "current_left": 64.0,
+      "current_right": 64.0,
+      "angle_left": 0.0,
+      "angle_right": 0.0,
+      "lean_state": 0.0,
+      "map": 45.604,
+      "throttle": 8.24,
+      "speed": 34.0,
+      "csv_line": 7094
+    },
+    {
+      "time": 747.087,
+      "duty_right": 7.32,
+      "duty_left": 6.99,
+      "pedal": 0.0,
+      "ect": 67.0,
+      "rpm": 941.0,
+      "afr": 0.0,
+      "fbkc": 0.0,
+      "flkc": 0.0,
+      "pw": 2.82,
+      "iam": 1.0,
+      "timing": 16.0,
+      "inhibit": 0.0,
+      "current_left": 64.0,
+      "current_right": 64.0,
+      "angle_left": 0.0,
+      "angle_right": 0.0,
+      "lean_state": 0.0,
+      "map": 40.839,
+      "throttle": 4.71,
+      "speed": 34.0,
+      "csv_line": 7095
+    },
+    {
+      "time": 748.751,
+      "duty_right": 43.45,
+      "duty_left": 38.96,
+      "pedal": 0.0,
+      "ect": 67.0,
+      "rpm": 2001.0,
+      "afr": 0.0,
+      "fbkc": 0.0,
+      "flkc": 0.0,
+      "pw": 0.77,
+      "iam": 1.0,
+      "timing": 20.0,
+      "inhibit": 63.0,
+      "current_left": 576.0,
+      "current_right": 608.0,
+      "angle_left": 0.0,
+      "angle_right": 0.0,
+      "lean_state": 0.0,
+      "map": 16.06,
+      "throttle": 6.67,
+      "speed": 27.0,
+      "csv_line": 7111
+    },
+    {
+      "time": 748.855,
+      "duty_right": 43.44,
+      "duty_left": 38.93,
+      "pedal": 0.0,
+      "ect": 67.0,
+      "rpm": 1943.0,
+      "afr": 0.0,
+      "fbkc": 0.0,
+      "flkc": 0.0,
+      "pw": 0.77,
+      "iam": 1.0,
+      "timing": 20.0,
+      "inhibit": 63.0,
+      "current_left": 576.0,
+      "current_right": 608.0,
+      "angle_left": 0.0,
+      "angle_right": 0.0,
+      "lean_state": 0.0,
+      "map": 16.378,
+      "throttle": 6.27,
+      "speed": 26.0,
+      "csv_line": 7112
+    },
+    {
+      "time": 748.959,
+      "duty_right": 43.43,
+      "duty_left": 38.16,
+      "pedal": 0.0,
+      "ect": 67.0,
+      "rpm": 1938.0,
+      "afr": 0.0,
+      "fbkc": 0.0,
+      "flkc": 0.0,
+      "pw": 0.77,
+      "iam": 1.0,
+      "timing": 20.0,
+      "inhibit": 63.0,
+      "current_left": 576.0,
+      "current_right": 608.0,
+      "angle_left": 0.0,
+      "angle_right": 0.0,
+      "lean_state": 0.0,
+      "map": 16.378,
+      "throttle": 6.27,
+      "speed": 26.0,
+      "csv_line": 7113
+    },
+    {
+      "time": 749.063,
+      "duty_right": 43.41,
+      "duty_left": 38.89,
+      "pedal": 0.0,
+      "ect": 67.0,
+      "rpm": 1909.0,
+      "afr": 0.0,
+      "fbkc": 0.0,
+      "flkc": 0.0,
+      "pw": 0.77,
+      "iam": 1.0,
+      "timing": 20.0,
+      "inhibit": 63.0,
+      "current_left": 576.0,
+      "current_right": 608.0,
+      "angle_left": 1.0,
+      "angle_right": 0.0,
+      "lean_state": 0.0,
+      "map": 16.378,
+      "throttle": 6.27,
+      "speed": 25.0,
+      "csv_line": 7114
+    },
+    {
+      "time": 749.167,
+      "duty_right": 43.4,
+      "duty_left": 38.87,
+      "pedal": 0.0,
+      "ect": 67.0,
+      "rpm": 1856.0,
+      "afr": 0.0,
+      "fbkc": 0.0,
+      "flkc": 0.0,
+      "pw": 0.77,
+      "iam": 1.0,
+      "timing": 20.0,
+      "inhibit": 63.0,
+      "current_left": 576.0,
+      "current_right": 608.0,
+      "angle_left": 1.0,
+      "angle_right": 0.0,
+      "lean_state": 0.0,
+      "map": 16.696,
+      "throttle": 6.27,
+      "speed": 25.0,
+      "csv_line": 7115
+    },
+    {
+      "time": 749.271,
+      "duty_right": 43.39,
+      "duty_left": 38.14,
+      "pedal": 0.0,
+      "ect": 67.0,
+      "rpm": 1843.0,
+      "afr": 0.0,
+      "fbkc": 0.0,
+      "flkc": 0.0,
+      "pw": 0.77,
+      "iam": 1.0,
+      "timing": 20.0,
+      "inhibit": 63.0,
+      "current_left": 576.0,
+      "current_right": 608.0,
+      "angle_left": 1.0,
+      "angle_right": 0.0,
+      "lean_state": 0.0,
+      "map": 16.378,
+      "throttle": 6.27,
+      "speed": 24.0,
+      "csv_line": 7116
+    },
+    {
+      "time": 749.375,
+      "duty_right": 43.38,
+      "duty_left": 38.11,
+      "pedal": 0.0,
+      "ect": 67.0,
+      "rpm": 1798.0,
+      "afr": 0.0,
+      "fbkc": 0.0,
+      "flkc": 0.0,
+      "pw": 1.54,
+      "iam": 1.0,
+      "timing": 20.0,
+      "inhibit": 63.0,
+      "current_left": 576.0,
+      "current_right": 608.0,
+      "angle_left": 1.0,
+      "angle_right": 0.0,
+      "lean_state": 0.0,
+      "map": 17.013,
+      "throttle": 6.27,
+      "speed": 24.0,
+      "csv_line": 7117
+    },
+    {
+      "time": 749.479,
+      "duty_right": 44.39,
+      "duty_left": 39.44,
+      "pedal": 1.57,
+      "ect": 67.0,
+      "rpm": 1790.0,
+      "afr": 0.0,
+      "fbkc": 0.0,
+      "flkc": 0.0,
+      "pw": 1.54,
+      "iam": 1.0,
+      "timing": 20.5,
+      "inhibit": 42.0,
+      "current_left": 576.0,
+      "current_right": 608.0,
+      "angle_left": 0.0,
+      "angle_right": 0.0,
+      "lean_state": 0.0,
+      "map": 19.237,
+      "throttle": 8.24,
+      "speed": 24.0,
+      "csv_line": 7118
+    },
+    {
+      "time": 749.583,
+      "duty_right": 44.43,
+      "duty_left": 38.86,
+      "pedal": 3.14,
+      "ect": 67.0,
+      "rpm": 1794.0,
+      "afr": 0.0,
+      "fbkc": 0.0,
+      "flkc": 0.0,
+      "pw": 1.79,
+      "iam": 1.0,
+      "timing": 21.5,
+      "inhibit": 0.0,
+      "current_left": 576.0,
+      "current_right": 640.0,
+      "angle_left": 1.0,
+      "angle_right": 0.0,
+      "lean_state": 0.0,
+      "map": 24.32,
+      "throttle": 9.02,
+      "speed": 23.0,
+      "csv_line": 7119
+    },
+    {
+      "time": 749.686,
+      "duty_right": 44.08,
+      "duty_left": 38.82,
+      "pedal": 3.92,
+      "ect": 67.0,
+      "rpm": 1731.0,
+      "afr": 0.0,
+      "fbkc": 0.0,
+      "flkc": 0.0,
+      "pw": 2.3,
+      "iam": 1.0,
+      "timing": 22.5,
+      "inhibit": 0.0,
+      "current_left": 576.0,
+      "current_right": 608.0,
+      "angle_left": 1.0,
+      "angle_right": 0.0,
+      "lean_state": 0.0,
+      "map": 30.356,
+      "throttle": 10.2,
+      "speed": 23.0,
+      "csv_line": 7120
+    },
+    {
+      "time": 749.791,
+      "duty_right": 44.05,
+      "duty_left": 38.8,
+      "pedal": 5.1,
+      "ect": 67.0,
+      "rpm": 1716.0,
+      "afr": 0.0,
+      "fbkc": 0.0,
+      "flkc": 0.0,
+      "pw": 2.56,
+      "iam": 1.0,
+      "timing": 23.5,
+      "inhibit": 0.0,
+      "current_left": 576.0,
+      "current_right": 608.0,
+      "angle_left": 1.0,
+      "angle_right": 0.0,
+      "lean_state": 0.0,
+      "map": 35.756,
+      "throttle": 11.76,
+      "speed": 23.0,
+      "csv_line": 7121
+    },
+    {
+      "time": 749.894,
+      "duty_right": 47.01,
+      "duty_left": 42.36,
+      "pedal": 7.45,
+      "ect": 67.0,
+      "rpm": 1745.0,
+      "afr": 0.0,
+      "fbkc": 0.0,
+      "flkc": 0.0,
+      "pw": 3.07,
+      "iam": 1.0,
+      "timing": 23.5,
+      "inhibit": 0.0,
+      "current_left": 608.0,
+      "current_right": 608.0,
+      "angle_left": 1.0,
+      "angle_right": 0.0,
+      "lean_state": 0.0,
+      "map": 45.604,
+      "throttle": 14.51,
+      "speed": 23.0,
+      "csv_line": 7122
+    },
+    {
+      "time": 749.998,
+      "duty_right": 47.08,
+      "duty_left": 42.38,
+      "pedal": 8.63,
+      "ect": 67.0,
+      "rpm": 1755.0,
+      "afr": 0.0,
+      "fbkc": 0.0,
+      "flkc": 0.0,
+      "pw": 3.58,
+      "iam": 1.0,
+      "timing": 23.0,
+      "inhibit": 0.0,
+      "current_left": 640.0,
+      "current_right": 672.0,
+      "angle_left": 3.0,
+      "angle_right": 0.0,
+      "lean_state": 0.0,
+      "map": 53.546,
+      "throttle": 15.29,
+      "speed": 23.0,
+      "csv_line": 7123
+    },
+    {
+      "time": 750.102,
+      "duty_right": 47.06,
+      "duty_left": 42.37,
+      "pedal": 9.8,
+      "ect": 67.0,
+      "rpm": 1719.0,
+      "afr": 0.0,
+      "fbkc": 0.0,
+      "flkc": 0.0,
+      "pw": 4.35,
+      "iam": 1.0,
+      "timing": 21.5,
+      "inhibit": 0.0,
+      "current_left": 608.0,
+      "current_right": 672.0,
+      "angle_left": 9.0,
+      "angle_right": 0.0,
+      "lean_state": 0.0,
+      "map": 59.582,
+      "throttle": 16.86,
+      "speed": 23.0,
+      "csv_line": 7124
+    },
+    {
+      "time": 750.206,
+      "duty_right": 47.07,
+      "duty_left": 41.35,
+      "pedal": 11.37,
+      "ect": 67.0,
+      "rpm": 1723.0,
+      "afr": 0.0,
+      "fbkc": 0.0,
+      "flkc": 0.0,
+      "pw": 4.86,
+      "iam": 1.0,
+      "timing": 21.5,
+      "inhibit": 0.0,
+      "current_left": 608.0,
+      "current_right": 672.0,
+      "angle_left": 14.0,
+      "angle_right": 0.0,
+      "lean_state": 0.0,
+      "map": 65.936,
+      "throttle": 18.04,
+      "speed": 23.0,
+      "csv_line": 7125
+    },
+    {
+      "time": 750.31,
+      "duty_right": 47.07,
+      "duty_left": 38.8,
+      "pedal": 11.37,
+      "ect": 67.0,
+      "rpm": 1755.0,
+      "afr": 0.0,
+      "fbkc": 0.0,
+      "flkc": 0.0,
+      "pw": 5.38,
+      "iam": 1.0,
+      "timing": 25.5,
+      "inhibit": 0.0,
+      "current_left": 576.0,
+      "current_right": 672.0,
+      "angle_left": 20.0,
+      "angle_right": 0.0,
+      "lean_state": 0.0,
+      "map": 68.477,
+      "throttle": 18.04,
+      "speed": 23.0,
+      "csv_line": 7126
+    },
+    {
+      "time": 750.414,
+      "duty_right": 47.05,
+      "duty_left": 38.7,
+      "pedal": 11.37,
+      "ect": 67.0,
+      "rpm": 1761.0,
+      "afr": 0.0,
+      "fbkc": 0.0,
+      "flkc": 0.0,
+      "pw": 5.38,
+      "iam": 1.0,
+      "timing": 23.0,
+      "inhibit": 0.0,
+      "current_left": 576.0,
+      "current_right": 672.0,
+      "angle_left": 22.0,
+      "angle_right": 0.0,
+      "lean_state": 0.0,
+      "map": 69.43,
+      "throttle": 18.04,
+      "speed": 23.0,
+      "csv_line": 7127
+    },
+    {
+      "time": 750.518,
+      "duty_right": 47.05,
+      "duty_left": 38.69,
+      "pedal": 11.37,
+      "ect": 67.0,
+      "rpm": 1774.0,
+      "afr": 0.0,
+      "fbkc": 0.0,
+      "flkc": 0.0,
+      "pw": 5.63,
+      "iam": 1.0,
+      "timing": 22.0,
+      "inhibit": 0.0,
+      "current_left": 576.0,
+      "current_right": 672.0,
+      "angle_left": 22.0,
+      "angle_right": 0.0,
+      "lean_state": 0.0,
+      "map": 69.43,
+      "throttle": 18.04,
+      "speed": 23.0,
+      "csv_line": 7128
+    },
+    {
+      "time": 774.992,
+      "duty_right": 43.39,
+      "duty_left": 38.26,
+      "pedal": 0.0,
+      "ect": 68.0,
+      "rpm": 2186.0,
+      "afr": 0.0,
+      "fbkc": 0.0,
+      "flkc": 0.0,
+      "pw": 0.77,
+      "iam": 1.0,
+      "timing": 15.0,
+      "inhibit": 63.0,
+      "current_left": 576.0,
+      "current_right": 608.0,
+      "angle_left": 1.0,
+      "angle_right": 0.0,
+      "lean_state": 0.0,
+      "map": 17.331,
+      "throttle": 7.45,
+      "speed": 55.0,
+      "csv_line": 7363
+    },
+    {
+      "time": 775.096,
+      "duty_right": 43.39,
+      "duty_left": 38.28,
+      "pedal": 0.0,
+      "ect": 68.0,
+      "rpm": 1976.0,
+      "afr": 0.0,
+      "fbkc": 0.0,
+      "flkc": 0.0,
+      "pw": 0.77,
+      "iam": 1.0,
+      "timing": 15.0,
+      "inhibit": 63.0,
+      "current_left": 576.0,
+      "current_right": 608.0,
+      "angle_left": 1.0,
+      "angle_right": 0.0,
+      "lean_state": 0.0,
+      "map": 19.555,
+      "throttle": 7.45,
+      "speed": 55.0,
+      "csv_line": 7364
+    },
+    {
+      "time": 775.2,
+      "duty_right": 44.51,
+      "duty_left": 39.77,
+      "pedal": 2.75,
+      "ect": 68.0,
+      "rpm": 1798.0,
+      "afr": 0.0,
+      "fbkc": 0.0,
+      "flkc": 0.0,
+      "pw": 1.79,
+      "iam": 1.0,
+      "timing": 20.5,
+      "inhibit": 42.0,
+      "current_left": 576.0,
+      "current_right": 608.0,
+      "angle_left": 1.0,
+      "angle_right": 0.0,
+      "lean_state": 0.0,
+      "map": 25.591,
+      "throttle": 10.59,
+      "speed": 55.0,
+      "csv_line": 7365
+    },
+    {
+      "time": 775.303,
+      "duty_right": 44.34,
+      "duty_left": 39.19,
+      "pedal": 11.37,
+      "ect": 68.0,
+      "rpm": 1783.0,
+      "afr": 0.0,
+      "fbkc": 0.0,
+      "flkc": 0.0,
+      "pw": 3.33,
+      "iam": 1.0,
+      "timing": 21.5,
+      "inhibit": 0.0,
+      "current_left": 576.0,
+      "current_right": 608.0,
+      "angle_left": 1.0,
+      "angle_right": 0.0,
+      "lean_state": 0.0,
+      "map": 50.052,
+      "throttle": 18.04,
+      "speed": 55.0,
+      "csv_line": 7366
+    },
+    {
+      "time": 775.408,
+      "duty_right": 43.5,
+      "duty_left": 36.37,
+      "pedal": 0.0,
+      "ect": 68.0,
+      "rpm": 1830.0,
+      "afr": 0.0,
+      "fbkc": 0.0,
+      "flkc": 0.0,
+      "pw": 3.07,
+      "iam": 1.0,
+      "timing": 22.5,
+      "inhibit": 0.0,
+      "current_left": 544.0,
+      "current_right": 640.0,
+      "angle_left": 1.0,
+      "angle_right": 0.0,
+      "lean_state": 0.0,
+      "map": 41.792,
+      "throttle": 7.45,
+      "speed": 54.0,
+      "csv_line": 7367
+    },
+    {
+      "time": 775.512,
+      "duty_right": 43.41,
+      "duty_left": 37.1,
+      "pedal": 0.0,
+      "ect": 68.0,
+      "rpm": 1925.0,
+      "afr": 0.0,
+      "fbkc": 0.0,
+      "flkc": 0.0,
+      "pw": 0.77,
+      "iam": 1.0,
+      "timing": 23.5,
+      "inhibit": 0.0,
+      "current_left": 544.0,
+      "current_right": 608.0,
+      "angle_left": 2.0,
+      "angle_right": 0.0,
+      "lean_state": 0.0,
+      "map": 30.673,
+      "throttle": 6.67,
+      "speed": 54.0,
+      "csv_line": 7368
+    },
+    {
+      "time": 775.616,
+      "duty_right": 43.4,
+      "duty_left": 38.32,
+      "pedal": 0.0,
+      "ect": 68.0,
+      "rpm": 2004.0,
+      "afr": 0.0,
+      "fbkc": 0.0,
+      "flkc": 0.0,
+      "pw": 2.05,
+      "iam": 1.0,
+      "timing": 22.0,
+      "inhibit": 1.0,
+      "current_left": 544.0,
+      "current_right": 608.0,
+      "angle_left": 1.0,
+      "angle_right": 0.0,
+      "lean_state": 0.0,
+      "map": 23.685,
+      "throttle": 6.27,
+      "speed": 54.0,
+      "csv_line": 7369
+    },
+    {
+      "time": 775.72,
+      "duty_right": 47.5,
+      "duty_left": 39.35,
+      "pedal": 1.18,
+      "ect": 68.0,
+      "rpm": 1992.0,
+      "afr": 0.0,
+      "fbkc": 0.0,
+      "flkc": 0.0,
+      "pw": 2.05,
+      "iam": 1.0,
+      "timing": 22.0,
+      "inhibit": 0.0,
+      "current_left": 640.0,
+      "current_right": 672.0,
+      "angle_left": 1.0,
+      "angle_right": 0.0,
+      "lean_state": 0.0,
+      "map": 22.096,
+      "throttle": 7.84,
+      "speed": 54.0,
+      "csv_line": 7370
+    },
+    {
+      "time": 775.825,
+      "duty_right": 45.72,
+      "duty_left": 33.5,
+      "pedal": 1.57,
+      "ect": 68.0,
+      "rpm": 2081.0,
+      "afr": 0.0,
+      "fbkc": 0.0,
+      "flkc": 0.0,
+      "pw": 1.79,
+      "iam": 1.0,
+      "timing": 10.0,
+      "inhibit": 0.0,
+      "current_left": 512.0,
+      "current_right": 640.0,
+      "angle_left": 9.0,
+      "angle_right": 0.0,
+      "lean_state": 0.0,
+      "map": 21.461,
+      "throttle": 8.24,
+      "speed": 53.0,
+      "csv_line": 7371
+    },
+    {
+      "time": 777.074,
+      "duty_right": 47.49,
+      "duty_left": 35.63,
+      "pedal": 76.47,
+      "ect": 68.0,
+      "rpm": 2789.0,
+      "afr": 0.0,
+      "fbkc": 0.0,
+      "flkc": 0.0,
+      "pw": 7.42,
+      "iam": 1.0,
+      "timing": 18.5,
+      "inhibit": 0.0,
+      "current_left": 512.0,
+      "current_right": 672.0,
+      "angle_left": 23.0,
+      "angle_right": 0.0,
+      "lean_state": 0.0,
+      "map": 96.115,
+      "throttle": 90.59,
+      "speed": 50.0,
+      "csv_line": 7383
+    },
+    {
+      "time": 780.512,
+      "duty_right": 47.56,
+      "duty_left": 43.35,
+      "pedal": 100.0,
+      "ect": 68.0,
+      "rpm": 2088.0,
+      "afr": 0.0,
+      "fbkc": 0.0,
+      "flkc": 0.0,
+      "pw": 6.4,
+      "iam": 1.0,
+      "timing": 2.5,
+      "inhibit": 0.0,
+      "current_left": 640.0,
+      "current_right": 640.0,
+      "angle_left": 1.0,
+      "angle_right": 0.0,
+      "lean_state": 0.0,
+      "map": 97.703,
+      "throttle": 100.0,
+      "speed": 46.0,
+      "csv_line": 7416
+    },
+    {
+      "time": 780.615,
+      "duty_right": 43.71,
+      "duty_left": 31.05,
+      "pedal": 0.39,
+      "ect": 68.0,
+      "rpm": 2338.0,
+      "afr": 0.0,
+      "fbkc": 0.0,
+      "flkc": 0.0,
+      "pw": 6.4,
+      "iam": 1.0,
+      "timing": 20.0,
+      "inhibit": 0.0,
+      "current_left": 512.0,
+      "current_right": 672.0,
+      "angle_left": 7.0,
+      "angle_right": 0.0,
+      "lean_state": 0.0,
+      "map": 83.09,
+      "throttle": 20.0,
+      "speed": 46.0,
+      "csv_line": 7417
+    },
+    {
+      "time": 780.719,
+      "duty_right": 43.55,
+      "duty_left": 33.19,
+      "pedal": 0.0,
+      "ect": 68.0,
+      "rpm": 2623.0,
+      "afr": 0.0,
+      "fbkc": 0.0,
+      "flkc": 0.0,
+      "pw": 0.77,
+      "iam": 1.0,
+      "timing": 22.0,
+      "inhibit": 0.0,
+      "current_left": 448.0,
+      "current_right": 608.0,
+      "angle_left": 11.0,
+      "angle_right": 0.0,
+      "lean_state": 0.0,
+      "map": 42.11,
+      "throttle": 8.24,
+      "speed": 46.0,
+      "csv_line": 7418
+    },
+    {
+      "time": 780.822,
+      "duty_right": 43.5,
+      "duty_left": 34.79,
+      "pedal": 0.0,
+      "ect": 68.0,
+      "rpm": 2666.0,
+      "afr": 0.0,
+      "fbkc": 0.0,
+      "flkc": 0.0,
+      "pw": 0.77,
+      "iam": 1.0,
+      "timing": 21.5,
+      "inhibit": 1.0,
+      "current_left": 480.0,
+      "current_right": 608.0,
+      "angle_left": 6.0,
+      "angle_right": 0.0,
+      "lean_state": 0.0,
+      "map": 28.45,
+      "throttle": 8.24,
+      "speed": 46.0,
+      "csv_line": 7419
+    },
+    {
+      "time": 784.466,
+      "duty_right": 45.68,
+      "duty_left": 39.29,
+      "pedal": 3.14,
+      "ect": 68.0,
+      "rpm": 1992.0,
+      "afr": 0.0,
+      "fbkc": 0.0,
+      "flkc": 0.0,
+      "pw": 2.3,
+      "iam": 1.0,
+      "timing": 33.0,
+      "inhibit": 0.0,
+      "current_left": 576.0,
+      "current_right": 640.0,
+      "angle_left": 3.0,
+      "angle_right": 0.0,
+      "lean_state": 0.0,
+      "map": 29.72,
+      "throttle": 10.2,
+      "speed": 26.0,
+      "csv_line": 7454
+    },
+    {
+      "time": 786.337,
+      "duty_right": 47.49,
+      "duty_left": 35.29,
+      "pedal": 37.65,
+      "ect": 68.0,
+      "rpm": 2197.0,
+      "afr": 0.0,
+      "fbkc": 0.0,
+      "flkc": 0.0,
+      "pw": 7.17,
+      "iam": 1.0,
+      "timing": 17.5,
+      "inhibit": 0.0,
+      "current_left": 512.0,
+      "current_right": 672.0,
+      "angle_left": 24.0,
+      "angle_right": 0.0,
+      "lean_state": 0.0,
+      "map": 94.844,
+      "throttle": 46.27,
+      "speed": 29.0,
+      "csv_line": 7472
+    },
+    {
+      "time": 792.477,
+      "duty_right": 7.43,
+      "duty_left": 7.06,
+      "pedal": 0.0,
+      "ect": 69.0,
+      "rpm": 1002.0,
+      "afr": 0.0,
+      "fbkc": 0.0,
+      "flkc": 0.0,
+      "pw": 2.05,
+      "iam": 1.0,
+      "timing": 15.0,
+      "inhibit": 0.0,
+      "current_left": 64.0,
+      "current_right": 64.0,
+      "angle_left": 0.0,
+      "angle_right": 0.0,
+      "lean_state": 0.0,
+      "map": 27.814,
+      "throttle": 4.71,
+      "speed": 27.0,
+      "csv_line": 7531
+    }
+  ],
+  "inhibit_with_pedal_above_10": [
+    {
+      "time": 780.407,
+      "duty_right": 45.59,
+      "duty_left": 41.01,
+      "pedal": 45.88,
+      "ect": 68.0,
+      "rpm": 2019.0,
+      "afr": 18.93,
+      "fbkc": 0.0,
+      "flkc": 0.0,
+      "pw": 6.14,
+      "iam": 1.0,
+      "timing": 22.0,
+      "inhibit": 42.0,
+      "current_left": 608.0,
+      "current_right": 608.0,
+      "angle_left": 1.0,
+      "angle_right": 0.0,
+      "lean_state": 0.0,
+      "map": 89.444,
+      "throttle": 61.18,
+      "speed": 46.0,
+      "csv_line": 7415
+    }
+  ],
+  "selected_event_rows": [
+    {
+      "time": 711.998,
+      "duty_right": 47.24,
+      "duty_left": 39.47,
+      "pedal": 67.06,
+      "ect": 66.0,
+      "rpm": 3100.0,
+      "afr": 11.56,
+      "fbkc": 0.0,
+      "flkc": 0.0,
+      "pw": 11.01,
+      "iam": 1.0,
+      "timing": 15.0,
+      "inhibit": 0.0,
+      "current_left": 576.0,
+      "current_right": 672.0,
+      "angle_left": 17.0,
+      "angle_right": 0.0,
+      "lean_state": 0.0,
+      "map": 113.587,
+      "throttle": 79.61,
+      "speed": 43.0,
+      "csv_line": 6758
+    },
+    {
+      "time": 731.991,
+      "duty_right": 46.85,
+      "duty_left": 38.56,
+      "pedal": 83.14,
+      "ect": 66.0,
+      "rpm": 2556.0,
+      "afr": 11.57,
+      "fbkc": 0.0,
+      "flkc": 0.0,
+      "pw": 8.7,
+      "iam": 1.0,
+      "timing": 15.5,
+      "inhibit": 0.0,
+      "current_left": 576.0,
+      "current_right": 672.0,
+      "angle_left": 18.0,
+      "angle_right": 0.0,
+      "lean_state": 0.0,
+      "map": 107.869,
+      "throttle": 94.9,
+      "speed": 45.0,
+      "csv_line": 6950
+    },
+    {
+      "time": 732.095,
+      "duty_right": 7.54,
+      "duty_left": 7.07,
+      "pedal": 83.14,
+      "ect": 66.0,
+      "rpm": 2534.0,
+      "afr": 11.55,
+      "fbkc": 0.0,
+      "flkc": 0.0,
+      "pw": 8.7,
+      "iam": 1.0,
+      "timing": 16.0,
+      "inhibit": 0.0,
+      "current_left": 96.0,
+      "current_right": 672.0,
+      "angle_left": 18.0,
+      "angle_right": 0.0,
+      "lean_state": 0.0,
+      "map": 107.551,
+      "throttle": 94.9,
+      "speed": 45.0,
+      "csv_line": 6951
+    },
+    {
+      "time": 732.303,
+      "duty_right": 7.25,
+      "duty_left": 6.9,
+      "pedal": 100.0,
+      "ect": 66.0,
+      "rpm": 2518.0,
+      "afr": 11.56,
+      "fbkc": 0.0,
+      "flkc": 0.0,
+      "pw": 8.96,
+      "iam": 1.0,
+      "timing": 15.5,
+      "inhibit": 0.0,
+      "current_left": 64.0,
+      "current_right": 64.0,
+      "angle_left": 0.0,
+      "angle_right": 0.0,
+      "lean_state": 0.0,
+      "map": 106.916,
+      "throttle": 100.0,
+      "speed": 45.0,
+      "csv_line": 6953
+    },
+    {
+      "time": 733.449,
+      "duty_right": 6.33,
+      "duty_left": 5.92,
+      "pedal": 3.92,
+      "ect": 66.0,
+      "rpm": 2560.0,
+      "afr": 12.13,
+      "fbkc": 0.0,
+      "flkc": 0.0,
+      "pw": 3.58,
+      "iam": 1.0,
+      "timing": 26.0,
+      "inhibit": 0.0,
+      "current_left": 480.0,
+      "current_right": 1312.0,
+      "angle_left": 12.0,
+      "angle_right": 0.0,
+      "lean_state": 0.0,
+      "map": 42.11,
+      "throttle": 11.37,
+      "speed": 45.0,
+      "csv_line": 6964
+    },
+    {
+      "time": 763.64,
+      "duty_right": 47.53,
+      "duty_left": 39.24,
+      "pedal": 95.29,
+      "ect": 67.0,
+      "rpm": 3132.0,
+      "afr": 11.56,
+      "fbkc": 0.0,
+      "flkc": 0.0,
+      "pw": 11.52,
+      "iam": 1.0,
+      "timing": 14.5,
+      "inhibit": 0.0,
+      "current_left": 576.0,
+      "current_right": 672.0,
+      "angle_left": 17.0,
+      "angle_right": 0.0,
+      "lean_state": 0.0,
+      "map": 119.305,
+      "throttle": 100.0,
+      "speed": 56.0,
+      "csv_line": 7254
+    },
+    {
+      "time": 763.848,
+      "duty_right": 47.55,
+      "duty_left": 40.07,
+      "pedal": 94.9,
+      "ect": 67.0,
+      "rpm": 3178.0,
+      "afr": 11.57,
+      "fbkc": 0.0,
+      "flkc": 0.0,
+      "pw": 12.03,
+      "iam": 1.0,
+      "timing": 14.5,
+      "inhibit": 0.0,
+      "current_left": 576.0,
+      "current_right": 672.0,
+      "angle_left": 17.0,
+      "angle_right": 0.0,
+      "lean_state": 1.0,
+      "map": 120.576,
+      "throttle": 100.0,
+      "speed": 56.0,
+      "csv_line": 7256
+    },
+    {
+      "time": 764.472,
+      "duty_right": 47.81,
+      "duty_left": 40.17,
+      "pedal": 94.12,
+      "ect": 68.0,
+      "rpm": 3110.0,
+      "afr": 16.57,
+      "fbkc": 0.0,
+      "flkc": 0.0,
+      "pw": 9.47,
+      "iam": 1.0,
+      "timing": 16.0,
+      "inhibit": 0.0,
+      "current_left": 576.0,
+      "current_right": 672.0,
+      "angle_left": 17.0,
+      "angle_right": 0.0,
+      "lean_state": 0.0,
+      "map": 108.822,
+      "throttle": 100.0,
+      "speed": 56.0,
+      "csv_line": 7262
+    },
+    {
+      "time": 764.576,
+      "duty_right": 47.84,
+      "duty_left": 40.0,
+      "pedal": 94.12,
+      "ect": 68.0,
+      "rpm": 3152.0,
+      "afr": 16.6,
+      "fbkc": 0.0,
+      "flkc": 0.0,
+      "pw": 9.22,
+      "iam": 1.0,
+      "timing": 16.5,
+      "inhibit": 0.0,
+      "current_left": 576.0,
+      "current_right": 672.0,
+      "angle_left": 17.0,
+      "angle_right": 0.0,
+      "lean_state": 0.0,
+      "map": 108.187,
+      "throttle": 100.0,
+      "speed": 56.0,
+      "csv_line": 7263
+    },
+    {
+      "time": 765.512,
+      "duty_right": 47.98,
+      "duty_left": 40.32,
+      "pedal": 100.0,
+      "ect": 68.0,
+      "rpm": 3156.0,
+      "afr": 13.35,
+      "fbkc": 0.0,
+      "flkc": 0.0,
+      "pw": 9.47,
+      "iam": 1.0,
+      "timing": 16.5,
+      "inhibit": 0.0,
+      "current_left": 576.0,
+      "current_right": 672.0,
+      "angle_left": 17.0,
+      "angle_right": 0.0,
+      "lean_state": 0.0,
+      "map": 108.822,
+      "throttle": 100.0,
+      "speed": 56.0,
+      "csv_line": 7272
+    },
+    {
+      "time": 780.407,
+      "duty_right": 45.59,
+      "duty_left": 41.01,
+      "pedal": 45.88,
+      "ect": 68.0,
+      "rpm": 2019.0,
+      "afr": 18.93,
+      "fbkc": 0.0,
+      "flkc": 0.0,
+      "pw": 6.14,
+      "iam": 1.0,
+      "timing": 22.0,
+      "inhibit": 42.0,
+      "current_left": 608.0,
+      "current_right": 608.0,
+      "angle_left": 1.0,
+      "angle_right": 0.0,
+      "lean_state": 0.0,
+      "map": 89.444,
+      "throttle": 61.18,
+      "speed": 46.0,
+      "csv_line": 7415
+    },
+    {
+      "time": 780.512,
+      "duty_right": 47.56,
+      "duty_left": 43.35,
+      "pedal": 100.0,
+      "ect": 68.0,
+      "rpm": 2088.0,
+      "afr": 0.0,
+      "fbkc": 0.0,
+      "flkc": 0.0,
+      "pw": 6.4,
+      "iam": 1.0,
+      "timing": 2.5,
+      "inhibit": 0.0,
+      "current_left": 640.0,
+      "current_right": 640.0,
+      "angle_left": 1.0,
+      "angle_right": 0.0,
+      "lean_state": 0.0,
+      "map": 97.703,
+      "throttle": 100.0,
+      "speed": 46.0,
+      "csv_line": 7416
+    }
+  ],
+  "conclusions": [
+    "The AVCS repair did not cure the cut, per the user and loaded capture.",
+    "Both normal OCV output publications and current channels are active. Left reported advance changes; Right is zero throughout all selected high-demand samples.",
+    "No sustained sampled B744 inhibition, lean-cut state3, IAM drop or knock retard coincides with the selected high-demand event.",
+    "The recorded AFR becomes lean during part of the approximately3100RPM event. It does not establish whether fuel delivery or failed combustion caused the excursion.",
+    "Rejected WB input can revoke cruise permission via the documented native path despite disabled O2 DTC enables. Actual lamp cause is not logged."
+  ],
+  "limits": [
+    "About104ms between samples cannot exclude brief firing/inhibit events between reads.",
+    "C0DC spark mask, C0E1 mode, C290 auxiliary mask, synchronization, queue losses, and actual injector/coil hardware outputs are not logged.",
+    "Right/Left follow the saved definition; physical harness assignment is not established.",
+    "Actual-angle publication is clamped after subtracting learned offsets. Targets, raw captures, learned offsets and capture validity are absent, so zero does not prove a stuck solenoid.",
+    "Normal OCV duty can differ from temporary diagnostic output. Overrides are not logged.",
+    "Zero AFR is an invalid-input sentinel, not a measured zero air/fuel ratio. Raw WB ADC and cruise-fault flags are absent.",
+    "The CSV contains no DTC response. No reported DTC is not proof that native fault latches are clear.",
+    "ECT reaches69C. No direct before/after torque measurement or fully matched route exists."
+  ],
+  "changes": "Offline review only; source CSV, ROMs, calibrations and logger profiles unchanged."
+}

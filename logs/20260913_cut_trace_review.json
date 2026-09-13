@@ -1,0 +1,6797 @@
+{
+  "source_log": "logs/romraiderlog_cuttrace_20260913_143625.csv",
+  "source_log_sha256": "3e62ab07eb7ee184ab43162debd7d97c3f829085399cf87742ca6c8997d85390",
+  "review_rom": "master_patch_v2/D2WD610H_master_patch_v2.bin",
+  "review_rom_sha256": "fabceb54359aca76e6e15835a51aa5cfd008e570dc002e886eaa62a6cb020ce5",
+  "rom_identity_limit": "Same saved repaired v2 as latest recorded 13:28 flash verification; this CSV contains no fresh ROM identity or ECU readback.",
+  "definition_sha256": "ee8b217571b0b2a65ba4d0ccf0aec7e16f3d8eddd077e4596434e17c5344bc9d",
+  "profile_sha256": "50ea606872133820e51b1ee06d810d2755e7ff4fba23624e0eaf6a73e80537aa",
+  "headings": {
+    "time": "Time (msec)",
+    "pedal": "Accelerator Pedal Angle (%)",
+    "aux": "Auxiliary Spark Inhibit Word (D2WD610H diagnostic)* (raw inhibit word)",
+    "battery": "Battery Voltage (V)",
+    "avls": "Committed AVLS VE State (D2WD610H master)* (AVLS mode (1 low; 3 high))",
+    "ect": "Coolant Temperature (C)",
+    "sync": "Crank Synchronization State (D2WD610H diagnostic)* (raw state)",
+    "flags": "Engine Signal Runtime Flags (D2WD610H diagnostic)* (raw flags)",
+    "timeout": "Engine Signal Timeout State (D2WD610H diagnostic)* (raw state)",
+    "rpm": "Engine Speed (rpm)",
+    "afr": "External Wideband AFR (D2WD610H master)* (estimated AFR (14.64 stoich))",
+    "fbkc": "Feedback Knock Correction (4-byte)* (degrees)",
+    "flkc": "Fine Learning Knock Correction (4-byte)* (degrees)",
+    "pw": "Fuel Injector #1 Pulse Width (ms)",
+    "iam": "IAM (4-byte)* (multiplier)",
+    "mode": "Ignition Scheduler Mode (D2WD610H diagnostic)* (raw mode)",
+    "timing": "Ignition Total Timing (degrees)",
+    "inhibit": "Injector Inhibit Word (D2WD610H diagnostic)* (raw inhibit word)",
+    "lean": "Lean Fuel Cut State (D2WD610H master)* (state (0 idle; 1 delay; 2 monitor; 3 cut))",
+    "airflow_missed": "Missed Airflow Task Activations (D2WD610H diagnostic)* (missed activations)",
+    "crank_missed": "Missed Crank Output Task Activations (D2WD610H diagnostic)* (missed activations)",
+    "map": "SD Native MAP Input (D2WD610H diagnostic)* (kPa absolute)",
+    "spark": "Spark Inhibit Word (D2WD610H diagnostic)* (raw inhibit word)",
+    "throttle": "Throttle Opening Angle (%)",
+    "speed": "Vehicle Speed (km/h)"
+  },
+  "user_observations": [
+    "Same hard cut repeated several times.",
+    "Feels like hitting a brick wall, with only one or two cylinders firing while held. The number of firing cylinders is a sensation, not measured cylinder attribution.",
+    "User challenged a fueling explanation based on the logged AFR."
+  ],
+  "whole_capture": {
+    "samples": 1590,
+    "csv_lines": [
+      2,
+      1591
+    ],
+    "range": {
+      "time": {
+        "min": 0.0,
+        "median": 82.667,
+        "max": 165.357
+      },
+      "pedal": {
+        "min": 0.0,
+        "median": 1.18,
+        "max": 100.0
+      },
+      "aux": {
+        "min": 4032.0,
+        "median": 4032.0,
+        "max": 4032.0
+      },
+      "battery": {
+        "min": 12.16,
+        "median": 14.08,
+        "max": 14.4
+      },
+      "avls": {
+        "min": 1.0,
+        "median": 1.0,
+        "max": 3.0
+      },
+      "ect": {
+        "min": 53.0,
+        "median": 59.0,
+        "max": 64.0
+      },
+      "sync": {
+        "min": 0.0,
+        "median": 1.0,
+        "max": 1.0
+      },
+      "flags": {
+        "min": 0.0,
+        "median": 0.0,
+        "max": 128.0
+      },
+      "timeout": {
+        "min": 0.0,
+        "median": 0.0,
+        "max": 1.0
+      },
+      "rpm": {
+        "min": 0.0,
+        "median": 1994.5,
+        "max": 3846.0
+      },
+      "afr": {
+        "min": 0.0,
+        "median": 14.055,
+        "max": 18.94
+      },
+      "fbkc": {
+        "min": 0.0,
+        "median": 0.0,
+        "max": 0.0
+      },
+      "flkc": {
+        "min": 0.0,
+        "median": 0.0,
+        "max": 0.0
+      },
+      "pw": {
+        "min": 0.77,
+        "median": 2.56,
+        "max": 11.52
+      },
+      "iam": {
+        "min": 1.0,
+        "median": 1.0,
+        "max": 1.0
+      },
+      "mode": {
+        "min": 0.0,
+        "median": 2.0,
+        "max": 2.0
+      },
+      "timing": {
+        "min": 8.0,
+        "median": 16.5,
+        "max": 43.5
+      },
+      "inhibit": {
+        "min": 0.0,
+        "median": 0.0,
+        "max": 65535.0
+      },
+      "lean": {
+        "min": 0.0,
+        "median": 0.0,
+        "max": 0.0
+      },
+      "airflow_missed": {
+        "min": 0.0,
+        "median": 0.0,
+        "max": 0.0
+      },
+      "crank_missed": {
+        "min": 0.0,
+        "median": 0.0,
+        "max": 0.0
+      },
+      "map": {
+        "min": 13.519,
+        "median": 36.392,
+        "max": 115.493
+      },
+      "spark": {
+        "min": 0.0,
+        "median": 0.0,
+        "max": 65535.0
+      },
+      "throttle": {
+        "min": 0.0,
+        "median": 9.02,
+        "max": 100.0
+      },
+      "speed": {
+        "min": 0.0,
+        "median": 30.0,
+        "max": 60.0
+      }
+    },
+    "state_counts": {
+      "aux": {
+        "4032": 1590
+      },
+      "avls": {
+        "1": 1464,
+        "3": 126
+      },
+      "sync": {
+        "0": 23,
+        "1": 1567
+      },
+      "flags": {
+        "0": 1567,
+        "128": 23
+      },
+      "timeout": {
+        "0": 1567,
+        "1": 23
+      },
+      "mode": {
+        "0": 23,
+        "1": 5,
+        "2": 1562
+      },
+      "spark": {
+        "0": 1558,
+        "65535": 32
+      },
+      "inhibit": {
+        "0": 1364,
+        "1": 33,
+        "3": 15,
+        "7": 13,
+        "15": 12,
+        "31": 13,
+        "42": 16,
+        "63": 89,
+        "65535": 35
+      },
+      "lean": {
+        "0": 1590
+      },
+      "airflow_missed": {
+        "0": 1590
+      },
+      "crank_missed": {
+        "0": 1590
+      },
+      "iam": {
+        "1": 1590
+      },
+      "fbkc": {
+        "0": 1590
+      },
+      "flkc": {
+        "0": 1590
+      }
+    },
+    "valid_afr": {
+      "min": 11.24,
+      "median": 14.09,
+      "max": 18.94
+    },
+    "invalid_afr_samples": 99
+  },
+  "sample_interval_ms": {
+    "min": 100,
+    "median": 104,
+    "max": 108
+  },
+  "high_demand": {
+    "samples": 247,
+    "csv_lines": [
+      406,
+      1199
+    ],
+    "range": {
+      "time": {
+        "min": 42.027,
+        "median": 70.856,
+        "max": 124.584
+      },
+      "pedal": {
+        "min": 31.76,
+        "median": 70.2,
+        "max": 100.0
+      },
+      "aux": {
+        "min": 4032.0,
+        "median": 4032.0,
+        "max": 4032.0
+      },
+      "battery": {
+        "min": 12.24,
+        "median": 14.16,
+        "max": 14.24
+      },
+      "avls": {
+        "min": 1.0,
+        "median": 1.0,
+        "max": 3.0
+      },
+      "ect": {
+        "min": 56.0,
+        "median": 58.0,
+        "max": 62.0
+      },
+      "sync": {
+        "min": 1.0,
+        "median": 1.0,
+        "max": 1.0
+      },
+      "flags": {
+        "min": 0.0,
+        "median": 0.0,
+        "max": 0.0
+      },
+      "timeout": {
+        "min": 0.0,
+        "median": 0.0,
+        "max": 0.0
+      },
+      "rpm": {
+        "min": 2502.0,
+        "median": 2919.0,
+        "max": 3800.0
+      },
+      "afr": {
+        "min": 0.0,
+        "median": 12.4,
+        "max": 16.62
+      },
+      "fbkc": {
+        "min": 0.0,
+        "median": 0.0,
+        "max": 0.0
+      },
+      "flkc": {
+        "min": 0.0,
+        "median": 0.0,
+        "max": 0.0
+      },
+      "pw": {
+        "min": 0.77,
+        "median": 8.45,
+        "max": 11.52
+      },
+      "iam": {
+        "min": 1.0,
+        "median": 1.0,
+        "max": 1.0
+      },
+      "mode": {
+        "min": 2.0,
+        "median": 2.0,
+        "max": 2.0
+      },
+      "timing": {
+        "min": 8.0,
+        "median": 16.5,
+        "max": 42.5
+      },
+      "inhibit": {
+        "min": 0.0,
+        "median": 0.0,
+        "max": 42.0
+      },
+      "lean": {
+        "min": 0.0,
+        "median": 0.0,
+        "max": 0.0
+      },
+      "airflow_missed": {
+        "min": 0.0,
+        "median": 0.0,
+        "max": 0.0
+      },
+      "crank_missed": {
+        "min": 0.0,
+        "median": 0.0,
+        "max": 0.0
+      },
+      "map": {
+        "min": 53.864,
+        "median": 105.963,
+        "max": 115.493
+      },
+      "spark": {
+        "min": 0.0,
+        "median": 0.0,
+        "max": 0.0
+      },
+      "throttle": {
+        "min": 9.02,
+        "median": 80.0,
+        "max": 100.0
+      },
+      "speed": {
+        "min": 33.0,
+        "median": 48.0,
+        "max": 59.0
+      }
+    },
+    "state_counts": {
+      "aux": {
+        "4032": 247
+      },
+      "avls": {
+        "1": 164,
+        "3": 83
+      },
+      "sync": {
+        "1": 247
+      },
+      "flags": {
+        "0": 247
+      },
+      "timeout": {
+        "0": 247
+      },
+      "mode": {
+        "2": 247
+      },
+      "spark": {
+        "0": 247
+      },
+      "inhibit": {
+        "0": 246,
+        "42": 1
+      },
+      "lean": {
+        "0": 247
+      },
+      "airflow_missed": {
+        "0": 247
+      },
+      "crank_missed": {
+        "0": 247
+      },
+      "iam": {
+        "1": 247
+      },
+      "fbkc": {
+        "0": 247
+      },
+      "flkc": {
+        "0": 247
+      }
+    },
+    "valid_afr": {
+      "min": 11.24,
+      "median": 12.4,
+      "max": 16.62
+    },
+    "invalid_afr_samples": 1
+  },
+  "high_demand_plate_at_least_80": {
+    "samples": 125,
+    "csv_lines": [
+      555,
+      1199
+    ],
+    "range": {
+      "time": {
+        "min": 57.524,
+        "median": 110.632,
+        "max": 124.584
+      },
+      "pedal": {
+        "min": 39.22,
+        "median": 100.0,
+        "max": 100.0
+      },
+      "aux": {
+        "min": 4032.0,
+        "median": 4032.0,
+        "max": 4032.0
+      },
+      "battery": {
+        "min": 12.24,
+        "median": 14.08,
+        "max": 14.24
+      },
+      "avls": {
+        "min": 1.0,
+        "median": 3.0,
+        "max": 3.0
+      },
+      "ect": {
+        "min": 58.0,
+        "median": 61.0,
+        "max": 62.0
+      },
+      "sync": {
+        "min": 1.0,
+        "median": 1.0,
+        "max": 1.0
+      },
+      "flags": {
+        "min": 0.0,
+        "median": 0.0,
+        "max": 0.0
+      },
+      "timeout": {
+        "min": 0.0,
+        "median": 0.0,
+        "max": 0.0
+      },
+      "rpm": {
+        "min": 2502.0,
+        "median": 3146.0,
+        "max": 3800.0
+      },
+      "afr": {
+        "min": 11.56,
+        "median": 12.54,
+        "max": 16.62
+      },
+      "fbkc": {
+        "min": 0.0,
+        "median": 0.0,
+        "max": 0.0
+      },
+      "flkc": {
+        "min": 0.0,
+        "median": 0.0,
+        "max": 0.0
+      },
+      "pw": {
+        "min": 6.4,
+        "median": 8.7,
+        "max": 11.52
+      },
+      "iam": {
+        "min": 1.0,
+        "median": 1.0,
+        "max": 1.0
+      },
+      "mode": {
+        "min": 2.0,
+        "median": 2.0,
+        "max": 2.0
+      },
+      "timing": {
+        "min": 8.0,
+        "median": 16.5,
+        "max": 19.5
+      },
+      "inhibit": {
+        "min": 0.0,
+        "median": 0.0,
+        "max": 0.0
+      },
+      "lean": {
+        "min": 0.0,
+        "median": 0.0,
+        "max": 0.0
+      },
+      "airflow_missed": {
+        "min": 0.0,
+        "median": 0.0,
+        "max": 0.0
+      },
+      "crank_missed": {
+        "min": 0.0,
+        "median": 0.0,
+        "max": 0.0
+      },
+      "map": {
+        "min": 98.34,
+        "median": 106.916,
+        "max": 115.493
+      },
+      "spark": {
+        "min": 0.0,
+        "median": 0.0,
+        "max": 0.0
+      },
+      "throttle": {
+        "min": 80.0,
+        "median": 100.0,
+        "max": 100.0
+      },
+      "speed": {
+        "min": 41.0,
+        "median": 49.0,
+        "max": 59.0
+      }
+    },
+    "state_counts": {
+      "aux": {
+        "4032": 125
+      },
+      "avls": {
+        "1": 53,
+        "3": 72
+      },
+      "sync": {
+        "1": 125
+      },
+      "flags": {
+        "0": 125
+      },
+      "timeout": {
+        "0": 125
+      },
+      "mode": {
+        "2": 125
+      },
+      "spark": {
+        "0": 125
+      },
+      "inhibit": {
+        "0": 125
+      },
+      "lean": {
+        "0": 125
+      },
+      "airflow_missed": {
+        "0": 125
+      },
+      "crank_missed": {
+        "0": 125
+      },
+      "iam": {
+        "1": 125
+      },
+      "fbkc": {
+        "0": 125
+      },
+      "flkc": {
+        "0": 125
+      }
+    },
+    "valid_afr": {
+      "min": 11.56,
+      "median": 12.54,
+      "max": 16.62
+    },
+    "invalid_afr_samples": 0
+  },
+  "high_demand_inhibit_exceptions": [
+    {
+      "time": 118.333,
+      "pedal": 100.0,
+      "aux": 4032.0,
+      "battery": 13.92,
+      "avls": 1.0,
+      "ect": 62.0,
+      "sync": 1.0,
+      "flags": 0.0,
+      "timeout": 0.0,
+      "rpm": 2672.0,
+      "afr": 16.61,
+      "fbkc": 0.0,
+      "flkc": 0.0,
+      "pw": 0.77,
+      "iam": 1.0,
+      "mode": 2.0,
+      "timing": 34.0,
+      "inhibit": 42.0,
+      "lean": 0.0,
+      "airflow_missed": 0.0,
+      "crank_missed": 0.0,
+      "map": 67.524,
+      "spark": 0.0,
+      "throttle": 9.02,
+      "speed": 54.0,
+      "csv_line": 1139,
+      "effective_spark_mask": 4032
+    }
+  ],
+  "windows": {
+    "low_lift_full_throttle": {
+      "samples": 10,
+      "csv_lines": [
+        609,
+        618
+      ],
+      "range": {
+        "time": {
+          "min": 63.148,
+          "median": 63.616,
+          "max": 64.085
+        },
+        "pedal": {
+          "min": 100.0,
+          "median": 100.0,
+          "max": 100.0
+        },
+        "aux": {
+          "min": 4032.0,
+          "median": 4032.0,
+          "max": 4032.0
+        },
+        "battery": {
+          "min": 14.0,
+          "median": 14.16,
+          "max": 14.24
+        },
+        "avls": {
+          "min": 1.0,
+          "median": 1.0,
+          "max": 1.0
+        },
+        "ect": {
+          "min": 58.0,
+          "median": 58.0,
+          "max": 58.0
+        },
+        "sync": {
+          "min": 1.0,
+          "median": 1.0,
+          "max": 1.0
+        },
+        "flags": {
+          "min": 0.0,
+          "median": 0.0,
+          "max": 0.0
+        },
+        "timeout": {
+          "min": 0.0,
+          "median": 0.0,
+          "max": 0.0
+        },
+        "rpm": {
+          "min": 2483.0,
+          "median": 2583.0,
+          "max": 2615.0
+        },
+        "afr": {
+          "min": 11.56,
+          "median": 12.105,
+          "max": 12.12
+        },
+        "fbkc": {
+          "min": 0.0,
+          "median": 0.0,
+          "max": 0.0
+        },
+        "flkc": {
+          "min": 0.0,
+          "median": 0.0,
+          "max": 0.0
+        },
+        "pw": {
+          "min": 8.19,
+          "median": 8.19,
+          "max": 8.19
+        },
+        "iam": {
+          "min": 1.0,
+          "median": 1.0,
+          "max": 1.0
+        },
+        "mode": {
+          "min": 2.0,
+          "median": 2.0,
+          "max": 2.0
+        },
+        "timing": {
+          "min": 16.0,
+          "median": 16.5,
+          "max": 16.5
+        },
+        "inhibit": {
+          "min": 0.0,
+          "median": 0.0,
+          "max": 0.0
+        },
+        "lean": {
+          "min": 0.0,
+          "median": 0.0,
+          "max": 0.0
+        },
+        "airflow_missed": {
+          "min": 0.0,
+          "median": 0.0,
+          "max": 0.0
+        },
+        "crank_missed": {
+          "min": 0.0,
+          "median": 0.0,
+          "max": 0.0
+        },
+        "map": {
+          "min": 104.692,
+          "median": 104.851,
+          "max": 105.644
+        },
+        "spark": {
+          "min": 0.0,
+          "median": 0.0,
+          "max": 0.0
+        },
+        "throttle": {
+          "min": 100.0,
+          "median": 100.0,
+          "max": 100.0
+        },
+        "speed": {
+          "min": 45.0,
+          "median": 45.5,
+          "max": 46.0
+        }
+      },
+      "state_counts": {
+        "aux": {
+          "4032": 10
+        },
+        "avls": {
+          "1": 10
+        },
+        "sync": {
+          "1": 10
+        },
+        "flags": {
+          "0": 10
+        },
+        "timeout": {
+          "0": 10
+        },
+        "mode": {
+          "2": 10
+        },
+        "spark": {
+          "0": 10
+        },
+        "inhibit": {
+          "0": 10
+        },
+        "lean": {
+          "0": 10
+        },
+        "airflow_missed": {
+          "0": 10
+        },
+        "crank_missed": {
+          "0": 10
+        },
+        "iam": {
+          "1": 10
+        },
+        "fbkc": {
+          "0": 10
+        },
+        "flkc": {
+          "0": 10
+        }
+      },
+      "valid_afr": {
+        "min": 11.56,
+        "median": 12.105,
+        "max": 12.12
+      },
+      "invalid_afr_samples": 0
+    },
+    "entry_57s": {
+      "samples": 9,
+      "csv_lines": [
+        552,
+        560
+      ],
+      "range": {
+        "time": {
+          "min": 57.211,
+          "median": 57.628,
+          "max": 58.044
+        },
+        "pedal": {
+          "min": 40.39,
+          "median": 75.29,
+          "max": 76.08
+        },
+        "aux": {
+          "min": 4032.0,
+          "median": 4032.0,
+          "max": 4032.0
+        },
+        "battery": {
+          "min": 13.84,
+          "median": 14.08,
+          "max": 14.16
+        },
+        "avls": {
+          "min": 3.0,
+          "median": 3.0,
+          "max": 3.0
+        },
+        "ect": {
+          "min": 58.0,
+          "median": 58.0,
+          "max": 58.0
+        },
+        "sync": {
+          "min": 1.0,
+          "median": 1.0,
+          "max": 1.0
+        },
+        "flags": {
+          "min": 0.0,
+          "median": 0.0,
+          "max": 0.0
+        },
+        "timeout": {
+          "min": 0.0,
+          "median": 0.0,
+          "max": 0.0
+        },
+        "rpm": {
+          "min": 3018.0,
+          "median": 3106.0,
+          "max": 3233.0
+        },
+        "afr": {
+          "min": 11.24,
+          "median": 13.13,
+          "max": 16.58
+        },
+        "fbkc": {
+          "min": 0.0,
+          "median": 0.0,
+          "max": 0.0
+        },
+        "flkc": {
+          "min": 0.0,
+          "median": 0.0,
+          "max": 0.0
+        },
+        "pw": {
+          "min": 8.96,
+          "median": 9.47,
+          "max": 10.75
+        },
+        "iam": {
+          "min": 1.0,
+          "median": 1.0,
+          "max": 1.0
+        },
+        "mode": {
+          "min": 2.0,
+          "median": 2.0,
+          "max": 2.0
+        },
+        "timing": {
+          "min": 16.5,
+          "median": 17.5,
+          "max": 17.5
+        },
+        "inhibit": {
+          "min": 0.0,
+          "median": 0.0,
+          "max": 0.0
+        },
+        "lean": {
+          "min": 0.0,
+          "median": 0.0,
+          "max": 0.0
+        },
+        "airflow_missed": {
+          "min": 0.0,
+          "median": 0.0,
+          "max": 0.0
+        },
+        "crank_missed": {
+          "min": 0.0,
+          "median": 0.0,
+          "max": 0.0
+        },
+        "map": {
+          "min": 107.869,
+          "median": 108.821,
+          "max": 113.268
+        },
+        "spark": {
+          "min": 0.0,
+          "median": 0.0,
+          "max": 0.0
+        },
+        "throttle": {
+          "min": 76.86,
+          "median": 81.18,
+          "max": 89.02
+        },
+        "speed": {
+          "min": 41.0,
+          "median": 41.0,
+          "max": 42.0
+        }
+      },
+      "state_counts": {
+        "aux": {
+          "4032": 9
+        },
+        "avls": {
+          "3": 9
+        },
+        "sync": {
+          "1": 9
+        },
+        "flags": {
+          "0": 9
+        },
+        "timeout": {
+          "0": 9
+        },
+        "mode": {
+          "2": 9
+        },
+        "spark": {
+          "0": 9
+        },
+        "inhibit": {
+          "0": 9
+        },
+        "lean": {
+          "0": 9
+        },
+        "airflow_missed": {
+          "0": 9
+        },
+        "crank_missed": {
+          "0": 9
+        },
+        "iam": {
+          "1": 9
+        },
+        "fbkc": {
+          "0": 9
+        },
+        "flkc": {
+          "0": 9
+        }
+      },
+      "valid_afr": {
+        "min": 11.24,
+        "median": 13.13,
+        "max": 16.58
+      },
+      "invalid_afr_samples": 0
+    },
+    "entry_105s": {
+      "samples": 7,
+      "csv_lines": [
+        1010,
+        1016
+      ],
+      "range": {
+        "time": {
+          "min": 104.899,
+          "median": 105.212,
+          "max": 105.525
+        },
+        "pedal": {
+          "min": 43.14,
+          "median": 77.65,
+          "max": 85.1
+        },
+        "aux": {
+          "min": 4032.0,
+          "median": 4032.0,
+          "max": 4032.0
+        },
+        "battery": {
+          "min": 12.24,
+          "median": 12.4,
+          "max": 12.48
+        },
+        "avls": {
+          "min": 3.0,
+          "median": 3.0,
+          "max": 3.0
+        },
+        "ect": {
+          "min": 61.0,
+          "median": 61.0,
+          "max": 61.0
+        },
+        "sync": {
+          "min": 1.0,
+          "median": 1.0,
+          "max": 1.0
+        },
+        "flags": {
+          "min": 0.0,
+          "median": 0.0,
+          "max": 0.0
+        },
+        "timeout": {
+          "min": 0.0,
+          "median": 0.0,
+          "max": 0.0
+        },
+        "rpm": {
+          "min": 3084.0,
+          "median": 3257.0,
+          "max": 3382.0
+        },
+        "afr": {
+          "min": 12.1,
+          "median": 12.87,
+          "max": 16.11
+        },
+        "fbkc": {
+          "min": 0.0,
+          "median": 0.0,
+          "max": 0.0
+        },
+        "flkc": {
+          "min": 0.0,
+          "median": 0.0,
+          "max": 0.0
+        },
+        "pw": {
+          "min": 8.96,
+          "median": 9.73,
+          "max": 10.24
+        },
+        "iam": {
+          "min": 1.0,
+          "median": 1.0,
+          "max": 1.0
+        },
+        "mode": {
+          "min": 2.0,
+          "median": 2.0,
+          "max": 2.0
+        },
+        "timing": {
+          "min": 16.0,
+          "median": 16.5,
+          "max": 17.0
+        },
+        "inhibit": {
+          "min": 0.0,
+          "median": 0.0,
+          "max": 0.0
+        },
+        "lean": {
+          "min": 0.0,
+          "median": 0.0,
+          "max": 0.0
+        },
+        "airflow_missed": {
+          "min": 0.0,
+          "median": 0.0,
+          "max": 0.0
+        },
+        "crank_missed": {
+          "min": 0.0,
+          "median": 0.0,
+          "max": 0.0
+        },
+        "map": {
+          "min": 107.55,
+          "median": 109.14,
+          "max": 110.411
+        },
+        "spark": {
+          "min": 0.0,
+          "median": 0.0,
+          "max": 0.0
+        },
+        "throttle": {
+          "min": 87.06,
+          "median": 93.73,
+          "max": 98.43
+        },
+        "speed": {
+          "min": 43.0,
+          "median": 43.0,
+          "max": 43.0
+        }
+      },
+      "state_counts": {
+        "aux": {
+          "4032": 7
+        },
+        "avls": {
+          "3": 7
+        },
+        "sync": {
+          "1": 7
+        },
+        "flags": {
+          "0": 7
+        },
+        "timeout": {
+          "0": 7
+        },
+        "mode": {
+          "2": 7
+        },
+        "spark": {
+          "0": 7
+        },
+        "inhibit": {
+          "0": 7
+        },
+        "lean": {
+          "0": 7
+        },
+        "airflow_missed": {
+          "0": 7
+        },
+        "crank_missed": {
+          "0": 7
+        },
+        "iam": {
+          "1": 7
+        },
+        "fbkc": {
+          "0": 7
+        },
+        "flkc": {
+          "0": 7
+        }
+      },
+      "valid_afr": {
+        "min": 12.1,
+        "median": 12.87,
+        "max": 16.11
+      },
+      "invalid_afr_samples": 0
+    },
+    "entry_110s": {
+      "samples": 16,
+      "csv_lines": [
+        1061,
+        1076
+      ],
+      "range": {
+        "time": {
+          "min": 110.215,
+          "median": 110.99600000000001,
+          "max": 111.777
+        },
+        "pedal": {
+          "min": 63.14,
+          "median": 97.65,
+          "max": 100.0
+        },
+        "aux": {
+          "min": 4032.0,
+          "median": 4032.0,
+          "max": 4032.0
+        },
+        "battery": {
+          "min": 12.48,
+          "median": 12.84,
+          "max": 13.52
+        },
+        "avls": {
+          "min": 3.0,
+          "median": 3.0,
+          "max": 3.0
+        },
+        "ect": {
+          "min": 61.0,
+          "median": 61.0,
+          "max": 61.0
+        },
+        "sync": {
+          "min": 1.0,
+          "median": 1.0,
+          "max": 1.0
+        },
+        "flags": {
+          "min": 0.0,
+          "median": 0.0,
+          "max": 0.0
+        },
+        "timeout": {
+          "min": 0.0,
+          "median": 0.0,
+          "max": 0.0
+        },
+        "rpm": {
+          "min": 3016.0,
+          "median": 3194.0,
+          "max": 3265.0
+        },
+        "afr": {
+          "min": 11.56,
+          "median": 13.34,
+          "max": 16.62
+        },
+        "fbkc": {
+          "min": 0.0,
+          "median": 0.0,
+          "max": 0.0
+        },
+        "flkc": {
+          "min": 0.0,
+          "median": 0.0,
+          "max": 0.0
+        },
+        "pw": {
+          "min": 9.47,
+          "median": 9.47,
+          "max": 11.52
+        },
+        "iam": {
+          "min": 1.0,
+          "median": 1.0,
+          "max": 1.0
+        },
+        "mode": {
+          "min": 2.0,
+          "median": 2.0,
+          "max": 2.0
+        },
+        "timing": {
+          "min": 15.0,
+          "median": 16.5,
+          "max": 16.5
+        },
+        "inhibit": {
+          "min": 0.0,
+          "median": 0.0,
+          "max": 0.0
+        },
+        "lean": {
+          "min": 0.0,
+          "median": 0.0,
+          "max": 0.0
+        },
+        "airflow_missed": {
+          "min": 0.0,
+          "median": 0.0,
+          "max": 0.0
+        },
+        "crank_missed": {
+          "min": 0.0,
+          "median": 0.0,
+          "max": 0.0
+        },
+        "map": {
+          "min": 107.55,
+          "median": 108.822,
+          "max": 115.493
+        },
+        "spark": {
+          "min": 0.0,
+          "median": 0.0,
+          "max": 0.0
+        },
+        "throttle": {
+          "min": 100.0,
+          "median": 100.0,
+          "max": 100.0
+        },
+        "speed": {
+          "min": 57.0,
+          "median": 57.0,
+          "max": 57.0
+        }
+      },
+      "state_counts": {
+        "aux": {
+          "4032": 16
+        },
+        "avls": {
+          "3": 16
+        },
+        "sync": {
+          "1": 16
+        },
+        "flags": {
+          "0": 16
+        },
+        "timeout": {
+          "0": 16
+        },
+        "mode": {
+          "2": 16
+        },
+        "spark": {
+          "0": 16
+        },
+        "inhibit": {
+          "0": 16
+        },
+        "lean": {
+          "0": 16
+        },
+        "airflow_missed": {
+          "0": 16
+        },
+        "crank_missed": {
+          "0": 16
+        },
+        "iam": {
+          "1": 16
+        },
+        "fbkc": {
+          "0": 16
+        },
+        "flkc": {
+          "0": 16
+        }
+      },
+      "valid_afr": {
+        "min": 11.56,
+        "median": 13.34,
+        "max": 16.62
+      },
+      "invalid_afr_samples": 0
+    },
+    "already_high_116s": {
+      "samples": 17,
+      "csv_lines": [
+        1118,
+        1134
+      ],
+      "range": {
+        "time": {
+          "min": 116.146,
+          "median": 116.981,
+          "max": 117.813
+        },
+        "pedal": {
+          "min": 51.76,
+          "median": 100.0,
+          "max": 100.0
+        },
+        "aux": {
+          "min": 4032.0,
+          "median": 4032.0,
+          "max": 4032.0
+        },
+        "battery": {
+          "min": 13.84,
+          "median": 14.08,
+          "max": 14.16
+        },
+        "avls": {
+          "min": 3.0,
+          "median": 3.0,
+          "max": 3.0
+        },
+        "ect": {
+          "min": 62.0,
+          "median": 62.0,
+          "max": 62.0
+        },
+        "sync": {
+          "min": 1.0,
+          "median": 1.0,
+          "max": 1.0
+        },
+        "flags": {
+          "min": 0.0,
+          "median": 0.0,
+          "max": 0.0
+        },
+        "timeout": {
+          "min": 0.0,
+          "median": 0.0,
+          "max": 0.0
+        },
+        "rpm": {
+          "min": 3092.0,
+          "median": 3176.0,
+          "max": 3282.0
+        },
+        "afr": {
+          "min": 12.1,
+          "median": 13.05,
+          "max": 14.12
+        },
+        "fbkc": {
+          "min": 0.0,
+          "median": 0.0,
+          "max": 0.0
+        },
+        "flkc": {
+          "min": 0.0,
+          "median": 0.0,
+          "max": 0.0
+        },
+        "pw": {
+          "min": 6.4,
+          "median": 8.96,
+          "max": 9.98
+        },
+        "iam": {
+          "min": 1.0,
+          "median": 1.0,
+          "max": 1.0
+        },
+        "mode": {
+          "min": 2.0,
+          "median": 2.0,
+          "max": 2.0
+        },
+        "timing": {
+          "min": 16.0,
+          "median": 17.0,
+          "max": 20.5
+        },
+        "inhibit": {
+          "min": 0.0,
+          "median": 0.0,
+          "max": 0.0
+        },
+        "lean": {
+          "min": 0.0,
+          "median": 0.0,
+          "max": 0.0
+        },
+        "airflow_missed": {
+          "min": 0.0,
+          "median": 0.0,
+          "max": 0.0
+        },
+        "crank_missed": {
+          "min": 0.0,
+          "median": 0.0,
+          "max": 0.0
+        },
+        "map": {
+          "min": 99.609,
+          "median": 107.87,
+          "max": 110.728
+        },
+        "spark": {
+          "min": 0.0,
+          "median": 0.0,
+          "max": 0.0
+        },
+        "throttle": {
+          "min": 77.25,
+          "median": 100.0,
+          "max": 100.0
+        },
+        "speed": {
+          "min": 56.0,
+          "median": 57.0,
+          "max": 57.0
+        }
+      },
+      "state_counts": {
+        "aux": {
+          "4032": 17
+        },
+        "avls": {
+          "3": 17
+        },
+        "sync": {
+          "1": 17
+        },
+        "flags": {
+          "0": 17
+        },
+        "timeout": {
+          "0": 17
+        },
+        "mode": {
+          "2": 17
+        },
+        "spark": {
+          "0": 17
+        },
+        "inhibit": {
+          "0": 17
+        },
+        "lean": {
+          "0": 17
+        },
+        "airflow_missed": {
+          "0": 17
+        },
+        "crank_missed": {
+          "0": 17
+        },
+        "iam": {
+          "1": 17
+        },
+        "fbkc": {
+          "0": 17
+        },
+        "flkc": {
+          "0": 17
+        }
+      },
+      "valid_afr": {
+        "min": 12.1,
+        "median": 13.05,
+        "max": 14.12
+      },
+      "invalid_afr_samples": 0
+    },
+    "already_high_120s": {
+      "samples": 13,
+      "csv_lines": [
+        1154,
+        1166
+      ],
+      "range": {
+        "time": {
+          "min": 119.896,
+          "median": 120.522,
+          "max": 121.148
+        },
+        "pedal": {
+          "min": 52.16,
+          "median": 100.0,
+          "max": 100.0
+        },
+        "aux": {
+          "min": 4032.0,
+          "median": 4032.0,
+          "max": 4032.0
+        },
+        "battery": {
+          "min": 13.84,
+          "median": 14.08,
+          "max": 14.16
+        },
+        "avls": {
+          "min": 3.0,
+          "median": 3.0,
+          "max": 3.0
+        },
+        "ect": {
+          "min": 62.0,
+          "median": 62.0,
+          "max": 62.0
+        },
+        "sync": {
+          "min": 1.0,
+          "median": 1.0,
+          "max": 1.0
+        },
+        "flags": {
+          "min": 0.0,
+          "median": 0.0,
+          "max": 0.0
+        },
+        "timeout": {
+          "min": 0.0,
+          "median": 0.0,
+          "max": 0.0
+        },
+        "rpm": {
+          "min": 3600.0,
+          "median": 3721.0,
+          "max": 3800.0
+        },
+        "afr": {
+          "min": 12.18,
+          "median": 13.54,
+          "max": 16.1
+        },
+        "fbkc": {
+          "min": 0.0,
+          "median": 0.0,
+          "max": 0.0
+        },
+        "flkc": {
+          "min": 0.0,
+          "median": 0.0,
+          "max": 0.0
+        },
+        "pw": {
+          "min": 5.63,
+          "median": 8.7,
+          "max": 11.01
+        },
+        "iam": {
+          "min": 1.0,
+          "median": 1.0,
+          "max": 1.0
+        },
+        "mode": {
+          "min": 2.0,
+          "median": 2.0,
+          "max": 2.0
+        },
+        "timing": {
+          "min": 16.0,
+          "median": 17.5,
+          "max": 23.0
+        },
+        "inhibit": {
+          "min": 0.0,
+          "median": 0.0,
+          "max": 0.0
+        },
+        "lean": {
+          "min": 0.0,
+          "median": 0.0,
+          "max": 0.0
+        },
+        "airflow_missed": {
+          "min": 0.0,
+          "median": 0.0,
+          "max": 0.0
+        },
+        "crank_missed": {
+          "min": 0.0,
+          "median": 0.0,
+          "max": 0.0
+        },
+        "map": {
+          "min": 97.068,
+          "median": 107.87,
+          "max": 112.316
+        },
+        "spark": {
+          "min": 0.0,
+          "median": 0.0,
+          "max": 0.0
+        },
+        "throttle": {
+          "min": 56.86,
+          "median": 100.0,
+          "max": 100.0
+        },
+        "speed": {
+          "min": 48.0,
+          "median": 49.0,
+          "max": 50.0
+        }
+      },
+      "state_counts": {
+        "aux": {
+          "4032": 13
+        },
+        "avls": {
+          "3": 13
+        },
+        "sync": {
+          "1": 13
+        },
+        "flags": {
+          "0": 13
+        },
+        "timeout": {
+          "0": 13
+        },
+        "mode": {
+          "2": 13
+        },
+        "spark": {
+          "0": 13
+        },
+        "inhibit": {
+          "0": 13
+        },
+        "lean": {
+          "0": 13
+        },
+        "airflow_missed": {
+          "0": 13
+        },
+        "crank_missed": {
+          "0": 13
+        },
+        "iam": {
+          "1": 13
+        },
+        "fbkc": {
+          "0": 13
+        },
+        "flkc": {
+          "0": 13
+        }
+      },
+      "valid_afr": {
+        "min": 12.18,
+        "median": 13.54,
+        "max": 16.1
+      },
+      "invalid_afr_samples": 0
+    },
+    "already_high_123s": {
+      "samples": 18,
+      "csv_lines": [
+        1182,
+        1199
+      ],
+      "range": {
+        "time": {
+          "min": 122.813,
+          "median": 123.6965,
+          "max": 124.584
+        },
+        "pedal": {
+          "min": 39.22,
+          "median": 100.0,
+          "max": 100.0
+        },
+        "aux": {
+          "min": 4032.0,
+          "median": 4032.0,
+          "max": 4032.0
+        },
+        "battery": {
+          "min": 13.92,
+          "median": 14.16,
+          "max": 14.24
+        },
+        "avls": {
+          "min": 3.0,
+          "median": 3.0,
+          "max": 3.0
+        },
+        "ect": {
+          "min": 62.0,
+          "median": 62.0,
+          "max": 62.0
+        },
+        "sync": {
+          "min": 1.0,
+          "median": 1.0,
+          "max": 1.0
+        },
+        "flags": {
+          "min": 0.0,
+          "median": 0.0,
+          "max": 0.0
+        },
+        "timeout": {
+          "min": 0.0,
+          "median": 0.0,
+          "max": 0.0
+        },
+        "rpm": {
+          "min": 3137.0,
+          "median": 3266.0,
+          "max": 3318.0
+        },
+        "afr": {
+          "min": 0.0,
+          "median": 13.059999999999999,
+          "max": 14.63
+        },
+        "fbkc": {
+          "min": 0.0,
+          "median": 0.0,
+          "max": 0.0
+        },
+        "flkc": {
+          "min": 0.0,
+          "median": 0.0,
+          "max": 0.0
+        },
+        "pw": {
+          "min": 5.38,
+          "median": 8.575,
+          "max": 10.24
+        },
+        "iam": {
+          "min": 1.0,
+          "median": 1.0,
+          "max": 1.0
+        },
+        "mode": {
+          "min": 2.0,
+          "median": 2.0,
+          "max": 2.0
+        },
+        "timing": {
+          "min": 13.5,
+          "median": 16.75,
+          "max": 24.5
+        },
+        "inhibit": {
+          "min": 0.0,
+          "median": 0.0,
+          "max": 0.0
+        },
+        "lean": {
+          "min": 0.0,
+          "median": 0.0,
+          "max": 0.0
+        },
+        "airflow_missed": {
+          "min": 0.0,
+          "median": 0.0,
+          "max": 0.0
+        },
+        "crank_missed": {
+          "min": 0.0,
+          "median": 0.0,
+          "max": 0.0
+        },
+        "map": {
+          "min": 93.892,
+          "median": 107.23349999999999,
+          "max": 110.41
+        },
+        "spark": {
+          "min": 0.0,
+          "median": 0.0,
+          "max": 0.0
+        },
+        "throttle": {
+          "min": 43.53,
+          "median": 100.0,
+          "max": 100.0
+        },
+        "speed": {
+          "min": 42.0,
+          "median": 43.0,
+          "max": 44.0
+        }
+      },
+      "state_counts": {
+        "aux": {
+          "4032": 18
+        },
+        "avls": {
+          "3": 18
+        },
+        "sync": {
+          "1": 18
+        },
+        "flags": {
+          "0": 18
+        },
+        "timeout": {
+          "0": 18
+        },
+        "mode": {
+          "2": 18
+        },
+        "spark": {
+          "0": 18
+        },
+        "inhibit": {
+          "0": 18
+        },
+        "lean": {
+          "0": 18
+        },
+        "airflow_missed": {
+          "0": 18
+        },
+        "crank_missed": {
+          "0": 18
+        },
+        "iam": {
+          "1": 18
+        },
+        "fbkc": {
+          "0": 18
+        },
+        "flkc": {
+          "0": 18
+        }
+      },
+      "valid_afr": {
+        "min": 12.1,
+        "median": 13.11,
+        "max": 14.63
+      },
+      "invalid_afr_samples": 1
+    },
+    "final_engine_stop": {
+      "samples": 36,
+      "csv_lines": [
+        1556,
+        1591
+      ],
+      "range": {
+        "time": {
+          "min": 161.718,
+          "median": 163.537,
+          "max": 165.357
+        },
+        "pedal": {
+          "min": 0.0,
+          "median": 0.0,
+          "max": 0.0
+        },
+        "aux": {
+          "min": 4032.0,
+          "median": 4032.0,
+          "max": 4032.0
+        },
+        "battery": {
+          "min": 12.64,
+          "median": 12.72,
+          "max": 14.24
+        },
+        "avls": {
+          "min": 1.0,
+          "median": 1.0,
+          "max": 1.0
+        },
+        "ect": {
+          "min": 64.0,
+          "median": 64.0,
+          "max": 64.0
+        },
+        "sync": {
+          "min": 0.0,
+          "median": 0.0,
+          "max": 1.0
+        },
+        "flags": {
+          "min": 0.0,
+          "median": 128.0,
+          "max": 128.0
+        },
+        "timeout": {
+          "min": 0.0,
+          "median": 1.0,
+          "max": 1.0
+        },
+        "rpm": {
+          "min": 0.0,
+          "median": 0.0,
+          "max": 931.0
+        },
+        "afr": {
+          "min": 13.54,
+          "median": 14.08,
+          "max": 14.36
+        },
+        "fbkc": {
+          "min": 0.0,
+          "median": 0.0,
+          "max": 0.0
+        },
+        "flkc": {
+          "min": 0.0,
+          "median": 0.0,
+          "max": 0.0
+        },
+        "pw": {
+          "min": 0.77,
+          "median": 0.77,
+          "max": 2.3
+        },
+        "iam": {
+          "min": 1.0,
+          "median": 1.0,
+          "max": 1.0
+        },
+        "mode": {
+          "min": 0.0,
+          "median": 0.0,
+          "max": 2.0
+        },
+        "timing": {
+          "min": 15.0,
+          "median": 15.0,
+          "max": 19.0
+        },
+        "inhibit": {
+          "min": 0.0,
+          "median": 65535.0,
+          "max": 65535.0
+        },
+        "lean": {
+          "min": 0.0,
+          "median": 0.0,
+          "max": 0.0
+        },
+        "airflow_missed": {
+          "min": 0.0,
+          "median": 0.0,
+          "max": 0.0
+        },
+        "crank_missed": {
+          "min": 0.0,
+          "median": 0.0,
+          "max": 0.0
+        },
+        "map": {
+          "min": 20.825,
+          "median": 64.5065,
+          "max": 94.844
+        },
+        "spark": {
+          "min": 0.0,
+          "median": 65535.0,
+          "max": 65535.0
+        },
+        "throttle": {
+          "min": 0.0,
+          "median": 4.904999999999999,
+          "max": 57.25
+        },
+        "speed": {
+          "min": 0.0,
+          "median": 0.0,
+          "max": 0.0
+        }
+      },
+      "state_counts": {
+        "aux": {
+          "4032": 36
+        },
+        "avls": {
+          "1": 36
+        },
+        "sync": {
+          "0": 23,
+          "1": 13
+        },
+        "flags": {
+          "0": 13,
+          "128": 23
+        },
+        "timeout": {
+          "0": 13,
+          "1": 23
+        },
+        "mode": {
+          "0": 23,
+          "1": 5,
+          "2": 8
+        },
+        "spark": {
+          "0": 4,
+          "65535": 32
+        },
+        "inhibit": {
+          "0": 1,
+          "65535": 35
+        },
+        "lean": {
+          "0": 36
+        },
+        "airflow_missed": {
+          "0": 36
+        },
+        "crank_missed": {
+          "0": 36
+        },
+        "iam": {
+          "1": 36
+        },
+        "fbkc": {
+          "0": 36
+        },
+        "flkc": {
+          "0": 36
+        }
+      },
+      "valid_afr": {
+        "min": 13.54,
+        "median": 14.08,
+        "max": 14.36
+      },
+      "invalid_afr_samples": 0
+    }
+  },
+  "window_rows": {
+    "low_lift_full_throttle": [
+      {
+        "time": 63.148,
+        "pedal": 100.0,
+        "aux": 4032.0,
+        "battery": 14.24,
+        "avls": 1.0,
+        "ect": 58.0,
+        "sync": 1.0,
+        "flags": 0.0,
+        "timeout": 0.0,
+        "rpm": 2615.0,
+        "afr": 12.12,
+        "fbkc": 0.0,
+        "flkc": 0.0,
+        "pw": 8.19,
+        "iam": 1.0,
+        "mode": 2.0,
+        "timing": 16.5,
+        "inhibit": 0.0,
+        "lean": 0.0,
+        "airflow_missed": 0.0,
+        "crank_missed": 0.0,
+        "map": 105.009,
+        "spark": 0.0,
+        "throttle": 100.0,
+        "speed": 45.0,
+        "csv_line": 609,
+        "effective_spark_mask": 4032
+      },
+      {
+        "time": 63.251,
+        "pedal": 100.0,
+        "aux": 4032.0,
+        "battery": 14.16,
+        "avls": 1.0,
+        "ect": 58.0,
+        "sync": 1.0,
+        "flags": 0.0,
+        "timeout": 0.0,
+        "rpm": 2483.0,
+        "afr": 11.87,
+        "fbkc": 0.0,
+        "flkc": 0.0,
+        "pw": 8.19,
+        "iam": 1.0,
+        "mode": 2.0,
+        "timing": 16.5,
+        "inhibit": 0.0,
+        "lean": 0.0,
+        "airflow_missed": 0.0,
+        "crank_missed": 0.0,
+        "map": 104.692,
+        "spark": 0.0,
+        "throttle": 100.0,
+        "speed": 45.0,
+        "csv_line": 610,
+        "effective_spark_mask": 4032
+      },
+      {
+        "time": 63.355,
+        "pedal": 100.0,
+        "aux": 4032.0,
+        "battery": 14.0,
+        "avls": 1.0,
+        "ect": 58.0,
+        "sync": 1.0,
+        "flags": 0.0,
+        "timeout": 0.0,
+        "rpm": 2595.0,
+        "afr": 11.56,
+        "fbkc": 0.0,
+        "flkc": 0.0,
+        "pw": 8.19,
+        "iam": 1.0,
+        "mode": 2.0,
+        "timing": 16.5,
+        "inhibit": 0.0,
+        "lean": 0.0,
+        "airflow_missed": 0.0,
+        "crank_missed": 0.0,
+        "map": 104.692,
+        "spark": 0.0,
+        "throttle": 100.0,
+        "speed": 45.0,
+        "csv_line": 611,
+        "effective_spark_mask": 4032
+      },
+      {
+        "time": 63.461,
+        "pedal": 100.0,
+        "aux": 4032.0,
+        "battery": 14.16,
+        "avls": 1.0,
+        "ect": 58.0,
+        "sync": 1.0,
+        "flags": 0.0,
+        "timeout": 0.0,
+        "rpm": 2514.0,
+        "afr": 12.07,
+        "fbkc": 0.0,
+        "flkc": 0.0,
+        "pw": 8.19,
+        "iam": 1.0,
+        "mode": 2.0,
+        "timing": 16.5,
+        "inhibit": 0.0,
+        "lean": 0.0,
+        "airflow_missed": 0.0,
+        "crank_missed": 0.0,
+        "map": 105.328,
+        "spark": 0.0,
+        "throttle": 100.0,
+        "speed": 45.0,
+        "csv_line": 612,
+        "effective_spark_mask": 4032
+      },
+      {
+        "time": 63.564,
+        "pedal": 100.0,
+        "aux": 4032.0,
+        "battery": 14.24,
+        "avls": 1.0,
+        "ect": 58.0,
+        "sync": 1.0,
+        "flags": 0.0,
+        "timeout": 0.0,
+        "rpm": 2607.0,
+        "afr": 12.1,
+        "fbkc": 0.0,
+        "flkc": 0.0,
+        "pw": 8.19,
+        "iam": 1.0,
+        "mode": 2.0,
+        "timing": 16.5,
+        "inhibit": 0.0,
+        "lean": 0.0,
+        "airflow_missed": 0.0,
+        "crank_missed": 0.0,
+        "map": 105.01,
+        "spark": 0.0,
+        "throttle": 100.0,
+        "speed": 45.0,
+        "csv_line": 613,
+        "effective_spark_mask": 4032
+      },
+      {
+        "time": 63.668,
+        "pedal": 100.0,
+        "aux": 4032.0,
+        "battery": 14.0,
+        "avls": 1.0,
+        "ect": 58.0,
+        "sync": 1.0,
+        "flags": 0.0,
+        "timeout": 0.0,
+        "rpm": 2600.0,
+        "afr": 12.12,
+        "fbkc": 0.0,
+        "flkc": 0.0,
+        "pw": 8.19,
+        "iam": 1.0,
+        "mode": 2.0,
+        "timing": 16.5,
+        "inhibit": 0.0,
+        "lean": 0.0,
+        "airflow_missed": 0.0,
+        "crank_missed": 0.0,
+        "map": 104.692,
+        "spark": 0.0,
+        "throttle": 100.0,
+        "speed": 46.0,
+        "csv_line": 614,
+        "effective_spark_mask": 4032
+      },
+      {
+        "time": 63.773,
+        "pedal": 100.0,
+        "aux": 4032.0,
+        "battery": 14.16,
+        "avls": 1.0,
+        "ect": 58.0,
+        "sync": 1.0,
+        "flags": 0.0,
+        "timeout": 0.0,
+        "rpm": 2581.0,
+        "afr": 12.09,
+        "fbkc": 0.0,
+        "flkc": 0.0,
+        "pw": 8.19,
+        "iam": 1.0,
+        "mode": 2.0,
+        "timing": 16.5,
+        "inhibit": 0.0,
+        "lean": 0.0,
+        "airflow_missed": 0.0,
+        "crank_missed": 0.0,
+        "map": 105.644,
+        "spark": 0.0,
+        "throttle": 100.0,
+        "speed": 46.0,
+        "csv_line": 615,
+        "effective_spark_mask": 4032
+      },
+      {
+        "time": 63.876,
+        "pedal": 100.0,
+        "aux": 4032.0,
+        "battery": 14.24,
+        "avls": 1.0,
+        "ect": 58.0,
+        "sync": 1.0,
+        "flags": 0.0,
+        "timeout": 0.0,
+        "rpm": 2569.0,
+        "afr": 12.12,
+        "fbkc": 0.0,
+        "flkc": 0.0,
+        "pw": 8.19,
+        "iam": 1.0,
+        "mode": 2.0,
+        "timing": 16.5,
+        "inhibit": 0.0,
+        "lean": 0.0,
+        "airflow_missed": 0.0,
+        "crank_missed": 0.0,
+        "map": 104.693,
+        "spark": 0.0,
+        "throttle": 100.0,
+        "speed": 46.0,
+        "csv_line": 616,
+        "effective_spark_mask": 4032
+      },
+      {
+        "time": 63.981,
+        "pedal": 100.0,
+        "aux": 4032.0,
+        "battery": 14.0,
+        "avls": 1.0,
+        "ect": 58.0,
+        "sync": 1.0,
+        "flags": 0.0,
+        "timeout": 0.0,
+        "rpm": 2564.0,
+        "afr": 12.11,
+        "fbkc": 0.0,
+        "flkc": 0.0,
+        "pw": 8.19,
+        "iam": 1.0,
+        "mode": 2.0,
+        "timing": 16.5,
+        "inhibit": 0.0,
+        "lean": 0.0,
+        "airflow_missed": 0.0,
+        "crank_missed": 0.0,
+        "map": 104.692,
+        "spark": 0.0,
+        "throttle": 100.0,
+        "speed": 46.0,
+        "csv_line": 617,
+        "effective_spark_mask": 4032
+      },
+      {
+        "time": 64.085,
+        "pedal": 100.0,
+        "aux": 4032.0,
+        "battery": 14.16,
+        "avls": 1.0,
+        "ect": 58.0,
+        "sync": 1.0,
+        "flags": 0.0,
+        "timeout": 0.0,
+        "rpm": 2585.0,
+        "afr": 12.11,
+        "fbkc": 0.0,
+        "flkc": 0.0,
+        "pw": 8.19,
+        "iam": 1.0,
+        "mode": 2.0,
+        "timing": 16.0,
+        "inhibit": 0.0,
+        "lean": 0.0,
+        "airflow_missed": 0.0,
+        "crank_missed": 0.0,
+        "map": 105.644,
+        "spark": 0.0,
+        "throttle": 100.0,
+        "speed": 46.0,
+        "csv_line": 618,
+        "effective_spark_mask": 4032
+      }
+    ],
+    "entry_57s": [
+      {
+        "time": 57.211,
+        "pedal": 64.71,
+        "aux": 4032.0,
+        "battery": 14.08,
+        "avls": 3.0,
+        "ect": 58.0,
+        "sync": 1.0,
+        "flags": 0.0,
+        "timeout": 0.0,
+        "rpm": 3204.0,
+        "afr": 11.56,
+        "fbkc": 0.0,
+        "flkc": 0.0,
+        "pw": 10.24,
+        "iam": 1.0,
+        "mode": 2.0,
+        "timing": 17.0,
+        "inhibit": 0.0,
+        "lean": 0.0,
+        "airflow_missed": 0.0,
+        "crank_missed": 0.0,
+        "map": 112.953,
+        "spark": 0.0,
+        "throttle": 77.25,
+        "speed": 42.0,
+        "csv_line": 552,
+        "effective_spark_mask": 4032
+      },
+      {
+        "time": 57.316,
+        "pedal": 64.71,
+        "aux": 4032.0,
+        "battery": 14.08,
+        "avls": 3.0,
+        "ect": 58.0,
+        "sync": 1.0,
+        "flags": 0.0,
+        "timeout": 0.0,
+        "rpm": 3038.0,
+        "afr": 11.58,
+        "fbkc": 0.0,
+        "flkc": 0.0,
+        "pw": 10.5,
+        "iam": 1.0,
+        "mode": 2.0,
+        "timing": 16.5,
+        "inhibit": 0.0,
+        "lean": 0.0,
+        "airflow_missed": 0.0,
+        "crank_missed": 0.0,
+        "map": 113.268,
+        "spark": 0.0,
+        "throttle": 76.86,
+        "speed": 42.0,
+        "csv_line": 553,
+        "effective_spark_mask": 4032
+      },
+      {
+        "time": 57.42,
+        "pedal": 64.71,
+        "aux": 4032.0,
+        "battery": 13.92,
+        "avls": 3.0,
+        "ect": 58.0,
+        "sync": 1.0,
+        "flags": 0.0,
+        "timeout": 0.0,
+        "rpm": 3018.0,
+        "afr": 11.24,
+        "fbkc": 0.0,
+        "flkc": 0.0,
+        "pw": 10.75,
+        "iam": 1.0,
+        "mode": 2.0,
+        "timing": 16.5,
+        "inhibit": 0.0,
+        "lean": 0.0,
+        "airflow_missed": 0.0,
+        "crank_missed": 0.0,
+        "map": 111.363,
+        "spark": 0.0,
+        "throttle": 76.86,
+        "speed": 42.0,
+        "csv_line": 554,
+        "effective_spark_mask": 4032
+      },
+      {
+        "time": 57.524,
+        "pedal": 75.69,
+        "aux": 4032.0,
+        "battery": 14.16,
+        "avls": 3.0,
+        "ect": 58.0,
+        "sync": 1.0,
+        "flags": 0.0,
+        "timeout": 0.0,
+        "rpm": 3233.0,
+        "afr": 13.7,
+        "fbkc": 0.0,
+        "flkc": 0.0,
+        "pw": 9.98,
+        "iam": 1.0,
+        "mode": 2.0,
+        "timing": 17.0,
+        "inhibit": 0.0,
+        "lean": 0.0,
+        "airflow_missed": 0.0,
+        "crank_missed": 0.0,
+        "map": 109.141,
+        "spark": 0.0,
+        "throttle": 81.18,
+        "speed": 42.0,
+        "csv_line": 555,
+        "effective_spark_mask": 4032
+      },
+      {
+        "time": 57.628,
+        "pedal": 76.08,
+        "aux": 4032.0,
+        "battery": 14.08,
+        "avls": 3.0,
+        "ect": 58.0,
+        "sync": 1.0,
+        "flags": 0.0,
+        "timeout": 0.0,
+        "rpm": 3083.0,
+        "afr": 15.3,
+        "fbkc": 0.0,
+        "flkc": 0.0,
+        "pw": 9.47,
+        "iam": 1.0,
+        "mode": 2.0,
+        "timing": 17.5,
+        "inhibit": 0.0,
+        "lean": 0.0,
+        "airflow_missed": 0.0,
+        "crank_missed": 0.0,
+        "map": 108.187,
+        "spark": 0.0,
+        "throttle": 89.02,
+        "speed": 41.0,
+        "csv_line": 556,
+        "effective_spark_mask": 4032
+      },
+      {
+        "time": 57.732,
+        "pedal": 76.08,
+        "aux": 4032.0,
+        "battery": 14.16,
+        "avls": 3.0,
+        "ect": 58.0,
+        "sync": 1.0,
+        "flags": 0.0,
+        "timeout": 0.0,
+        "rpm": 3106.0,
+        "afr": 16.58,
+        "fbkc": 0.0,
+        "flkc": 0.0,
+        "pw": 8.96,
+        "iam": 1.0,
+        "mode": 2.0,
+        "timing": 17.5,
+        "inhibit": 0.0,
+        "lean": 0.0,
+        "airflow_missed": 0.0,
+        "crank_missed": 0.0,
+        "map": 108.505,
+        "spark": 0.0,
+        "throttle": 89.02,
+        "speed": 41.0,
+        "csv_line": 557,
+        "effective_spark_mask": 4032
+      },
+      {
+        "time": 57.835,
+        "pedal": 76.08,
+        "aux": 4032.0,
+        "battery": 14.16,
+        "avls": 3.0,
+        "ect": 58.0,
+        "sync": 1.0,
+        "flags": 0.0,
+        "timeout": 0.0,
+        "rpm": 3180.0,
+        "afr": 14.16,
+        "fbkc": 0.0,
+        "flkc": 0.0,
+        "pw": 8.96,
+        "iam": 1.0,
+        "mode": 2.0,
+        "timing": 17.5,
+        "inhibit": 0.0,
+        "lean": 0.0,
+        "airflow_missed": 0.0,
+        "crank_missed": 0.0,
+        "map": 107.869,
+        "spark": 0.0,
+        "throttle": 88.63,
+        "speed": 41.0,
+        "csv_line": 558,
+        "effective_spark_mask": 4032
+      },
+      {
+        "time": 57.94,
+        "pedal": 75.29,
+        "aux": 4032.0,
+        "battery": 13.84,
+        "avls": 3.0,
+        "ect": 58.0,
+        "sync": 1.0,
+        "flags": 0.0,
+        "timeout": 0.0,
+        "rpm": 3126.0,
+        "afr": 13.13,
+        "fbkc": 0.0,
+        "flkc": 0.0,
+        "pw": 9.22,
+        "iam": 1.0,
+        "mode": 2.0,
+        "timing": 17.5,
+        "inhibit": 0.0,
+        "lean": 0.0,
+        "airflow_missed": 0.0,
+        "crank_missed": 0.0,
+        "map": 108.821,
+        "spark": 0.0,
+        "throttle": 89.02,
+        "speed": 41.0,
+        "csv_line": 559,
+        "effective_spark_mask": 4032
+      },
+      {
+        "time": 58.044,
+        "pedal": 40.39,
+        "aux": 4032.0,
+        "battery": 13.84,
+        "avls": 3.0,
+        "ect": 58.0,
+        "sync": 1.0,
+        "flags": 0.0,
+        "timeout": 0.0,
+        "rpm": 3037.0,
+        "afr": 12.11,
+        "fbkc": 0.0,
+        "flkc": 0.0,
+        "pw": 9.22,
+        "iam": 1.0,
+        "mode": 2.0,
+        "timing": 17.5,
+        "inhibit": 0.0,
+        "lean": 0.0,
+        "airflow_missed": 0.0,
+        "crank_missed": 0.0,
+        "map": 108.187,
+        "spark": 0.0,
+        "throttle": 80.0,
+        "speed": 41.0,
+        "csv_line": 560,
+        "effective_spark_mask": 4032
+      }
+    ],
+    "entry_105s": [
+      {
+        "time": 104.899,
+        "pedal": 74.12,
+        "aux": 4032.0,
+        "battery": 12.4,
+        "avls": 3.0,
+        "ect": 61.0,
+        "sync": 1.0,
+        "flags": 0.0,
+        "timeout": 0.0,
+        "rpm": 3368.0,
+        "afr": 12.18,
+        "fbkc": 0.0,
+        "flkc": 0.0,
+        "pw": 8.96,
+        "iam": 1.0,
+        "mode": 2.0,
+        "timing": 17.0,
+        "inhibit": 0.0,
+        "lean": 0.0,
+        "airflow_missed": 0.0,
+        "crank_missed": 0.0,
+        "map": 109.14,
+        "spark": 0.0,
+        "throttle": 87.06,
+        "speed": 43.0,
+        "csv_line": 1010,
+        "effective_spark_mask": 4032
+      },
+      {
+        "time": 105.003,
+        "pedal": 74.12,
+        "aux": 4032.0,
+        "battery": 12.4,
+        "avls": 3.0,
+        "ect": 61.0,
+        "sync": 1.0,
+        "flags": 0.0,
+        "timeout": 0.0,
+        "rpm": 3084.0,
+        "afr": 12.55,
+        "fbkc": 0.0,
+        "flkc": 0.0,
+        "pw": 9.73,
+        "iam": 1.0,
+        "mode": 2.0,
+        "timing": 16.5,
+        "inhibit": 0.0,
+        "lean": 0.0,
+        "airflow_missed": 0.0,
+        "crank_missed": 0.0,
+        "map": 110.411,
+        "spark": 0.0,
+        "throttle": 87.06,
+        "speed": 43.0,
+        "csv_line": 1011,
+        "effective_spark_mask": 4032
+      },
+      {
+        "time": 105.107,
+        "pedal": 77.65,
+        "aux": 4032.0,
+        "battery": 12.32,
+        "avls": 3.0,
+        "ect": 61.0,
+        "sync": 1.0,
+        "flags": 0.0,
+        "timeout": 0.0,
+        "rpm": 3218.0,
+        "afr": 13.12,
+        "fbkc": 0.0,
+        "flkc": 0.0,
+        "pw": 9.98,
+        "iam": 1.0,
+        "mode": 2.0,
+        "timing": 16.0,
+        "inhibit": 0.0,
+        "lean": 0.0,
+        "airflow_missed": 0.0,
+        "crank_missed": 0.0,
+        "map": 110.41,
+        "spark": 0.0,
+        "throttle": 88.63,
+        "speed": 43.0,
+        "csv_line": 1012,
+        "effective_spark_mask": 4032
+      },
+      {
+        "time": 105.212,
+        "pedal": 85.1,
+        "aux": 4032.0,
+        "battery": 12.48,
+        "avls": 3.0,
+        "ect": 61.0,
+        "sync": 1.0,
+        "flags": 0.0,
+        "timeout": 0.0,
+        "rpm": 3285.0,
+        "afr": 12.1,
+        "fbkc": 0.0,
+        "flkc": 0.0,
+        "pw": 10.24,
+        "iam": 1.0,
+        "mode": 2.0,
+        "timing": 16.0,
+        "inhibit": 0.0,
+        "lean": 0.0,
+        "airflow_missed": 0.0,
+        "crank_missed": 0.0,
+        "map": 109.456,
+        "spark": 0.0,
+        "throttle": 94.51,
+        "speed": 43.0,
+        "csv_line": 1013,
+        "effective_spark_mask": 4032
+      },
+      {
+        "time": 105.317,
+        "pedal": 85.1,
+        "aux": 4032.0,
+        "battery": 12.32,
+        "avls": 3.0,
+        "ect": 61.0,
+        "sync": 1.0,
+        "flags": 0.0,
+        "timeout": 0.0,
+        "rpm": 3217.0,
+        "afr": 12.87,
+        "fbkc": 0.0,
+        "flkc": 0.0,
+        "pw": 9.98,
+        "iam": 1.0,
+        "mode": 2.0,
+        "timing": 16.0,
+        "inhibit": 0.0,
+        "lean": 0.0,
+        "airflow_missed": 0.0,
+        "crank_missed": 0.0,
+        "map": 108.821,
+        "spark": 0.0,
+        "throttle": 98.43,
+        "speed": 43.0,
+        "csv_line": 1014,
+        "effective_spark_mask": 4032
+      },
+      {
+        "time": 105.422,
+        "pedal": 85.1,
+        "aux": 4032.0,
+        "battery": 12.48,
+        "avls": 3.0,
+        "ect": 61.0,
+        "sync": 1.0,
+        "flags": 0.0,
+        "timeout": 0.0,
+        "rpm": 3257.0,
+        "afr": 15.36,
+        "fbkc": 0.0,
+        "flkc": 0.0,
+        "pw": 9.73,
+        "iam": 1.0,
+        "mode": 2.0,
+        "timing": 16.5,
+        "inhibit": 0.0,
+        "lean": 0.0,
+        "airflow_missed": 0.0,
+        "crank_missed": 0.0,
+        "map": 107.55,
+        "spark": 0.0,
+        "throttle": 98.43,
+        "speed": 43.0,
+        "csv_line": 1015,
+        "effective_spark_mask": 4032
+      },
+      {
+        "time": 105.525,
+        "pedal": 43.14,
+        "aux": 4032.0,
+        "battery": 12.24,
+        "avls": 3.0,
+        "ect": 61.0,
+        "sync": 1.0,
+        "flags": 0.0,
+        "timeout": 0.0,
+        "rpm": 3382.0,
+        "afr": 16.11,
+        "fbkc": 0.0,
+        "flkc": 0.0,
+        "pw": 9.22,
+        "iam": 1.0,
+        "mode": 2.0,
+        "timing": 16.5,
+        "inhibit": 0.0,
+        "lean": 0.0,
+        "airflow_missed": 0.0,
+        "crank_missed": 0.0,
+        "map": 107.869,
+        "spark": 0.0,
+        "throttle": 93.73,
+        "speed": 43.0,
+        "csv_line": 1016,
+        "effective_spark_mask": 4032
+      }
+    ],
+    "entry_110s": [
+      {
+        "time": 110.215,
+        "pedal": 97.65,
+        "aux": 4032.0,
+        "battery": 12.72,
+        "avls": 3.0,
+        "ect": 61.0,
+        "sync": 1.0,
+        "flags": 0.0,
+        "timeout": 0.0,
+        "rpm": 3152.0,
+        "afr": 11.56,
+        "fbkc": 0.0,
+        "flkc": 0.0,
+        "pw": 10.75,
+        "iam": 1.0,
+        "mode": 2.0,
+        "timing": 15.5,
+        "inhibit": 0.0,
+        "lean": 0.0,
+        "airflow_missed": 0.0,
+        "crank_missed": 0.0,
+        "map": 113.905,
+        "spark": 0.0,
+        "throttle": 100.0,
+        "speed": 57.0,
+        "csv_line": 1061,
+        "effective_spark_mask": 4032
+      },
+      {
+        "time": 110.319,
+        "pedal": 97.65,
+        "aux": 4032.0,
+        "battery": 12.56,
+        "avls": 3.0,
+        "ect": 61.0,
+        "sync": 1.0,
+        "flags": 0.0,
+        "timeout": 0.0,
+        "rpm": 3249.0,
+        "afr": 11.57,
+        "fbkc": 0.0,
+        "flkc": 0.0,
+        "pw": 11.01,
+        "iam": 1.0,
+        "mode": 2.0,
+        "timing": 15.5,
+        "inhibit": 0.0,
+        "lean": 0.0,
+        "airflow_missed": 0.0,
+        "crank_missed": 0.0,
+        "map": 115.493,
+        "spark": 0.0,
+        "throttle": 100.0,
+        "speed": 57.0,
+        "csv_line": 1062,
+        "effective_spark_mask": 4032
+      },
+      {
+        "time": 110.424,
+        "pedal": 97.65,
+        "aux": 4032.0,
+        "battery": 12.48,
+        "avls": 3.0,
+        "ect": 61.0,
+        "sync": 1.0,
+        "flags": 0.0,
+        "timeout": 0.0,
+        "rpm": 3016.0,
+        "afr": 11.57,
+        "fbkc": 0.0,
+        "flkc": 0.0,
+        "pw": 11.52,
+        "iam": 1.0,
+        "mode": 2.0,
+        "timing": 15.0,
+        "inhibit": 0.0,
+        "lean": 0.0,
+        "airflow_missed": 0.0,
+        "crank_missed": 0.0,
+        "map": 113.905,
+        "spark": 0.0,
+        "throttle": 100.0,
+        "speed": 57.0,
+        "csv_line": 1063,
+        "effective_spark_mask": 4032
+      },
+      {
+        "time": 110.527,
+        "pedal": 97.65,
+        "aux": 4032.0,
+        "battery": 12.64,
+        "avls": 3.0,
+        "ect": 61.0,
+        "sync": 1.0,
+        "flags": 0.0,
+        "timeout": 0.0,
+        "rpm": 3265.0,
+        "afr": 12.09,
+        "fbkc": 0.0,
+        "flkc": 0.0,
+        "pw": 11.26,
+        "iam": 1.0,
+        "mode": 2.0,
+        "timing": 15.5,
+        "inhibit": 0.0,
+        "lean": 0.0,
+        "airflow_missed": 0.0,
+        "crank_missed": 0.0,
+        "map": 111.047,
+        "spark": 0.0,
+        "throttle": 100.0,
+        "speed": 57.0,
+        "csv_line": 1064,
+        "effective_spark_mask": 4032
+      },
+      {
+        "time": 110.632,
+        "pedal": 97.65,
+        "aux": 4032.0,
+        "battery": 12.64,
+        "avls": 3.0,
+        "ect": 61.0,
+        "sync": 1.0,
+        "flags": 0.0,
+        "timeout": 0.0,
+        "rpm": 3139.0,
+        "afr": 15.39,
+        "fbkc": 0.0,
+        "flkc": 0.0,
+        "pw": 10.24,
+        "iam": 1.0,
+        "mode": 2.0,
+        "timing": 15.5,
+        "inhibit": 0.0,
+        "lean": 0.0,
+        "airflow_missed": 0.0,
+        "crank_missed": 0.0,
+        "map": 109.775,
+        "spark": 0.0,
+        "throttle": 100.0,
+        "speed": 57.0,
+        "csv_line": 1065,
+        "effective_spark_mask": 4032
+      },
+      {
+        "time": 110.736,
+        "pedal": 97.65,
+        "aux": 4032.0,
+        "battery": 12.48,
+        "avls": 3.0,
+        "ect": 61.0,
+        "sync": 1.0,
+        "flags": 0.0,
+        "timeout": 0.0,
+        "rpm": 3155.0,
+        "afr": 16.59,
+        "fbkc": 0.0,
+        "flkc": 0.0,
+        "pw": 9.73,
+        "iam": 1.0,
+        "mode": 2.0,
+        "timing": 16.0,
+        "inhibit": 0.0,
+        "lean": 0.0,
+        "airflow_missed": 0.0,
+        "crank_missed": 0.0,
+        "map": 108.822,
+        "spark": 0.0,
+        "throttle": 100.0,
+        "speed": 57.0,
+        "csv_line": 1066,
+        "effective_spark_mask": 4032
+      },
+      {
+        "time": 110.84,
+        "pedal": 97.65,
+        "aux": 4032.0,
+        "battery": 12.64,
+        "avls": 3.0,
+        "ect": 61.0,
+        "sync": 1.0,
+        "flags": 0.0,
+        "timeout": 0.0,
+        "rpm": 3262.0,
+        "afr": 16.62,
+        "fbkc": 0.0,
+        "flkc": 0.0,
+        "pw": 9.47,
+        "iam": 1.0,
+        "mode": 2.0,
+        "timing": 16.5,
+        "inhibit": 0.0,
+        "lean": 0.0,
+        "airflow_missed": 0.0,
+        "crank_missed": 0.0,
+        "map": 108.504,
+        "spark": 0.0,
+        "throttle": 100.0,
+        "speed": 57.0,
+        "csv_line": 1067,
+        "effective_spark_mask": 4032
+      },
+      {
+        "time": 110.944,
+        "pedal": 97.65,
+        "aux": 4032.0,
+        "battery": 12.8,
+        "avls": 3.0,
+        "ect": 61.0,
+        "sync": 1.0,
+        "flags": 0.0,
+        "timeout": 0.0,
+        "rpm": 3199.0,
+        "afr": 16.6,
+        "fbkc": 0.0,
+        "flkc": 0.0,
+        "pw": 9.47,
+        "iam": 1.0,
+        "mode": 2.0,
+        "timing": 16.5,
+        "inhibit": 0.0,
+        "lean": 0.0,
+        "airflow_missed": 0.0,
+        "crank_missed": 0.0,
+        "map": 107.55,
+        "spark": 0.0,
+        "throttle": 100.0,
+        "speed": 57.0,
+        "csv_line": 1068,
+        "effective_spark_mask": 4032
+      },
+      {
+        "time": 111.048,
+        "pedal": 100.0,
+        "aux": 4032.0,
+        "battery": 12.88,
+        "avls": 3.0,
+        "ect": 61.0,
+        "sync": 1.0,
+        "flags": 0.0,
+        "timeout": 0.0,
+        "rpm": 3258.0,
+        "afr": 14.61,
+        "fbkc": 0.0,
+        "flkc": 0.0,
+        "pw": 9.47,
+        "iam": 1.0,
+        "mode": 2.0,
+        "timing": 16.5,
+        "inhibit": 0.0,
+        "lean": 0.0,
+        "airflow_missed": 0.0,
+        "crank_missed": 0.0,
+        "map": 108.505,
+        "spark": 0.0,
+        "throttle": 100.0,
+        "speed": 57.0,
+        "csv_line": 1069,
+        "effective_spark_mask": 4032
+      },
+      {
+        "time": 111.152,
+        "pedal": 100.0,
+        "aux": 4032.0,
+        "battery": 13.04,
+        "avls": 3.0,
+        "ect": 61.0,
+        "sync": 1.0,
+        "flags": 0.0,
+        "timeout": 0.0,
+        "rpm": 3192.0,
+        "afr": 14.11,
+        "fbkc": 0.0,
+        "flkc": 0.0,
+        "pw": 9.47,
+        "iam": 1.0,
+        "mode": 2.0,
+        "timing": 16.5,
+        "inhibit": 0.0,
+        "lean": 0.0,
+        "airflow_missed": 0.0,
+        "crank_missed": 0.0,
+        "map": 108.822,
+        "spark": 0.0,
+        "throttle": 100.0,
+        "speed": 57.0,
+        "csv_line": 1070,
+        "effective_spark_mask": 4032
+      },
+      {
+        "time": 111.255,
+        "pedal": 100.0,
+        "aux": 4032.0,
+        "battery": 13.04,
+        "avls": 3.0,
+        "ect": 61.0,
+        "sync": 1.0,
+        "flags": 0.0,
+        "timeout": 0.0,
+        "rpm": 3176.0,
+        "afr": 13.11,
+        "fbkc": 0.0,
+        "flkc": 0.0,
+        "pw": 9.47,
+        "iam": 1.0,
+        "mode": 2.0,
+        "timing": 16.5,
+        "inhibit": 0.0,
+        "lean": 0.0,
+        "airflow_missed": 0.0,
+        "crank_missed": 0.0,
+        "map": 108.504,
+        "spark": 0.0,
+        "throttle": 100.0,
+        "speed": 57.0,
+        "csv_line": 1071,
+        "effective_spark_mask": 4032
+      },
+      {
+        "time": 111.36,
+        "pedal": 100.0,
+        "aux": 4032.0,
+        "battery": 13.12,
+        "avls": 3.0,
+        "ect": 61.0,
+        "sync": 1.0,
+        "flags": 0.0,
+        "timeout": 0.0,
+        "rpm": 3196.0,
+        "afr": 12.86,
+        "fbkc": 0.0,
+        "flkc": 0.0,
+        "pw": 9.47,
+        "iam": 1.0,
+        "mode": 2.0,
+        "timing": 16.5,
+        "inhibit": 0.0,
+        "lean": 0.0,
+        "airflow_missed": 0.0,
+        "crank_missed": 0.0,
+        "map": 108.822,
+        "spark": 0.0,
+        "throttle": 100.0,
+        "speed": 57.0,
+        "csv_line": 1072,
+        "effective_spark_mask": 4032
+      },
+      {
+        "time": 111.463,
+        "pedal": 100.0,
+        "aux": 4032.0,
+        "battery": 13.2,
+        "avls": 3.0,
+        "ect": 61.0,
+        "sync": 1.0,
+        "flags": 0.0,
+        "timeout": 0.0,
+        "rpm": 3176.0,
+        "afr": 13.29,
+        "fbkc": 0.0,
+        "flkc": 0.0,
+        "pw": 9.47,
+        "iam": 1.0,
+        "mode": 2.0,
+        "timing": 16.5,
+        "inhibit": 0.0,
+        "lean": 0.0,
+        "airflow_missed": 0.0,
+        "crank_missed": 0.0,
+        "map": 108.504,
+        "spark": 0.0,
+        "throttle": 100.0,
+        "speed": 57.0,
+        "csv_line": 1073,
+        "effective_spark_mask": 4032
+      },
+      {
+        "time": 111.568,
+        "pedal": 100.0,
+        "aux": 4032.0,
+        "battery": 13.36,
+        "avls": 3.0,
+        "ect": 61.0,
+        "sync": 1.0,
+        "flags": 0.0,
+        "timeout": 0.0,
+        "rpm": 3244.0,
+        "afr": 13.54,
+        "fbkc": 0.0,
+        "flkc": 0.0,
+        "pw": 9.47,
+        "iam": 1.0,
+        "mode": 2.0,
+        "timing": 16.5,
+        "inhibit": 0.0,
+        "lean": 0.0,
+        "airflow_missed": 0.0,
+        "crank_missed": 0.0,
+        "map": 108.504,
+        "spark": 0.0,
+        "throttle": 100.0,
+        "speed": 57.0,
+        "csv_line": 1074,
+        "effective_spark_mask": 4032
+      },
+      {
+        "time": 111.673,
+        "pedal": 100.0,
+        "aux": 4032.0,
+        "battery": 13.44,
+        "avls": 3.0,
+        "ect": 61.0,
+        "sync": 1.0,
+        "flags": 0.0,
+        "timeout": 0.0,
+        "rpm": 3258.0,
+        "afr": 13.39,
+        "fbkc": 0.0,
+        "flkc": 0.0,
+        "pw": 9.47,
+        "iam": 1.0,
+        "mode": 2.0,
+        "timing": 16.5,
+        "inhibit": 0.0,
+        "lean": 0.0,
+        "airflow_missed": 0.0,
+        "crank_missed": 0.0,
+        "map": 109.14,
+        "spark": 0.0,
+        "throttle": 100.0,
+        "speed": 57.0,
+        "csv_line": 1075,
+        "effective_spark_mask": 4032
+      },
+      {
+        "time": 111.777,
+        "pedal": 63.14,
+        "aux": 4032.0,
+        "battery": 13.52,
+        "avls": 3.0,
+        "ect": 61.0,
+        "sync": 1.0,
+        "flags": 0.0,
+        "timeout": 0.0,
+        "rpm": 3151.0,
+        "afr": 12.9,
+        "fbkc": 0.0,
+        "flkc": 0.0,
+        "pw": 9.47,
+        "iam": 1.0,
+        "mode": 2.0,
+        "timing": 16.5,
+        "inhibit": 0.0,
+        "lean": 0.0,
+        "airflow_missed": 0.0,
+        "crank_missed": 0.0,
+        "map": 109.141,
+        "spark": 0.0,
+        "throttle": 100.0,
+        "speed": 57.0,
+        "csv_line": 1076,
+        "effective_spark_mask": 4032
+      }
+    ],
+    "already_high_116s": [
+      {
+        "time": 116.146,
+        "pedal": 100.0,
+        "aux": 4032.0,
+        "battery": 14.08,
+        "avls": 3.0,
+        "ect": 62.0,
+        "sync": 1.0,
+        "flags": 0.0,
+        "timeout": 0.0,
+        "rpm": 3282.0,
+        "afr": 13.56,
+        "fbkc": 0.0,
+        "flkc": 0.0,
+        "pw": 6.4,
+        "iam": 1.0,
+        "mode": 2.0,
+        "timing": 20.5,
+        "inhibit": 0.0,
+        "lean": 0.0,
+        "airflow_missed": 0.0,
+        "crank_missed": 0.0,
+        "map": 99.609,
+        "spark": 0.0,
+        "throttle": 77.25,
+        "speed": 56.0,
+        "csv_line": 1118,
+        "effective_spark_mask": 4032
+      },
+      {
+        "time": 116.251,
+        "pedal": 100.0,
+        "aux": 4032.0,
+        "battery": 14.16,
+        "avls": 3.0,
+        "ect": 62.0,
+        "sync": 1.0,
+        "flags": 0.0,
+        "timeout": 0.0,
+        "rpm": 3105.0,
+        "afr": 13.6,
+        "fbkc": 0.0,
+        "flkc": 0.0,
+        "pw": 7.17,
+        "iam": 1.0,
+        "mode": 2.0,
+        "timing": 18.5,
+        "inhibit": 0.0,
+        "lean": 0.0,
+        "airflow_missed": 0.0,
+        "crank_missed": 0.0,
+        "map": 100.881,
+        "spark": 0.0,
+        "throttle": 100.0,
+        "speed": 57.0,
+        "csv_line": 1119,
+        "effective_spark_mask": 4032
+      },
+      {
+        "time": 116.356,
+        "pedal": 100.0,
+        "aux": 4032.0,
+        "battery": 14.08,
+        "avls": 3.0,
+        "ect": 62.0,
+        "sync": 1.0,
+        "flags": 0.0,
+        "timeout": 0.0,
+        "rpm": 3212.0,
+        "afr": 13.05,
+        "fbkc": 0.0,
+        "flkc": 0.0,
+        "pw": 7.42,
+        "iam": 1.0,
+        "mode": 2.0,
+        "timing": 18.5,
+        "inhibit": 0.0,
+        "lean": 0.0,
+        "airflow_missed": 0.0,
+        "crank_missed": 0.0,
+        "map": 101.832,
+        "spark": 0.0,
+        "throttle": 100.0,
+        "speed": 56.0,
+        "csv_line": 1120,
+        "effective_spark_mask": 4032
+      },
+      {
+        "time": 116.46,
+        "pedal": 100.0,
+        "aux": 4032.0,
+        "battery": 14.16,
+        "avls": 3.0,
+        "ect": 62.0,
+        "sync": 1.0,
+        "flags": 0.0,
+        "timeout": 0.0,
+        "rpm": 3140.0,
+        "afr": 13.12,
+        "fbkc": 0.0,
+        "flkc": 0.0,
+        "pw": 7.68,
+        "iam": 1.0,
+        "mode": 2.0,
+        "timing": 18.0,
+        "inhibit": 0.0,
+        "lean": 0.0,
+        "airflow_missed": 0.0,
+        "crank_missed": 0.0,
+        "map": 103.423,
+        "spark": 0.0,
+        "throttle": 100.0,
+        "speed": 57.0,
+        "csv_line": 1121,
+        "effective_spark_mask": 4032
+      },
+      {
+        "time": 116.565,
+        "pedal": 100.0,
+        "aux": 4032.0,
+        "battery": 14.08,
+        "avls": 3.0,
+        "ect": 62.0,
+        "sync": 1.0,
+        "flags": 0.0,
+        "timeout": 0.0,
+        "rpm": 3243.0,
+        "afr": 13.35,
+        "fbkc": 0.0,
+        "flkc": 0.0,
+        "pw": 7.94,
+        "iam": 1.0,
+        "mode": 2.0,
+        "timing": 18.0,
+        "inhibit": 0.0,
+        "lean": 0.0,
+        "airflow_missed": 0.0,
+        "crank_missed": 0.0,
+        "map": 104.375,
+        "spark": 0.0,
+        "throttle": 100.0,
+        "speed": 57.0,
+        "csv_line": 1122,
+        "effective_spark_mask": 4032
+      },
+      {
+        "time": 116.668,
+        "pedal": 100.0,
+        "aux": 4032.0,
+        "battery": 14.08,
+        "avls": 3.0,
+        "ect": 62.0,
+        "sync": 1.0,
+        "flags": 0.0,
+        "timeout": 0.0,
+        "rpm": 3151.0,
+        "afr": 13.37,
+        "fbkc": 0.0,
+        "flkc": 0.0,
+        "pw": 8.19,
+        "iam": 1.0,
+        "mode": 2.0,
+        "timing": 17.5,
+        "inhibit": 0.0,
+        "lean": 0.0,
+        "airflow_missed": 0.0,
+        "crank_missed": 0.0,
+        "map": 105.328,
+        "spark": 0.0,
+        "throttle": 100.0,
+        "speed": 57.0,
+        "csv_line": 1123,
+        "effective_spark_mask": 4032
+      },
+      {
+        "time": 116.772,
+        "pedal": 100.0,
+        "aux": 4032.0,
+        "battery": 13.84,
+        "avls": 3.0,
+        "ect": 62.0,
+        "sync": 1.0,
+        "flags": 0.0,
+        "timeout": 0.0,
+        "rpm": 3214.0,
+        "afr": 12.55,
+        "fbkc": 0.0,
+        "flkc": 0.0,
+        "pw": 8.19,
+        "iam": 1.0,
+        "mode": 2.0,
+        "timing": 17.5,
+        "inhibit": 0.0,
+        "lean": 0.0,
+        "airflow_missed": 0.0,
+        "crank_missed": 0.0,
+        "map": 106.281,
+        "spark": 0.0,
+        "throttle": 100.0,
+        "speed": 57.0,
+        "csv_line": 1124,
+        "effective_spark_mask": 4032
+      },
+      {
+        "time": 116.877,
+        "pedal": 100.0,
+        "aux": 4032.0,
+        "battery": 14.16,
+        "avls": 3.0,
+        "ect": 62.0,
+        "sync": 1.0,
+        "flags": 0.0,
+        "timeout": 0.0,
+        "rpm": 3180.0,
+        "afr": 12.53,
+        "fbkc": 0.0,
+        "flkc": 0.0,
+        "pw": 8.45,
+        "iam": 1.0,
+        "mode": 2.0,
+        "timing": 17.0,
+        "inhibit": 0.0,
+        "lean": 0.0,
+        "airflow_missed": 0.0,
+        "crank_missed": 0.0,
+        "map": 107.234,
+        "spark": 0.0,
+        "throttle": 100.0,
+        "speed": 57.0,
+        "csv_line": 1125,
+        "effective_spark_mask": 4032
+      },
+      {
+        "time": 116.981,
+        "pedal": 100.0,
+        "aux": 4032.0,
+        "battery": 14.16,
+        "avls": 3.0,
+        "ect": 62.0,
+        "sync": 1.0,
+        "flags": 0.0,
+        "timeout": 0.0,
+        "rpm": 3205.0,
+        "afr": 12.1,
+        "fbkc": 0.0,
+        "flkc": 0.0,
+        "pw": 8.96,
+        "iam": 1.0,
+        "mode": 2.0,
+        "timing": 17.0,
+        "inhibit": 0.0,
+        "lean": 0.0,
+        "airflow_missed": 0.0,
+        "crank_missed": 0.0,
+        "map": 107.87,
+        "spark": 0.0,
+        "throttle": 100.0,
+        "speed": 57.0,
+        "csv_line": 1126,
+        "effective_spark_mask": 4032
+      },
+      {
+        "time": 117.084,
+        "pedal": 100.0,
+        "aux": 4032.0,
+        "battery": 14.0,
+        "avls": 3.0,
+        "ect": 62.0,
+        "sync": 1.0,
+        "flags": 0.0,
+        "timeout": 0.0,
+        "rpm": 3146.0,
+        "afr": 12.1,
+        "fbkc": 0.0,
+        "flkc": 0.0,
+        "pw": 9.22,
+        "iam": 1.0,
+        "mode": 2.0,
+        "timing": 16.5,
+        "inhibit": 0.0,
+        "lean": 0.0,
+        "airflow_missed": 0.0,
+        "crank_missed": 0.0,
+        "map": 108.822,
+        "spark": 0.0,
+        "throttle": 100.0,
+        "speed": 57.0,
+        "csv_line": 1127,
+        "effective_spark_mask": 4032
+      },
+      {
+        "time": 117.188,
+        "pedal": 100.0,
+        "aux": 4032.0,
+        "battery": 14.16,
+        "avls": 3.0,
+        "ect": 62.0,
+        "sync": 1.0,
+        "flags": 0.0,
+        "timeout": 0.0,
+        "rpm": 3247.0,
+        "afr": 12.1,
+        "fbkc": 0.0,
+        "flkc": 0.0,
+        "pw": 9.47,
+        "iam": 1.0,
+        "mode": 2.0,
+        "timing": 16.5,
+        "inhibit": 0.0,
+        "lean": 0.0,
+        "airflow_missed": 0.0,
+        "crank_missed": 0.0,
+        "map": 109.776,
+        "spark": 0.0,
+        "throttle": 100.0,
+        "speed": 57.0,
+        "csv_line": 1128,
+        "effective_spark_mask": 4032
+      },
+      {
+        "time": 117.292,
+        "pedal": 100.0,
+        "aux": 4032.0,
+        "battery": 14.08,
+        "avls": 3.0,
+        "ect": 62.0,
+        "sync": 1.0,
+        "flags": 0.0,
+        "timeout": 0.0,
+        "rpm": 3176.0,
+        "afr": 12.1,
+        "fbkc": 0.0,
+        "flkc": 0.0,
+        "pw": 9.73,
+        "iam": 1.0,
+        "mode": 2.0,
+        "timing": 16.0,
+        "inhibit": 0.0,
+        "lean": 0.0,
+        "airflow_missed": 0.0,
+        "crank_missed": 0.0,
+        "map": 110.093,
+        "spark": 0.0,
+        "throttle": 100.0,
+        "speed": 57.0,
+        "csv_line": 1129,
+        "effective_spark_mask": 4032
+      },
+      {
+        "time": 117.397,
+        "pedal": 100.0,
+        "aux": 4032.0,
+        "battery": 14.16,
+        "avls": 3.0,
+        "ect": 62.0,
+        "sync": 1.0,
+        "flags": 0.0,
+        "timeout": 0.0,
+        "rpm": 3148.0,
+        "afr": 12.11,
+        "fbkc": 0.0,
+        "flkc": 0.0,
+        "pw": 9.98,
+        "iam": 1.0,
+        "mode": 2.0,
+        "timing": 16.0,
+        "inhibit": 0.0,
+        "lean": 0.0,
+        "airflow_missed": 0.0,
+        "crank_missed": 0.0,
+        "map": 110.093,
+        "spark": 0.0,
+        "throttle": 100.0,
+        "speed": 57.0,
+        "csv_line": 1130,
+        "effective_spark_mask": 4032
+      },
+      {
+        "time": 117.501,
+        "pedal": 100.0,
+        "aux": 4032.0,
+        "battery": 14.08,
+        "avls": 3.0,
+        "ect": 62.0,
+        "sync": 1.0,
+        "flags": 0.0,
+        "timeout": 0.0,
+        "rpm": 3184.0,
+        "afr": 12.54,
+        "fbkc": 0.0,
+        "flkc": 0.0,
+        "pw": 9.98,
+        "iam": 1.0,
+        "mode": 2.0,
+        "timing": 16.0,
+        "inhibit": 0.0,
+        "lean": 0.0,
+        "airflow_missed": 0.0,
+        "crank_missed": 0.0,
+        "map": 110.727,
+        "spark": 0.0,
+        "throttle": 100.0,
+        "speed": 56.0,
+        "csv_line": 1131,
+        "effective_spark_mask": 4032
+      },
+      {
+        "time": 117.604,
+        "pedal": 100.0,
+        "aux": 4032.0,
+        "battery": 14.08,
+        "avls": 3.0,
+        "ect": 62.0,
+        "sync": 1.0,
+        "flags": 0.0,
+        "timeout": 0.0,
+        "rpm": 3138.0,
+        "afr": 13.12,
+        "fbkc": 0.0,
+        "flkc": 0.0,
+        "pw": 9.98,
+        "iam": 1.0,
+        "mode": 2.0,
+        "timing": 16.0,
+        "inhibit": 0.0,
+        "lean": 0.0,
+        "airflow_missed": 0.0,
+        "crank_missed": 0.0,
+        "map": 110.728,
+        "spark": 0.0,
+        "throttle": 100.0,
+        "speed": 56.0,
+        "csv_line": 1132,
+        "effective_spark_mask": 4032
+      },
+      {
+        "time": 117.709,
+        "pedal": 94.12,
+        "aux": 4032.0,
+        "battery": 14.08,
+        "avls": 3.0,
+        "ect": 62.0,
+        "sync": 1.0,
+        "flags": 0.0,
+        "timeout": 0.0,
+        "rpm": 3134.0,
+        "afr": 13.11,
+        "fbkc": 0.0,
+        "flkc": 0.0,
+        "pw": 9.73,
+        "iam": 1.0,
+        "mode": 2.0,
+        "timing": 16.0,
+        "inhibit": 0.0,
+        "lean": 0.0,
+        "airflow_missed": 0.0,
+        "crank_missed": 0.0,
+        "map": 109.456,
+        "spark": 0.0,
+        "throttle": 100.0,
+        "speed": 56.0,
+        "csv_line": 1133,
+        "effective_spark_mask": 4032
+      },
+      {
+        "time": 117.813,
+        "pedal": 51.76,
+        "aux": 4032.0,
+        "battery": 14.08,
+        "avls": 3.0,
+        "ect": 62.0,
+        "sync": 1.0,
+        "flags": 0.0,
+        "timeout": 0.0,
+        "rpm": 3092.0,
+        "afr": 14.12,
+        "fbkc": 0.0,
+        "flkc": 0.0,
+        "pw": 9.73,
+        "iam": 1.0,
+        "mode": 2.0,
+        "timing": 16.0,
+        "inhibit": 0.0,
+        "lean": 0.0,
+        "airflow_missed": 0.0,
+        "crank_missed": 0.0,
+        "map": 109.457,
+        "spark": 0.0,
+        "throttle": 100.0,
+        "speed": 56.0,
+        "csv_line": 1134,
+        "effective_spark_mask": 4032
+      }
+    ],
+    "already_high_120s": [
+      {
+        "time": 119.896,
+        "pedal": 100.0,
+        "aux": 4032.0,
+        "battery": 14.16,
+        "avls": 3.0,
+        "ect": 62.0,
+        "sync": 1.0,
+        "flags": 0.0,
+        "timeout": 0.0,
+        "rpm": 3734.0,
+        "afr": 13.58,
+        "fbkc": 0.0,
+        "flkc": 0.0,
+        "pw": 5.63,
+        "iam": 1.0,
+        "mode": 2.0,
+        "timing": 23.0,
+        "inhibit": 0.0,
+        "lean": 0.0,
+        "airflow_missed": 0.0,
+        "crank_missed": 0.0,
+        "map": 97.068,
+        "spark": 0.0,
+        "throttle": 56.86,
+        "speed": 48.0,
+        "csv_line": 1154,
+        "effective_spark_mask": 4032
+      },
+      {
+        "time": 120.0,
+        "pedal": 100.0,
+        "aux": 4032.0,
+        "battery": 14.16,
+        "avls": 3.0,
+        "ect": 62.0,
+        "sync": 1.0,
+        "flags": 0.0,
+        "timeout": 0.0,
+        "rpm": 3632.0,
+        "afr": 15.58,
+        "fbkc": 0.0,
+        "flkc": 0.0,
+        "pw": 6.91,
+        "iam": 1.0,
+        "mode": 2.0,
+        "timing": 19.5,
+        "inhibit": 0.0,
+        "lean": 0.0,
+        "airflow_missed": 0.0,
+        "crank_missed": 0.0,
+        "map": 98.34,
+        "spark": 0.0,
+        "throttle": 100.0,
+        "speed": 49.0,
+        "csv_line": 1155,
+        "effective_spark_mask": 4032
+      },
+      {
+        "time": 120.103,
+        "pedal": 100.0,
+        "aux": 4032.0,
+        "battery": 14.16,
+        "avls": 3.0,
+        "ect": 62.0,
+        "sync": 1.0,
+        "flags": 0.0,
+        "timeout": 0.0,
+        "rpm": 3733.0,
+        "afr": 15.12,
+        "fbkc": 0.0,
+        "flkc": 0.0,
+        "pw": 7.17,
+        "iam": 1.0,
+        "mode": 2.0,
+        "timing": 19.0,
+        "inhibit": 0.0,
+        "lean": 0.0,
+        "airflow_missed": 0.0,
+        "crank_missed": 0.0,
+        "map": 99.61,
+        "spark": 0.0,
+        "throttle": 100.0,
+        "speed": 49.0,
+        "csv_line": 1156,
+        "effective_spark_mask": 4032
+      },
+      {
+        "time": 120.208,
+        "pedal": 100.0,
+        "aux": 4032.0,
+        "battery": 14.08,
+        "avls": 3.0,
+        "ect": 62.0,
+        "sync": 1.0,
+        "flags": 0.0,
+        "timeout": 0.0,
+        "rpm": 3732.0,
+        "afr": 13.38,
+        "fbkc": 0.0,
+        "flkc": 0.0,
+        "pw": 7.42,
+        "iam": 1.0,
+        "mode": 2.0,
+        "timing": 19.0,
+        "inhibit": 0.0,
+        "lean": 0.0,
+        "airflow_missed": 0.0,
+        "crank_missed": 0.0,
+        "map": 101.832,
+        "spark": 0.0,
+        "throttle": 100.0,
+        "speed": 49.0,
+        "csv_line": 1157,
+        "effective_spark_mask": 4032
+      },
+      {
+        "time": 120.313,
+        "pedal": 100.0,
+        "aux": 4032.0,
+        "battery": 14.08,
+        "avls": 3.0,
+        "ect": 62.0,
+        "sync": 1.0,
+        "flags": 0.0,
+        "timeout": 0.0,
+        "rpm": 3764.0,
+        "afr": 13.54,
+        "fbkc": 0.0,
+        "flkc": 0.0,
+        "pw": 7.68,
+        "iam": 1.0,
+        "mode": 2.0,
+        "timing": 18.5,
+        "inhibit": 0.0,
+        "lean": 0.0,
+        "airflow_missed": 0.0,
+        "crank_missed": 0.0,
+        "map": 103.422,
+        "spark": 0.0,
+        "throttle": 100.0,
+        "speed": 49.0,
+        "csv_line": 1158,
+        "effective_spark_mask": 4032
+      },
+      {
+        "time": 120.417,
+        "pedal": 100.0,
+        "aux": 4032.0,
+        "battery": 14.16,
+        "avls": 3.0,
+        "ect": 62.0,
+        "sync": 1.0,
+        "flags": 0.0,
+        "timeout": 0.0,
+        "rpm": 3721.0,
+        "afr": 13.1,
+        "fbkc": 0.0,
+        "flkc": 0.0,
+        "pw": 8.19,
+        "iam": 1.0,
+        "mode": 2.0,
+        "timing": 18.0,
+        "inhibit": 0.0,
+        "lean": 0.0,
+        "airflow_missed": 0.0,
+        "crank_missed": 0.0,
+        "map": 104.693,
+        "spark": 0.0,
+        "throttle": 100.0,
+        "speed": 49.0,
+        "csv_line": 1159,
+        "effective_spark_mask": 4032
+      },
+      {
+        "time": 120.522,
+        "pedal": 100.0,
+        "aux": 4032.0,
+        "battery": 14.16,
+        "avls": 3.0,
+        "ect": 62.0,
+        "sync": 1.0,
+        "flags": 0.0,
+        "timeout": 0.0,
+        "rpm": 3726.0,
+        "afr": 12.64,
+        "fbkc": 0.0,
+        "flkc": 0.0,
+        "pw": 8.7,
+        "iam": 1.0,
+        "mode": 2.0,
+        "timing": 17.5,
+        "inhibit": 0.0,
+        "lean": 0.0,
+        "airflow_missed": 0.0,
+        "crank_missed": 0.0,
+        "map": 107.87,
+        "spark": 0.0,
+        "throttle": 100.0,
+        "speed": 49.0,
+        "csv_line": 1160,
+        "effective_spark_mask": 4032
+      },
+      {
+        "time": 120.626,
+        "pedal": 100.0,
+        "aux": 4032.0,
+        "battery": 14.08,
+        "avls": 3.0,
+        "ect": 62.0,
+        "sync": 1.0,
+        "flags": 0.0,
+        "timeout": 0.0,
+        "rpm": 3800.0,
+        "afr": 12.54,
+        "fbkc": 0.0,
+        "flkc": 0.0,
+        "pw": 9.22,
+        "iam": 1.0,
+        "mode": 2.0,
+        "timing": 17.0,
+        "inhibit": 0.0,
+        "lean": 0.0,
+        "airflow_missed": 0.0,
+        "crank_missed": 0.0,
+        "map": 108.821,
+        "spark": 0.0,
+        "throttle": 100.0,
+        "speed": 49.0,
+        "csv_line": 1161,
+        "effective_spark_mask": 4032
+      },
+      {
+        "time": 120.731,
+        "pedal": 100.0,
+        "aux": 4032.0,
+        "battery": 13.84,
+        "avls": 3.0,
+        "ect": 62.0,
+        "sync": 1.0,
+        "flags": 0.0,
+        "timeout": 0.0,
+        "rpm": 3659.0,
+        "afr": 12.18,
+        "fbkc": 0.0,
+        "flkc": 0.0,
+        "pw": 9.98,
+        "iam": 1.0,
+        "mode": 2.0,
+        "timing": 16.5,
+        "inhibit": 0.0,
+        "lean": 0.0,
+        "airflow_missed": 0.0,
+        "crank_missed": 0.0,
+        "map": 111.682,
+        "spark": 0.0,
+        "throttle": 100.0,
+        "speed": 49.0,
+        "csv_line": 1162,
+        "effective_spark_mask": 4032
+      },
+      {
+        "time": 120.835,
+        "pedal": 100.0,
+        "aux": 4032.0,
+        "battery": 14.08,
+        "avls": 3.0,
+        "ect": 62.0,
+        "sync": 1.0,
+        "flags": 0.0,
+        "timeout": 0.0,
+        "rpm": 3600.0,
+        "afr": 12.49,
+        "fbkc": 0.0,
+        "flkc": 0.0,
+        "pw": 10.75,
+        "iam": 1.0,
+        "mode": 2.0,
+        "timing": 16.0,
+        "inhibit": 0.0,
+        "lean": 0.0,
+        "airflow_missed": 0.0,
+        "crank_missed": 0.0,
+        "map": 112.316,
+        "spark": 0.0,
+        "throttle": 100.0,
+        "speed": 50.0,
+        "csv_line": 1163,
+        "effective_spark_mask": 4032
+      },
+      {
+        "time": 120.94,
+        "pedal": 100.0,
+        "aux": 4032.0,
+        "battery": 14.08,
+        "avls": 3.0,
+        "ect": 62.0,
+        "sync": 1.0,
+        "flags": 0.0,
+        "timeout": 0.0,
+        "rpm": 3700.0,
+        "afr": 13.62,
+        "fbkc": 0.0,
+        "flkc": 0.0,
+        "pw": 11.01,
+        "iam": 1.0,
+        "mode": 2.0,
+        "timing": 16.0,
+        "inhibit": 0.0,
+        "lean": 0.0,
+        "airflow_missed": 0.0,
+        "crank_missed": 0.0,
+        "map": 110.728,
+        "spark": 0.0,
+        "throttle": 100.0,
+        "speed": 49.0,
+        "csv_line": 1164,
+        "effective_spark_mask": 4032
+      },
+      {
+        "time": 121.044,
+        "pedal": 100.0,
+        "aux": 4032.0,
+        "battery": 14.16,
+        "avls": 3.0,
+        "ect": 62.0,
+        "sync": 1.0,
+        "flags": 0.0,
+        "timeout": 0.0,
+        "rpm": 3651.0,
+        "afr": 15.12,
+        "fbkc": 0.0,
+        "flkc": 0.0,
+        "pw": 10.24,
+        "iam": 1.0,
+        "mode": 2.0,
+        "timing": 16.0,
+        "inhibit": 0.0,
+        "lean": 0.0,
+        "airflow_missed": 0.0,
+        "crank_missed": 0.0,
+        "map": 108.821,
+        "spark": 0.0,
+        "throttle": 100.0,
+        "speed": 48.0,
+        "csv_line": 1165,
+        "effective_spark_mask": 4032
+      },
+      {
+        "time": 121.148,
+        "pedal": 52.16,
+        "aux": 4032.0,
+        "battery": 13.92,
+        "avls": 3.0,
+        "ect": 62.0,
+        "sync": 1.0,
+        "flags": 0.0,
+        "timeout": 0.0,
+        "rpm": 3644.0,
+        "afr": 16.1,
+        "fbkc": 0.0,
+        "flkc": 0.0,
+        "pw": 9.98,
+        "iam": 1.0,
+        "mode": 2.0,
+        "timing": 16.0,
+        "inhibit": 0.0,
+        "lean": 0.0,
+        "airflow_missed": 0.0,
+        "crank_missed": 0.0,
+        "map": 110.411,
+        "spark": 0.0,
+        "throttle": 100.0,
+        "speed": 48.0,
+        "csv_line": 1166,
+        "effective_spark_mask": 4032
+      }
+    ],
+    "already_high_123s": [
+      {
+        "time": 122.813,
+        "pedal": 40.0,
+        "aux": 4032.0,
+        "battery": 14.08,
+        "avls": 3.0,
+        "ect": 62.0,
+        "sync": 1.0,
+        "flags": 0.0,
+        "timeout": 0.0,
+        "rpm": 3151.0,
+        "afr": 14.57,
+        "fbkc": 0.0,
+        "flkc": 0.0,
+        "pw": 5.38,
+        "iam": 1.0,
+        "mode": 2.0,
+        "timing": 24.5,
+        "inhibit": 0.0,
+        "lean": 0.0,
+        "airflow_missed": 0.0,
+        "crank_missed": 0.0,
+        "map": 93.892,
+        "spark": 0.0,
+        "throttle": 43.53,
+        "speed": 42.0,
+        "csv_line": 1182,
+        "effective_spark_mask": 4032
+      },
+      {
+        "time": 122.917,
+        "pedal": 51.76,
+        "aux": 4032.0,
+        "battery": 14.24,
+        "avls": 3.0,
+        "ect": 62.0,
+        "sync": 1.0,
+        "flags": 0.0,
+        "timeout": 0.0,
+        "rpm": 3248.0,
+        "afr": 14.56,
+        "fbkc": 0.0,
+        "flkc": 0.0,
+        "pw": 6.4,
+        "iam": 1.0,
+        "mode": 2.0,
+        "timing": 13.5,
+        "inhibit": 0.0,
+        "lean": 0.0,
+        "airflow_missed": 0.0,
+        "crank_missed": 0.0,
+        "map": 97.069,
+        "spark": 0.0,
+        "throttle": 56.08,
+        "speed": 42.0,
+        "csv_line": 1183,
+        "effective_spark_mask": 4032
+      },
+      {
+        "time": 123.021,
+        "pedal": 64.71,
+        "aux": 4032.0,
+        "battery": 14.16,
+        "avls": 3.0,
+        "ect": 62.0,
+        "sync": 1.0,
+        "flags": 0.0,
+        "timeout": 0.0,
+        "rpm": 3211.0,
+        "afr": 0.0,
+        "fbkc": 0.0,
+        "flkc": 0.0,
+        "pw": 6.91,
+        "iam": 1.0,
+        "mode": 2.0,
+        "timing": 19.0,
+        "inhibit": 0.0,
+        "lean": 0.0,
+        "airflow_missed": 0.0,
+        "crank_missed": 0.0,
+        "map": 99.291,
+        "spark": 0.0,
+        "throttle": 68.63,
+        "speed": 42.0,
+        "csv_line": 1184,
+        "effective_spark_mask": 4032
+      },
+      {
+        "time": 123.125,
+        "pedal": 78.04,
+        "aux": 4032.0,
+        "battery": 14.16,
+        "avls": 3.0,
+        "ect": 62.0,
+        "sync": 1.0,
+        "flags": 0.0,
+        "timeout": 0.0,
+        "rpm": 3218.0,
+        "afr": 14.63,
+        "fbkc": 0.0,
+        "flkc": 0.0,
+        "pw": 7.17,
+        "iam": 1.0,
+        "mode": 2.0,
+        "timing": 18.5,
+        "inhibit": 0.0,
+        "lean": 0.0,
+        "airflow_missed": 0.0,
+        "crank_missed": 0.0,
+        "map": 100.88,
+        "spark": 0.0,
+        "throttle": 82.75,
+        "speed": 43.0,
+        "csv_line": 1185,
+        "effective_spark_mask": 4032
+      },
+      {
+        "time": 123.229,
+        "pedal": 91.37,
+        "aux": 4032.0,
+        "battery": 14.16,
+        "avls": 3.0,
+        "ect": 62.0,
+        "sync": 1.0,
+        "flags": 0.0,
+        "timeout": 0.0,
+        "rpm": 3304.0,
+        "afr": 13.12,
+        "fbkc": 0.0,
+        "flkc": 0.0,
+        "pw": 7.42,
+        "iam": 1.0,
+        "mode": 2.0,
+        "timing": 18.5,
+        "inhibit": 0.0,
+        "lean": 0.0,
+        "airflow_missed": 0.0,
+        "crank_missed": 0.0,
+        "map": 102.152,
+        "spark": 0.0,
+        "throttle": 96.86,
+        "speed": 43.0,
+        "csv_line": 1186,
+        "effective_spark_mask": 4032
+      },
+      {
+        "time": 123.332,
+        "pedal": 100.0,
+        "aux": 4032.0,
+        "battery": 14.08,
+        "avls": 3.0,
+        "ect": 62.0,
+        "sync": 1.0,
+        "flags": 0.0,
+        "timeout": 0.0,
+        "rpm": 3313.0,
+        "afr": 13.13,
+        "fbkc": 0.0,
+        "flkc": 0.0,
+        "pw": 7.68,
+        "iam": 1.0,
+        "mode": 2.0,
+        "timing": 18.0,
+        "inhibit": 0.0,
+        "lean": 0.0,
+        "airflow_missed": 0.0,
+        "crank_missed": 0.0,
+        "map": 103.422,
+        "spark": 0.0,
+        "throttle": 100.0,
+        "speed": 43.0,
+        "csv_line": 1187,
+        "effective_spark_mask": 4032
+      },
+      {
+        "time": 123.436,
+        "pedal": 100.0,
+        "aux": 4032.0,
+        "battery": 14.16,
+        "avls": 3.0,
+        "ect": 62.0,
+        "sync": 1.0,
+        "flags": 0.0,
+        "timeout": 0.0,
+        "rpm": 3283.0,
+        "afr": 13.12,
+        "fbkc": 0.0,
+        "flkc": 0.0,
+        "pw": 7.94,
+        "iam": 1.0,
+        "mode": 2.0,
+        "timing": 18.0,
+        "inhibit": 0.0,
+        "lean": 0.0,
+        "airflow_missed": 0.0,
+        "crank_missed": 0.0,
+        "map": 104.693,
+        "spark": 0.0,
+        "throttle": 100.0,
+        "speed": 43.0,
+        "csv_line": 1188,
+        "effective_spark_mask": 4032
+      },
+      {
+        "time": 123.54,
+        "pedal": 100.0,
+        "aux": 4032.0,
+        "battery": 14.24,
+        "avls": 3.0,
+        "ect": 62.0,
+        "sync": 1.0,
+        "flags": 0.0,
+        "timeout": 0.0,
+        "rpm": 3318.0,
+        "afr": 12.57,
+        "fbkc": 0.0,
+        "flkc": 0.0,
+        "pw": 8.19,
+        "iam": 1.0,
+        "mode": 2.0,
+        "timing": 17.5,
+        "inhibit": 0.0,
+        "lean": 0.0,
+        "airflow_missed": 0.0,
+        "crank_missed": 0.0,
+        "map": 105.645,
+        "spark": 0.0,
+        "throttle": 100.0,
+        "speed": 43.0,
+        "csv_line": 1189,
+        "effective_spark_mask": 4032
+      },
+      {
+        "time": 123.645,
+        "pedal": 100.0,
+        "aux": 4032.0,
+        "battery": 14.16,
+        "avls": 3.0,
+        "ect": 62.0,
+        "sync": 1.0,
+        "flags": 0.0,
+        "timeout": 0.0,
+        "rpm": 3301.0,
+        "afr": 12.58,
+        "fbkc": 0.0,
+        "flkc": 0.0,
+        "pw": 8.45,
+        "iam": 1.0,
+        "mode": 2.0,
+        "timing": 17.5,
+        "inhibit": 0.0,
+        "lean": 0.0,
+        "airflow_missed": 0.0,
+        "crank_missed": 0.0,
+        "map": 106.598,
+        "spark": 0.0,
+        "throttle": 100.0,
+        "speed": 44.0,
+        "csv_line": 1190,
+        "effective_spark_mask": 4032
+      },
+      {
+        "time": 123.748,
+        "pedal": 100.0,
+        "aux": 4032.0,
+        "battery": 14.08,
+        "avls": 3.0,
+        "ect": 62.0,
+        "sync": 1.0,
+        "flags": 0.0,
+        "timeout": 0.0,
+        "rpm": 3273.0,
+        "afr": 12.11,
+        "fbkc": 0.0,
+        "flkc": 0.0,
+        "pw": 8.7,
+        "iam": 1.0,
+        "mode": 2.0,
+        "timing": 17.0,
+        "inhibit": 0.0,
+        "lean": 0.0,
+        "airflow_missed": 0.0,
+        "crank_missed": 0.0,
+        "map": 107.869,
+        "spark": 0.0,
+        "throttle": 100.0,
+        "speed": 44.0,
+        "csv_line": 1191,
+        "effective_spark_mask": 4032
+      },
+      {
+        "time": 123.853,
+        "pedal": 100.0,
+        "aux": 4032.0,
+        "battery": 14.16,
+        "avls": 3.0,
+        "ect": 62.0,
+        "sync": 1.0,
+        "flags": 0.0,
+        "timeout": 0.0,
+        "rpm": 3305.0,
+        "afr": 12.11,
+        "fbkc": 0.0,
+        "flkc": 0.0,
+        "pw": 9.22,
+        "iam": 1.0,
+        "mode": 2.0,
+        "timing": 16.5,
+        "inhibit": 0.0,
+        "lean": 0.0,
+        "airflow_missed": 0.0,
+        "crank_missed": 0.0,
+        "map": 108.821,
+        "spark": 0.0,
+        "throttle": 100.0,
+        "speed": 44.0,
+        "csv_line": 1192,
+        "effective_spark_mask": 4032
+      },
+      {
+        "time": 123.957,
+        "pedal": 100.0,
+        "aux": 4032.0,
+        "battery": 14.16,
+        "avls": 3.0,
+        "ect": 62.0,
+        "sync": 1.0,
+        "flags": 0.0,
+        "timeout": 0.0,
+        "rpm": 3307.0,
+        "afr": 12.11,
+        "fbkc": 0.0,
+        "flkc": 0.0,
+        "pw": 9.47,
+        "iam": 1.0,
+        "mode": 2.0,
+        "timing": 16.5,
+        "inhibit": 0.0,
+        "lean": 0.0,
+        "airflow_missed": 0.0,
+        "crank_missed": 0.0,
+        "map": 110.092,
+        "spark": 0.0,
+        "throttle": 100.0,
+        "speed": 44.0,
+        "csv_line": 1193,
+        "effective_spark_mask": 4032
+      },
+      {
+        "time": 124.062,
+        "pedal": 100.0,
+        "aux": 4032.0,
+        "battery": 13.92,
+        "avls": 3.0,
+        "ect": 62.0,
+        "sync": 1.0,
+        "flags": 0.0,
+        "timeout": 0.0,
+        "rpm": 3308.0,
+        "afr": 12.1,
+        "fbkc": 0.0,
+        "flkc": 0.0,
+        "pw": 9.98,
+        "iam": 1.0,
+        "mode": 2.0,
+        "timing": 16.0,
+        "inhibit": 0.0,
+        "lean": 0.0,
+        "airflow_missed": 0.0,
+        "crank_missed": 0.0,
+        "map": 110.41,
+        "spark": 0.0,
+        "throttle": 100.0,
+        "speed": 43.0,
+        "csv_line": 1194,
+        "effective_spark_mask": 4032
+      },
+      {
+        "time": 124.166,
+        "pedal": 100.0,
+        "aux": 4032.0,
+        "battery": 14.16,
+        "avls": 3.0,
+        "ect": 62.0,
+        "sync": 1.0,
+        "flags": 0.0,
+        "timeout": 0.0,
+        "rpm": 3137.0,
+        "afr": 12.1,
+        "fbkc": 0.0,
+        "flkc": 0.0,
+        "pw": 9.98,
+        "iam": 1.0,
+        "mode": 2.0,
+        "timing": 16.0,
+        "inhibit": 0.0,
+        "lean": 0.0,
+        "airflow_missed": 0.0,
+        "crank_missed": 0.0,
+        "map": 109.776,
+        "spark": 0.0,
+        "throttle": 100.0,
+        "speed": 43.0,
+        "csv_line": 1195,
+        "effective_spark_mask": 4032
+      },
+      {
+        "time": 124.27,
+        "pedal": 100.0,
+        "aux": 4032.0,
+        "battery": 14.08,
+        "avls": 3.0,
+        "ect": 62.0,
+        "sync": 1.0,
+        "flags": 0.0,
+        "timeout": 0.0,
+        "rpm": 3250.0,
+        "afr": 13.11,
+        "fbkc": 0.0,
+        "flkc": 0.0,
+        "pw": 9.98,
+        "iam": 1.0,
+        "mode": 2.0,
+        "timing": 16.0,
+        "inhibit": 0.0,
+        "lean": 0.0,
+        "airflow_missed": 0.0,
+        "crank_missed": 0.0,
+        "map": 109.776,
+        "spark": 0.0,
+        "throttle": 100.0,
+        "speed": 43.0,
+        "csv_line": 1196,
+        "effective_spark_mask": 4032
+      },
+      {
+        "time": 124.375,
+        "pedal": 100.0,
+        "aux": 4032.0,
+        "battery": 14.24,
+        "avls": 3.0,
+        "ect": 62.0,
+        "sync": 1.0,
+        "flags": 0.0,
+        "timeout": 0.0,
+        "rpm": 3259.0,
+        "afr": 13.01,
+        "fbkc": 0.0,
+        "flkc": 0.0,
+        "pw": 10.24,
+        "iam": 1.0,
+        "mode": 2.0,
+        "timing": 16.0,
+        "inhibit": 0.0,
+        "lean": 0.0,
+        "airflow_missed": 0.0,
+        "crank_missed": 0.0,
+        "map": 109.457,
+        "spark": 0.0,
+        "throttle": 100.0,
+        "speed": 43.0,
+        "csv_line": 1197,
+        "effective_spark_mask": 4032
+      },
+      {
+        "time": 124.479,
+        "pedal": 96.47,
+        "aux": 4032.0,
+        "battery": 14.16,
+        "avls": 3.0,
+        "ect": 62.0,
+        "sync": 1.0,
+        "flags": 0.0,
+        "timeout": 0.0,
+        "rpm": 3252.0,
+        "afr": 13.35,
+        "fbkc": 0.0,
+        "flkc": 0.0,
+        "pw": 9.73,
+        "iam": 1.0,
+        "mode": 2.0,
+        "timing": 16.0,
+        "inhibit": 0.0,
+        "lean": 0.0,
+        "airflow_missed": 0.0,
+        "crank_missed": 0.0,
+        "map": 109.776,
+        "spark": 0.0,
+        "throttle": 100.0,
+        "speed": 43.0,
+        "csv_line": 1198,
+        "effective_spark_mask": 4032
+      },
+      {
+        "time": 124.584,
+        "pedal": 39.22,
+        "aux": 4032.0,
+        "battery": 14.08,
+        "avls": 3.0,
+        "ect": 62.0,
+        "sync": 1.0,
+        "flags": 0.0,
+        "timeout": 0.0,
+        "rpm": 3186.0,
+        "afr": 13.61,
+        "fbkc": 0.0,
+        "flkc": 0.0,
+        "pw": 9.73,
+        "iam": 1.0,
+        "mode": 2.0,
+        "timing": 16.0,
+        "inhibit": 0.0,
+        "lean": 0.0,
+        "airflow_missed": 0.0,
+        "crank_missed": 0.0,
+        "map": 109.141,
+        "spark": 0.0,
+        "throttle": 88.63,
+        "speed": 42.0,
+        "csv_line": 1199,
+        "effective_spark_mask": 4032
+      }
+    ],
+    "final_engine_stop": [
+      {
+        "time": 161.718,
+        "pedal": 0.0,
+        "aux": 4032.0,
+        "battery": 14.24,
+        "avls": 1.0,
+        "ect": 64.0,
+        "sync": 1.0,
+        "flags": 0.0,
+        "timeout": 0.0,
+        "rpm": 917.0,
+        "afr": 13.56,
+        "fbkc": 0.0,
+        "flkc": 0.0,
+        "pw": 2.3,
+        "iam": 1.0,
+        "mode": 2.0,
+        "timing": 16.0,
+        "inhibit": 0.0,
+        "lean": 0.0,
+        "airflow_missed": 0.0,
+        "crank_missed": 0.0,
+        "map": 31.627,
+        "spark": 0.0,
+        "throttle": 5.1,
+        "speed": 0.0,
+        "csv_line": 1556,
+        "effective_spark_mask": 4032
+      },
+      {
+        "time": 161.821,
+        "pedal": 0.0,
+        "aux": 4032.0,
+        "battery": 13.6,
+        "avls": 1.0,
+        "ect": 64.0,
+        "sync": 1.0,
+        "flags": 0.0,
+        "timeout": 0.0,
+        "rpm": 931.0,
+        "afr": 13.54,
+        "fbkc": 0.0,
+        "flkc": 0.0,
+        "pw": 2.3,
+        "iam": 1.0,
+        "mode": 2.0,
+        "timing": 15.5,
+        "inhibit": 65535.0,
+        "lean": 0.0,
+        "airflow_missed": 0.0,
+        "crank_missed": 0.0,
+        "map": 30.356,
+        "spark": 0.0,
+        "throttle": 4.71,
+        "speed": 0.0,
+        "csv_line": 1557,
+        "effective_spark_mask": 4032
+      },
+      {
+        "time": 161.926,
+        "pedal": 0.0,
+        "aux": 4032.0,
+        "battery": 13.12,
+        "avls": 1.0,
+        "ect": 64.0,
+        "sync": 1.0,
+        "flags": 0.0,
+        "timeout": 0.0,
+        "rpm": 926.0,
+        "afr": 13.59,
+        "fbkc": 0.0,
+        "flkc": 0.0,
+        "pw": 0.77,
+        "iam": 1.0,
+        "mode": 2.0,
+        "timing": 16.0,
+        "inhibit": 65535.0,
+        "lean": 0.0,
+        "airflow_missed": 0.0,
+        "crank_missed": 0.0,
+        "map": 24.955,
+        "spark": 0.0,
+        "throttle": 1.57,
+        "speed": 0.0,
+        "csv_line": 1558,
+        "effective_spark_mask": 4032
+      },
+      {
+        "time": 162.03,
+        "pedal": 0.0,
+        "aux": 4032.0,
+        "battery": 12.88,
+        "avls": 1.0,
+        "ect": 64.0,
+        "sync": 1.0,
+        "flags": 0.0,
+        "timeout": 0.0,
+        "rpm": 865.0,
+        "afr": 13.56,
+        "fbkc": 0.0,
+        "flkc": 0.0,
+        "pw": 0.77,
+        "iam": 1.0,
+        "mode": 2.0,
+        "timing": 18.0,
+        "inhibit": 65535.0,
+        "lean": 0.0,
+        "airflow_missed": 0.0,
+        "crank_missed": 0.0,
+        "map": 21.779,
+        "spark": 0.0,
+        "throttle": 1.57,
+        "speed": 0.0,
+        "csv_line": 1559,
+        "effective_spark_mask": 4032
+      },
+      {
+        "time": 162.133,
+        "pedal": 0.0,
+        "aux": 4032.0,
+        "battery": 12.88,
+        "avls": 1.0,
+        "ect": 64.0,
+        "sync": 1.0,
+        "flags": 0.0,
+        "timeout": 0.0,
+        "rpm": 732.0,
+        "afr": 13.57,
+        "fbkc": 0.0,
+        "flkc": 0.0,
+        "pw": 0.77,
+        "iam": 1.0,
+        "mode": 2.0,
+        "timing": 19.0,
+        "inhibit": 65535.0,
+        "lean": 0.0,
+        "airflow_missed": 0.0,
+        "crank_missed": 0.0,
+        "map": 20.825,
+        "spark": 65535.0,
+        "throttle": 1.96,
+        "speed": 0.0,
+        "csv_line": 1560,
+        "effective_spark_mask": 65535
+      },
+      {
+        "time": 162.238,
+        "pedal": 0.0,
+        "aux": 4032.0,
+        "battery": 12.88,
+        "avls": 1.0,
+        "ect": 64.0,
+        "sync": 1.0,
+        "flags": 0.0,
+        "timeout": 0.0,
+        "rpm": 637.0,
+        "afr": 13.55,
+        "fbkc": 0.0,
+        "flkc": 0.0,
+        "pw": 0.77,
+        "iam": 1.0,
+        "mode": 2.0,
+        "timing": 19.0,
+        "inhibit": 65535.0,
+        "lean": 0.0,
+        "airflow_missed": 0.0,
+        "crank_missed": 0.0,
+        "map": 21.461,
+        "spark": 65535.0,
+        "throttle": 1.57,
+        "speed": 0.0,
+        "csv_line": 1561,
+        "effective_spark_mask": 65535
+      },
+      {
+        "time": 162.342,
+        "pedal": 0.0,
+        "aux": 4032.0,
+        "battery": 12.8,
+        "avls": 1.0,
+        "ect": 64.0,
+        "sync": 1.0,
+        "flags": 0.0,
+        "timeout": 0.0,
+        "rpm": 474.0,
+        "afr": 13.89,
+        "fbkc": 0.0,
+        "flkc": 0.0,
+        "pw": 0.77,
+        "iam": 1.0,
+        "mode": 2.0,
+        "timing": 19.0,
+        "inhibit": 65535.0,
+        "lean": 0.0,
+        "airflow_missed": 0.0,
+        "crank_missed": 0.0,
+        "map": 23.049,
+        "spark": 65535.0,
+        "throttle": 1.96,
+        "speed": 0.0,
+        "csv_line": 1562,
+        "effective_spark_mask": 65535
+      },
+      {
+        "time": 162.446,
+        "pedal": 0.0,
+        "aux": 4032.0,
+        "battery": 12.8,
+        "avls": 1.0,
+        "ect": 64.0,
+        "sync": 1.0,
+        "flags": 0.0,
+        "timeout": 0.0,
+        "rpm": 351.0,
+        "afr": 13.63,
+        "fbkc": 0.0,
+        "flkc": 0.0,
+        "pw": 0.77,
+        "iam": 1.0,
+        "mode": 2.0,
+        "timing": 19.0,
+        "inhibit": 65535.0,
+        "lean": 0.0,
+        "airflow_missed": 0.0,
+        "crank_missed": 0.0,
+        "map": 25.273,
+        "spark": 65535.0,
+        "throttle": 1.57,
+        "speed": 0.0,
+        "csv_line": 1563,
+        "effective_spark_mask": 65535
+      },
+      {
+        "time": 162.551,
+        "pedal": 0.0,
+        "aux": 4032.0,
+        "battery": 12.8,
+        "avls": 1.0,
+        "ect": 64.0,
+        "sync": 1.0,
+        "flags": 0.0,
+        "timeout": 0.0,
+        "rpm": 266.0,
+        "afr": 14.03,
+        "fbkc": 0.0,
+        "flkc": 0.0,
+        "pw": 0.77,
+        "iam": 1.0,
+        "mode": 1.0,
+        "timing": 15.0,
+        "inhibit": 65535.0,
+        "lean": 0.0,
+        "airflow_missed": 0.0,
+        "crank_missed": 0.0,
+        "map": 28.132,
+        "spark": 65535.0,
+        "throttle": 1.96,
+        "speed": 0.0,
+        "csv_line": 1564,
+        "effective_spark_mask": 65535
+      },
+      {
+        "time": 162.654,
+        "pedal": 0.0,
+        "aux": 4032.0,
+        "battery": 12.8,
+        "avls": 1.0,
+        "ect": 64.0,
+        "sync": 1.0,
+        "flags": 0.0,
+        "timeout": 0.0,
+        "rpm": 266.0,
+        "afr": 13.85,
+        "fbkc": 0.0,
+        "flkc": 0.0,
+        "pw": 0.77,
+        "iam": 1.0,
+        "mode": 1.0,
+        "timing": 15.0,
+        "inhibit": 65535.0,
+        "lean": 0.0,
+        "airflow_missed": 0.0,
+        "crank_missed": 0.0,
+        "map": 32.58,
+        "spark": 65535.0,
+        "throttle": 1.57,
+        "speed": 0.0,
+        "csv_line": 1565,
+        "effective_spark_mask": 65535
+      },
+      {
+        "time": 162.758,
+        "pedal": 0.0,
+        "aux": 4032.0,
+        "battery": 12.8,
+        "avls": 1.0,
+        "ect": 64.0,
+        "sync": 1.0,
+        "flags": 0.0,
+        "timeout": 0.0,
+        "rpm": 110.0,
+        "afr": 13.98,
+        "fbkc": 0.0,
+        "flkc": 0.0,
+        "pw": 0.77,
+        "iam": 1.0,
+        "mode": 1.0,
+        "timing": 15.0,
+        "inhibit": 65535.0,
+        "lean": 0.0,
+        "airflow_missed": 0.0,
+        "crank_missed": 0.0,
+        "map": 39.251,
+        "spark": 65535.0,
+        "throttle": 1.96,
+        "speed": 0.0,
+        "csv_line": 1566,
+        "effective_spark_mask": 65535
+      },
+      {
+        "time": 162.862,
+        "pedal": 0.0,
+        "aux": 4032.0,
+        "battery": 12.8,
+        "avls": 1.0,
+        "ect": 64.0,
+        "sync": 1.0,
+        "flags": 0.0,
+        "timeout": 0.0,
+        "rpm": 110.0,
+        "afr": 14.09,
+        "fbkc": 0.0,
+        "flkc": 0.0,
+        "pw": 0.77,
+        "iam": 1.0,
+        "mode": 1.0,
+        "timing": 15.0,
+        "inhibit": 65535.0,
+        "lean": 0.0,
+        "airflow_missed": 0.0,
+        "crank_missed": 0.0,
+        "map": 44.016,
+        "spark": 65535.0,
+        "throttle": 1.57,
+        "speed": 0.0,
+        "csv_line": 1567,
+        "effective_spark_mask": 65535
+      },
+      {
+        "time": 162.966,
+        "pedal": 0.0,
+        "aux": 4032.0,
+        "battery": 12.8,
+        "avls": 1.0,
+        "ect": 64.0,
+        "sync": 1.0,
+        "flags": 0.0,
+        "timeout": 0.0,
+        "rpm": 110.0,
+        "afr": 14.1,
+        "fbkc": 0.0,
+        "flkc": 0.0,
+        "pw": 0.77,
+        "iam": 1.0,
+        "mode": 1.0,
+        "timing": 15.0,
+        "inhibit": 65535.0,
+        "lean": 0.0,
+        "airflow_missed": 0.0,
+        "crank_missed": 0.0,
+        "map": 48.781,
+        "spark": 65535.0,
+        "throttle": 1.96,
+        "speed": 0.0,
+        "csv_line": 1568,
+        "effective_spark_mask": 65535
+      },
+      {
+        "time": 163.07,
+        "pedal": 0.0,
+        "aux": 4032.0,
+        "battery": 12.8,
+        "avls": 1.0,
+        "ect": 64.0,
+        "sync": 0.0,
+        "flags": 128.0,
+        "timeout": 1.0,
+        "rpm": 0.0,
+        "afr": 14.09,
+        "fbkc": 0.0,
+        "flkc": 0.0,
+        "pw": 0.77,
+        "iam": 1.0,
+        "mode": 0.0,
+        "timing": 15.0,
+        "inhibit": 65535.0,
+        "lean": 0.0,
+        "airflow_missed": 0.0,
+        "crank_missed": 0.0,
+        "map": 52.911,
+        "spark": 65535.0,
+        "throttle": 1.57,
+        "speed": 0.0,
+        "csv_line": 1569,
+        "effective_spark_mask": 65535
+      },
+      {
+        "time": 163.174,
+        "pedal": 0.0,
+        "aux": 4032.0,
+        "battery": 12.64,
+        "avls": 1.0,
+        "ect": 64.0,
+        "sync": 0.0,
+        "flags": 128.0,
+        "timeout": 1.0,
+        "rpm": 0.0,
+        "afr": 14.08,
+        "fbkc": 0.0,
+        "flkc": 0.0,
+        "pw": 0.77,
+        "iam": 1.0,
+        "mode": 0.0,
+        "timing": 15.0,
+        "inhibit": 65535.0,
+        "lean": 0.0,
+        "airflow_missed": 0.0,
+        "crank_missed": 0.0,
+        "map": 53.864,
+        "spark": 65535.0,
+        "throttle": 0.0,
+        "speed": 0.0,
+        "csv_line": 1570,
+        "effective_spark_mask": 65535
+      },
+      {
+        "time": 163.278,
+        "pedal": 0.0,
+        "aux": 4032.0,
+        "battery": 12.64,
+        "avls": 1.0,
+        "ect": 64.0,
+        "sync": 0.0,
+        "flags": 128.0,
+        "timeout": 1.0,
+        "rpm": 0.0,
+        "afr": 14.07,
+        "fbkc": 0.0,
+        "flkc": 0.0,
+        "pw": 0.77,
+        "iam": 1.0,
+        "mode": 0.0,
+        "timing": 15.0,
+        "inhibit": 65535.0,
+        "lean": 0.0,
+        "airflow_missed": 0.0,
+        "crank_missed": 0.0,
+        "map": 54.817,
+        "spark": 65535.0,
+        "throttle": 0.0,
+        "speed": 0.0,
+        "csv_line": 1571,
+        "effective_spark_mask": 65535
+      },
+      {
+        "time": 163.382,
+        "pedal": 0.0,
+        "aux": 4032.0,
+        "battery": 12.72,
+        "avls": 1.0,
+        "ect": 64.0,
+        "sync": 0.0,
+        "flags": 128.0,
+        "timeout": 1.0,
+        "rpm": 0.0,
+        "afr": 14.1,
+        "fbkc": 0.0,
+        "flkc": 0.0,
+        "pw": 0.77,
+        "iam": 1.0,
+        "mode": 0.0,
+        "timing": 15.0,
+        "inhibit": 65535.0,
+        "lean": 0.0,
+        "airflow_missed": 0.0,
+        "crank_missed": 0.0,
+        "map": 58.947,
+        "spark": 65535.0,
+        "throttle": 2.35,
+        "speed": 0.0,
+        "csv_line": 1572,
+        "effective_spark_mask": 65535
+      },
+      {
+        "time": 163.485,
+        "pedal": 0.0,
+        "aux": 4032.0,
+        "battery": 12.72,
+        "avls": 1.0,
+        "ect": 64.0,
+        "sync": 0.0,
+        "flags": 128.0,
+        "timeout": 1.0,
+        "rpm": 0.0,
+        "afr": 14.36,
+        "fbkc": 0.0,
+        "flkc": 0.0,
+        "pw": 0.77,
+        "iam": 1.0,
+        "mode": 0.0,
+        "timing": 15.0,
+        "inhibit": 65535.0,
+        "lean": 0.0,
+        "airflow_missed": 0.0,
+        "crank_missed": 0.0,
+        "map": 63.077,
+        "spark": 65535.0,
+        "throttle": 1.96,
+        "speed": 0.0,
+        "csv_line": 1573,
+        "effective_spark_mask": 65535
+      },
+      {
+        "time": 163.589,
+        "pedal": 0.0,
+        "aux": 4032.0,
+        "battery": 12.72,
+        "avls": 1.0,
+        "ect": 64.0,
+        "sync": 0.0,
+        "flags": 128.0,
+        "timeout": 1.0,
+        "rpm": 0.0,
+        "afr": 14.34,
+        "fbkc": 0.0,
+        "flkc": 0.0,
+        "pw": 0.77,
+        "iam": 1.0,
+        "mode": 0.0,
+        "timing": 15.0,
+        "inhibit": 65535.0,
+        "lean": 0.0,
+        "airflow_missed": 0.0,
+        "crank_missed": 0.0,
+        "map": 65.936,
+        "spark": 65535.0,
+        "throttle": 1.18,
+        "speed": 0.0,
+        "csv_line": 1574,
+        "effective_spark_mask": 65535
+      },
+      {
+        "time": 163.693,
+        "pedal": 0.0,
+        "aux": 4032.0,
+        "battery": 12.72,
+        "avls": 1.0,
+        "ect": 64.0,
+        "sync": 0.0,
+        "flags": 128.0,
+        "timeout": 1.0,
+        "rpm": 0.0,
+        "afr": 14.11,
+        "fbkc": 0.0,
+        "flkc": 0.0,
+        "pw": 0.77,
+        "iam": 1.0,
+        "mode": 0.0,
+        "timing": 15.0,
+        "inhibit": 65535.0,
+        "lean": 0.0,
+        "airflow_missed": 0.0,
+        "crank_missed": 0.0,
+        "map": 75.466,
+        "spark": 65535.0,
+        "throttle": 5.1,
+        "speed": 0.0,
+        "csv_line": 1575,
+        "effective_spark_mask": 65535
+      },
+      {
+        "time": 163.797,
+        "pedal": 0.0,
+        "aux": 4032.0,
+        "battery": 12.72,
+        "avls": 1.0,
+        "ect": 64.0,
+        "sync": 0.0,
+        "flags": 128.0,
+        "timeout": 1.0,
+        "rpm": 0.0,
+        "afr": 14.08,
+        "fbkc": 0.0,
+        "flkc": 0.0,
+        "pw": 0.77,
+        "iam": 1.0,
+        "mode": 0.0,
+        "timing": 15.0,
+        "inhibit": 65535.0,
+        "lean": 0.0,
+        "airflow_missed": 0.0,
+        "crank_missed": 0.0,
+        "map": 92.62,
+        "spark": 65535.0,
+        "throttle": 11.37,
+        "speed": 0.0,
+        "csv_line": 1576,
+        "effective_spark_mask": 65535
+      },
+      {
+        "time": 163.901,
+        "pedal": 0.0,
+        "aux": 4032.0,
+        "battery": 12.72,
+        "avls": 1.0,
+        "ect": 64.0,
+        "sync": 0.0,
+        "flags": 128.0,
+        "timeout": 1.0,
+        "rpm": 0.0,
+        "afr": 14.1,
+        "fbkc": 0.0,
+        "flkc": 0.0,
+        "pw": 0.77,
+        "iam": 1.0,
+        "mode": 0.0,
+        "timing": 15.0,
+        "inhibit": 65535.0,
+        "lean": 0.0,
+        "airflow_missed": 0.0,
+        "crank_missed": 0.0,
+        "map": 94.844,
+        "spark": 65535.0,
+        "throttle": 22.75,
+        "speed": 0.0,
+        "csv_line": 1577,
+        "effective_spark_mask": 65535
+      },
+      {
+        "time": 164.005,
+        "pedal": 0.0,
+        "aux": 4032.0,
+        "battery": 12.72,
+        "avls": 1.0,
+        "ect": 64.0,
+        "sync": 0.0,
+        "flags": 128.0,
+        "timeout": 1.0,
+        "rpm": 0.0,
+        "afr": 14.08,
+        "fbkc": 0.0,
+        "flkc": 0.0,
+        "pw": 0.77,
+        "iam": 1.0,
+        "mode": 0.0,
+        "timing": 15.0,
+        "inhibit": 65535.0,
+        "lean": 0.0,
+        "airflow_missed": 0.0,
+        "crank_missed": 0.0,
+        "map": 94.844,
+        "spark": 65535.0,
+        "throttle": 34.51,
+        "speed": 0.0,
+        "csv_line": 1578,
+        "effective_spark_mask": 65535
+      },
+      {
+        "time": 164.109,
+        "pedal": 0.0,
+        "aux": 4032.0,
+        "battery": 12.72,
+        "avls": 1.0,
+        "ect": 64.0,
+        "sync": 0.0,
+        "flags": 128.0,
+        "timeout": 1.0,
+        "rpm": 0.0,
+        "afr": 14.11,
+        "fbkc": 0.0,
+        "flkc": 0.0,
+        "pw": 0.77,
+        "iam": 1.0,
+        "mode": 0.0,
+        "timing": 15.0,
+        "inhibit": 65535.0,
+        "lean": 0.0,
+        "airflow_missed": 0.0,
+        "crank_missed": 0.0,
+        "map": 94.527,
+        "spark": 65535.0,
+        "throttle": 45.88,
+        "speed": 0.0,
+        "csv_line": 1579,
+        "effective_spark_mask": 65535
+      },
+      {
+        "time": 164.213,
+        "pedal": 0.0,
+        "aux": 4032.0,
+        "battery": 12.64,
+        "avls": 1.0,
+        "ect": 64.0,
+        "sync": 0.0,
+        "flags": 128.0,
+        "timeout": 1.0,
+        "rpm": 0.0,
+        "afr": 14.09,
+        "fbkc": 0.0,
+        "flkc": 0.0,
+        "pw": 0.77,
+        "iam": 1.0,
+        "mode": 0.0,
+        "timing": 15.0,
+        "inhibit": 65535.0,
+        "lean": 0.0,
+        "airflow_missed": 0.0,
+        "crank_missed": 0.0,
+        "map": 94.527,
+        "spark": 65535.0,
+        "throttle": 56.47,
+        "speed": 0.0,
+        "csv_line": 1580,
+        "effective_spark_mask": 65535
+      },
+      {
+        "time": 164.317,
+        "pedal": 0.0,
+        "aux": 4032.0,
+        "battery": 12.72,
+        "avls": 1.0,
+        "ect": 64.0,
+        "sync": 0.0,
+        "flags": 128.0,
+        "timeout": 1.0,
+        "rpm": 0.0,
+        "afr": 14.11,
+        "fbkc": 0.0,
+        "flkc": 0.0,
+        "pw": 0.77,
+        "iam": 1.0,
+        "mode": 0.0,
+        "timing": 15.0,
+        "inhibit": 65535.0,
+        "lean": 0.0,
+        "airflow_missed": 0.0,
+        "crank_missed": 0.0,
+        "map": 94.527,
+        "spark": 65535.0,
+        "throttle": 57.25,
+        "speed": 0.0,
+        "csv_line": 1581,
+        "effective_spark_mask": 65535
+      },
+      {
+        "time": 164.422,
+        "pedal": 0.0,
+        "aux": 4032.0,
+        "battery": 12.72,
+        "avls": 1.0,
+        "ect": 64.0,
+        "sync": 0.0,
+        "flags": 128.0,
+        "timeout": 1.0,
+        "rpm": 0.0,
+        "afr": 14.09,
+        "fbkc": 0.0,
+        "flkc": 0.0,
+        "pw": 0.77,
+        "iam": 1.0,
+        "mode": 0.0,
+        "timing": 15.0,
+        "inhibit": 65535.0,
+        "lean": 0.0,
+        "airflow_missed": 0.0,
+        "crank_missed": 0.0,
+        "map": 94.527,
+        "spark": 65535.0,
+        "throttle": 57.25,
+        "speed": 0.0,
+        "csv_line": 1582,
+        "effective_spark_mask": 65535
+      },
+      {
+        "time": 164.525,
+        "pedal": 0.0,
+        "aux": 4032.0,
+        "battery": 12.72,
+        "avls": 1.0,
+        "ect": 64.0,
+        "sync": 0.0,
+        "flags": 128.0,
+        "timeout": 1.0,
+        "rpm": 0.0,
+        "afr": 14.11,
+        "fbkc": 0.0,
+        "flkc": 0.0,
+        "pw": 0.77,
+        "iam": 1.0,
+        "mode": 0.0,
+        "timing": 15.0,
+        "inhibit": 65535.0,
+        "lean": 0.0,
+        "airflow_missed": 0.0,
+        "crank_missed": 0.0,
+        "map": 94.843,
+        "spark": 65535.0,
+        "throttle": 50.98,
+        "speed": 0.0,
+        "csv_line": 1583,
+        "effective_spark_mask": 65535
+      },
+      {
+        "time": 164.629,
+        "pedal": 0.0,
+        "aux": 4032.0,
+        "battery": 12.72,
+        "avls": 1.0,
+        "ect": 64.0,
+        "sync": 0.0,
+        "flags": 128.0,
+        "timeout": 1.0,
+        "rpm": 0.0,
+        "afr": 14.1,
+        "fbkc": 0.0,
+        "flkc": 0.0,
+        "pw": 0.77,
+        "iam": 1.0,
+        "mode": 0.0,
+        "timing": 15.0,
+        "inhibit": 65535.0,
+        "lean": 0.0,
+        "airflow_missed": 0.0,
+        "crank_missed": 0.0,
+        "map": 94.527,
+        "spark": 65535.0,
+        "throttle": 36.47,
+        "speed": 0.0,
+        "csv_line": 1584,
+        "effective_spark_mask": 65535
+      },
+      {
+        "time": 164.733,
+        "pedal": 0.0,
+        "aux": 4032.0,
+        "battery": 12.72,
+        "avls": 1.0,
+        "ect": 64.0,
+        "sync": 0.0,
+        "flags": 128.0,
+        "timeout": 1.0,
+        "rpm": 0.0,
+        "afr": 14.02,
+        "fbkc": 0.0,
+        "flkc": 0.0,
+        "pw": 0.77,
+        "iam": 1.0,
+        "mode": 0.0,
+        "timing": 15.0,
+        "inhibit": 65535.0,
+        "lean": 0.0,
+        "airflow_missed": 0.0,
+        "crank_missed": 0.0,
+        "map": 94.527,
+        "spark": 65535.0,
+        "throttle": 22.35,
+        "speed": 0.0,
+        "csv_line": 1585,
+        "effective_spark_mask": 65535
+      },
+      {
+        "time": 164.837,
+        "pedal": 0.0,
+        "aux": 4032.0,
+        "battery": 12.64,
+        "avls": 1.0,
+        "ect": 64.0,
+        "sync": 0.0,
+        "flags": 128.0,
+        "timeout": 1.0,
+        "rpm": 0.0,
+        "afr": 13.87,
+        "fbkc": 0.0,
+        "flkc": 0.0,
+        "pw": 0.77,
+        "iam": 1.0,
+        "mode": 0.0,
+        "timing": 15.0,
+        "inhibit": 65535.0,
+        "lean": 0.0,
+        "airflow_missed": 0.0,
+        "crank_missed": 0.0,
+        "map": 94.527,
+        "spark": 65535.0,
+        "throttle": 9.41,
+        "speed": 0.0,
+        "csv_line": 1586,
+        "effective_spark_mask": 65535
+      },
+      {
+        "time": 164.94,
+        "pedal": 0.0,
+        "aux": 4032.0,
+        "battery": 12.64,
+        "avls": 1.0,
+        "ect": 64.0,
+        "sync": 0.0,
+        "flags": 128.0,
+        "timeout": 1.0,
+        "rpm": 0.0,
+        "afr": 14.09,
+        "fbkc": 0.0,
+        "flkc": 0.0,
+        "pw": 0.77,
+        "iam": 1.0,
+        "mode": 0.0,
+        "timing": 15.0,
+        "inhibit": 65535.0,
+        "lean": 0.0,
+        "airflow_missed": 0.0,
+        "crank_missed": 0.0,
+        "map": 94.843,
+        "spark": 65535.0,
+        "throttle": 7.84,
+        "speed": 0.0,
+        "csv_line": 1587,
+        "effective_spark_mask": 65535
+      },
+      {
+        "time": 165.045,
+        "pedal": 0.0,
+        "aux": 4032.0,
+        "battery": 12.64,
+        "avls": 1.0,
+        "ect": 64.0,
+        "sync": 0.0,
+        "flags": 128.0,
+        "timeout": 1.0,
+        "rpm": 0.0,
+        "afr": 14.11,
+        "fbkc": 0.0,
+        "flkc": 0.0,
+        "pw": 0.77,
+        "iam": 1.0,
+        "mode": 0.0,
+        "timing": 15.0,
+        "inhibit": 65535.0,
+        "lean": 0.0,
+        "airflow_missed": 0.0,
+        "crank_missed": 0.0,
+        "map": 94.527,
+        "spark": 65535.0,
+        "throttle": 8.24,
+        "speed": 0.0,
+        "csv_line": 1588,
+        "effective_spark_mask": 65535
+      },
+      {
+        "time": 165.149,
+        "pedal": 0.0,
+        "aux": 4032.0,
+        "battery": 12.64,
+        "avls": 1.0,
+        "ect": 64.0,
+        "sync": 0.0,
+        "flags": 128.0,
+        "timeout": 1.0,
+        "rpm": 0.0,
+        "afr": 14.08,
+        "fbkc": 0.0,
+        "flkc": 0.0,
+        "pw": 0.77,
+        "iam": 1.0,
+        "mode": 0.0,
+        "timing": 15.0,
+        "inhibit": 65535.0,
+        "lean": 0.0,
+        "airflow_missed": 0.0,
+        "crank_missed": 0.0,
+        "map": 94.527,
+        "spark": 65535.0,
+        "throttle": 7.84,
+        "speed": 0.0,
+        "csv_line": 1589,
+        "effective_spark_mask": 65535
+      },
+      {
+        "time": 165.252,
+        "pedal": 0.0,
+        "aux": 4032.0,
+        "battery": 12.64,
+        "avls": 1.0,
+        "ect": 64.0,
+        "sync": 0.0,
+        "flags": 128.0,
+        "timeout": 1.0,
+        "rpm": 0.0,
+        "afr": 14.11,
+        "fbkc": 0.0,
+        "flkc": 0.0,
+        "pw": 0.77,
+        "iam": 1.0,
+        "mode": 0.0,
+        "timing": 15.0,
+        "inhibit": 65535.0,
+        "lean": 0.0,
+        "airflow_missed": 0.0,
+        "crank_missed": 0.0,
+        "map": 94.527,
+        "spark": 65535.0,
+        "throttle": 7.84,
+        "speed": 0.0,
+        "csv_line": 1590,
+        "effective_spark_mask": 65535
+      },
+      {
+        "time": 165.357,
+        "pedal": 0.0,
+        "aux": 4032.0,
+        "battery": 12.64,
+        "avls": 1.0,
+        "ect": 64.0,
+        "sync": 0.0,
+        "flags": 128.0,
+        "timeout": 1.0,
+        "rpm": 0.0,
+        "afr": 14.08,
+        "fbkc": 0.0,
+        "flkc": 0.0,
+        "pw": 0.77,
+        "iam": 1.0,
+        "mode": 0.0,
+        "timing": 15.0,
+        "inhibit": 65535.0,
+        "lean": 0.0,
+        "airflow_missed": 0.0,
+        "crank_missed": 0.0,
+        "map": 94.527,
+        "spark": 65535.0,
+        "throttle": 7.84,
+        "speed": 0.0,
+        "csv_line": 1591,
+        "effective_spark_mask": 65535
+      }
+    ]
+  },
+  "state_transitions": {
+    "aux": [
+      {
+        "time": 0.0,
+        "pedal": 0.0,
+        "aux": 4032.0,
+        "battery": 14.24,
+        "avls": 1.0,
+        "ect": 53.0,
+        "sync": 1.0,
+        "flags": 0.0,
+        "timeout": 0.0,
+        "rpm": 944.0,
+        "afr": 15.14,
+        "fbkc": 0.0,
+        "flkc": 0.0,
+        "pw": 2.3,
+        "iam": 1.0,
+        "mode": 2.0,
+        "timing": 15.0,
+        "inhibit": 0.0,
+        "lean": 0.0,
+        "airflow_missed": 0.0,
+        "crank_missed": 0.0,
+        "map": 32.262,
+        "spark": 0.0,
+        "throttle": 5.1,
+        "speed": 0.0,
+        "csv_line": 2,
+        "effective_spark_mask": 4032
+      }
+    ],
+    "sync": [
+      {
+        "time": 0.0,
+        "pedal": 0.0,
+        "aux": 4032.0,
+        "battery": 14.24,
+        "avls": 1.0,
+        "ect": 53.0,
+        "sync": 1.0,
+        "flags": 0.0,
+        "timeout": 0.0,
+        "rpm": 944.0,
+        "afr": 15.14,
+        "fbkc": 0.0,
+        "flkc": 0.0,
+        "pw": 2.3,
+        "iam": 1.0,
+        "mode": 2.0,
+        "timing": 15.0,
+        "inhibit": 0.0,
+        "lean": 0.0,
+        "airflow_missed": 0.0,
+        "crank_missed": 0.0,
+        "map": 32.262,
+        "spark": 0.0,
+        "throttle": 5.1,
+        "speed": 0.0,
+        "csv_line": 2,
+        "effective_spark_mask": 4032
+      },
+      {
+        "time": 163.07,
+        "pedal": 0.0,
+        "aux": 4032.0,
+        "battery": 12.8,
+        "avls": 1.0,
+        "ect": 64.0,
+        "sync": 0.0,
+        "flags": 128.0,
+        "timeout": 1.0,
+        "rpm": 0.0,
+        "afr": 14.09,
+        "fbkc": 0.0,
+        "flkc": 0.0,
+        "pw": 0.77,
+        "iam": 1.0,
+        "mode": 0.0,
+        "timing": 15.0,
+        "inhibit": 65535.0,
+        "lean": 0.0,
+        "airflow_missed": 0.0,
+        "crank_missed": 0.0,
+        "map": 52.911,
+        "spark": 65535.0,
+        "throttle": 1.57,
+        "speed": 0.0,
+        "csv_line": 1569,
+        "effective_spark_mask": 65535
+      }
+    ],
+    "flags": [
+      {
+        "time": 0.0,
+        "pedal": 0.0,
+        "aux": 4032.0,
+        "battery": 14.24,
+        "avls": 1.0,
+        "ect": 53.0,
+        "sync": 1.0,
+        "flags": 0.0,
+        "timeout": 0.0,
+        "rpm": 944.0,
+        "afr": 15.14,
+        "fbkc": 0.0,
+        "flkc": 0.0,
+        "pw": 2.3,
+        "iam": 1.0,
+        "mode": 2.0,
+        "timing": 15.0,
+        "inhibit": 0.0,
+        "lean": 0.0,
+        "airflow_missed": 0.0,
+        "crank_missed": 0.0,
+        "map": 32.262,
+        "spark": 0.0,
+        "throttle": 5.1,
+        "speed": 0.0,
+        "csv_line": 2,
+        "effective_spark_mask": 4032
+      },
+      {
+        "time": 163.07,
+        "pedal": 0.0,
+        "aux": 4032.0,
+        "battery": 12.8,
+        "avls": 1.0,
+        "ect": 64.0,
+        "sync": 0.0,
+        "flags": 128.0,
+        "timeout": 1.0,
+        "rpm": 0.0,
+        "afr": 14.09,
+        "fbkc": 0.0,
+        "flkc": 0.0,
+        "pw": 0.77,
+        "iam": 1.0,
+        "mode": 0.0,
+        "timing": 15.0,
+        "inhibit": 65535.0,
+        "lean": 0.0,
+        "airflow_missed": 0.0,
+        "crank_missed": 0.0,
+        "map": 52.911,
+        "spark": 65535.0,
+        "throttle": 1.57,
+        "speed": 0.0,
+        "csv_line": 1569,
+        "effective_spark_mask": 65535
+      }
+    ],
+    "timeout": [
+      {
+        "time": 0.0,
+        "pedal": 0.0,
+        "aux": 4032.0,
+        "battery": 14.24,
+        "avls": 1.0,
+        "ect": 53.0,
+        "sync": 1.0,
+        "flags": 0.0,
+        "timeout": 0.0,
+        "rpm": 944.0,
+        "afr": 15.14,
+        "fbkc": 0.0,
+        "flkc": 0.0,
+        "pw": 2.3,
+        "iam": 1.0,
+        "mode": 2.0,
+        "timing": 15.0,
+        "inhibit": 0.0,
+        "lean": 0.0,
+        "airflow_missed": 0.0,
+        "crank_missed": 0.0,
+        "map": 32.262,
+        "spark": 0.0,
+        "throttle": 5.1,
+        "speed": 0.0,
+        "csv_line": 2,
+        "effective_spark_mask": 4032
+      },
+      {
+        "time": 163.07,
+        "pedal": 0.0,
+        "aux": 4032.0,
+        "battery": 12.8,
+        "avls": 1.0,
+        "ect": 64.0,
+        "sync": 0.0,
+        "flags": 128.0,
+        "timeout": 1.0,
+        "rpm": 0.0,
+        "afr": 14.09,
+        "fbkc": 0.0,
+        "flkc": 0.0,
+        "pw": 0.77,
+        "iam": 1.0,
+        "mode": 0.0,
+        "timing": 15.0,
+        "inhibit": 65535.0,
+        "lean": 0.0,
+        "airflow_missed": 0.0,
+        "crank_missed": 0.0,
+        "map": 52.911,
+        "spark": 65535.0,
+        "throttle": 1.57,
+        "speed": 0.0,
+        "csv_line": 1569,
+        "effective_spark_mask": 65535
+      }
+    ],
+    "mode": [
+      {
+        "time": 0.0,
+        "pedal": 0.0,
+        "aux": 4032.0,
+        "battery": 14.24,
+        "avls": 1.0,
+        "ect": 53.0,
+        "sync": 1.0,
+        "flags": 0.0,
+        "timeout": 0.0,
+        "rpm": 944.0,
+        "afr": 15.14,
+        "fbkc": 0.0,
+        "flkc": 0.0,
+        "pw": 2.3,
+        "iam": 1.0,
+        "mode": 2.0,
+        "timing": 15.0,
+        "inhibit": 0.0,
+        "lean": 0.0,
+        "airflow_missed": 0.0,
+        "crank_missed": 0.0,
+        "map": 32.262,
+        "spark": 0.0,
+        "throttle": 5.1,
+        "speed": 0.0,
+        "csv_line": 2,
+        "effective_spark_mask": 4032
+      },
+      {
+        "time": 162.551,
+        "pedal": 0.0,
+        "aux": 4032.0,
+        "battery": 12.8,
+        "avls": 1.0,
+        "ect": 64.0,
+        "sync": 1.0,
+        "flags": 0.0,
+        "timeout": 0.0,
+        "rpm": 266.0,
+        "afr": 14.03,
+        "fbkc": 0.0,
+        "flkc": 0.0,
+        "pw": 0.77,
+        "iam": 1.0,
+        "mode": 1.0,
+        "timing": 15.0,
+        "inhibit": 65535.0,
+        "lean": 0.0,
+        "airflow_missed": 0.0,
+        "crank_missed": 0.0,
+        "map": 28.132,
+        "spark": 65535.0,
+        "throttle": 1.96,
+        "speed": 0.0,
+        "csv_line": 1564,
+        "effective_spark_mask": 65535
+      },
+      {
+        "time": 163.07,
+        "pedal": 0.0,
+        "aux": 4032.0,
+        "battery": 12.8,
+        "avls": 1.0,
+        "ect": 64.0,
+        "sync": 0.0,
+        "flags": 128.0,
+        "timeout": 1.0,
+        "rpm": 0.0,
+        "afr": 14.09,
+        "fbkc": 0.0,
+        "flkc": 0.0,
+        "pw": 0.77,
+        "iam": 1.0,
+        "mode": 0.0,
+        "timing": 15.0,
+        "inhibit": 65535.0,
+        "lean": 0.0,
+        "airflow_missed": 0.0,
+        "crank_missed": 0.0,
+        "map": 52.911,
+        "spark": 65535.0,
+        "throttle": 1.57,
+        "speed": 0.0,
+        "csv_line": 1569,
+        "effective_spark_mask": 65535
+      }
+    ],
+    "spark": [
+      {
+        "time": 0.0,
+        "pedal": 0.0,
+        "aux": 4032.0,
+        "battery": 14.24,
+        "avls": 1.0,
+        "ect": 53.0,
+        "sync": 1.0,
+        "flags": 0.0,
+        "timeout": 0.0,
+        "rpm": 944.0,
+        "afr": 15.14,
+        "fbkc": 0.0,
+        "flkc": 0.0,
+        "pw": 2.3,
+        "iam": 1.0,
+        "mode": 2.0,
+        "timing": 15.0,
+        "inhibit": 0.0,
+        "lean": 0.0,
+        "airflow_missed": 0.0,
+        "crank_missed": 0.0,
+        "map": 32.262,
+        "spark": 0.0,
+        "throttle": 5.1,
+        "speed": 0.0,
+        "csv_line": 2,
+        "effective_spark_mask": 4032
+      },
+      {
+        "time": 162.133,
+        "pedal": 0.0,
+        "aux": 4032.0,
+        "battery": 12.88,
+        "avls": 1.0,
+        "ect": 64.0,
+        "sync": 1.0,
+        "flags": 0.0,
+        "timeout": 0.0,
+        "rpm": 732.0,
+        "afr": 13.57,
+        "fbkc": 0.0,
+        "flkc": 0.0,
+        "pw": 0.77,
+        "iam": 1.0,
+        "mode": 2.0,
+        "timing": 19.0,
+        "inhibit": 65535.0,
+        "lean": 0.0,
+        "airflow_missed": 0.0,
+        "crank_missed": 0.0,
+        "map": 20.825,
+        "spark": 65535.0,
+        "throttle": 1.96,
+        "speed": 0.0,
+        "csv_line": 1560,
+        "effective_spark_mask": 65535
+      }
+    ],
+    "lean": [
+      {
+        "time": 0.0,
+        "pedal": 0.0,
+        "aux": 4032.0,
+        "battery": 14.24,
+        "avls": 1.0,
+        "ect": 53.0,
+        "sync": 1.0,
+        "flags": 0.0,
+        "timeout": 0.0,
+        "rpm": 944.0,
+        "afr": 15.14,
+        "fbkc": 0.0,
+        "flkc": 0.0,
+        "pw": 2.3,
+        "iam": 1.0,
+        "mode": 2.0,
+        "timing": 15.0,
+        "inhibit": 0.0,
+        "lean": 0.0,
+        "airflow_missed": 0.0,
+        "crank_missed": 0.0,
+        "map": 32.262,
+        "spark": 0.0,
+        "throttle": 5.1,
+        "speed": 0.0,
+        "csv_line": 2,
+        "effective_spark_mask": 4032
+      }
+    ],
+    "airflow_missed": [
+      {
+        "time": 0.0,
+        "pedal": 0.0,
+        "aux": 4032.0,
+        "battery": 14.24,
+        "avls": 1.0,
+        "ect": 53.0,
+        "sync": 1.0,
+        "flags": 0.0,
+        "timeout": 0.0,
+        "rpm": 944.0,
+        "afr": 15.14,
+        "fbkc": 0.0,
+        "flkc": 0.0,
+        "pw": 2.3,
+        "iam": 1.0,
+        "mode": 2.0,
+        "timing": 15.0,
+        "inhibit": 0.0,
+        "lean": 0.0,
+        "airflow_missed": 0.0,
+        "crank_missed": 0.0,
+        "map": 32.262,
+        "spark": 0.0,
+        "throttle": 5.1,
+        "speed": 0.0,
+        "csv_line": 2,
+        "effective_spark_mask": 4032
+      }
+    ],
+    "crank_missed": [
+      {
+        "time": 0.0,
+        "pedal": 0.0,
+        "aux": 4032.0,
+        "battery": 14.24,
+        "avls": 1.0,
+        "ect": 53.0,
+        "sync": 1.0,
+        "flags": 0.0,
+        "timeout": 0.0,
+        "rpm": 944.0,
+        "afr": 15.14,
+        "fbkc": 0.0,
+        "flkc": 0.0,
+        "pw": 2.3,
+        "iam": 1.0,
+        "mode": 2.0,
+        "timing": 15.0,
+        "inhibit": 0.0,
+        "lean": 0.0,
+        "airflow_missed": 0.0,
+        "crank_missed": 0.0,
+        "map": 32.262,
+        "spark": 0.0,
+        "throttle": 5.1,
+        "speed": 0.0,
+        "csv_line": 2,
+        "effective_spark_mask": 4032
+      }
+    ],
+    "iam": [
+      {
+        "time": 0.0,
+        "pedal": 0.0,
+        "aux": 4032.0,
+        "battery": 14.24,
+        "avls": 1.0,
+        "ect": 53.0,
+        "sync": 1.0,
+        "flags": 0.0,
+        "timeout": 0.0,
+        "rpm": 944.0,
+        "afr": 15.14,
+        "fbkc": 0.0,
+        "flkc": 0.0,
+        "pw": 2.3,
+        "iam": 1.0,
+        "mode": 2.0,
+        "timing": 15.0,
+        "inhibit": 0.0,
+        "lean": 0.0,
+        "airflow_missed": 0.0,
+        "crank_missed": 0.0,
+        "map": 32.262,
+        "spark": 0.0,
+        "throttle": 5.1,
+        "speed": 0.0,
+        "csv_line": 2,
+        "effective_spark_mask": 4032
+      }
+    ],
+    "fbkc": [
+      {
+        "time": 0.0,
+        "pedal": 0.0,
+        "aux": 4032.0,
+        "battery": 14.24,
+        "avls": 1.0,
+        "ect": 53.0,
+        "sync": 1.0,
+        "flags": 0.0,
+        "timeout": 0.0,
+        "rpm": 944.0,
+        "afr": 15.14,
+        "fbkc": 0.0,
+        "flkc": 0.0,
+        "pw": 2.3,
+        "iam": 1.0,
+        "mode": 2.0,
+        "timing": 15.0,
+        "inhibit": 0.0,
+        "lean": 0.0,
+        "airflow_missed": 0.0,
+        "crank_missed": 0.0,
+        "map": 32.262,
+        "spark": 0.0,
+        "throttle": 5.1,
+        "speed": 0.0,
+        "csv_line": 2,
+        "effective_spark_mask": 4032
+      }
+    ],
+    "flkc": [
+      {
+        "time": 0.0,
+        "pedal": 0.0,
+        "aux": 4032.0,
+        "battery": 14.24,
+        "avls": 1.0,
+        "ect": 53.0,
+        "sync": 1.0,
+        "flags": 0.0,
+        "timeout": 0.0,
+        "rpm": 944.0,
+        "afr": 15.14,
+        "fbkc": 0.0,
+        "flkc": 0.0,
+        "pw": 2.3,
+        "iam": 1.0,
+        "mode": 2.0,
+        "timing": 15.0,
+        "inhibit": 0.0,
+        "lean": 0.0,
+        "airflow_missed": 0.0,
+        "crank_missed": 0.0,
+        "map": 32.262,
+        "spark": 0.0,
+        "throttle": 5.1,
+        "speed": 0.0,
+        "csv_line": 2,
+        "effective_spark_mask": 4032
+      }
+    ]
+  },
+  "avls_entries": [
+    {
+      "previous": {
+        "time": 57.107,
+        "pedal": 64.71,
+        "aux": 4032.0,
+        "battery": 14.16,
+        "avls": 1.0,
+        "ect": 58.0,
+        "sync": 1.0,
+        "flags": 0.0,
+        "timeout": 0.0,
+        "rpm": 3152.0,
+        "afr": 11.58,
+        "fbkc": 0.0,
+        "flkc": 0.0,
+        "pw": 9.98,
+        "iam": 1.0,
+        "mode": 2.0,
+        "timing": 16.0,
+        "inhibit": 0.0,
+        "lean": 0.0,
+        "airflow_missed": 0.0,
+        "crank_missed": 0.0,
+        "map": 111.362,
+        "spark": 0.0,
+        "throttle": 76.86,
+        "speed": 42.0,
+        "csv_line": 551,
+        "effective_spark_mask": 4032
+      },
+      "sample": {
+        "time": 57.211,
+        "pedal": 64.71,
+        "aux": 4032.0,
+        "battery": 14.08,
+        "avls": 3.0,
+        "ect": 58.0,
+        "sync": 1.0,
+        "flags": 0.0,
+        "timeout": 0.0,
+        "rpm": 3204.0,
+        "afr": 11.56,
+        "fbkc": 0.0,
+        "flkc": 0.0,
+        "pw": 10.24,
+        "iam": 1.0,
+        "mode": 2.0,
+        "timing": 17.0,
+        "inhibit": 0.0,
+        "lean": 0.0,
+        "airflow_missed": 0.0,
+        "crank_missed": 0.0,
+        "map": 112.953,
+        "spark": 0.0,
+        "throttle": 77.25,
+        "speed": 42.0,
+        "csv_line": 552,
+        "effective_spark_mask": 4032
+      },
+      "loaded_entry": true,
+      "mode_only_wrapper_replay": [
+        {
+          "iat_fixture_c": 10,
+          "mode1_g_s": 143.29705810546875,
+          "mode3_g_s": 143.19134521484375,
+          "mode_only_change_percent": -0.07377184990580155
+        },
+        {
+          "iat_fixture_c": 30,
+          "mode1_g_s": 133.98899841308594,
+          "mode3_g_s": 133.89015197753906,
+          "mode_only_change_percent": -0.07377205346525972
+        },
+        {
+          "iat_fixture_c": 60,
+          "mode1_g_s": 121.79067993164062,
+          "mode3_g_s": 121.7008285522461,
+          "mode_only_change_percent": -0.073775250655439
+        }
+      ]
+    },
+    {
+      "previous": {
+        "time": 104.796,
+        "pedal": 74.12,
+        "aux": 4032.0,
+        "battery": 12.48,
+        "avls": 1.0,
+        "ect": 61.0,
+        "sync": 1.0,
+        "flags": 0.0,
+        "timeout": 0.0,
+        "rpm": 3241.0,
+        "afr": 13.12,
+        "fbkc": 0.0,
+        "flkc": 0.0,
+        "pw": 8.7,
+        "iam": 1.0,
+        "mode": 2.0,
+        "timing": 17.0,
+        "inhibit": 0.0,
+        "lean": 0.0,
+        "airflow_missed": 0.0,
+        "crank_missed": 0.0,
+        "map": 105.964,
+        "spark": 0.0,
+        "throttle": 86.67,
+        "speed": 42.0,
+        "csv_line": 1009,
+        "effective_spark_mask": 4032
+      },
+      "sample": {
+        "time": 104.899,
+        "pedal": 74.12,
+        "aux": 4032.0,
+        "battery": 12.4,
+        "avls": 3.0,
+        "ect": 61.0,
+        "sync": 1.0,
+        "flags": 0.0,
+        "timeout": 0.0,
+        "rpm": 3368.0,
+        "afr": 12.18,
+        "fbkc": 0.0,
+        "flkc": 0.0,
+        "pw": 8.96,
+        "iam": 1.0,
+        "mode": 2.0,
+        "timing": 17.0,
+        "inhibit": 0.0,
+        "lean": 0.0,
+        "airflow_missed": 0.0,
+        "crank_missed": 0.0,
+        "map": 109.14,
+        "spark": 0.0,
+        "throttle": 87.06,
+        "speed": 43.0,
+        "csv_line": 1010,
+        "effective_spark_mask": 4032
+      },
+      "loaded_entry": true,
+      "mode_only_wrapper_replay": [
+        {
+          "iat_fixture_c": 10,
+          "mode1_g_s": 137.10647583007812,
+          "mode3_g_s": 137.17999267578125,
+          "mode_only_change_percent": 0.05362025772892576
+        },
+        {
+          "iat_fixture_c": 30,
+          "mode1_g_s": 128.20053100585938,
+          "mode3_g_s": 128.26927185058594,
+          "mode_only_change_percent": 0.0536197815931283
+        },
+        {
+          "iat_fixture_c": 60,
+          "mode1_g_s": 116.52919006347656,
+          "mode3_g_s": 116.5916748046875,
+          "mode_only_change_percent": 0.053621535665793196
+        }
+      ]
+    },
+    {
+      "previous": {
+        "time": 110.109,
+        "pedal": 97.65,
+        "aux": 4032.0,
+        "battery": 12.48,
+        "avls": 1.0,
+        "ect": 61.0,
+        "sync": 1.0,
+        "flags": 0.0,
+        "timeout": 0.0,
+        "rpm": 3169.0,
+        "afr": 11.58,
+        "fbkc": 0.0,
+        "flkc": 0.0,
+        "pw": 10.5,
+        "iam": 1.0,
+        "mode": 2.0,
+        "timing": 16.0,
+        "inhibit": 0.0,
+        "lean": 0.0,
+        "airflow_missed": 0.0,
+        "crank_missed": 0.0,
+        "map": 111.046,
+        "spark": 0.0,
+        "throttle": 100.0,
+        "speed": 56.0,
+        "csv_line": 1060,
+        "effective_spark_mask": 4032
+      },
+      "sample": {
+        "time": 110.215,
+        "pedal": 97.65,
+        "aux": 4032.0,
+        "battery": 12.72,
+        "avls": 3.0,
+        "ect": 61.0,
+        "sync": 1.0,
+        "flags": 0.0,
+        "timeout": 0.0,
+        "rpm": 3152.0,
+        "afr": 11.56,
+        "fbkc": 0.0,
+        "flkc": 0.0,
+        "pw": 10.75,
+        "iam": 1.0,
+        "mode": 2.0,
+        "timing": 15.5,
+        "inhibit": 0.0,
+        "lean": 0.0,
+        "airflow_missed": 0.0,
+        "crank_missed": 0.0,
+        "map": 113.905,
+        "spark": 0.0,
+        "throttle": 100.0,
+        "speed": 57.0,
+        "csv_line": 1061,
+        "effective_spark_mask": 4032
+      },
+      "loaded_entry": true,
+      "mode_only_wrapper_replay": [
+        {
+          "iat_fixture_c": 10,
+          "mode1_g_s": 142.5557403564453,
+          "mode3_g_s": 142.5557403564453,
+          "mode_only_change_percent": 0.0
+        },
+        {
+          "iat_fixture_c": 30,
+          "mode1_g_s": 133.2958221435547,
+          "mode3_g_s": 133.2958221435547,
+          "mode_only_change_percent": 0.0
+        },
+        {
+          "iat_fixture_c": 60,
+          "mode1_g_s": 121.16061401367188,
+          "mode3_g_s": 121.16061401367188,
+          "mode_only_change_percent": 0.0
+        }
+      ]
+    },
+    {
+      "previous": {
+        "time": 115.522,
+        "pedal": 13.33,
+        "aux": 4032.0,
+        "battery": 14.08,
+        "avls": 1.0,
+        "ect": 62.0,
+        "sync": 1.0,
+        "flags": 0.0,
+        "timeout": 0.0,
+        "rpm": 2963.0,
+        "afr": 14.07,
+        "fbkc": 0.0,
+        "flkc": 0.0,
+        "pw": 3.07,
+        "iam": 1.0,
+        "mode": 2.0,
+        "timing": 23.5,
+        "inhibit": 0.0,
+        "lean": 0.0,
+        "airflow_missed": 0.0,
+        "crank_missed": 0.0,
+        "map": 57.358,
+        "spark": 0.0,
+        "throttle": 21.57,
+        "speed": 57.0,
+        "csv_line": 1112,
+        "effective_spark_mask": 4032
+      },
+      "sample": {
+        "time": 115.626,
+        "pedal": 15.29,
+        "aux": 4032.0,
+        "battery": 14.08,
+        "avls": 3.0,
+        "ect": 62.0,
+        "sync": 1.0,
+        "flags": 0.0,
+        "timeout": 0.0,
+        "rpm": 3476.0,
+        "afr": 15.13,
+        "fbkc": 0.0,
+        "flkc": 0.0,
+        "pw": 4.35,
+        "iam": 1.0,
+        "mode": 2.0,
+        "timing": 17.0,
+        "inhibit": 0.0,
+        "lean": 0.0,
+        "airflow_missed": 0.0,
+        "crank_missed": 0.0,
+        "map": 63.394,
+        "spark": 0.0,
+        "throttle": 23.92,
+        "speed": 56.0,
+        "csv_line": 1113,
+        "effective_spark_mask": 4032
+      },
+      "loaded_entry": false,
+      "mode_only_wrapper_replay": [
+        {
+          "iat_fixture_c": 10,
+          "mode1_g_s": 75.51466369628906,
+          "mode3_g_s": 75.90471649169922,
+          "mode_only_change_percent": 0.5165258988358845
+        },
+        {
+          "iat_fixture_c": 30,
+          "mode1_g_s": 70.60950469970703,
+          "mode3_g_s": 70.9742202758789,
+          "mode_only_change_percent": 0.5165247621024438
+        },
+        {
+          "iat_fixture_c": 60,
+          "mode1_g_s": 64.18123626708984,
+          "mode3_g_s": 64.51274871826172,
+          "mode_only_change_percent": 0.5165254994345725
+        }
+      ]
+    },
+    {
+      "previous": {
+        "time": 118.542,
+        "pedal": 100.0,
+        "aux": 4032.0,
+        "battery": 14.24,
+        "avls": 1.0,
+        "ect": 62.0,
+        "sync": 1.0,
+        "flags": 0.0,
+        "timeout": 0.0,
+        "rpm": 3200.0,
+        "afr": 15.13,
+        "fbkc": 0.0,
+        "flkc": 0.0,
+        "pw": 7.42,
+        "iam": 1.0,
+        "mode": 2.0,
+        "timing": 8.0,
+        "inhibit": 0.0,
+        "lean": 0.0,
+        "airflow_missed": 0.0,
+        "crank_missed": 0.0,
+        "map": 102.152,
+        "spark": 0.0,
+        "throttle": 100.0,
+        "speed": 53.0,
+        "csv_line": 1141,
+        "effective_spark_mask": 4032
+      },
+      "sample": {
+        "time": 118.646,
+        "pedal": 0.0,
+        "aux": 4032.0,
+        "battery": 14.08,
+        "avls": 3.0,
+        "ect": 62.0,
+        "sync": 1.0,
+        "flags": 0.0,
+        "timeout": 0.0,
+        "rpm": 3545.0,
+        "afr": 12.82,
+        "fbkc": 0.0,
+        "flkc": 0.0,
+        "pw": 7.68,
+        "iam": 1.0,
+        "mode": 2.0,
+        "timing": 19.0,
+        "inhibit": 0.0,
+        "lean": 0.0,
+        "airflow_missed": 0.0,
+        "crank_missed": 0.0,
+        "map": 76.42,
+        "spark": 0.0,
+        "throttle": 42.35,
+        "speed": 53.0,
+        "csv_line": 1142,
+        "effective_spark_mask": 4032
+      },
+      "loaded_entry": false,
+      "mode_only_wrapper_replay": [
+        {
+          "iat_fixture_c": 10,
+          "mode1_g_s": 86.82508087158203,
+          "mode3_g_s": 80.57482147216797,
+          "mode_only_change_percent": -7.198679617308345
+        },
+        {
+          "iat_fixture_c": 30,
+          "mode1_g_s": 81.18523406982422,
+          "mode3_g_s": 75.3409652709961,
+          "mode_only_change_percent": -7.198684423083268
+        },
+        {
+          "iat_fixture_c": 60,
+          "mode1_g_s": 73.79415130615234,
+          "mode3_g_s": 68.48194885253906,
+          "mode_only_change_percent": -7.198676805122894
+        }
+      ]
+    }
+  ],
+  "native_stock_byte_ranges": [
+    {
+      "start": "405B2",
+      "end_exclusive": "40714"
+    },
+    {
+      "start": "2A262",
+      "end_exclusive": "2A2E8"
+    },
+    {
+      "start": "0D156",
+      "end_exclusive": "0D18C"
+    },
+    {
+      "start": "0D22E",
+      "end_exclusive": "0D232"
+    },
+    {
+      "start": "0D240",
+      "end_exclusive": "0D24C"
+    }
+  ],
+  "limits": [
+    "100\u2013108ms non-atomic SSM samples can miss brief state changes.",
+    "Counters start and remain at zero; capture begins with engine already running at944RPM. No missed task5/task6 activations are recorded, but this is not proof of every deadline.",
+    "Normal auxiliary mask0FC0 suppresses the secondary six slots; primary slots remain enabled.",
+    "P21 and timing are software publications, not actual injector/coil waveforms.",
+    "AVLS committed software state is not hydraulic lift or bank electrical feedback.",
+    "AFR zero means rejected wideband input; AFR during failed combustion does not establish cause.",
+    "IAT, fuel pressure, individual-cylinder combustion and current coil/injector outputs are absent.",
+    "The mode-only replay uses supplied IAT and modeled lookups; it isolates table selection but does not reconstruct the unlogged full fuel/ignition calculation or transient physical airflow.",
+    "The final engine-stop sequence changes masks and sync; the CSV does not identify key position."
+  ],
+  "conclusions": [
+    "At110.319\u2013110.424s RPM falls3249to3016 while AFR stays11.57 and published pulse increases11.01to11.52ms. The later lean excursion does not establish fuel starvation; no further fuel adjustment is justified by this observation.",
+    "Repeated loaded loss of acceleration occurs without sustained sampled ignition inhibition, engine-signal timeout, synchronization loss, lean guard or knock retard.",
+    "No native task5/task6 activation losses are recorded anywhere in the capture.",
+    "Three loaded lift transitions correlate with disturbance but their mode-only airflow changes are below0.1%; there is no large VE-table selection step at those points.",
+    "Another plateau occurs at3600\u20133800RPM with high mode already committed; low-lift full-throttle acceleration is also weak. A single3200RPM table-switch explanation is insufficient.",
+    "No vehicle cause or software cure is established. Downstream scheduling, physical ignition, injection, fuel pressure and lift response are not cleared by normal software gates."
+  ],
+  "changes": "Offline analysis and documentation only. No firmware, calibration, logger or CSV edits."
+}

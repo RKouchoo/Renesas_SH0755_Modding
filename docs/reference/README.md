@@ -5,7 +5,7 @@ patch's history, current architecture, address evidence and unresolved issues.
 The September 8–9 audit uses the stock Ghidra program through MCP, the saved
 stock/main/v2 images, their builders and the offline instruction fixtures.
 
-**The loaded cut is not yet proven cured.** The full-flow audit found and repaired
+**The loaded cut persists in the September 13 repaired-v2 test.** The full-flow audit found and repaired
 a separate, definite failure of the native AVCS feedback/PWM path; both rolling
 BINs and the logger definition now contain that correction. Passing the build and execution checks
 establishes the tested software contracts, not a vehicle-validated calibration.
@@ -13,6 +13,9 @@ See [findings](FINDINGS.md) before relying on an older address label.
 
 | Read | Covers |
 |---|---|
+| [Cut-trace vehicle capture](CUT_TRACE_CAPTURE_20260913.md) | Repeated hard cuts with normal sampled spark/sync gates and zero lost-task activations; rich AFR at the first RPM drop, no large VE-selection step, and the remaining physical ignition/output boundary. |
+| [Loaded-cut logger](CUT_TRACE_LOGGER_20260913.md) | Prepared next capture: separate spark masks, ignition mode, synchronization/timeout and native missed-task counters on the existing ROM. |
+| [First repaired-v2 vehicle capture](AVCS_REPAIR_CAPTURE_20260913.md) | Cut persists with sampled injector inhibition and knock retard absent; unequal reported cam advance, exact flash identity, and the remaining ignition/scheduler questions. |
 | [Resume checkpoint — September 13](AUDIT_RESUME_20260913.md) | User-requested pause: exact artifacts, completed checks, unfinished temperature traces and the completed AVCS logger follow-up. |
 | [Full patch process-flow review](PATCH_PROCESS_FLOW.md) | Ongoing dependency audit beyond the earlier address review: every build assignment, producers, consumers, initialization, latches and scheduling. |
 | [AVCS actuator dependency repair](AVCS_OCV_REPAIR_20260913.md) | Corrects the false rear-O2 identity, restores current feedback and PWM, and moves patch RAM out of the cam controller. |

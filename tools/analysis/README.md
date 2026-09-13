@@ -7,6 +7,12 @@ independently of the current working directory.
 
 | Modules | Purpose |
 |---|---|
+| `analyze_20260913_patch_workload.py` | Paired stock/v2 native airflow and wideband instruction/mask counts; isolates SD call substitutions in memory without creating a ROM. No elapsed-time or deadline claim. |
+| `analyze_20260913_cylinder_fuel_followup.py` | Individual-cylinder fuel modifiers through the native composer, running refresh and pending/active injector updates; explicit state fixtures and native division controls. |
+| `analyze_20260913_crank_refresh_followup.py` | Connects the native cranking-flag producer to six injector duration-refresh requests at the logged RPM/ECT pairs; distinguishes ignition mode from fuel scheduler state. |
+| `analyze_20260913_ignition_followup.py` | Native dwell lookup at logged voltages, bounded late-start device cases, P10 visibility and per-cylinder correction clearing; no ECU writes or physical-output claim. |
+| `analyze_20260913_cut_trace.py` | Repeated loaded cuts with spark/sync/task counters, exact profile matching, rich-at-onset event sequence and bounded mode-only VE replay; optional comparison figure. |
+| `analyze_20260913_avcs_repair.py` | First repaired-v2 vehicle capture, full flash CRC identity, explicit Right/Left bank mapping and sampled cut/knock/AFR evidence; preserves the unresolved-cut finding. |
 | `analyze_20260912_adjusted_drive.py` | Matched post-adjustment drive, low-lift bog, native fuel arithmetic and held-input cut checks; no physical-cause claim. |
 | `analyze_20260912_pump_demand.py`, `_captured_images.py` | Native pump-demand comparison with explicit missing-input fixtures; exact capture-image recovery across the later pump-scaling correction. |
 | `analyze_20260912_avls_neutral.py`, `analyze_20260912_fueling_adjustment.py` | Exact neutral capture identities and the measured idle/high-lift vacuum VE adjustment, with historical-image reconstruction. |

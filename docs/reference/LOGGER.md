@@ -4,9 +4,9 @@
 
 The complete definition is
 [D2WD610H_master_logger.xml](../../logger/D2WD610H_master_logger.xml),
-with the [E500–E529 fragment](../../logger/D2WD610H_master_logger_ecuparams.xml).
+with the [E500–E537 fragment](../../logger/D2WD610H_master_logger_ecuparams.xml).
 The complete definition SHA-256 is
-`855b0af1620eb9efd6cc439945dec4fe5fc7dd957e9b79d506f8d1d1a099c71d`.
+`ee8b217571b0b2a65ba4d0ccf0aec7e16f3d8eddd077e4596434e17c5344bc9d`.
 The AVCS repair relocates E500/E504/E505 to `FFAE8C/FFAEA0/FFAE9C`.
 Use this complete definition with the repaired rolling BINs; older definitions
 would read native OCV currents/integrators as patch state. IDs, conversions and
@@ -17,7 +17,7 @@ Both current integrations include the [local load-fallback repair](V2_LOAD_FALLB
 
 ## Native request budget
 
-All eight generated profiles use **43 address bytes** in each worst-case selected
+All nine generated profiles use **43 address bytes** in each worst-case selected
 request. The A8 frame is 136 bytes at that budget. Native receiver `32CA4`
 has a receive-index limit of 137; 44 addresses do not fit. An accepted profile
 file does not establish that the ECU accepts its request size.
@@ -29,6 +29,7 @@ no serial connection was opened during this audit.
 
 | Profile | Purpose |
 |---|---|
+| [Cut trace](../../logger/D2WD610H_cut_trace_profile.xml) | Separate spark gate, ignition mode, synchronization/timeout and native missed-task counters; retains IAM, knock and AFR on the existing ROM. [24-channel budget and interpretation](../../logger/README.md#loaded-cut-trace). |
 | [AVCS repair](../../logger/D2WD610H_avcs_repair_profile.xml) | Both actual cam angles, measured OCV currents and restored normal output duty, retaining IAM, knock and cut context. See the [20-channel budget](../../logger/README.md#avcs-repair-validation). |
 | [AVLS and fuel cut](../../logger/D2WD610H_avls_cut_diagnostic_profile.xml) | Both bank output paths, software modes, lean-cut state and injector inhibition; retains IAM and both knock corrections. See the [23-channel budget](../../logger/README.md#avls-and-cut-diagnosis). |
 | [Road tuning](../../logger/D2WD610H_road_tuning_profile.xml) | IAM, feedback/learned knock, timing, native SD MAP, load and fueling, with speed, pedal and throttle. See the [18-channel budget](../../logger/README.md). |
@@ -76,6 +77,17 @@ the main verifier.
 | E527 | `FFFFCD8A`, u8 | AVLS bank-index-1 software mode; same index as P124/P126. |
 | E528 | `FFFFC91C`, float percent | AVCS bank-index-0 normal output duty after `34BE4` feedback/gates; before later diagnostic override/PWM selection. |
 | E529 | `FFFFC920`, float percent | AVCS bank-index-1 normal output duty at the same stage. |
+| E530 | `FFFFC0DC`, u16 | Separate spark-inhibit word; combine with E531/E532. |
+| E531 | `FFFFC0E1`, u8 | Ignition mode; zero inhibits all spark slots. |
+| E532 | `FFFFC290`, u16 | Auxiliary spark mask; normal `0FC0` suppresses secondary slots rather than all coils. |
+| E533 | `FFFFAC16`, u8 | Crank synchronization state; stable running uses1. |
+| E534 | `FFFFB52C`, u8 | Engine runtime flags; mask128 is stopped/timeout publication. |
+| E535 | `FFFFB00C`, u8 | Saturating missed task5 activation counter. |
+| E536 | `FFFFB00D`, u8 | Saturating missed task6 activation counter. |
+| E537 | `FFFFAC0C`, u8 | Selected engine-signal timeout latch. |
+
+The [cut-trace note](CUT_TRACE_LOGGER_20260913.md) records native producers,
+counter saturation, byte order and the limits of sampling these flags.
 
 E51 is **processed MAP B2A0**, not SD's direct input. P24 is a quantized
 atmospheric estimate, not an independent physical reference. Raw pedal uses
@@ -106,7 +118,7 @@ explains why this path is not established as the cause of the latest drive.
 ## Native AVLS channel verification
 
 The later [native command-flow tests](../../tests/test_ssm_command_process_flow.py)
-execute all eight saved profiles through receive/echo handling, command decode,
+execute all nine saved profiles through receive/echo handling, command decode,
 actual getters and two complete continuous responses in main/v2/captured.
 Each 43-address selection produces a valid 49-byte response. None reaches
 the explicit retained-bank reset writer: A8 reads use table `4B6FC`, whereas

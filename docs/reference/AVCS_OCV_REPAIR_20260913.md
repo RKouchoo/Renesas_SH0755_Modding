@@ -2,8 +2,10 @@
 
 [Process-flow audit](PATCH_PROCESS_FLOW.md) · [Exact repair bytes](evidence/avcs_ocv_repair_20260913.json) · [Native execution tests](../../tests/test_avcs_actuator_process_flow.py)
 
-**Confirmed firmware defect, repaired in both rolling builds. Vehicle effect
-remains untested; this is not proof that the entire loaded cut is cured.**
+**Confirmed firmware defect, repaired in both rolling builds. The first vehicle
+test shows current/output activity and Left reported cam advance, but the user
+confirms the loaded cut persists.** See the [September 13 capture review](AVCS_REPAIR_CAPTURE_20260913.md)
+for the separate Right-angle discrepancy and the limits of these observations.
 
 The wideband component had misidentified an AVCS oil-control-valve (OCV)
 feedback loop as rear-O2 processing. It bypassed the current converter and

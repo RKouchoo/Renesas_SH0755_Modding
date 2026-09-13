@@ -1,0 +1,832 @@
+{
+  "schema_version": 1,
+  "scope": "Bounded review of cuttrace_20260913_143625; not a resumption/completion of the paused audit.",
+  "source_log": "logs/romraiderlog_cuttrace_20260913_143625.csv",
+  "source_sha256": "3e62ab07eb7ee184ab43162debd7d97c3f829085399cf87742ca6c8997d85390",
+  "review": "docs/reference/CUT_TRACE_CAPTURE_20260913.md",
+  "computed_evidence": "logs/20260913_cut_trace_review.json",
+  "mcp_reads": [
+    {
+      "address": "0x405B2",
+      "result": {
+        "status": "fulfilled",
+        "value": {
+          "content": [
+            {
+              "type": "text",
+              "text": "000405b2: mov.w 0x000405c0,r2 "
+            },
+            {
+              "type": "text",
+              "text": "000405b4: mov.w 0x000405c2,r0 "
+            },
+            {
+              "type": "text",
+              "text": "000405b6: mov.b @r2,r3 "
+            },
+            {
+              "type": "text",
+              "text": "000405b8: rts "
+            },
+            {
+              "type": "text",
+              "text": "000405ba: _mov.b r3,@r0 "
+            }
+          ],
+          "isError": false
+        }
+      }
+    },
+    {
+      "address": "0x405CC",
+      "result": {
+        "status": "fulfilled",
+        "value": {
+          "content": [
+            {
+              "type": "text",
+              "text": "000405cc: mov.l r14,@-r15 ; 2026-09-12 process audit: B528 is native crank-phase publication (24-state source 87F2 -> CF58/D0D0 queue -> D106 -> 11958/19F9C). CD8F80 skips. Bank0 requires phase=CD8B, CD89!=CD86 and bank1 CD8A==CD86; RPM>=7D4AC (3000) first setsCD9D=1 and defers; next eligible opportunity clearsCD9D, copiesCD89=CD86 and calls40C94/40798/40CE6(0). Bank1 phase=CD8C andCD8A!=CD86 copiesCD8A and calls same chain(1). Software copies precede output and are not physical confirmation. Native tests exercise all24 starting phases with commanded high/low transitions and exact bank calculations to F12A boundary; no persistent mismatch found in those bounded sequences."
+            },
+            {
+              "type": "text",
+              "text": "000405ce: sts.l PR,@-r15 "
+            },
+            {
+              "type": "text",
+              "text": "000405d0: mov.w 0x000406ea,r1 "
+            },
+            {
+              "type": "text",
+              "text": "000405d2: mov.b @r1,r4 "
+            },
+            {
+              "type": "text",
+              "text": "000405d4: mov.w 0x000406ec,r3 "
+            },
+            {
+              "type": "text",
+              "text": "000405d6: mov.w 0x000406ee,r0 "
+            },
+            {
+              "type": "text",
+              "text": "000405d8: mov.b @r0,r0 "
+            },
+            {
+              "type": "text",
+              "text": "000405da: tst #0x80,r0 "
+            },
+            {
+              "type": "text",
+              "text": "000405dc: bf/s 0x0004067c "
+            },
+            {
+              "type": "text",
+              "text": "000405de: _fmov.s @r3,fr4 "
+            },
+            {
+              "type": "text",
+              "text": "000405e0: mov.w 0x000406f0,r1 "
+            },
+            {
+              "type": "text",
+              "text": "000405e2: extu.b r4,r14 "
+            },
+            {
+              "type": "text",
+              "text": "000405e4: mov.b @r1,r2 "
+            },
+            {
+              "type": "text",
+              "text": "000405e6: extu.b r2,r2 "
+            },
+            {
+              "type": "text",
+              "text": "000405e8: cmp/eq r2,r14 "
+            },
+            {
+              "type": "text",
+              "text": "000405ea: bf/s 0x00040644 "
+            },
+            {
+              "type": "text",
+              "text": "000405ec: _nop "
+            },
+            {
+              "type": "text",
+              "text": "000405ee: mov.w 0x000406f2,r2 "
+            },
+            {
+              "type": "text",
+              "text": "000405f0: mov.w 0x000406f4,r1 "
+            },
+            {
+              "type": "text",
+              "text": "000405f2: mov.b @r2,r0 "
+            },
+            {
+              "type": "text",
+              "text": "000405f4: mov.b @r1,r3 "
+            },
+            {
+              "type": "text",
+              "text": "000405f6: cmp/eq r3,r0 "
+            },
+            {
+              "type": "text",
+              "text": "000405f8: bt/s 0x00040644 "
+            },
+            {
+              "type": "text",
+              "text": "000405fa: _nop "
+            },
+            {
+              "type": "text",
+              "text": "000405fc: mov.w 0x000406f6,r3 "
+            },
+            {
+              "type": "text",
+              "text": "000405fe: mov.b @r3,r0 "
+            },
+            {
+              "type": "text",
+              "text": "00040600: mov.b @r1,r2 "
+            },
+            {
+              "type": "text",
+              "text": "00040602: cmp/eq r2,r0 "
+            },
+            {
+              "type": "text",
+              "text": "00040604: bf/s 0x00040644 "
+            },
+            {
+              "type": "text",
+              "text": "00040606: _nop "
+            },
+            {
+              "type": "text",
+              "text": "00040608: mov.l 0x000406fc,r4 "
+            },
+            {
+              "type": "text",
+              "text": "0004060a: mov.b @r4,r0 "
+            },
+            {
+              "type": "text",
+              "text": "0004060c: extu.b r0,r0 "
+            },
+            {
+              "type": "text",
+              "text": "0004060e: cmp/eq #0x1,r0 "
+            },
+            {
+              "type": "text",
+              "text": "00040610: bt/s 0x0004061e "
+            },
+            {
+              "type": "text",
+              "text": "00040612: _nop "
+            },
+            {
+              "type": "text",
+              "text": "00040614: mov.l 0x00040700,r3 "
+            },
+            {
+              "type": "text",
+              "text": "00040616: fmov.s @r3,fr3 "
+            },
+            {
+              "type": "text",
+              "text": "00040618: fcmp/gt fr4,fr3 "
+            },
+            {
+              "type": "text",
+              "text": "0004061a: bf/s 0x00040640 "
+            },
+            {
+              "type": "text",
+              "text": "0004061c: _nop "
+            },
+            {
+              "type": "text",
+              "text": "0004061e: mov #0x0,r1 "
+            },
+            {
+              "type": "text",
+              "text": "00040620: mov.w 0x000406f4,r2 "
+            },
+            {
+              "type": "text",
+              "text": "00040622: mov.b r1,@r4 "
+            },
+            {
+              "type": "text",
+              "text": "00040624: mov.b @r2,r3 "
+            },
+            {
+              "type": "text",
+              "text": "00040626: mov.w 0x000406f2,r0 "
+            },
+            {
+              "type": "text",
+              "text": "00040628: mov.b r3,@r0 "
+            },
+            {
+              "type": "text",
+              "text": "0004062a: mov.l 0x00040704,r3 "
+            },
+            {
+              "type": "text",
+              "text": "0004062c: jsr @r3 "
+            },
+            {
+              "type": "text",
+              "text": "0004062e: _mov r1,r4 "
+            },
+            {
+              "type": "text",
+              "text": "00040630: mov.l 0x00040708,r2 "
+            },
+            {
+              "type": "text",
+              "text": "00040632: jsr @r2 "
+            },
+            {
+              "type": "text",
+              "text": "00040634: _mov #0x0,r4 "
+            },
+            {
+              "type": "text",
+              "text": "00040636: mov.l 0x0004070c,r3 "
+            },
+            {
+              "type": "text",
+              "text": "00040638: jsr @r3 "
+            },
+            {
+              "type": "text",
+              "text": "0004063a: _mov #0x0,r4 "
+            },
+            {
+              "type": "text",
+              "text": "0004063c: bra 0x00040644 "
+            },
+            {
+              "type": "text",
+              "text": "0004063e: _nop "
+            },
+            {
+              "type": "text",
+              "text": "00040640: mov #0x1,r3 "
+            },
+            {
+              "type": "text",
+              "text": "00040642: mov.b r3,@r4 "
+            },
+            {
+              "type": "text",
+              "text": "00040644: mov.w 0x000406f8,r1 "
+            },
+            {
+              "type": "text",
+              "text": "00040646: mov.b @r1,r2 "
+            },
+            {
+              "type": "text",
+              "text": "00040648: extu.b r2,r2 "
+            },
+            {
+              "type": "text",
+              "text": "0004064a: cmp/eq r2,r14 "
+            },
+            {
+              "type": "text",
+              "text": "0004064c: bf/s 0x0004067c "
+            },
+            {
+              "type": "text",
+              "text": "0004064e: _nop "
+            },
+            {
+              "type": "text",
+              "text": "00040650: mov.w 0x000406f6,r3 "
+            },
+            {
+              "type": "text",
+              "text": "00040652: mov.b @r3,r2 "
+            },
+            {
+              "type": "text",
+              "text": "00040654: mov.w 0x000406f4,r1 "
+            },
+            {
+              "type": "text",
+              "text": "00040656: mov.b @r1,r0 "
+            },
+            {
+              "type": "text",
+              "text": "00040658: cmp/eq r0,r2 "
+            },
+            {
+              "type": "text",
+              "text": "0004065a: bt/s 0x0004067c "
+            },
+            {
+              "type": "text",
+              "text": "0004065c: _nop "
+            },
+            {
+              "type": "text",
+              "text": "0004065e: mov.w 0x000406f4,r2 "
+            },
+            {
+              "type": "text",
+              "text": "00040660: mov.w 0x000406f6,r1 "
+            },
+            {
+              "type": "text",
+              "text": "00040662: mov.b @r2,r3 "
+            },
+            {
+              "type": "text",
+              "text": "00040664: mov.b r3,@r1 "
+            },
+            {
+              "type": "text",
+              "text": "00040666: mov.l 0x00040704,r3 "
+            },
+            {
+              "type": "text",
+              "text": "00040668: jsr @r3 "
+            },
+            {
+              "type": "text",
+              "text": "0004066a: _mov #0x1,r4 "
+            },
+            {
+              "type": "text",
+              "text": "0004066c: mov.l 0x00040708,r2 "
+            },
+            {
+              "type": "text",
+              "text": "0004066e: jsr @r2 "
+            },
+            {
+              "type": "text",
+              "text": "00040670: _mov #0x1,r4 "
+            },
+            {
+              "type": "text",
+              "text": "00040672: mov #0x1,r4 "
+            },
+            {
+              "type": "text",
+              "text": "00040674: lds.l @r15+,PR "
+            },
+            {
+              "type": "text",
+              "text": "00040676: mov.l 0x0004070c,r3 "
+            },
+            {
+              "type": "text",
+              "text": "00040678: jmp @r3 "
+            },
+            {
+              "type": "text",
+              "text": "0004067a: _mov.l @r15+,r14 "
+            },
+            {
+              "type": "text",
+              "text": "0004067c: lds.l @r15+,PR "
+            },
+            {
+              "type": "text",
+              "text": "0004067e: rts "
+            },
+            {
+              "type": "text",
+              "text": "00040680: _mov.l @r15+,r14 "
+            }
+          ],
+          "isError": false
+        }
+      }
+    },
+    {
+      "address": "0x2A262",
+      "result": {
+        "status": "fulfilled",
+        "value": {
+          "content": [
+            {
+              "type": "text",
+              "text": "0002a262: mov.w 0x0002a2d8,r2 ; 2026-09-13 full-flow audit: Returns ((C0E1!=0 ? C0DC : FFFF) | C290). Separate from injector B744. 27090 maps D94C upper2/D94D lower4 into six bits and duplicates them at+6 for both logical phase halves."
+            },
+            {
+              "type": "text",
+              "text": "0002a264: mov.b @r2,r4 "
+            },
+            {
+              "type": "text",
+              "text": "0002a266: extu.b r4,r4 "
+            },
+            {
+              "type": "text",
+              "text": "0002a268: tst r4,r4 "
+            },
+            {
+              "type": "text",
+              "text": "0002a26a: bf/s 0x0002a274 "
+            },
+            {
+              "type": "text",
+              "text": "0002a26c: _nop "
+            },
+            {
+              "type": "text",
+              "text": "0002a26e: mov.l 0x0002a2e4,r4 "
+            },
+            {
+              "type": "text",
+              "text": "0002a270: bra 0x0002a278 "
+            },
+            {
+              "type": "text",
+              "text": "0002a272: _nop "
+            },
+            {
+              "type": "text",
+              "text": "0002a274: mov.w 0x0002a2da,r3 "
+            },
+            {
+              "type": "text",
+              "text": "0002a276: mov.w @r3,r4 "
+            },
+            {
+              "type": "text",
+              "text": "0002a278: mov.l 0x0002a2e0,r1 "
+            },
+            {
+              "type": "text",
+              "text": "0002a27a: mov.w @r1,r2 "
+            },
+            {
+              "type": "text",
+              "text": "0002a27c: or r2,r4 "
+            },
+            {
+              "type": "text",
+              "text": "0002a27e: rts "
+            },
+            {
+              "type": "text",
+              "text": "0002a280: _mov r4,r0 "
+            }
+          ],
+          "isError": false
+        }
+      }
+    },
+    {
+      "address": "0xD156",
+      "result": {
+        "status": "fulfilled",
+        "value": {
+          "content": [
+            {
+              "type": "text",
+              "text": "0000d156: mov r4,r0 ; 2026-09-12 scheduler dependency: CF58/CF7E call3A28(task5/task6); failed activation routes here instead of queueingphase viaD0D0. Increments saturating byte at B007+taskID: B00C(task5), B00D(task6). Those counters are computed writes and absent from direct destination xrefs. D0D0/D106 use two longword slots per12-byte record fromAFEC, with independent producer/consumerbyteindices. Static path establishes a way missed scheduling can lose phase work; no overload occurrence or timing breach is proven from captured log. Cut-trace logger E535 reads B00C and E536 reads B00D as distinct uint8 values. Both saturate at255; compare with a start-of-run baseline. Native SSM A8 read-only exchanges verified20260913; no new counter or runtime patch was installed."
+            },
+            {
+              "type": "text",
+              "text": "0000d158: mov.w 0x0000d22e,r5 "
+            },
+            {
+              "type": "text",
+              "text": "0000d15a: sts.l PR,@-r15 "
+            },
+            {
+              "type": "text",
+              "text": "0000d15c: mov.l 0x0000d240,r3 "
+            },
+            {
+              "type": "text",
+              "text": "0000d15e: add #-0x8,r15 "
+            },
+            {
+              "type": "text",
+              "text": "0000d160: mov.w r0,@(0x4,r15) "
+            },
+            {
+              "type": "text",
+              "text": "0000d162: jsr @r3 "
+            },
+            {
+              "type": "text",
+              "text": "0000d164: _mov r15,r4 "
+            },
+            {
+              "type": "text",
+              "text": "0000d166: mov.w @(0x4,r15),r0 "
+            },
+            {
+              "type": "text",
+              "text": "0000d168: mov.l 0x0000d244,r4 "
+            },
+            {
+              "type": "text",
+              "text": "0000d16a: add r0,r4 "
+            },
+            {
+              "type": "text",
+              "text": "0000d16c: mov.b @r4,r3 "
+            },
+            {
+              "type": "text",
+              "text": "0000d16e: extu.b r3,r3 "
+            },
+            {
+              "type": "text",
+              "text": "0000d170: mov.w 0x0000d230,r2 "
+            },
+            {
+              "type": "text",
+              "text": "0000d172: cmp/ge r2,r3 "
+            },
+            {
+              "type": "text",
+              "text": "0000d174: bt/s 0x0000d17e "
+            },
+            {
+              "type": "text",
+              "text": "0000d176: _nop "
+            },
+            {
+              "type": "text",
+              "text": "0000d178: mov.b @r4,r1 "
+            },
+            {
+              "type": "text",
+              "text": "0000d17a: add #0x1,r1 "
+            },
+            {
+              "type": "text",
+              "text": "0000d17c: mov.b r1,@r4 "
+            },
+            {
+              "type": "text",
+              "text": "0000d17e: mov.l 0x0000d248,r3 "
+            },
+            {
+              "type": "text",
+              "text": "0000d180: jsr @r3 "
+            },
+            {
+              "type": "text",
+              "text": "0000d182: _mov.l @r15,r4 "
+            },
+            {
+              "type": "text",
+              "text": "0000d184: add #0x8,r15 "
+            },
+            {
+              "type": "text",
+              "text": "0000d186: lds.l @r15+,PR "
+            },
+            {
+              "type": "text",
+              "text": "0000d188: rts "
+            },
+            {
+              "type": "text",
+              "text": "0000d18a: _nop "
+            }
+          ],
+          "isError": false
+        }
+      }
+    }
+  ],
+  "annotations": [
+    {
+      "address": "0x2A262",
+      "comment": "2026-09-13 full-flow audit: Returns ((C0E1!=0 ? C0DC : FFFF) | C290). Separate from injector B744. 27090 maps D94C upper2/D94D lower4 into six bits and duplicates them at+6 for both logical phase halves. Cuttrace 20260913_143625: all247 moving/pedal>=30/RPM>=2500 samples have C0DC=0,C0E1=2,C290=0FC0, so sampled primary six slots remain enabled. User confirms repeated hard cut. All125 such samples with plate>=80 also have injector B744=0. These software gates do not prove physical spark or downstream timer delivery; source/report in CUT_TRACE_CAPTURE_20260913.md.",
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "Comment set successfully"
+          }
+        ],
+        "isError": false
+      }
+    },
+    {
+      "address": "0xD156",
+      "comment": "2026-09-12 scheduler dependency: CF58/CF7E call3A28(task5/task6); failed activation routes here instead of queueingphase viaD0D0. Increments saturating byte at B007+taskID: B00C(task5), B00D(task6). Those counters are computed writes and absent from direct destination xrefs. D0D0/D106 use two longword slots per12-byte record fromAFEC, with independent producer/consumerbyteindices. Static path establishes a way missed scheduling can lose phase work; no overload occurrence or timing breach is proven from captured log. Cut-trace logger E535 reads B00C and E536 reads B00D as distinct uint8 values. Both saturate at255; compare with a start-of-run baseline. Native SSM A8 read-only exchanges verified20260913; no new counter or runtime patch was installed. Cuttrace 20260913_143625: B00C=B00D=0 in all1590 rows, including repeated user-confirmed loaded cuts. Capture starts at944RPM with zero counters and ends in engine stop; no task5/task6 activation losses recorded. This narrows overload-by-failed-activation but does not prove all deadlines, phase inputs or hardware outputs. See CUT_TRACE_CAPTURE_20260913.md.",
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "Comment set successfully"
+          }
+        ],
+        "isError": false
+      }
+    }
+  ],
+  "readbacks": [
+    {
+      "status": "fulfilled",
+      "value": {
+        "content": [
+          {
+            "type": "text",
+            "text": "0002a262: mov.w 0x0002a2d8,r2 ; 2026-09-13 full-flow audit: Returns ((C0E1!=0 ? C0DC : FFFF) | C290). Separate from injector B744. 27090 maps D94C upper2/D94D lower4 into six bits and duplicates them at+6 for both logical phase halves. Cuttrace 20260913_143625: all247 moving/pedal>=30/RPM>=2500 samples have C0DC=0,C0E1=2,C290=0FC0, so sampled primary six slots remain enabled. User confirms repeated hard cut. All125 such samples with plate>=80 also have injector B744=0. These software gates do not prove physical spark or downstream timer delivery; source/report in CUT_TRACE_CAPTURE_20260913.md."
+          },
+          {
+            "type": "text",
+            "text": "0002a264: mov.b @r2,r4 "
+          },
+          {
+            "type": "text",
+            "text": "0002a266: extu.b r4,r4 "
+          },
+          {
+            "type": "text",
+            "text": "0002a268: tst r4,r4 "
+          },
+          {
+            "type": "text",
+            "text": "0002a26a: bf/s 0x0002a274 "
+          },
+          {
+            "type": "text",
+            "text": "0002a26c: _nop "
+          },
+          {
+            "type": "text",
+            "text": "0002a26e: mov.l 0x0002a2e4,r4 "
+          },
+          {
+            "type": "text",
+            "text": "0002a270: bra 0x0002a278 "
+          },
+          {
+            "type": "text",
+            "text": "0002a272: _nop "
+          },
+          {
+            "type": "text",
+            "text": "0002a274: mov.w 0x0002a2da,r3 "
+          },
+          {
+            "type": "text",
+            "text": "0002a276: mov.w @r3,r4 "
+          },
+          {
+            "type": "text",
+            "text": "0002a278: mov.l 0x0002a2e0,r1 "
+          },
+          {
+            "type": "text",
+            "text": "0002a27a: mov.w @r1,r2 "
+          },
+          {
+            "type": "text",
+            "text": "0002a27c: or r2,r4 "
+          },
+          {
+            "type": "text",
+            "text": "0002a27e: rts "
+          },
+          {
+            "type": "text",
+            "text": "0002a280: _mov r4,r0 "
+          }
+        ],
+        "isError": false
+      }
+    },
+    {
+      "status": "fulfilled",
+      "value": {
+        "content": [
+          {
+            "type": "text",
+            "text": "0000d156: mov r4,r0 ; 2026-09-12 scheduler dependency: CF58/CF7E call3A28(task5/task6); failed activation routes here instead of queueingphase viaD0D0. Increments saturating byte at B007+taskID: B00C(task5), B00D(task6). Those counters are computed writes and absent from direct destination xrefs. D0D0/D106 use two longword slots per12-byte record fromAFEC, with independent producer/consumerbyteindices. Static path establishes a way missed scheduling can lose phase work; no overload occurrence or timing breach is proven from captured log. Cut-trace logger E535 reads B00C and E536 reads B00D as distinct uint8 values. Both saturate at255; compare with a start-of-run baseline. Native SSM A8 read-only exchanges verified20260913; no new counter or runtime patch was installed. Cuttrace 20260913_143625: B00C=B00D=0 in all1590 rows, including repeated user-confirmed loaded cuts. Capture starts at944RPM with zero counters and ends in engine stop; no task5/task6 activation losses recorded. This narrows overload-by-failed-activation but does not prove all deadlines, phase inputs or hardware outputs. See CUT_TRACE_CAPTURE_20260913.md."
+          },
+          {
+            "type": "text",
+            "text": "0000d158: mov.w 0x0000d22e,r5 "
+          },
+          {
+            "type": "text",
+            "text": "0000d15a: sts.l PR,@-r15 "
+          },
+          {
+            "type": "text",
+            "text": "0000d15c: mov.l 0x0000d240,r3 "
+          },
+          {
+            "type": "text",
+            "text": "0000d15e: add #-0x8,r15 "
+          },
+          {
+            "type": "text",
+            "text": "0000d160: mov.w r0,@(0x4,r15) "
+          },
+          {
+            "type": "text",
+            "text": "0000d162: jsr @r3 "
+          },
+          {
+            "type": "text",
+            "text": "0000d164: _mov r15,r4 "
+          },
+          {
+            "type": "text",
+            "text": "0000d166: mov.w @(0x4,r15),r0 "
+          },
+          {
+            "type": "text",
+            "text": "0000d168: mov.l 0x0000d244,r4 "
+          },
+          {
+            "type": "text",
+            "text": "0000d16a: add r0,r4 "
+          },
+          {
+            "type": "text",
+            "text": "0000d16c: mov.b @r4,r3 "
+          },
+          {
+            "type": "text",
+            "text": "0000d16e: extu.b r3,r3 "
+          },
+          {
+            "type": "text",
+            "text": "0000d170: mov.w 0x0000d230,r2 "
+          },
+          {
+            "type": "text",
+            "text": "0000d172: cmp/ge r2,r3 "
+          },
+          {
+            "type": "text",
+            "text": "0000d174: bt/s 0x0000d17e "
+          },
+          {
+            "type": "text",
+            "text": "0000d176: _nop "
+          },
+          {
+            "type": "text",
+            "text": "0000d178: mov.b @r4,r1 "
+          },
+          {
+            "type": "text",
+            "text": "0000d17a: add #0x1,r1 "
+          },
+          {
+            "type": "text",
+            "text": "0000d17c: mov.b r1,@r4 "
+          },
+          {
+            "type": "text",
+            "text": "0000d17e: mov.l 0x0000d248,r3 "
+          },
+          {
+            "type": "text",
+            "text": "0000d180: jsr @r3 "
+          },
+          {
+            "type": "text",
+            "text": "0000d182: _mov.l @r15,r4 "
+          },
+          {
+            "type": "text",
+            "text": "0000d184: add #0x8,r15 "
+          },
+          {
+            "type": "text",
+            "text": "0000d186: lds.l @r15+,PR "
+          },
+          {
+            "type": "text",
+            "text": "0000d188: rts "
+          },
+          {
+            "type": "text",
+            "text": "0000d18a: _nop "
+          }
+        ],
+        "isError": false
+      }
+    }
+  ],
+  "readback_verification": "Both returned full submitted comment strings.",
+  "validation": "Pinned CSV, exact selected names/units, finite/monotonic1590rows, native stock byte spans, actual emitted wrapper mode-only replay with IAT fixtures. Existing cumulative355test groups not rerun or incremented.",
+  "runtime_changes": false,
+  "ecu_communication": false
+}

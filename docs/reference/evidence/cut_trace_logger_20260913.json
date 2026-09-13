@@ -1,0 +1,1203 @@
+{
+  "date": "2026-09-13",
+  "review": "docs/reference/CUT_TRACE_LOGGER_20260913.md",
+  "profile": "logger/D2WD610H_cut_trace_profile.xml",
+  "definition": "logger/D2WD610H_master_logger.xml",
+  "complete_definition_sha256": "ee8b217571b0b2a65ba4d0ccf0aec7e16f3d8eddd077e4596434e17c5344bc9d",
+  "prior_definition_sha256": "855b0af1620eb9efd6cc439945dec4fe5fc7dd957e9b79d506f8d1d1a099c71d",
+  "channel_count": 24,
+  "requested_bytes": 43,
+  "request_frame_bytes": 136,
+  "response_frame_bytes": 49,
+  "params_added": [
+    "E530",
+    "E531",
+    "E532",
+    "E533",
+    "E534",
+    "E535",
+    "E536",
+    "E537"
+  ],
+  "mcp_reads": [
+    {
+      "status": "fulfilled",
+      "value": {
+        "address": "0xFFFFB00C",
+        "result": {
+          "content": [],
+          "isError": false
+        }
+      }
+    },
+    {
+      "status": "fulfilled",
+      "value": {
+        "address": "0xFFFFB00D",
+        "result": {
+          "content": [],
+          "isError": false
+        }
+      }
+    },
+    {
+      "status": "fulfilled",
+      "value": {
+        "address": "0xFFFFAC16",
+        "result": {
+          "content": [
+            {
+              "type": "text",
+              "text": "From 0000892c in FUN_00008910 [READ]"
+            },
+            {
+              "type": "text",
+              "text": "From 0000db6c in crank_edge_window_status_update [READ]"
+            },
+            {
+              "type": "text",
+              "text": "From 000087dc in FUN_000087ce [READ]"
+            },
+            {
+              "type": "text",
+              "text": "From 000087e8 in FUN_000087ce [WRITE]"
+            },
+            {
+              "type": "text",
+              "text": "From 0000879e in FUN_00008782 [READ]"
+            },
+            {
+              "type": "text",
+              "text": "From 0000882a in crank_phase_publish_and_activate [READ]"
+            },
+            {
+              "type": "text",
+              "text": "From 00008836 in crank_phase_publish_and_activate [WRITE]"
+            },
+            {
+              "type": "text",
+              "text": "From 000088c0 in crank_phase_publish_and_activate [READ]"
+            },
+            {
+              "type": "text",
+              "text": "From 0000d946 in crank_interval_observation_publish [READ]"
+            },
+            {
+              "type": "text",
+              "text": "From 00008854 [DATA]"
+            },
+            {
+              "type": "text",
+              "text": "From 00008984 [DATA]"
+            },
+            {
+              "type": "text",
+              "text": "From 0000d9a8 [DATA]"
+            },
+            {
+              "type": "text",
+              "text": "From 0000dbd8 [DATA]"
+            },
+            {
+              "type": "text",
+              "text": "From 00008172 [WRITE]"
+            },
+            {
+              "type": "text",
+              "text": "From 00008208 [DATA]"
+            },
+            {
+              "type": "text",
+              "text": "From 0003f3fa in FUN_0003f3e4 [READ]"
+            },
+            {
+              "type": "text",
+              "text": "From 0001a114 in engine_runtime_b52c_bit6_warmup_gate_update [READ]"
+            }
+          ],
+          "isError": false
+        }
+      }
+    },
+    {
+      "status": "fulfilled",
+      "value": {
+        "address": "0xFFFFAC0C",
+        "result": {
+          "content": [
+            {
+              "type": "text",
+              "text": "From 00008ba4 in engine_signal_secondary_event_timeout_clear [WRITE]"
+            },
+            {
+              "type": "text",
+              "text": "From 00008ba2 in engine_signal_secondary_event_timeout_clear [DATA]"
+            },
+            {
+              "type": "text",
+              "text": "From 00008c98 [DATA]"
+            },
+            {
+              "type": "text",
+              "text": "From 00008b42 in engine_signal_primary_event_timeout_clear [WRITE]"
+            },
+            {
+              "type": "text",
+              "text": "From 00008b40 in engine_signal_primary_event_timeout_clear [DATA]"
+            },
+            {
+              "type": "text",
+              "text": "From 00008ace in engine_signal_timeout_latches_initialize [WRITE]"
+            },
+            {
+              "type": "text",
+              "text": "From 00008b6c [DATA]"
+            },
+            {
+              "type": "text",
+              "text": "From 0001a17e in engine_runtime_b52c_bit7_update_from_ac0c [READ]"
+            },
+            {
+              "type": "text",
+              "text": "From 00008b1e in engine_signal_timeout_latch_update [READ]"
+            },
+            {
+              "type": "text",
+              "text": "From 00008b28 in engine_signal_timeout_latch_update [WRITE]"
+            },
+            {
+              "type": "text",
+              "text": "From 00008b1c in engine_signal_timeout_latch_update [PARAM]"
+            },
+            {
+              "type": "text",
+              "text": "From 0001a1f8 [DATA]"
+            },
+            {
+              "type": "text",
+              "text": "From 0000f544 in FUN_0000f526 [READ]"
+            },
+            {
+              "type": "text",
+              "text": "From 0000f5dc [DATA]"
+            }
+          ],
+          "isError": false
+        }
+      }
+    },
+    {
+      "status": "fulfilled",
+      "value": {
+        "address": "0xD0D0",
+        "result": {
+          "content": [
+            {
+              "type": "text",
+              "text": "0000d0d0: mov.l 0x0000d140,r6 "
+            },
+            {
+              "type": "text",
+              "text": "0000d0d2: mov r4,r7 "
+            },
+            {
+              "type": "text",
+              "text": "0000d0d4: mov r4,r3 "
+            },
+            {
+              "type": "text",
+              "text": "0000d0d6: shll r7 "
+            },
+            {
+              "type": "text",
+              "text": "0000d0d8: add r3,r7 "
+            },
+            {
+              "type": "text",
+              "text": "0000d0da: shll2 r7 "
+            },
+            {
+              "type": "text",
+              "text": "0000d0dc: add r7,r6 "
+            },
+            {
+              "type": "text",
+              "text": "0000d0de: mov r6,r3 "
+            },
+            {
+              "type": "text",
+              "text": "0000d0e0: mov.b @(0x8,r6),r0 "
+            },
+            {
+              "type": "text",
+              "text": "0000d0e2: extu.b r0,r4 "
+            },
+            {
+              "type": "text",
+              "text": "0000d0e4: shll2 r4 "
+            },
+            {
+              "type": "text",
+              "text": "0000d0e6: add r3,r4 "
+            },
+            {
+              "type": "text",
+              "text": "0000d0e8: mov.l r5,@r4 "
+            },
+            {
+              "type": "text",
+              "text": "0000d0ea: mov #0x2,r3 "
+            },
+            {
+              "type": "text",
+              "text": "0000d0ec: mov.b @(0x8,r6),r0 "
+            },
+            {
+              "type": "text",
+              "text": "0000d0ee: add #0x1,r0 "
+            },
+            {
+              "type": "text",
+              "text": "0000d0f0: mov.b r0,@(0x8,r6) "
+            },
+            {
+              "type": "text",
+              "text": "0000d0f2: mov.b @(0x8,r6),r0 "
+            },
+            {
+              "type": "text",
+              "text": "0000d0f4: extu.b r0,r0 "
+            },
+            {
+              "type": "text",
+              "text": "0000d0f6: cmp/ge r3,r0 "
+            },
+            {
+              "type": "text",
+              "text": "0000d0f8: bf/s 0x0000d102 "
+            },
+            {
+              "type": "text",
+              "text": "0000d0fa: _nop "
+            },
+            {
+              "type": "text",
+              "text": "0000d0fc: mov.l 0x0000d144,r0 "
+            },
+            {
+              "type": "text",
+              "text": "0000d0fe: mov #0x0,r1 "
+            },
+            {
+              "type": "text",
+              "text": "0000d100: mov.b r1,@(r0,r7) "
+            },
+            {
+              "type": "text",
+              "text": "0000d102: rts "
+            },
+            {
+              "type": "text",
+              "text": "0000d104: _nop "
+            }
+          ],
+          "isError": false
+        }
+      }
+    },
+    {
+      "status": "fulfilled",
+      "value": {
+        "address": "0xD156",
+        "result": {
+          "content": [
+            {
+              "type": "text",
+              "text": "0000d156: mov r4,r0 ; 2026-09-12 scheduler dependency: CF58/CF7E call3A28(task5/task6); failed activation routes here instead of queueingphase viaD0D0. Increments saturating byte at B007+taskID: B00C(task5), B00D(task6). Those counters are computed writes and absent from direct destination xrefs. D0D0/D106 use two longword slots per12-byte record fromAFEC, with independent producer/consumerbyteindices. Static path establishes a way missed scheduling can lose phase work; no overload occurrence or timing breach is proven from captured log."
+            },
+            {
+              "type": "text",
+              "text": "0000d158: mov.w 0x0000d22e,r5 "
+            },
+            {
+              "type": "text",
+              "text": "0000d15a: sts.l PR,@-r15 "
+            },
+            {
+              "type": "text",
+              "text": "0000d15c: mov.l 0x0000d240,r3 "
+            },
+            {
+              "type": "text",
+              "text": "0000d15e: add #-0x8,r15 "
+            },
+            {
+              "type": "text",
+              "text": "0000d160: mov.w r0,@(0x4,r15) "
+            },
+            {
+              "type": "text",
+              "text": "0000d162: jsr @r3 "
+            },
+            {
+              "type": "text",
+              "text": "0000d164: _mov r15,r4 "
+            },
+            {
+              "type": "text",
+              "text": "0000d166: mov.w @(0x4,r15),r0 "
+            },
+            {
+              "type": "text",
+              "text": "0000d168: mov.l 0x0000d244,r4 "
+            },
+            {
+              "type": "text",
+              "text": "0000d16a: add r0,r4 "
+            },
+            {
+              "type": "text",
+              "text": "0000d16c: mov.b @r4,r3 "
+            },
+            {
+              "type": "text",
+              "text": "0000d16e: extu.b r3,r3 "
+            },
+            {
+              "type": "text",
+              "text": "0000d170: mov.w 0x0000d230,r2 "
+            },
+            {
+              "type": "text",
+              "text": "0000d172: cmp/ge r2,r3 "
+            },
+            {
+              "type": "text",
+              "text": "0000d174: bt/s 0x0000d17e "
+            },
+            {
+              "type": "text",
+              "text": "0000d176: _nop "
+            },
+            {
+              "type": "text",
+              "text": "0000d178: mov.b @r4,r1 "
+            },
+            {
+              "type": "text",
+              "text": "0000d17a: add #0x1,r1 "
+            },
+            {
+              "type": "text",
+              "text": "0000d17c: mov.b r1,@r4 "
+            },
+            {
+              "type": "text",
+              "text": "0000d17e: mov.l 0x0000d248,r3 "
+            },
+            {
+              "type": "text",
+              "text": "0000d180: jsr @r3 "
+            },
+            {
+              "type": "text",
+              "text": "0000d182: _mov.l @r15,r4 "
+            },
+            {
+              "type": "text",
+              "text": "0000d184: add #0x8,r15 "
+            },
+            {
+              "type": "text",
+              "text": "0000d186: lds.l @r15+,PR "
+            },
+            {
+              "type": "text",
+              "text": "0000d188: rts "
+            },
+            {
+              "type": "text",
+              "text": "0000d18a: _nop "
+            }
+          ],
+          "isError": false
+        }
+      }
+    },
+    {
+      "status": "fulfilled",
+      "value": {
+        "address": "0xCF58",
+        "result": {
+          "content": [
+            {
+              "type": "text",
+              "text": "0000cf58: sts.l PR,@-r15 ; 2026-09-13 native IRQ/kernel fixture: 3A28(task5) reserves activation; on success D0D0(record0,phase) writes AFEC/AFF0 before IRQ return dispatches6938. D106 consumes in FIFO order. Two pending activations maximum; failure D156 increments B00C and skips enqueue. Kernel3F2C restores activation availability. Full task5 engine payload and timing remain separate."
+            },
+            {
+              "type": "text",
+              "text": "0000cf5a: add #-0x4,r15 "
+            },
+            {
+              "type": "text",
+              "text": "0000cf5c: mov.l 0x0000d0ac,r3 "
+            },
+            {
+              "type": "text",
+              "text": "0000cf5e: mov.l r4,@r15 "
+            },
+            {
+              "type": "text",
+              "text": "0000cf60: jsr @r3 "
+            },
+            {
+              "type": "text",
+              "text": "0000cf62: _mov #0x5,r4 "
+            },
+            {
+              "type": "text",
+              "text": "0000cf64: tst r0,r0 "
+            },
+            {
+              "type": "text",
+              "text": "0000cf66: bt/s 0x0000cf74 "
+            },
+            {
+              "type": "text",
+              "text": "0000cf68: _nop "
+            },
+            {
+              "type": "text",
+              "text": "0000cf6a: mov #0x5,r4 "
+            },
+            {
+              "type": "text",
+              "text": "0000cf6c: mov.l 0x0000d0b0,r3 "
+            },
+            {
+              "type": "text",
+              "text": "0000cf6e: add #0x4,r15 "
+            },
+            {
+              "type": "text",
+              "text": "0000cf70: jmp @r3 "
+            },
+            {
+              "type": "text",
+              "text": "0000cf72: _lds.l @r15+,PR "
+            },
+            {
+              "type": "text",
+              "text": "0000cf74: mov.l @r15,r5 "
+            },
+            {
+              "type": "text",
+              "text": "0000cf76: mov #0x0,r4 "
+            },
+            {
+              "type": "text",
+              "text": "0000cf78: add #0x4,r15 "
+            },
+            {
+              "type": "text",
+              "text": "0000cf7a: bra 0x0000d0d0 "
+            },
+            {
+              "type": "text",
+              "text": "0000cf7c: _lds.l @r15+,PR "
+            }
+          ],
+          "isError": false
+        }
+      }
+    },
+    {
+      "status": "fulfilled",
+      "value": {
+        "address": "0x87F2",
+        "result": {
+          "content": [
+            {
+              "type": "text",
+              "text": "000087f2: mov.l r14,@-r15 ; 2026-09-13 process-flow execution: stable AC16=1 advances AC17 modulo24,8BE6 publishes period/angle/RPM,CF58 activates task5 and queues phase0..23. FA7C maps every fourth phase to0..5 through82B6/CF7E task6. Native IRQ/kernel tests verify publication before consumption; finite activation capacity can drop work without corrupting queued slots. Accepted edges and execution time are explicit boundaries; no vehicle overload diagnosis."
+            },
+            {
+              "type": "text",
+              "text": "000087f4: mov.l r13,@-r15 "
+            },
+            {
+              "type": "text",
+              "text": "000087f6: mov.l r12,@-r15 "
+            },
+            {
+              "type": "text",
+              "text": "000087f8: mov.l r11,@-r15 "
+            },
+            {
+              "type": "text",
+              "text": "000087fa: mov #0x18,r12 "
+            },
+            {
+              "type": "text",
+              "text": "000087fc: mov.l 0x00008864,r14 "
+            },
+            {
+              "type": "text",
+              "text": "000087fe: mov.l r10,@-r15 "
+            },
+            {
+              "type": "text",
+              "text": "00008800: mov.l r9,@-r15 "
+            },
+            {
+              "type": "text",
+              "text": "00008802: mov.l r8,@-r15 "
+            },
+            {
+              "type": "text",
+              "text": "00008804: sts.l PR,@-r15 "
+            },
+            {
+              "type": "text",
+              "text": "00008806: add #-0x4,r15 "
+            },
+            {
+              "type": "text",
+              "text": "00008808: mov.b @r14,r3 "
+            },
+            {
+              "type": "text",
+              "text": "0000880a: add #0x1,r3 "
+            },
+            {
+              "type": "text",
+              "text": "0000880c: mov.b r3,@r14 "
+            },
+            {
+              "type": "text",
+              "text": "0000880e: mov.b @r14,r2 "
+            },
+            {
+              "type": "text",
+              "text": "00008810: extu.b r2,r2 "
+            },
+            {
+              "type": "text",
+              "text": "00008812: cmp/ge r12,r2 "
+            },
+            {
+              "type": "text",
+              "text": "00008814: bf/s 0x0000881a "
+            },
+            {
+              "type": "text",
+              "text": "00008816: _mov #0x0,r11 "
+            },
+            {
+              "type": "text",
+              "text": "00008818: mov.b r11,@r14 "
+            },
+            {
+              "type": "text",
+              "text": "0000881a: mov.w 0x00008844,r8 "
+            },
+            {
+              "type": "text",
+              "text": "0000881c: mov.l 0x00008854,r9 "
+            },
+            {
+              "type": "text",
+              "text": "0000881e: mov.l 0x00008860,r10 "
+            },
+            {
+              "type": "text",
+              "text": "00008820: mov.b @r10,r4 "
+            },
+            {
+              "type": "text",
+              "text": "00008822: extu.b r4,r2 "
+            },
+            {
+              "type": "text",
+              "text": "00008824: cmp/eq r8,r2 "
+            },
+            {
+              "type": "text",
+              "text": "00008826: bt/s 0x000088c0 "
+            },
+            {
+              "type": "text",
+              "text": "00008828: _mov.b @r14,r5 "
+            },
+            {
+              "type": "text",
+              "text": "0000882a: mov.b @r9,r2 "
+            },
+            {
+              "type": "text",
+              "text": "0000882c: tst r2,r2 "
+            },
+            {
+              "type": "text",
+              "text": "0000882e: bf/s 0x00008868 "
+            },
+            {
+              "type": "text",
+              "text": "00008830: _nop "
+            },
+            {
+              "type": "text",
+              "text": "00008832: mov #0x1,r2 "
+            },
+            {
+              "type": "text",
+              "text": "00008834: mov.b r4,@r14 "
+            },
+            {
+              "type": "text",
+              "text": "00008836: mov.b r2,@r9 "
+            },
+            {
+              "type": "text",
+              "text": "00008838: bsr 0x00008298 "
+            },
+            {
+              "type": "text",
+              "text": "0000883a: _mov r2,r4 "
+            },
+            {
+              "type": "text",
+              "text": "0000883c: bra 0x000088be "
+            },
+            {
+              "type": "text",
+              "text": "0000883e: _nop "
+            },
+            {
+              "type": "text",
+              "text": "00008868: extu.b r4,r3 "
+            },
+            {
+              "type": "text",
+              "text": "0000886a: extu.b r5,r2 "
+            },
+            {
+              "type": "text",
+              "text": "0000886c: cmp/eq r2,r3 "
+            },
+            {
+              "type": "text",
+              "text": "0000886e: bt/s 0x000088be "
+            },
+            {
+              "type": "text",
+              "text": "00008870: _nop "
+            },
+            {
+              "type": "text",
+              "text": "00008872: mov r4,r13 "
+            },
+            {
+              "type": "text",
+              "text": "00008874: mov.w 0x0000896c,r3 "
+            },
+            {
+              "type": "text",
+              "text": "00008876: sub r5,r13 "
+            },
+            {
+              "type": "text",
+              "text": "00008878: extu.b r13,r2 "
+            },
+            {
+              "type": "text",
+              "text": "0000887a: cmp/ge r3,r2 "
+            },
+            {
+              "type": "text",
+              "text": "0000887c: bf/s 0x00008882 "
+            },
+            {
+              "type": "text",
+              "text": "0000887e: _nop "
+            },
+            {
+              "type": "text",
+              "text": "00008880: add #0x18,r13 "
+            },
+            {
+              "type": "text",
+              "text": "00008882: extu.b r13,r3 "
+            },
+            {
+              "type": "text",
+              "text": "00008884: mov #0x2,r2 "
+            },
+            {
+              "type": "text",
+              "text": "00008886: cmp/gt r2,r3 "
+            },
+            {
+              "type": "text",
+              "text": "00008888: bt/s 0x000088ba "
+            },
+            {
+              "type": "text",
+              "text": "0000888a: _nop "
+            },
+            {
+              "type": "text",
+              "text": "0000888c: mov.l 0x00008970,r1 "
+            },
+            {
+              "type": "text",
+              "text": "0000888e: bra 0x000088b2 "
+            },
+            {
+              "type": "text",
+              "text": "00008890: _mov.l r1,@r15 "
+            },
+            {
+              "type": "text",
+              "text": "00008892: bsr 0x00008be6 "
+            },
+            {
+              "type": "text",
+              "text": "00008894: _mov.b @r14,r4 "
+            },
+            {
+              "type": "text",
+              "text": "00008896: mov.l @r15,r3 "
+            },
+            {
+              "type": "text",
+              "text": "00008898: mov.b @r14,r4 "
+            },
+            {
+              "type": "text",
+              "text": "0000889a: mov.l @r3,r2 "
+            },
+            {
+              "type": "text",
+              "text": "0000889c: jsr @r2 "
+            },
+            {
+              "type": "text",
+              "text": "0000889e: _extu.b r4,r4 "
+            },
+            {
+              "type": "text",
+              "text": "000088a0: mov.b @r14,r3 "
+            },
+            {
+              "type": "text",
+              "text": "000088a2: add #0x1,r3 "
+            },
+            {
+              "type": "text",
+              "text": "000088a4: mov.b r3,@r14 "
+            },
+            {
+              "type": "text",
+              "text": "000088a6: mov.b @r14,r2 "
+            },
+            {
+              "type": "text",
+              "text": "000088a8: extu.b r2,r2 "
+            },
+            {
+              "type": "text",
+              "text": "000088aa: cmp/ge r12,r2 "
+            },
+            {
+              "type": "text",
+              "text": "000088ac: bf/s 0x000088b2 "
+            },
+            {
+              "type": "text",
+              "text": "000088ae: _add #-0x1,r13 "
+            },
+            {
+              "type": "text",
+              "text": "000088b0: mov.b r11,@r14 "
+            },
+            {
+              "type": "text",
+              "text": "000088b2: extu.b r13,r2 "
+            },
+            {
+              "type": "text",
+              "text": "000088b4: tst r2,r2 "
+            },
+            {
+              "type": "text",
+              "text": "000088b6: bf/s 0x00008892 "
+            },
+            {
+              "type": "text",
+              "text": "000088b8: _nop "
+            },
+            {
+              "type": "text",
+              "text": "000088ba: mov.b @r10,r1 "
+            },
+            {
+              "type": "text",
+              "text": "000088bc: mov.b r1,@r14 "
+            },
+            {
+              "type": "text",
+              "text": "000088be: mov.b r8,@r10 "
+            },
+            {
+              "type": "text",
+              "text": "000088c0: mov.b @r9,r0 "
+            },
+            {
+              "type": "text",
+              "text": "000088c2: extu.b r0,r0 "
+            },
+            {
+              "type": "text",
+              "text": "000088c4: cmp/eq #0x1,r0 "
+            },
+            {
+              "type": "text",
+              "text": "000088c6: bf/s 0x000088fc "
+            },
+            {
+              "type": "text",
+              "text": "000088c8: _nop "
+            },
+            {
+              "type": "text",
+              "text": "000088ca: bsr 0x00008be6 "
+            },
+            {
+              "type": "text",
+              "text": "000088cc: _mov.b @r14,r4 "
+            },
+            {
+              "type": "text",
+              "text": "000088ce: mov.l 0x00008970,r3 "
+            },
+            {
+              "type": "text",
+              "text": "000088d0: mov.b @r14,r4 "
+            },
+            {
+              "type": "text",
+              "text": "000088d2: mov.l @r3,r2 "
+            },
+            {
+              "type": "text",
+              "text": "000088d4: jsr @r2 "
+            },
+            {
+              "type": "text",
+              "text": "000088d6: _extu.b r4,r4 "
+            },
+            {
+              "type": "text",
+              "text": "000088d8: mov.b @r14,r4 "
+            },
+            {
+              "type": "text",
+              "text": "000088da: extu.b r4,r4 "
+            },
+            {
+              "type": "text",
+              "text": "000088dc: mov.l 0x00008974,r0 "
+            },
+            {
+              "type": "text",
+              "text": "000088de: mov.b @(r0,r4),r4 "
+            },
+            {
+              "type": "text",
+              "text": "000088e0: extu.b r4,r3 "
+            },
+            {
+              "type": "text",
+              "text": "000088e2: cmp/eq r8,r3 "
+            },
+            {
+              "type": "text",
+              "text": "000088e4: bt/s 0x000088fc "
+            },
+            {
+              "type": "text",
+              "text": "000088e6: _nop "
+            },
+            {
+              "type": "text",
+              "text": "000088e8: add #0x4,r15 "
+            },
+            {
+              "type": "text",
+              "text": "000088ea: lds.l @r15+,PR "
+            },
+            {
+              "type": "text",
+              "text": "000088ec: mov.l @r15+,r8 "
+            },
+            {
+              "type": "text",
+              "text": "000088ee: mov.l @r15+,r9 "
+            },
+            {
+              "type": "text",
+              "text": "000088f0: mov.l @r15+,r10 "
+            },
+            {
+              "type": "text",
+              "text": "000088f2: mov.l @r15+,r11 "
+            },
+            {
+              "type": "text",
+              "text": "000088f4: mov.l @r15+,r12 "
+            },
+            {
+              "type": "text",
+              "text": "000088f6: mov.l @r15+,r13 "
+            },
+            {
+              "type": "text",
+              "text": "000088f8: bra 0x000082b6 "
+            },
+            {
+              "type": "text",
+              "text": "000088fa: _mov.l @r15+,r14 "
+            },
+            {
+              "type": "text",
+              "text": "000088fc: add #0x4,r15 "
+            },
+            {
+              "type": "text",
+              "text": "000088fe: lds.l @r15+,PR "
+            },
+            {
+              "type": "text",
+              "text": "00008900: mov.l @r15+,r8 "
+            },
+            {
+              "type": "text",
+              "text": "00008902: mov.l @r15+,r9 "
+            },
+            {
+              "type": "text",
+              "text": "00008904: mov.l @r15+,r10 "
+            },
+            {
+              "type": "text",
+              "text": "00008906: mov.l @r15+,r11 "
+            },
+            {
+              "type": "text",
+              "text": "00008908: mov.l @r15+,r12 "
+            },
+            {
+              "type": "text",
+              "text": "0000890a: mov.l @r15+,r13 "
+            },
+            {
+              "type": "text",
+              "text": "0000890c: rts "
+            },
+            {
+              "type": "text",
+              "text": "0000890e: _mov.l @r15+,r14 "
+            }
+          ],
+          "isError": false
+        }
+      }
+    }
+  ],
+  "annotation": {
+    "address": "0xD156",
+    "comment": "2026-09-12 scheduler dependency: CF58/CF7E call3A28(task5/task6); failed activation routes here instead of queueingphase viaD0D0. Increments saturating byte at B007+taskID: B00C(task5), B00D(task6). Those counters are computed writes and absent from direct destination xrefs. D0D0/D106 use two longword slots per12-byte record fromAFEC, with independent producer/consumerbyteindices. Static path establishes a way missed scheduling can lose phase work; no overload occurrence or timing breach is proven from captured log. Cut-trace logger E535 reads B00C and E536 reads B00D as distinct uint8 values. Both saturate at255; compare with a start-of-run baseline. Native SSM A8 read-only exchanges verified20260913; no new counter or runtime patch was installed.",
+    "result": {
+      "content": [
+        {
+          "type": "text",
+          "text": "Comment set successfully"
+        }
+      ],
+      "isError": false
+    },
+    "readback": {
+      "content": [
+        {
+          "type": "text",
+          "text": "0000d156: mov r4,r0 ; 2026-09-12 scheduler dependency: CF58/CF7E call3A28(task5/task6); failed activation routes here instead of queueingphase viaD0D0. Increments saturating byte at B007+taskID: B00C(task5), B00D(task6). Those counters are computed writes and absent from direct destination xrefs. D0D0/D106 use two longword slots per12-byte record fromAFEC, with independent producer/consumerbyteindices. Static path establishes a way missed scheduling can lose phase work; no overload occurrence or timing breach is proven from captured log. Cut-trace logger E535 reads B00C and E536 reads B00D as distinct uint8 values. Both saturate at255; compare with a start-of-run baseline. Native SSM A8 read-only exchanges verified20260913; no new counter or runtime patch was installed."
+        },
+        {
+          "type": "text",
+          "text": "0000d158: mov.w 0x0000d22e,r5 "
+        },
+        {
+          "type": "text",
+          "text": "0000d15a: sts.l PR,@-r15 "
+        },
+        {
+          "type": "text",
+          "text": "0000d15c: mov.l 0x0000d240,r3 "
+        },
+        {
+          "type": "text",
+          "text": "0000d15e: add #-0x8,r15 "
+        },
+        {
+          "type": "text",
+          "text": "0000d160: mov.w r0,@(0x4,r15) "
+        },
+        {
+          "type": "text",
+          "text": "0000d162: jsr @r3 "
+        },
+        {
+          "type": "text",
+          "text": "0000d164: _mov r15,r4 "
+        },
+        {
+          "type": "text",
+          "text": "0000d166: mov.w @(0x4,r15),r0 "
+        },
+        {
+          "type": "text",
+          "text": "0000d168: mov.l 0x0000d244,r4 "
+        },
+        {
+          "type": "text",
+          "text": "0000d16a: add r0,r4 "
+        },
+        {
+          "type": "text",
+          "text": "0000d16c: mov.b @r4,r3 "
+        },
+        {
+          "type": "text",
+          "text": "0000d16e: extu.b r3,r3 "
+        },
+        {
+          "type": "text",
+          "text": "0000d170: mov.w 0x0000d230,r2 "
+        },
+        {
+          "type": "text",
+          "text": "0000d172: cmp/ge r2,r3 "
+        },
+        {
+          "type": "text",
+          "text": "0000d174: bt/s 0x0000d17e "
+        },
+        {
+          "type": "text",
+          "text": "0000d176: _nop "
+        },
+        {
+          "type": "text",
+          "text": "0000d178: mov.b @r4,r1 "
+        },
+        {
+          "type": "text",
+          "text": "0000d17a: add #0x1,r1 "
+        },
+        {
+          "type": "text",
+          "text": "0000d17c: mov.b r1,@r4 "
+        },
+        {
+          "type": "text",
+          "text": "0000d17e: mov.l 0x0000d248,r3 "
+        },
+        {
+          "type": "text",
+          "text": "0000d180: jsr @r3 "
+        },
+        {
+          "type": "text",
+          "text": "0000d182: _mov.l @r15,r4 "
+        },
+        {
+          "type": "text",
+          "text": "0000d184: add #0x8,r15 "
+        },
+        {
+          "type": "text",
+          "text": "0000d186: lds.l @r15+,PR "
+        },
+        {
+          "type": "text",
+          "text": "0000d188: rts "
+        },
+        {
+          "type": "text",
+          "text": "0000d18a: _nop "
+        }
+      ],
+      "isError": false
+    }
+  },
+  "verification": {
+    "ssm_groups": 7,
+    "elapsed_seconds": 18.035,
+    "profiles": 9,
+    "images": 3,
+    "earlier_parameter_semantics_preserved": true,
+    "earlier_selections_preserved": true,
+    "fragment_definition_profile_verifiers_passed": true,
+    "source_sentinels": [
+      [
+        49372,
+        1040,
+        2
+      ],
+      [
+        49377,
+        2,
+        1
+      ],
+      [
+        49808,
+        4032,
+        2
+      ],
+      [
+        44054,
+        1,
+        1
+      ],
+      [
+        46380,
+        160,
+        1
+      ],
+      [
+        45068,
+        45,
+        1
+      ],
+      [
+        45069,
+        107,
+        1
+      ],
+      [
+        44044,
+        1,
+        1
+      ]
+    ],
+    "transcript": "docs/reference/evidence/process_flow_tests_20260912.json: results[module=test_ssm_command_process_flow]"
+  },
+  "limits": [
+    "No ROM modifications or ECU communication.",
+    "Flags are sampled; counters saturate at255. Negative samples cannot exclude short interruptions.",
+    "Missed activations are not a measured count of physical misfires.",
+    "Full audit not rerun; aggregate355 groups retained with seven-group SSM rerun.",
+    "No cut cause or cure established."
+  ]
+}

@@ -13,6 +13,7 @@ definition/image pairings when replaying old captures; see the
 
 | Profile | Purpose |
 |---|---|
+| [Cut trace](D2WD610H_cut_trace_profile.xml) | Next capture for the persisting loaded cut: separate spark/injector gates, synchronization/timeout and native missed-task counters, retaining IAM, knock, AFR and driver context. Existing repaired v2 requires no reflash. |
 | [AVCS repair](D2WD610H_avcs_repair_profile.xml) | Both cam angles, restored normal OCV output duty and measured current, with IAM, knock, AFR, MAP and injector/lean-cut state. Use with the repaired rolling v2 and the updated complete definition. |
 | [AVLS and fuel cut](D2WD610H_avls_cut_diagnostic_profile.xml) | Both banks' software lift modes, OSV duty/current and injector inhibition, with IAM, knock, MAP and baro. Use for the September 12 transition investigation. |
 | [Road tuning](D2WD610H_road_tuning_profile.xml) | IAM, feedback/learned knock, ignition timing, native MAP, load, wideband and fuel response, with speed and driver inputs. |
@@ -22,7 +23,7 @@ definition/image pairings when replaying old captures; see the
 | [Recovery](D2WD610H_idle_recovery_profile.xml) | Pedal, transient fuel correction, base factor and lift state. |
 | [Idle air](D2WD610H_idle_air_diagnostic_profile.xml) | Idle RPM request, throttle request, pedal and feedback flags. |
 
-All eight generated capture profiles use the native limit of 43 byte addresses
+All nine generated capture profiles use the native limit of 43 byte addresses
 per request. See the [logger reference](../docs/reference/LOGGER.md) for signal
 meanings and capture evidence.
 
@@ -32,6 +33,52 @@ the request budget. Selecting all four as well produces a 184-byte request
 that the ECU rejects, reported by RomRaider as an invalid header. Reload the
 profile after changing the file; replace channels instead of adding to this
 full selection. The generator now checks the byte budget before writing.
+
+## Loaded-cut trace
+
+The AVCS repair did not cure the loaded cut. The last capture showed B744=0
+during high demand, but did not record the separate spark mask, synchronization
+or missed scheduling. Use [D2WD610H_cut_trace_profile.xml](D2WD610H_cut_trace_profile.xml)
+with the newly updated [complete definition](D2WD610H_master_logger.xml).
+Reload the definition or restart RomRaider, then **File → Load Profile**.
+New E530–E537 read existing native RAM; no ROM or calibration change is needed.
+
+| Signals | IDs | Requested bytes |
+|---|---|---:|
+| Spark inhibit, ignition mode and auxiliary spark mask | E530–E532 | 5 |
+| Crank synchronization, runtime flags and engine timeout | E533, E534, E537 | 3 |
+| Missed output-task and airflow-task activations | E535, E536 | 2 |
+| Injector inhibit, added lean-cut state and committed lift mode | E525, E504, E503 | 4 |
+| IAM and feedback/fine knock correction | E31, E39, E41 | 12 |
+| Wideband AFR and native MAP | E500, E518 | 8 |
+| RPM, speed, timing, pedal, throttle, pulse width, coolant and battery | P8, P9, P10, P30, P13, P21, P2, P17 | 9 |
+| **24 channels** | | **43** |
+
+Begin logging before engine start so the native loss counters have a baseline.
+The useful recording includes pre-event running, the onset and release of
+the cut, and several seconds afterward. A prolonged hold against the cut
+adds no useful requirement. Keep test connectors disconnected and the OBD
+logging cable connected. Preserve the supplied selections; adding channels
+can exceed the ECU's receive limit.
+
+Interpretation is conditional:
+
+- E530 is the independent C0DC spark mask. E531=0 also inhibits every spark
+  slot even if E530=0. E532=4032 (`0FC0`) is the normal secondary-slot mask,
+  **not** an all-coil cut. The effective mask is
+  `E532 | (E531 != 0 ? E530 : 65535)`; read timing relationships cautiously.
+- E533 normally reports synchronized state1 while running. E537 reports the
+  selected timeout, with E534 bit128 its later stopped-state publication.
+  Startup/shutdown values must be separated from an in-event transition.
+- E535/E536 are native saturating counters. An increase records a missed
+  task activation; it does not by itself establish the cause or a missed
+  electrical pulse. At255 they cannot show additional losses.
+
+The counters can expose losses between samples. Other flags are instantaneous;
+a clean roughly104ms trace cannot exclude short interruptions. This profile
+does not measure physical injector/coil pulses or fuel pressure. Persistent
+normal states would narrow the next investigation but would not by themselves
+prove a hardware fault. See the [channel evidence](../docs/reference/CUT_TRACE_LOGGER_20260913.md).
 
 ## AVCS repair validation
 
@@ -135,12 +182,12 @@ in the same capture without exceeding the 136-byte request size. The road
 profile continues to use its existing channel definitions.
 
 [testinglogger.xml](testinglogger.xml) and [testprofile.xml](testprofile.xml)
-are retained manual test selections, separate from the eight generated captures.
+are retained manual test selections, separate from the nine generated captures.
 [D2WD610H_master_logger_ecuparams.xml](D2WD610H_master_logger_ecuparams.xml) is
 the generator's parameter fragment; select the complete definition in RomRaider.
 
 The existing helper commands remain under `master_patch/`. From the repository
-root, regenerate the eight capture profiles with:
+root, regenerate the nine capture profiles with:
 
 ```sh
 python3 -B master_patch/logger_profiles.py

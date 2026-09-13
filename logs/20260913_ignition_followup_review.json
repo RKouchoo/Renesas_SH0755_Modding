@@ -1,0 +1,1152 @@
+{
+  "source_log_sha256": "3e62ab07eb7ee184ab43162debd7d97c3f829085399cf87742ca6c8997d85390",
+  "rom_sha256": "fabceb54359aca76e6e15835a51aa5cfd008e570dc002e886eaa62a6cb020ce5",
+  "scope": "No-cost offline ignition follow-up; no ECU I/O or ROM/calibration changes.",
+  "native_lookup": "9FEC ->21B0 ->27D0/26B0 executes without lookup stand-ins.",
+  "P10_visibility": [
+    {
+      "supplied_angles": [
+        15,
+        20,
+        25,
+        30,
+        35,
+        40
+      ],
+      "P10_degrees": 15.0
+    },
+    {
+      "supplied_angles": [
+        15,
+        -20,
+        -10,
+        0,
+        5,
+        60
+      ],
+      "P10_degrees": 15.0
+    },
+    {
+      "supplied_angles": [
+        16,
+        -20,
+        -10,
+        0,
+        5,
+        60
+      ],
+      "P10_degrees": 16.0
+    }
+  ],
+  "per_cylinder_correction": [
+    {
+      "rpm_fixture": 1999,
+      "output_offsets": [
+        -5.0,
+        -5.0,
+        -5.0,
+        0.0,
+        5.0,
+        5.0
+      ]
+    },
+    {
+      "rpm_fixture": 2000,
+      "output_offsets": [
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ]
+    },
+    {
+      "rpm_fixture": 2500,
+      "output_offsets": [
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ]
+    },
+    {
+      "rpm_fixture": 2800,
+      "output_offsets": [
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ]
+    },
+    {
+      "rpm_fixture": 3016,
+      "output_offsets": [
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ]
+    },
+    {
+      "rpm_fixture": 3152,
+      "output_offsets": [
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ]
+    },
+    {
+      "rpm_fixture": 3500,
+      "output_offsets": [
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ]
+    },
+    {
+      "rpm_fixture": 3800,
+      "output_offsets": [
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ]
+    }
+  ],
+  "sampled_operating_points": [
+    {
+      "csv_line": 555,
+      "seconds": 57.524,
+      "rpm": 3233.0,
+      "logged_battery_v": 14.16,
+      "native_dwell_counts": 645,
+      "late_fixture_min_compare_width_counts": 322
+    },
+    {
+      "csv_line": 556,
+      "seconds": 57.628,
+      "rpm": 3083.0,
+      "logged_battery_v": 14.08,
+      "native_dwell_counts": 670,
+      "late_fixture_min_compare_width_counts": 335
+    },
+    {
+      "csv_line": 557,
+      "seconds": 57.732,
+      "rpm": 3106.0,
+      "logged_battery_v": 14.16,
+      "native_dwell_counts": 660,
+      "late_fixture_min_compare_width_counts": 330
+    },
+    {
+      "csv_line": 558,
+      "seconds": 57.835,
+      "rpm": 3180.0,
+      "logged_battery_v": 14.16,
+      "native_dwell_counts": 651,
+      "late_fixture_min_compare_width_counts": 325
+    },
+    {
+      "csv_line": 559,
+      "seconds": 57.94,
+      "rpm": 3126.0,
+      "logged_battery_v": 13.84,
+      "native_dwell_counts": 683,
+      "late_fixture_min_compare_width_counts": 341
+    },
+    {
+      "csv_line": 560,
+      "seconds": 58.044,
+      "rpm": 3037.0,
+      "logged_battery_v": 13.84,
+      "native_dwell_counts": 694,
+      "late_fixture_min_compare_width_counts": 347
+    },
+    {
+      "csv_line": 605,
+      "seconds": 62.731,
+      "rpm": 2502.0,
+      "logged_battery_v": 14.24,
+      "native_dwell_counts": 721,
+      "late_fixture_min_compare_width_counts": 360
+    },
+    {
+      "csv_line": 606,
+      "seconds": 62.834,
+      "rpm": 2530.0,
+      "logged_battery_v": 14.16,
+      "native_dwell_counts": 727,
+      "late_fixture_min_compare_width_counts": 363
+    },
+    {
+      "csv_line": 607,
+      "seconds": 62.939,
+      "rpm": 2520.0,
+      "logged_battery_v": 14.16,
+      "native_dwell_counts": 729,
+      "late_fixture_min_compare_width_counts": 364
+    },
+    {
+      "csv_line": 608,
+      "seconds": 63.044,
+      "rpm": 2548.0,
+      "logged_battery_v": 14.24,
+      "native_dwell_counts": 715,
+      "late_fixture_min_compare_width_counts": 357
+    },
+    {
+      "csv_line": 609,
+      "seconds": 63.148,
+      "rpm": 2615.0,
+      "logged_battery_v": 14.24,
+      "native_dwell_counts": 708,
+      "late_fixture_min_compare_width_counts": 354
+    },
+    {
+      "csv_line": 611,
+      "seconds": 63.355,
+      "rpm": 2595.0,
+      "logged_battery_v": 14.0,
+      "native_dwell_counts": 739,
+      "late_fixture_min_compare_width_counts": 369
+    },
+    {
+      "csv_line": 612,
+      "seconds": 63.461,
+      "rpm": 2514.0,
+      "logged_battery_v": 14.16,
+      "native_dwell_counts": 729,
+      "late_fixture_min_compare_width_counts": 364
+    },
+    {
+      "csv_line": 613,
+      "seconds": 63.564,
+      "rpm": 2607.0,
+      "logged_battery_v": 14.24,
+      "native_dwell_counts": 709,
+      "late_fixture_min_compare_width_counts": 354
+    },
+    {
+      "csv_line": 614,
+      "seconds": 63.668,
+      "rpm": 2600.0,
+      "logged_battery_v": 14.0,
+      "native_dwell_counts": 739,
+      "late_fixture_min_compare_width_counts": 369
+    },
+    {
+      "csv_line": 615,
+      "seconds": 63.773,
+      "rpm": 2581.0,
+      "logged_battery_v": 14.16,
+      "native_dwell_counts": 721,
+      "late_fixture_min_compare_width_counts": 360
+    },
+    {
+      "csv_line": 616,
+      "seconds": 63.876,
+      "rpm": 2569.0,
+      "logged_battery_v": 14.24,
+      "native_dwell_counts": 713,
+      "late_fixture_min_compare_width_counts": 356
+    },
+    {
+      "csv_line": 617,
+      "seconds": 63.981,
+      "rpm": 2564.0,
+      "logged_battery_v": 14.0,
+      "native_dwell_counts": 743,
+      "late_fixture_min_compare_width_counts": 371
+    },
+    {
+      "csv_line": 618,
+      "seconds": 64.085,
+      "rpm": 2585.0,
+      "logged_battery_v": 14.16,
+      "native_dwell_counts": 721,
+      "late_fixture_min_compare_width_counts": 360
+    },
+    {
+      "csv_line": 619,
+      "seconds": 64.19,
+      "rpm": 2572.0,
+      "logged_battery_v": 14.24,
+      "native_dwell_counts": 713,
+      "late_fixture_min_compare_width_counts": 356
+    },
+    {
+      "csv_line": 620,
+      "seconds": 64.295,
+      "rpm": 2565.0,
+      "logged_battery_v": 14.16,
+      "native_dwell_counts": 723,
+      "late_fixture_min_compare_width_counts": 361
+    },
+    {
+      "csv_line": 621,
+      "seconds": 64.399,
+      "rpm": 2612.0,
+      "logged_battery_v": 14.08,
+      "native_dwell_counts": 727,
+      "late_fixture_min_compare_width_counts": 363
+    },
+    {
+      "csv_line": 622,
+      "seconds": 64.503,
+      "rpm": 2668.0,
+      "logged_battery_v": 14.08,
+      "native_dwell_counts": 721,
+      "late_fixture_min_compare_width_counts": 360
+    },
+    {
+      "csv_line": 623,
+      "seconds": 64.607,
+      "rpm": 2606.0,
+      "logged_battery_v": 14.24,
+      "native_dwell_counts": 709,
+      "late_fixture_min_compare_width_counts": 354
+    },
+    {
+      "csv_line": 624,
+      "seconds": 64.712,
+      "rpm": 2686.0,
+      "logged_battery_v": 14.24,
+      "native_dwell_counts": 700,
+      "late_fixture_min_compare_width_counts": 350
+    },
+    {
+      "csv_line": 625,
+      "seconds": 64.816,
+      "rpm": 2566.0,
+      "logged_battery_v": 14.16,
+      "native_dwell_counts": 723,
+      "late_fixture_min_compare_width_counts": 361
+    },
+    {
+      "csv_line": 626,
+      "seconds": 64.92,
+      "rpm": 2674.0,
+      "logged_battery_v": 14.16,
+      "native_dwell_counts": 711,
+      "late_fixture_min_compare_width_counts": 355
+    },
+    {
+      "csv_line": 627,
+      "seconds": 65.025,
+      "rpm": 2655.0,
+      "logged_battery_v": 14.0,
+      "native_dwell_counts": 732,
+      "late_fixture_min_compare_width_counts": 366
+    },
+    {
+      "csv_line": 628,
+      "seconds": 65.13,
+      "rpm": 2688.0,
+      "logged_battery_v": 14.24,
+      "native_dwell_counts": 700,
+      "late_fixture_min_compare_width_counts": 350
+    },
+    {
+      "csv_line": 629,
+      "seconds": 65.234,
+      "rpm": 2684.0,
+      "logged_battery_v": 14.16,
+      "native_dwell_counts": 709,
+      "late_fixture_min_compare_width_counts": 354
+    },
+    {
+      "csv_line": 630,
+      "seconds": 65.339,
+      "rpm": 2673.0,
+      "logged_battery_v": 14.16,
+      "native_dwell_counts": 711,
+      "late_fixture_min_compare_width_counts": 355
+    },
+    {
+      "csv_line": 631,
+      "seconds": 65.442,
+      "rpm": 2634.0,
+      "logged_battery_v": 14.16,
+      "native_dwell_counts": 715,
+      "late_fixture_min_compare_width_counts": 357
+    },
+    {
+      "csv_line": 632,
+      "seconds": 65.546,
+      "rpm": 2678.0,
+      "logged_battery_v": 14.24,
+      "native_dwell_counts": 701,
+      "late_fixture_min_compare_width_counts": 350
+    },
+    {
+      "csv_line": 633,
+      "seconds": 65.653,
+      "rpm": 2654.0,
+      "logged_battery_v": 14.16,
+      "native_dwell_counts": 713,
+      "late_fixture_min_compare_width_counts": 356
+    },
+    {
+      "csv_line": 1009,
+      "seconds": 104.796,
+      "rpm": 3241.0,
+      "logged_battery_v": 12.48,
+      "native_dwell_counts": 766,
+      "late_fixture_min_compare_width_counts": 383
+    },
+    {
+      "csv_line": 1010,
+      "seconds": 104.899,
+      "rpm": 3368.0,
+      "logged_battery_v": 12.4,
+      "native_dwell_counts": 756,
+      "late_fixture_min_compare_width_counts": 378
+    },
+    {
+      "csv_line": 1011,
+      "seconds": 105.003,
+      "rpm": 3084.0,
+      "logged_battery_v": 12.4,
+      "native_dwell_counts": 792,
+      "late_fixture_min_compare_width_counts": 396
+    },
+    {
+      "csv_line": 1012,
+      "seconds": 105.107,
+      "rpm": 3218.0,
+      "logged_battery_v": 12.32,
+      "native_dwell_counts": 781,
+      "late_fixture_min_compare_width_counts": 390
+    },
+    {
+      "csv_line": 1013,
+      "seconds": 105.212,
+      "rpm": 3285.0,
+      "logged_battery_v": 12.48,
+      "native_dwell_counts": 760,
+      "late_fixture_min_compare_width_counts": 380
+    },
+    {
+      "csv_line": 1014,
+      "seconds": 105.317,
+      "rpm": 3217.0,
+      "logged_battery_v": 12.32,
+      "native_dwell_counts": 781,
+      "late_fixture_min_compare_width_counts": 390
+    },
+    {
+      "csv_line": 1015,
+      "seconds": 105.422,
+      "rpm": 3257.0,
+      "logged_battery_v": 12.48,
+      "native_dwell_counts": 764,
+      "late_fixture_min_compare_width_counts": 382
+    },
+    {
+      "csv_line": 1016,
+      "seconds": 105.525,
+      "rpm": 3382.0,
+      "logged_battery_v": 12.24,
+      "native_dwell_counts": 765,
+      "late_fixture_min_compare_width_counts": 382
+    },
+    {
+      "csv_line": 1045,
+      "seconds": 108.548,
+      "rpm": 2756.0,
+      "logged_battery_v": 12.48,
+      "native_dwell_counts": 840,
+      "late_fixture_min_compare_width_counts": 420
+    },
+    {
+      "csv_line": 1046,
+      "seconds": 108.653,
+      "rpm": 2869.0,
+      "logged_battery_v": 12.32,
+      "native_dwell_counts": 832,
+      "late_fixture_min_compare_width_counts": 416
+    },
+    {
+      "csv_line": 1047,
+      "seconds": 108.757,
+      "rpm": 2818.0,
+      "logged_battery_v": 12.56,
+      "native_dwell_counts": 823,
+      "late_fixture_min_compare_width_counts": 411
+    },
+    {
+      "csv_line": 1048,
+      "seconds": 108.86,
+      "rpm": 2854.0,
+      "logged_battery_v": 12.56,
+      "native_dwell_counts": 817,
+      "late_fixture_min_compare_width_counts": 408
+    },
+    {
+      "csv_line": 1049,
+      "seconds": 108.964,
+      "rpm": 2942.0,
+      "logged_battery_v": 12.56,
+      "native_dwell_counts": 801,
+      "late_fixture_min_compare_width_counts": 400
+    },
+    {
+      "csv_line": 1050,
+      "seconds": 109.068,
+      "rpm": 2894.0,
+      "logged_battery_v": 12.56,
+      "native_dwell_counts": 810,
+      "late_fixture_min_compare_width_counts": 405
+    },
+    {
+      "csv_line": 1051,
+      "seconds": 109.171,
+      "rpm": 3004.0,
+      "logged_battery_v": 12.56,
+      "native_dwell_counts": 791,
+      "late_fixture_min_compare_width_counts": 395
+    },
+    {
+      "csv_line": 1052,
+      "seconds": 109.276,
+      "rpm": 2960.0,
+      "logged_battery_v": 12.48,
+      "native_dwell_counts": 804,
+      "late_fixture_min_compare_width_counts": 402
+    },
+    {
+      "csv_line": 1053,
+      "seconds": 109.379,
+      "rpm": 2978.0,
+      "logged_battery_v": 12.48,
+      "native_dwell_counts": 801,
+      "late_fixture_min_compare_width_counts": 400
+    },
+    {
+      "csv_line": 1054,
+      "seconds": 109.484,
+      "rpm": 2967.0,
+      "logged_battery_v": 12.48,
+      "native_dwell_counts": 803,
+      "late_fixture_min_compare_width_counts": 401
+    },
+    {
+      "csv_line": 1055,
+      "seconds": 109.588,
+      "rpm": 3013.0,
+      "logged_battery_v": 12.48,
+      "native_dwell_counts": 795,
+      "late_fixture_min_compare_width_counts": 397
+    },
+    {
+      "csv_line": 1056,
+      "seconds": 109.692,
+      "rpm": 3130.0,
+      "logged_battery_v": 12.48,
+      "native_dwell_counts": 780,
+      "late_fixture_min_compare_width_counts": 390
+    },
+    {
+      "csv_line": 1057,
+      "seconds": 109.796,
+      "rpm": 3102.0,
+      "logged_battery_v": 12.56,
+      "native_dwell_counts": 778,
+      "late_fixture_min_compare_width_counts": 389
+    },
+    {
+      "csv_line": 1058,
+      "seconds": 109.899,
+      "rpm": 3112.0,
+      "logged_battery_v": 12.56,
+      "native_dwell_counts": 777,
+      "late_fixture_min_compare_width_counts": 388
+    },
+    {
+      "csv_line": 1059,
+      "seconds": 110.004,
+      "rpm": 3193.0,
+      "logged_battery_v": 12.72,
+      "native_dwell_counts": 755,
+      "late_fixture_min_compare_width_counts": 377
+    },
+    {
+      "csv_line": 1060,
+      "seconds": 110.109,
+      "rpm": 3169.0,
+      "logged_battery_v": 12.48,
+      "native_dwell_counts": 775,
+      "late_fixture_min_compare_width_counts": 387
+    },
+    {
+      "csv_line": 1061,
+      "seconds": 110.215,
+      "rpm": 3152.0,
+      "logged_battery_v": 12.72,
+      "native_dwell_counts": 760,
+      "late_fixture_min_compare_width_counts": 380
+    },
+    {
+      "csv_line": 1062,
+      "seconds": 110.319,
+      "rpm": 3249.0,
+      "logged_battery_v": 12.56,
+      "native_dwell_counts": 759,
+      "late_fixture_min_compare_width_counts": 379
+    },
+    {
+      "csv_line": 1063,
+      "seconds": 110.424,
+      "rpm": 3016.0,
+      "logged_battery_v": 12.48,
+      "native_dwell_counts": 795,
+      "late_fixture_min_compare_width_counts": 397
+    },
+    {
+      "csv_line": 1064,
+      "seconds": 110.527,
+      "rpm": 3265.0,
+      "logged_battery_v": 12.64,
+      "native_dwell_counts": 751,
+      "late_fixture_min_compare_width_counts": 375
+    },
+    {
+      "csv_line": 1065,
+      "seconds": 110.632,
+      "rpm": 3139.0,
+      "logged_battery_v": 12.64,
+      "native_dwell_counts": 768,
+      "late_fixture_min_compare_width_counts": 384
+    },
+    {
+      "csv_line": 1066,
+      "seconds": 110.736,
+      "rpm": 3155.0,
+      "logged_battery_v": 12.48,
+      "native_dwell_counts": 777,
+      "late_fixture_min_compare_width_counts": 388
+    },
+    {
+      "csv_line": 1067,
+      "seconds": 110.84,
+      "rpm": 3262.0,
+      "logged_battery_v": 12.64,
+      "native_dwell_counts": 752,
+      "late_fixture_min_compare_width_counts": 376
+    },
+    {
+      "csv_line": 1068,
+      "seconds": 110.944,
+      "rpm": 3199.0,
+      "logged_battery_v": 12.8,
+      "native_dwell_counts": 748,
+      "late_fixture_min_compare_width_counts": 374
+    },
+    {
+      "csv_line": 1069,
+      "seconds": 111.048,
+      "rpm": 3258.0,
+      "logged_battery_v": 12.88,
+      "native_dwell_counts": 735,
+      "late_fixture_min_compare_width_counts": 367
+    },
+    {
+      "csv_line": 1070,
+      "seconds": 111.152,
+      "rpm": 3192.0,
+      "logged_battery_v": 13.04,
+      "native_dwell_counts": 732,
+      "late_fixture_min_compare_width_counts": 366
+    },
+    {
+      "csv_line": 1071,
+      "seconds": 111.255,
+      "rpm": 3176.0,
+      "logged_battery_v": 13.04,
+      "native_dwell_counts": 734,
+      "late_fixture_min_compare_width_counts": 367
+    },
+    {
+      "csv_line": 1072,
+      "seconds": 111.36,
+      "rpm": 3196.0,
+      "logged_battery_v": 13.12,
+      "native_dwell_counts": 726,
+      "late_fixture_min_compare_width_counts": 363
+    },
+    {
+      "csv_line": 1073,
+      "seconds": 111.463,
+      "rpm": 3176.0,
+      "logged_battery_v": 13.2,
+      "native_dwell_counts": 723,
+      "late_fixture_min_compare_width_counts": 361
+    },
+    {
+      "csv_line": 1074,
+      "seconds": 111.568,
+      "rpm": 3244.0,
+      "logged_battery_v": 13.36,
+      "native_dwell_counts": 702,
+      "late_fixture_min_compare_width_counts": 351
+    },
+    {
+      "csv_line": 1075,
+      "seconds": 111.673,
+      "rpm": 3258.0,
+      "logged_battery_v": 13.44,
+      "native_dwell_counts": 695,
+      "late_fixture_min_compare_width_counts": 347
+    },
+    {
+      "csv_line": 1076,
+      "seconds": 111.777,
+      "rpm": 3151.0,
+      "logged_battery_v": 13.52,
+      "native_dwell_counts": 703,
+      "late_fixture_min_compare_width_counts": 351
+    },
+    {
+      "csv_line": 1095,
+      "seconds": 113.752,
+      "rpm": 2527.0,
+      "logged_battery_v": 14.24,
+      "native_dwell_counts": 718,
+      "late_fixture_min_compare_width_counts": 359
+    },
+    {
+      "csv_line": 1097,
+      "seconds": 113.959,
+      "rpm": 2532.0,
+      "logged_battery_v": 14.16,
+      "native_dwell_counts": 727,
+      "late_fixture_min_compare_width_counts": 363
+    },
+    {
+      "csv_line": 1098,
+      "seconds": 114.063,
+      "rpm": 2504.0,
+      "logged_battery_v": 14.08,
+      "native_dwell_counts": 741,
+      "late_fixture_min_compare_width_counts": 370
+    },
+    {
+      "csv_line": 1099,
+      "seconds": 114.167,
+      "rpm": 2521.0,
+      "logged_battery_v": 14.08,
+      "native_dwell_counts": 739,
+      "late_fixture_min_compare_width_counts": 369
+    },
+    {
+      "csv_line": 1100,
+      "seconds": 114.271,
+      "rpm": 2530.0,
+      "logged_battery_v": 14.16,
+      "native_dwell_counts": 727,
+      "late_fixture_min_compare_width_counts": 363
+    },
+    {
+      "csv_line": 1101,
+      "seconds": 114.375,
+      "rpm": 2535.0,
+      "logged_battery_v": 13.92,
+      "native_dwell_counts": 754,
+      "late_fixture_min_compare_width_counts": 377
+    },
+    {
+      "csv_line": 1119,
+      "seconds": 116.251,
+      "rpm": 3105.0,
+      "logged_battery_v": 14.16,
+      "native_dwell_counts": 660,
+      "late_fixture_min_compare_width_counts": 330
+    },
+    {
+      "csv_line": 1120,
+      "seconds": 116.356,
+      "rpm": 3212.0,
+      "logged_battery_v": 14.08,
+      "native_dwell_counts": 654,
+      "late_fixture_min_compare_width_counts": 327
+    },
+    {
+      "csv_line": 1121,
+      "seconds": 116.46,
+      "rpm": 3140.0,
+      "logged_battery_v": 14.16,
+      "native_dwell_counts": 656,
+      "late_fixture_min_compare_width_counts": 328
+    },
+    {
+      "csv_line": 1122,
+      "seconds": 116.565,
+      "rpm": 3243.0,
+      "logged_battery_v": 14.08,
+      "native_dwell_counts": 650,
+      "late_fixture_min_compare_width_counts": 325
+    },
+    {
+      "csv_line": 1123,
+      "seconds": 116.668,
+      "rpm": 3151.0,
+      "logged_battery_v": 14.08,
+      "native_dwell_counts": 661,
+      "late_fixture_min_compare_width_counts": 330
+    },
+    {
+      "csv_line": 1124,
+      "seconds": 116.772,
+      "rpm": 3214.0,
+      "logged_battery_v": 13.84,
+      "native_dwell_counts": 672,
+      "late_fixture_min_compare_width_counts": 336
+    },
+    {
+      "csv_line": 1125,
+      "seconds": 116.877,
+      "rpm": 3180.0,
+      "logged_battery_v": 14.16,
+      "native_dwell_counts": 651,
+      "late_fixture_min_compare_width_counts": 325
+    },
+    {
+      "csv_line": 1126,
+      "seconds": 116.981,
+      "rpm": 3205.0,
+      "logged_battery_v": 14.16,
+      "native_dwell_counts": 648,
+      "late_fixture_min_compare_width_counts": 324
+    },
+    {
+      "csv_line": 1127,
+      "seconds": 117.084,
+      "rpm": 3146.0,
+      "logged_battery_v": 14.0,
+      "native_dwell_counts": 669,
+      "late_fixture_min_compare_width_counts": 334
+    },
+    {
+      "csv_line": 1128,
+      "seconds": 117.188,
+      "rpm": 3247.0,
+      "logged_battery_v": 14.16,
+      "native_dwell_counts": 643,
+      "late_fixture_min_compare_width_counts": 321
+    },
+    {
+      "csv_line": 1129,
+      "seconds": 117.292,
+      "rpm": 3176.0,
+      "logged_battery_v": 14.08,
+      "native_dwell_counts": 658,
+      "late_fixture_min_compare_width_counts": 329
+    },
+    {
+      "csv_line": 1130,
+      "seconds": 117.397,
+      "rpm": 3148.0,
+      "logged_battery_v": 14.16,
+      "native_dwell_counts": 655,
+      "late_fixture_min_compare_width_counts": 327
+    },
+    {
+      "csv_line": 1131,
+      "seconds": 117.501,
+      "rpm": 3184.0,
+      "logged_battery_v": 14.08,
+      "native_dwell_counts": 657,
+      "late_fixture_min_compare_width_counts": 328
+    },
+    {
+      "csv_line": 1132,
+      "seconds": 117.604,
+      "rpm": 3138.0,
+      "logged_battery_v": 14.08,
+      "native_dwell_counts": 663,
+      "late_fixture_min_compare_width_counts": 331
+    },
+    {
+      "csv_line": 1133,
+      "seconds": 117.709,
+      "rpm": 3134.0,
+      "logged_battery_v": 14.08,
+      "native_dwell_counts": 663,
+      "late_fixture_min_compare_width_counts": 331
+    },
+    {
+      "csv_line": 1134,
+      "seconds": 117.813,
+      "rpm": 3092.0,
+      "logged_battery_v": 14.08,
+      "native_dwell_counts": 669,
+      "late_fixture_min_compare_width_counts": 334
+    },
+    {
+      "csv_line": 1140,
+      "seconds": 118.437,
+      "rpm": 2833.0,
+      "logged_battery_v": 14.16,
+      "native_dwell_counts": 692,
+      "late_fixture_min_compare_width_counts": 346
+    },
+    {
+      "csv_line": 1141,
+      "seconds": 118.542,
+      "rpm": 3200.0,
+      "logged_battery_v": 14.24,
+      "native_dwell_counts": 642,
+      "late_fixture_min_compare_width_counts": 321
+    },
+    {
+      "csv_line": 1155,
+      "seconds": 120.0,
+      "rpm": 3632.0,
+      "logged_battery_v": 14.16,
+      "native_dwell_counts": 605,
+      "late_fixture_min_compare_width_counts": 302
+    },
+    {
+      "csv_line": 1156,
+      "seconds": 120.103,
+      "rpm": 3733.0,
+      "logged_battery_v": 14.16,
+      "native_dwell_counts": 600,
+      "late_fixture_min_compare_width_counts": 300
+    },
+    {
+      "csv_line": 1157,
+      "seconds": 120.208,
+      "rpm": 3732.0,
+      "logged_battery_v": 14.08,
+      "native_dwell_counts": 604,
+      "late_fixture_min_compare_width_counts": 302
+    },
+    {
+      "csv_line": 1158,
+      "seconds": 120.313,
+      "rpm": 3764.0,
+      "logged_battery_v": 14.08,
+      "native_dwell_counts": 602,
+      "late_fixture_min_compare_width_counts": 301
+    },
+    {
+      "csv_line": 1159,
+      "seconds": 120.417,
+      "rpm": 3721.0,
+      "logged_battery_v": 14.16,
+      "native_dwell_counts": 600,
+      "late_fixture_min_compare_width_counts": 300
+    },
+    {
+      "csv_line": 1160,
+      "seconds": 120.522,
+      "rpm": 3726.0,
+      "logged_battery_v": 14.16,
+      "native_dwell_counts": 600,
+      "late_fixture_min_compare_width_counts": 300
+    },
+    {
+      "csv_line": 1161,
+      "seconds": 120.626,
+      "rpm": 3800.0,
+      "logged_battery_v": 14.08,
+      "native_dwell_counts": 600,
+      "late_fixture_min_compare_width_counts": 300
+    },
+    {
+      "csv_line": 1162,
+      "seconds": 120.731,
+      "rpm": 3659.0,
+      "logged_battery_v": 13.84,
+      "native_dwell_counts": 624,
+      "late_fixture_min_compare_width_counts": 312
+    },
+    {
+      "csv_line": 1163,
+      "seconds": 120.835,
+      "rpm": 3600.0,
+      "logged_battery_v": 14.08,
+      "native_dwell_counts": 612,
+      "late_fixture_min_compare_width_counts": 306
+    },
+    {
+      "csv_line": 1164,
+      "seconds": 120.94,
+      "rpm": 3700.0,
+      "logged_battery_v": 14.08,
+      "native_dwell_counts": 606,
+      "late_fixture_min_compare_width_counts": 303
+    },
+    {
+      "csv_line": 1165,
+      "seconds": 121.044,
+      "rpm": 3651.0,
+      "logged_battery_v": 14.16,
+      "native_dwell_counts": 604,
+      "late_fixture_min_compare_width_counts": 302
+    },
+    {
+      "csv_line": 1166,
+      "seconds": 121.148,
+      "rpm": 3644.0,
+      "logged_battery_v": 13.92,
+      "native_dwell_counts": 620,
+      "late_fixture_min_compare_width_counts": 310
+    },
+    {
+      "csv_line": 1185,
+      "seconds": 123.125,
+      "rpm": 3218.0,
+      "logged_battery_v": 14.16,
+      "native_dwell_counts": 646,
+      "late_fixture_min_compare_width_counts": 323
+    },
+    {
+      "csv_line": 1186,
+      "seconds": 123.229,
+      "rpm": 3304.0,
+      "logged_battery_v": 14.16,
+      "native_dwell_counts": 636,
+      "late_fixture_min_compare_width_counts": 318
+    },
+    {
+      "csv_line": 1187,
+      "seconds": 123.332,
+      "rpm": 3313.0,
+      "logged_battery_v": 14.08,
+      "native_dwell_counts": 641,
+      "late_fixture_min_compare_width_counts": 320
+    },
+    {
+      "csv_line": 1188,
+      "seconds": 123.436,
+      "rpm": 3283.0,
+      "logged_battery_v": 14.16,
+      "native_dwell_counts": 639,
+      "late_fixture_min_compare_width_counts": 319
+    },
+    {
+      "csv_line": 1189,
+      "seconds": 123.54,
+      "rpm": 3318.0,
+      "logged_battery_v": 14.24,
+      "native_dwell_counts": 629,
+      "late_fixture_min_compare_width_counts": 314
+    },
+    {
+      "csv_line": 1190,
+      "seconds": 123.645,
+      "rpm": 3301.0,
+      "logged_battery_v": 14.16,
+      "native_dwell_counts": 637,
+      "late_fixture_min_compare_width_counts": 318
+    },
+    {
+      "csv_line": 1191,
+      "seconds": 123.748,
+      "rpm": 3273.0,
+      "logged_battery_v": 14.08,
+      "native_dwell_counts": 646,
+      "late_fixture_min_compare_width_counts": 323
+    },
+    {
+      "csv_line": 1192,
+      "seconds": 123.853,
+      "rpm": 3305.0,
+      "logged_battery_v": 14.16,
+      "native_dwell_counts": 636,
+      "late_fixture_min_compare_width_counts": 318
+    },
+    {
+      "csv_line": 1193,
+      "seconds": 123.957,
+      "rpm": 3307.0,
+      "logged_battery_v": 14.16,
+      "native_dwell_counts": 636,
+      "late_fixture_min_compare_width_counts": 318
+    },
+    {
+      "csv_line": 1194,
+      "seconds": 124.062,
+      "rpm": 3308.0,
+      "logged_battery_v": 13.92,
+      "native_dwell_counts": 654,
+      "late_fixture_min_compare_width_counts": 327
+    },
+    {
+      "csv_line": 1195,
+      "seconds": 124.166,
+      "rpm": 3137.0,
+      "logged_battery_v": 14.16,
+      "native_dwell_counts": 656,
+      "late_fixture_min_compare_width_counts": 328
+    },
+    {
+      "csv_line": 1196,
+      "seconds": 124.27,
+      "rpm": 3250.0,
+      "logged_battery_v": 14.08,
+      "native_dwell_counts": 649,
+      "late_fixture_min_compare_width_counts": 324
+    },
+    {
+      "csv_line": 1197,
+      "seconds": 124.375,
+      "rpm": 3259.0,
+      "logged_battery_v": 14.24,
+      "native_dwell_counts": 635,
+      "late_fixture_min_compare_width_counts": 317
+    },
+    {
+      "csv_line": 1198,
+      "seconds": 124.479,
+      "rpm": 3252.0,
+      "logged_battery_v": 14.16,
+      "native_dwell_counts": 642,
+      "late_fixture_min_compare_width_counts": 321
+    },
+    {
+      "csv_line": 1199,
+      "seconds": 124.584,
+      "rpm": 3186.0,
+      "logged_battery_v": 14.08,
+      "native_dwell_counts": 657,
+      "late_fixture_min_compare_width_counts": 328
+    }
+  ],
+  "device_cases": 1500,
+  "dwell_count_range": [
+    600,
+    840
+  ],
+  "conclusions": [
+    "P10 encodes only final timing element0 atC0EC; it is not an average or six-cylinder trace.",
+    "Installed3D824 clears the ordinary six correction offsets atRPM>=2000 even with its enable bit set; below threshold the forced records clamp to-5..+5deg.",
+    "Native requested dwell stays nonzero at all125 recorded open-plate/high-demand points.",
+    "All1500 held-point late-start/channel/wrap fixtures program nonzero down-counters and at least half-dwell compare spans; none establishes a new software cut."
+  ],
+  "limits": [
+    "Logged battery/RPM are quantized samples, not the exact simultaneous native inputs.",
+    "No actual coil current, coil voltage, spark energy or hardware waveform is simulated.",
+    "A programmed nonzero compare span does not prove an electrical firing event.",
+    "No full-task dispatch, real interrupt delays or live phase/timer snapshots are recovered.",
+    "Correction clearing requires the installed producer to execute; actual offsets remain unlogged.",
+    "This is bounded instruction analysis, not new registered regression-test groups; the historical355-group cumulative report is unchanged."
+  ]
+}

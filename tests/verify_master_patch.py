@@ -74,8 +74,8 @@ LOGGER_PROFILE = LOGGER_DIR / "D2WD610H_idle_diagnostic_profile.xml"
 # September 12: lean-reset repair, then six-byte stationary oil-gate repair
 # confined to 7D4B0/B4 and checksum. Both oil thresholds return to stock 15 C.
 EXPECTED_OUTPUT_SHA256 = "3e95b7508427f544e30a96c7aa78298b32560a6f3caf5c180e7949b8c2adc388"
-# Canonical E524 plus AVLS/cut diagnostics; prior 123 signal conversions retained.
-EXPECTED_LOGGER_SHA256 = "855b0af1620eb9efd6cc439945dec4fe5fc7dd957e9b79d506f8d1d1a099c71d"
+# Includes E530..E537 cut-state diagnostics; earlier signal meanings retained.
+EXPECTED_LOGGER_SHA256 = "ee8b217571b0b2a65ba4d0ccf0aec7e16f3d8eddd077e4596434e17c5344bc9d"
 
 
 def fail(message: str) -> None:
@@ -879,6 +879,14 @@ def verify_logger_fragment() -> None:
         "E527": ("0xFFCD8A", "1", "uint8", {"x"}),
         "E528": ("0xFFC91C", "4", "float", {"x"}),
         "E529": ("0xFFC920", "4", "float", {"x"}),
+        "E530": ("0xFFC0DC", "2", "uint16", {"x"}),
+        "E531": ("0xFFC0E1", "1", "uint8", {"x"}),
+        "E532": ("0xFFC290", "2", "uint16", {"x"}),
+        "E533": ("0xFFAC16", "1", "uint8", {"x"}),
+        "E534": ("0xFFB52C", "1", "uint8", {"x"}),
+        "E535": ("0xFFB00C", "1", "uint8", {"x"}),
+        "E536": ("0xFFB00D", "1", "uint8", {"x"}),
+        "E537": ("0xFFAC0C", "1", "uint8", {"x"}),
     }
     parameters = list(root.findall("ecuparam"))
     by_id = {parameter.get("id"): parameter for parameter in parameters}
