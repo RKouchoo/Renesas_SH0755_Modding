@@ -8,6 +8,16 @@ The central pages hold current conclusions. Archived pages describe historical s
 
 Audited source text is pinned to `46bfc52` with superseded claims from `2d95301`. [document_locations.json](document_locations.json) maps the later moves; the inventory retains the original source hashes/line numbers separately from the current file hashes.
 
+September 12–13 additions are outside those frozen counts. No new document is
+removed by the ongoing process-flow review.
+
+| Later document | Central destination | Disposition after this review |
+|---|---|---|
+| [AVCS_OCV_REPAIR_20260913.md](AVCS_OCV_REPAIR_20260913.md) | [AVCS coverage](PATCH_PROCESS_FLOW.md#coverage-register), [signals](SIGNALS.md), [logger](LOGGER.md) and [memory](../../master_patch/MEMORY_LAYOUT.md) | Retain as the evidence-backed correction. Earlier archived claims that `E0D0/33xxx/34BE4/69568` are rear-O2 work, or that `B098/B09C/C85C/C860` are safely reclaimed, are explicitly withdrawn. Preserve historical files for review. |
+| [AF_LEARNING_WOT_ISOLATION.md](AF_LEARNING_WOT_ISOLATION.md) | [Fuel-learning process](PATCH_PROCESS_FLOW.md#fuel-learning-region-acquisition-and-open-loop-application) | Incorrect zero-trim guarantee retracted and replaced with native evidence. Retain for user review; may later be archived once the central account is accepted. |
+| [PATCH_TOUCHPOINT_REGISTER.md](PATCH_TOUCHPOINT_REGISTER.md) | [Coverage register](PATCH_PROCESS_FLOW.md#coverage-register) | Retain as generated assignment inventory; it is not a complete flow proof. |
+| [PATCH_PROCESS_FLOW.md](PATCH_PROCESS_FLOW.md) | This is the new central process account. | Retain and continue; outstanding edges remain explicit. |
+
 | Original document | Present location | Central destination | Disposition |
 |---|---|---|---|
 | `audit.md` | [docs/archive/audit.md](../../docs/archive/audit.md) | [PATCH_STORY.md](PATCH_STORY.md) | Archived; historical evidence retained |
@@ -22,9 +32,9 @@ Audited source text is pinned to `46bfc52` with superseded claims from `2d95301`
 | `docs/single_front_af_patch.md` | [docs/archive/research/single_front_af_patch.md](../../docs/archive/research/single_front_af_patch.md) | [PATCH_STORY.md](PATCH_STORY.md) | Archived; historical evidence retained |
 | `docs/solenoid_subsystem.md` | [docs/archive/research/solenoid_subsystem.md](../../docs/archive/research/solenoid_subsystem.md) | [MEMORY_AND_IO.md](MEMORY_AND_IO.md) | Archived; historical evidence retained |
 | `fueling_safety/README.md` | [patches/fueling_safety/README.md](../../patches/fueling_safety/README.md) | [IMAGES.md](IMAGES.md) | Retained: component contract |
-| `logs/20260908_dashpot_review.md` | [logs/20260908_dashpot_review.md](../../logs/20260908_dashpot_review.md) | [LOGGER.md](LOGGER.md) | Retained: capture provenance unchanged |
-| `logs/20260908_idle_review.md` | [logs/20260908_idle_review.md](../../logs/20260908_idle_review.md) | [LOGGER.md](LOGGER.md) | Retained: capture provenance unchanged |
-| `logs/20260908_recovery_review.md` | [logs/20260908_recovery_review.md](../../logs/20260908_recovery_review.md) | [LOGGER.md](LOGGER.md) | Retained: capture provenance unchanged |
+| `logs/20260908_dashpot_review.md` | [logs/20260908_dashpot_review.md](../../logs/archive/20260908_dashpot_review.md) | [LOGGER.md](LOGGER.md) | Retained: capture provenance unchanged |
+| `logs/20260908_idle_review.md` | [logs/20260908_idle_review.md](../../logs/archive/20260908_idle_review.md) | [LOGGER.md](LOGGER.md) | Retained: capture provenance unchanged |
+| `logs/20260908_recovery_review.md` | [logs/20260908_recovery_review.md](../../logs/archive/20260908_recovery_review.md) | [LOGGER.md](LOGGER.md) | Retained: capture provenance unchanged |
 | `logs/README.md` | [logs/README.md](../../logs/README.md) | [LOGGER.md](LOGGER.md) | Retained: capture provenance unchanged |
 | `master_patch/CALIBRATION.md` | [master_patch/CALIBRATION.md](../../master_patch/CALIBRATION.md) | [IMAGES.md](IMAGES.md) | Retained: detailed current build contract |
 | `master_patch/COMMISSIONING.md` | [master_patch/COMMISSIONING.md](../../master_patch/COMMISSIONING.md) | [README.md](README.md) | Retained: operational entry point |

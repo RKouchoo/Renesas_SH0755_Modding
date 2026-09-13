@@ -2,9 +2,28 @@
 
 [Reference home](README.md) · [Original audit evidence](evidence/image_contracts.json) · [V2 repair](V2_LOAD_FALLBACK_FIX.md)
 
-## Current v2 image
+## Current rolling images
 
-The rolling [v2 BIN](../../master_patch_v2/D2WD610H_master_patch_v2.bin) now has
+The [AVCS/OCV repair](AVCS_OCV_REPAIR_20260913.md) restores the native cam
+current converter, feedback loop, output and circuit monitors incorrectly
+removed by the former rear-O2 bypass. It also restores the native integrator
+initializer and moves the conflicting wideband/lean state. Both builds retain
+the preceding fuel-pump scaling repair. Neither repair has been flashed.
+
+| Artifact | SHA-256 | Checksum |
+|---|---|---|
+| [Main BIN](../../master_patch/D2WD610H_master_patch.bin) | `3e95b7508427f544e30a96c7aa78298b32560a6f3caf5c180e7949b8c2adc388` | `1ADC9F24` |
+| [V2 BIN](../../master_patch_v2/D2WD610H_master_patch_v2.bin) | `fabceb54359aca76e6e15835a51aa5cfd008e570dc002e886eaa62a6cb020ce5` | `AA416B03` |
+
+The [exact repair evidence](evidence/avcs_ocv_repair_20260913.json) records
+72 changed bytes in 16 spans per image relative to the pump-only builds below.
+Use the updated logger definitions for E500/E504/E505 with these images.
+The software defect is reproduced and repaired; the loaded cut is not proven
+cured, and the broader process-flow audit remains in progress.
+
+## September 12 pump-scaling images
+
+The preceding v2 build had
 SHA-256 `8ab70f32dce51857652fc2ab24e340dea9399f12d7042cf8f9afab851e0df6d5`
 and checksum `4295EB4B`. The [fuel-pump demand scaling repair](FUEL_PUMP_SCALING_20260912.md)
 pairs the separate pulse-to-consumption coefficient with the installed injector
@@ -12,7 +31,7 @@ calibration. Only `72D54` and the checksum word changed: eight byte positions
 relative to the 14:42 drive image below. All ten v2 verifier groups pass.
 The loaded bog remains unresolved; this repair has not been flashed or logged.
 
-The rolling [main BIN](../../master_patch/D2WD610H_master_patch.bin) has the same
+The matching main build had the same
 coefficient repair: SHA-256
 `697b9f3a48a95027cc048ed68967520e2de4692314d88cf1768564ef15471d3a`, checksum
 `B3311F6C`. Its change is seven byte positions across the same two words.

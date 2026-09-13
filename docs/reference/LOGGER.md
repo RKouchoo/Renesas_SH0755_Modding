@@ -6,9 +6,11 @@ The complete definition is
 [D2WD610H_master_logger.xml](../../logger/D2WD610H_master_logger.xml),
 with the [E500–E527 fragment](../../logger/D2WD610H_master_logger_ecuparams.xml).
 The complete definition SHA-256 is
-`ea00d00a7fbe174c8292f4090bc01d939018725cb1637dcb11beaa52cfe5971f`.
-The addresses and conversions of all 123 previously defined signals are
-preserved. E524 is now generated from the canonical fragment and always
+`e2bf2106b81fb146a138981e8a5367132a9eb405c0cba199465deac3f147428a`.
+The AVCS repair relocates E500/E504/E505 to `FFAE8C/FFAEA0/FFAE9C`.
+Use this complete definition with the repaired rolling BINs; older definitions
+would read native OCV currents/integrators as patch state. IDs, conversions and
+profile selections are unchanged. Other existing addresses are preserved. E524 is now generated from the canonical fragment and always
 visible, matching the other project parameters. E525–E527 expose existing
 injector and AVLS state; they allocate no RAM and require no ROM change.
 Both current integrations include the [local load-fallback repair](V2_LOAD_FALLBACK_FIX.md).
@@ -43,12 +45,12 @@ the main verifier.
 
 | ID | RAM / storage | Meaning |
 |---|---|---|
-| E500 | `FFFFB098`, float | Wideband lambda; AFR display multiplies by 14.64. Zero is a fault sentinel. |
+| E500 | `FFFFAE8C`, float | Wideband lambda; AFR display multiplies by 14.64. Zero is a fault sentinel. |
 | E501 | `FFFFAB06`, u16 | Wideband raw ADC; volts = word × 5/65536. |
 | E502 | `FFFFAE70`, float | Synthetic sensor readiness. |
 | E503 | `FFFFCD86`, u8 | Committed AVLS mode. |
-| E504 | `FFFFC860`, u8 | Lean-cut state. |
-| E505 | `FFFFC85C`, u16 | Lean confirmation/delay counter. |
+| E504 | `FFFFAEA0`, u8 | Lean-cut state. |
+| E505 | `FFFFAE9C`, u16 | Lean confirmation/delay counter. |
 | E506 | `FFFFBE38`, u8 | CL/OL flags. |
 | E507 | `FFFFB688`, u16 | Engine-run counter; time conversion uses nominal 8-ms ticks. |
 | E508 | `FFFFB834`, float | After-start group A. |
@@ -99,6 +101,15 @@ The [loaded-fault review](V2_AVLS_MISFIRE_20260912.md#all-cylinder-cut-test-conn
 explains why this path is not established as the cause of the latest drive.
 
 ## Native AVLS channel verification
+
+The later [native command-flow tests](../../tests/test_ssm_command_process_flow.py)
+execute all seven saved profiles through receive/echo handling, command decode,
+actual getters and two complete continuous responses in main/v2/captured.
+Each 43-address selection produces a valid 49-byte response. None reaches
+the explicit retained-bank reset writer: A8 reads use table `4B6FC`, whereas
+B8 writes use `4BD3C`. Parameter `0060` reads `8262` through `319E2`; only
+its explicit setter `32894` can invalidate the header. These are offline
+CPU checks with supplied serial events, not a measured live connection.
 
 [Saved checks and MCP comments](evidence/avls_logger_20260912.json) record the
 image identity, sample callback results and Ghidra updates.

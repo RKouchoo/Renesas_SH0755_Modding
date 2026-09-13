@@ -7,7 +7,13 @@
 > with EBCS OFF. The corrected build is not vehicle-validated or a proved
 > lean-out cure; see `master_patch/GHIDRA_AUDIT.md`.
 
-This directory contains the audited component builders used by the focused
+The September 13 [AVCS repair](../../docs/reference/AVCS_OCV_REPAIR_20260913.md)
+also removes the false rear-O2 bypass from the historical single-front and
+combined builders. Their ADC/current-feedback/PWM tasks now remain native;
+regression builds were verified in temporary files. They remain separate from
+the current external-wideband main/v2 architecture.
+
+This directory contains the component builders used by the focused
 [`master_patch`](../../docs/archive/master_patch/README.md). The master is the only generated flash target kept in
 the repository. Standalone component ROMs can still be generated locally for binary testing, but
 they are ignored and must never be stacked or treated as current tuning images.
@@ -25,11 +31,11 @@ same 512-KiB ROM payload.
 | Component | Source | Master behavior |
 |---|---|---|
 | Independent hard overboost cut; electronic actuator retired | `patch_boost.py` | Stock fan route remains intact; hard cut defaults ON. No electronic boost output is installed. |
-| Actual CPC purge and bank fuel-subtraction deletion | `../master_patch/purge_delete_component.py` | Clears purge duty/airflow/mode and both bank subtraction terms; commands zero through the stock CPC writer. |
+| Actual CPC purge and bank fuel-subtraction deletion | `../purge/purge_delete_component.py` | Clears purge duty/airflow/mode and both bank subtraction terms; commands zero through the stock CPC writer. |
 | Rotational idle | `patch_rotational_idle.py` | Installed, bounded retard-only, defaults OFF. |
 | MAFless speed density | `../speed_density/patch_speed_density.py` | Always on; committed-AVLS-state dual VE. |
-| Former-MAF wideband and four-stock-O2 removal | `../master_patch/wideband_component.py` | Installed as part of the master architecture. |
-| Pressure-forced open loop and lean cut | `../fueling_safety/patch_fueling_safety.py` | Independent guards default ON. |
+| Former-MAF wideband and four-stock-O2 removal | `../wideband_o2/wideband_component.py` | Installed as part of the master architecture. |
+| Pressure-forced open loop and lean cut | `../fueling_safety/fueling_safety_component.py` | Independent guards default ON. |
 
 The historical `patch_single_front_af.py` and `patch_combined.py` sources remain for audit and
 regression purposes. They implement the superseded one-factory-front-sensor architecture and are

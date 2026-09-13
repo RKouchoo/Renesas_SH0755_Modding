@@ -4,6 +4,13 @@ These files are shared by the current v1 and v2 patches. Select
 [D2WD610H_master_logger.xml](D2WD610H_master_logger.xml) as the complete logger
 definition, then load one capture profile:
 
+The current rolling BINs require this updated complete definition: E500 now
+reads `FFAE8C`, E504 reads `FFAEA0`, and E505 reads `FFAE9C`. Older definitions
+read native cam-control state at those IDs after the AVCS repair. Channel IDs,
+conversions and profile selections are unchanged. Preserve historical
+definition/image pairings when replaying old captures; see the
+[RAM migration](../docs/reference/AVCS_OCV_REPAIR_20260913.md).
+
 | Profile | Purpose |
 |---|---|
 | [AVLS and fuel cut](D2WD610H_avls_cut_diagnostic_profile.xml) | Both banks' software lift modes, OSV duty/current and injector inhibition, with IAM, knock, MAP and baro. Use for the September 12 transition investigation. |

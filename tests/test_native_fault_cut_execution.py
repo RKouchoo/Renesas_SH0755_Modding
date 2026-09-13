@@ -3,7 +3,8 @@
 
 Fault inputs are imposed fixtures, not observations from a vehicle capture.
 The native fault aggregator, RPM hysteresis, selector and B744 publisher run
-from ROM. No serial endpoint, diagnostic detection or engine is simulated.
+from ROM. One local voltage diagnostic also executes with an explicit enable;
+electrical acquisition, the remote endpoint and the engine are not simulated.
 """
 
 import _test_paths
@@ -32,6 +33,8 @@ class FaultCutMachine(LinkMachine):
         # 148E4 copies ROM configuration byte 737C9 here. This is not the
         # physical test connector; that input is B51E/80 (SSM 61 bit 5).
         self.write(0xFFFFB28C, image[0x737C9], 1)
+        # Native selected throttle angle, not coolant temperature. The
+        # selector's first fault branch compares it against 22.75 degrees.
         self.put_float(0xFFFFB2C8, 60)
         self.put_float(0xFFFFB538, 35)
 
@@ -49,6 +52,50 @@ class FaultCutMachine(LinkMachine):
         self.put_float(0xFFFFB544, rpm)
         self.invoke(0x253A8, CUT_WRITES)
         return self.read(INHIBIT_WORD, 2)
+
+    def select_throttle(self, native_angle):
+        """Execute the actual healthy/fault substitution before cut selection."""
+        self.put_float(0xFFFFB2C4, native_angle)
+        self.invoke(0x14CE6, {(0xFFFFB2C8, 4)})
+        return self.get_float(0xFFFFB2C8)
+
+
+VOLTAGE_DELAY_WRITES = {(a, 4) for a in (
+    0xFFFFD34C, 0xFFFFD358, 0xFFFFD35C)}
+VOLTAGE_COUNTER_WRITES = {(a, 2) for a in range(0xFFFFD33C, 0xFFFFD348, 2)}
+VOLTAGE_FAULT_WRITES = VOLTAGE_COUNTER_WRITES | {
+    (0xFFFFD354, 4), (0xFFFFD348, 1), (0xFFFF81AC, 1)}
+
+
+class ThrottleVoltageMachine(FaultCutMachine):
+    """Native local/received TPS-voltage comparison with an imposed enable.
+
+    The ADC and remote samples are fixtures. The prerequisite task, remote
+    endpoint, electrical acquisition and elapsed time are not simulated.
+    """
+
+    def __init__(self, image, initial_count=32768):
+        super().__init__(image)
+        for address, size in VOLTAGE_DELAY_WRITES | VOLTAGE_FAULT_WRITES:
+            self.write(address, 0, size)
+        for address, _ in VOLTAGE_DELAY_WRITES:
+            self.put_float(address, initial_count * 5 / 65536)
+        self.write(0xFFFFD348, 1, 1)  # Explicit diagnostic-enable boundary.
+        self.put_float(0xFFFFB46C, 80)
+
+    def compare(self, local_count, received_count):
+        self.write(0xFFFFAB1A, local_count, 2)
+        frame = frame_with_status([0] * 7)
+        frame[6:8] = received_count.to_bytes(2, 'big')
+        checksum = sum(int.from_bytes(frame[i:i + 2], 'big')
+                       for i in range(0, 38, 2))
+        frame[38:40] = (checksum & 65535).to_bytes(2, 'big')
+        self.receive(frame)
+        self.invoke(0x68814, VOLTAGE_DELAY_WRITES)
+        self.invoke(0x68856, VOLTAGE_FAULT_WRITES)
+        self.invoke(0x68984, VOLTAGE_FAULT_WRITES)
+        self.invoke(0x64874, FAULT_WRITES)
+        return self.read(0xFFFF81AC, 1) & 1
 
 
 class NativeFaultCutTests(unittest.TestCase):
@@ -69,6 +116,47 @@ class NativeFaultCutTests(unittest.TestCase):
             cpu.write(0xFFFFCD86, mode, 1)
             for rpm in (2500, 2800, 2999, 3000, 3200, 3500, 4000):
                 self.assertEqual(cpu.fault_cut(rpm), 0, (mode, rpm))
+
+    def test_received_throttle_voltage_agrees_with_native_two_call_delay(self):
+        stock = (ROOT / '2005 BLE MT.bin').read_bytes()
+        for start, end in ((0x68814, 0x68A98), (0x30790, 0x30A84),
+                           (0x74D31, 0x74D32), (0x74DC4, 0x74DD0),
+                           (0x74FE4, 0x74FF8)):
+            self.assertEqual(self.image[start:end], stock[start:end], hex(start))
+        self.assertEqual(self.image[0x74D31], 2)
+        cpu = ThrottleVoltageMachine(self.image)
+        history = [32768, 32768]
+        for count in [10000, 20000, 30000, 40000, 50000, 32768] * 15:
+            expected_count = history.pop(0)
+            history.append(count)
+            self.assertEqual(cpu.compare(count, expected_count), 0)
+            self.assertEqual(cpu.get_float(0xFFFFD34C), expected_count * 5 / 65536)
+            self.assertEqual(cpu.get_float(0xFFFFD354), 0)
+            self.assertEqual(cpu.fault_cut(3200), 0)
+
+    def test_persistent_throttle_voltage_disagreement_reaches_native_cut(self):
+        cpu = ThrottleVoltageMachine(self.image)
+        # Imposed 0.59265 V disagreement exceeds the highest tolerance.
+        for _ in range(30):
+            self.assertEqual(cpu.compare(32768, 25000), 0)
+            self.assertEqual(cpu.fault_cut(3200), 0)
+        self.assertEqual(cpu.compare(32768, 25000), 1)
+        self.assertEqual(cpu.read(0xFFFFD271, 1), 0)
+        self.assertEqual(cpu.read(0xFFFFD273, 1), 0x27)
+        for rpm in (3200, 2800, 2500):
+            self.assertEqual(cpu.fault_cut(rpm), 0x3F)
+
+    def test_throttle_voltage_error_sign_reversal_resets_persistence(self):
+        cpu = ThrottleVoltageMachine(self.image)
+        for _ in range(20):
+            self.assertEqual(cpu.compare(32768, 25000), 0)
+        self.assertEqual(cpu.compare(32768, 40000), 0)
+        for address in range(0xFFFFD33C, 0xFFFFD346, 2):
+            self.assertEqual(cpu.read(address, 2), 0)
+        self.assertEqual(cpu.read(0xFFFFD346, 2), 1)  # One clear comparison.
+        for _ in range(30):
+            self.assertEqual(cpu.compare(32768, 40000), 0)
+        self.assertEqual(cpu.compare(32768, 40000), 1)
 
     def test_d273_mask_02_path_has_3000_2500_hysteresis(self):
         cpu = FaultCutMachine(self.image)
@@ -173,6 +261,28 @@ class NativeFaultCutTests(unittest.TestCase):
                 cpu.receive(frame_with_status([0] * 7))
             cpu.invoke(0x64874, FAULT_WRITES)
             self.assertEqual(cpu.fault_cut(2700), 0)
+
+    def test_first_fault_branch_uses_selected_throttle_not_coolant(self):
+        cpu = FaultCutMachine(self.image)
+        cpu.put_float(0xFFFFB46C, 80)
+        values = [0, 1, 0, 0, 0, 0, 0]
+        for _ in range(2):
+            cpu.receive(frame_with_status(values))
+        cpu.invoke(0x64874, FAULT_WRITES)
+        self.assertEqual(cpu.read(0xFFFFD271, 1), 0)
+        self.assertEqual(cpu.read(0xFFFFD273, 1), 0x27)
+        for coolant in (20, 66, 90):
+            cpu.put_float(0xFFFFB3AC, coolant)
+            for angle, expected in ((22.74, 0), (22.75, 63), (60, 63), (0, 0)):
+                self.assertAlmostEqual(cpu.select_throttle(angle), angle, places=4)
+                self.assertEqual(cpu.fault_cut(2700), expected)
+        # Either native TPS-fault flag selects 6.375 degrees regardless of
+        # measured opening. This is independent of the logged P13 source.
+        for fault in (0x40, 0x80, 0xC0):
+            cpu.write(0xFFFFD271, fault, 1)
+            self.assertEqual(cpu.select_throttle(60), 6.375)
+        cpu.write(0xFFFFD271, 0, 1)
+        self.assertEqual(cpu.select_throttle(60), 60)
 
 
 def verify_execution(image):

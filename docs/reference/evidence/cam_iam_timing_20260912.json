@@ -1,0 +1,96 @@
+{
+  "image_sha256": "fd795813febf817c845fc922e81e498539a539efeeb6e4d11822af47098094a2",
+  "cases": [
+    {
+      "rpm": 2800,
+      "imposed_cam": 0,
+      "imposed_iam": 1,
+      "mode": 1,
+      "lookup_target": 18.0010986328125,
+      "cam_deficit": 18.0010986328125,
+      "correction": -0.0,
+      "final_angles": [
+        20.0,
+        20.0,
+        20.0,
+        20.0,
+        20.0,
+        20.0
+      ]
+    },
+    {
+      "rpm": 2800,
+      "imposed_cam": 0,
+      "imposed_iam": 0,
+      "mode": 1,
+      "lookup_target": 18.0010986328125,
+      "cam_deficit": 18.0010986328125,
+      "correction": -14.273900985717773,
+      "final_angles": [
+        5.726099014282227,
+        5.726099014282227,
+        5.726099014282227,
+        5.726099014282227,
+        5.726099014282227,
+        5.726099014282227
+      ]
+    },
+    {
+      "rpm": 2800,
+      "imposed_cam": 18,
+      "imposed_iam": 0,
+      "mode": 1,
+      "lookup_target": 18.0010986328125,
+      "cam_deficit": 0.0010986328125,
+      "correction": -0.003604888916015625,
+      "final_angles": [
+        19.996395111083984,
+        19.996395111083984,
+        19.996395111083984,
+        19.996395111083984,
+        19.996395111083984,
+        19.996395111083984
+      ]
+    },
+    {
+      "rpm": 2800,
+      "imposed_cam": 0,
+      "imposed_iam": 0,
+      "mode": 3,
+      "lookup_target": 0.0,
+      "cam_deficit": 0.0,
+      "correction": 0.0,
+      "final_angles": [
+        20.0,
+        20.0,
+        20.0,
+        20.0,
+        20.0,
+        20.0
+      ]
+    },
+    {
+      "rpm": 3500,
+      "imposed_cam": 0,
+      "imposed_iam": 1,
+      "mode": 1,
+      "lookup_target": 15.0018310546875,
+      "cam_deficit": 15.0018310546875,
+      "correction": -0.0,
+      "final_angles": [
+        20.0,
+        20.0,
+        20.0,
+        20.0,
+        20.0,
+        20.0
+      ]
+    }
+  ],
+  "tests": {
+    "file": "tests/test_cam_iam_timing_process_flow.py",
+    "groups": 4,
+    "result": "PASS"
+  },
+  "boundary": "Imposed eligibility, sensor, IAM and scheduler states. Native producers and final composer; mathematical table helpers. No vehicle-state reconstruction."
+}

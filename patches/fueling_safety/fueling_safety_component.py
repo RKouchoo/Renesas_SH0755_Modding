@@ -39,13 +39,13 @@ LEAN_CUT_TASK_PTR = boost.REVLIM_FNPTR
 PRIOR_FUEL_CUT_WRAPPER = boost.REVWRAP_ADDR
 FUEL_CUT_FLAG = boost.FUELCUT_FLAG
 
-# Reclaimed rear-O2 state. The master wideband component bypasses every traced
-# runtime reader/writer of these locations. The stock initialization task writes
-# float 1.0, so this component also replaces that task with an explicit zeroer.
-LEAN_COUNTER_RAM = 0xFFFFC85C  # uint16
-LEAN_STATE_RAM = 0xFFFFC860    # uint8: 0 idle, 1 delay, 2 monitor, 3 latched
+# Reclaimed B8CC front-impedance intermediate pair. Its sole task B658 is
+# already bypassed by the external-WB component. Reserve four bytes per item
+# for explicit initialization. C85C/C860 remain native AVCS integrators.
+LEAN_COUNTER_RAM = 0xFFFFAE9C  # uint16; AE9E/9F reserved
+LEAN_STATE_RAM = 0xFFFFAEA0    # uint8: 0 idle, 1 delay, 2 monitor, 3 latched
 LEAN_STATE_INIT_TASK_PTR = 0x0001055C
-STOCK_REAR_O2_INTEGRATOR_INITIALIZE = 0x00033964
+STOCK_AVCS_INTEGRATOR_INITIALIZE = 0x00033964
 
 # Remaining checksum-covered free flash begins at 0x7EAC8.
 COMPONENT_START = 0x0007EAC8
@@ -270,12 +270,14 @@ def build_lean_cut_wrapper() -> bytes:
 
 
 def build_lean_state_initialize() -> bytes:
-    """Replace the stock rear-O2 float-1.0 initializer with integer zero state."""
+    """Preserve native AVCS unity seeds, then initialize separate lean state."""
     a = Asm(LEAN_STATE_INITIALIZE_ADDR)
+    a.stsl_pr()
+    a.movl_pool(1, STOCK_AVCS_INTEGRATOR_INITIALIZE).jsr(1).nop()
     a.mov_imm(0, 0)
     a.movl_pool(1, LEAN_COUNTER_RAM).movl_store(0, 1)
     a.movl_pool(1, LEAN_STATE_RAM).movl_store(0, 1)
-    a.rts().nop()
+    a.ldsl_pr().rts().nop()
     return a.assemble()
 
 
@@ -315,9 +317,8 @@ def apply_to_rom(rom: bytearray) -> list[tuple[str, int, bytes]]:
         raise SystemExit("REFUSING: fueling safety requires a 512 KiB master-derived ROM")
     if rom[wideband.MASTER_O2_SIGNATURE_ADDR] != 1:
         raise SystemExit("REFUSING: fueling safety requires the master wideband component")
-    for address, _, label in wideband.REAR_O2_TASK_POINTERS:
-        if struct.unpack_from(">I", rom, address)[0] != wideband.NOOP_TASK:
-            raise SystemExit("REFUSING: reclaimed lean-cut RAM is not safe; %s remains active" % label)
+    wideband.check_avcs_dependencies(rom)
+    wideband.check_reclaimed_front_scratch(rom)
 
     blobs = build_blobs()
     for name, address, data in blobs:
@@ -331,8 +332,8 @@ def apply_to_rom(rom: bytearray) -> list[tuple[str, int, bytes]]:
         PRESSURE_OL_WRAPPER_ADDR, "primary open-loop fueling task pointer",
     )
     checked_pointer(
-        rom, LEAN_STATE_INIT_TASK_PTR, STOCK_REAR_O2_INTEGRATOR_INITIALIZE,
-        LEAN_STATE_INITIALIZE_ADDR, "retired rear-O2 integrator initialization task",
+        rom, LEAN_STATE_INIT_TASK_PTR, STOCK_AVCS_INTEGRATOR_INITIALIZE,
+        LEAN_STATE_INITIALIZE_ADDR, "native AVCS and separate lean-state initialization",
     )
     checked_pointer(
         rom, LEAN_CUT_TASK_PTR, PRIOR_FUEL_CUT_WRAPPER,

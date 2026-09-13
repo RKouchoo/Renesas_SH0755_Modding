@@ -166,12 +166,12 @@ B874. A separate `6af0d1...` candidate changes ten low-lift VE cells: the
 value, with increasing modeled air mass throughout. The main `48d63c...`
 baseline is unchanged. The candidate retains all transient logic and tables;
 its large lower-RPM changes and startup interpolation need engine validation.
-The [14:13 candidate capture](../logs/20260908_recovery_review.md) subsequently
+The [14:13 candidate capture](../logs/archive/20260908_recovery_review.md) subsequently
 shows better settled fueling near 970--1000 RPM, but blips still cause
 near-stalls. It supports the direction of the change, not complete validation;
 no further VE or transient calibration change was made from that review.
 See the [recovery audit](../docs/archive/master_patch/IDLE_RECOVERY_AUDIT.md) and
-[log review](../logs/20260908_idle_review.md).
+[log review](../logs/archive/20260908_idle_review.md).
 
 The remainder of both surfaces is still an unmeasured EZ30R starting model and
 must be calibrated from controlled data. Global multiplier defaults to 1.0.
@@ -201,7 +201,7 @@ transfers and are unsupported. At each accepted sample,
 the patch writes the same lambda to the two stock bank inputs at
 `0xFFFFAE60/AE64`, zeroes the obsolete pump-current pair at `AE68/AE6C`, and
 sets both readiness values at `AE70/AE74` to 50.0. It mirrors lambda to
-`B098/B09C` for logging.
+`AE8C/AE90` for logging. Native `B098/B09C` remain OCV-current feedback.
 
 For an invalid sample it publishes 1.0 only as an internal placeholder, writes
 0.0 to the logger mirrors and readiness values, returns the stock inhibited

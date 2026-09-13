@@ -55,6 +55,18 @@ class GuardMachine(Machine):
         super().__init__()
         self.image = image
         self.memory.clear()
+        # Historical captures retain the pre-OCV-repair RAM layout. Read the
+        # pinned emitted literals instead of silently applying today's map.
+        self.wideband_outputs = WIDEBAND_OUTPUTS
+        self.lean_state_ram, self.lean_counter_ram = safety.LEAN_STATE_RAM, safety.LEAN_COUNTER_RAM
+        if image[wideband.MASTER_O2_SIGNATURE_ADDR] == 1:
+            mirrors = tuple(int.from_bytes(image[a:a+4], 'big') for a in (0x7E500, 0x7E504))
+            assert mirrors in ((0xFFFFB098, 0xFFFFB09C), (0xFFFFAE8C, 0xFFFFAE90))
+            self.wideband_outputs = WIDEBAND_OUTPUTS[:2] + mirrors + WIDEBAND_OUTPUTS[4:]
+            self.lean_state_ram, self.lean_counter_ram = (
+                int.from_bytes(image[a:a+4], 'big') for a in (0x7EDB4, 0x7EDB8))
+            assert (self.lean_state_ram, self.lean_counter_ram) in (
+                (0xFFFFC860, 0xFFFFC85C), (0xFFFFAEA0, 0xFFFFAE9C))
         self.fpul = 0
         self.sr = 0
         self.task_handoffs = []
@@ -63,8 +75,8 @@ class GuardMachine(Machine):
         self.write(0xFFFF72C8, 0x49FC)  # Current task-6 descriptor, ordinary dispatchable task.
         self.write(safety.FUEL_CUT_FLAG, 0, 1)
         self.write(RPM_FLAGS, 0, 1)
-        self.write(safety.LEAN_STATE_RAM, 0, 1)
-        self.write(safety.LEAN_COUNTER_RAM, 0, 2)
+        self.write(self.lean_state_ram, 0, 1)
+        self.write(self.lean_counter_ram, 0, 2)
         self.write(safety.CL_OL_STATE_FLAGS, 0, 1)
         self.write(AGGREGATED_FLAG, 0, 1)
         self.write(0xFFFFB52C, 0, 1)
@@ -77,7 +89,7 @@ class GuardMachine(Machine):
         self.put_float(0xFFFFB538, 10)  # Outside secondary limiter's zero band.
         self.put_float(safety.MAP_PRESSURE, 315)
         self.put_float(safety.ATMOSPHERIC_PRESSURE, 760)
-        for address in WIDEBAND_OUTPUTS:
+        for address in self.wideband_outputs:
             self.put_float(address, float("nan"))
 
     def read(self, address, size):
@@ -100,7 +112,7 @@ class GuardMachine(Machine):
             self.poison_scratch()
         else:
             assert target in (boost.REVWRAP_ADDR, boost.REVLIMITER, boost.TASK_LOCK,
-                              0x24FC, 0x1A256, *INHIBIT_GETTERS), hex(target)
+                              0x24FC, 0x1A256, 0x33964, *INHIBIT_GETTERS), hex(target)
             return_pc = self.pr
             self.pc = target
             while self.pc != return_pc:
@@ -226,18 +238,18 @@ class GuardMachine(Machine):
 
     def update_wideband(self, raw):
         self.write(wideband.RAW_WIDEBAND_ADC, raw, 2)
-        self.invoke(wideband.FRONT_AF_PROCESS_ENTRY, {(a, 4) for a in WIDEBAND_OUTPUTS})
-        assert Counter(self.writes) == Counter((a, 4) for a in WIDEBAND_OUTPUTS)
-        return tuple(self.get_float(a) for a in WIDEBAND_OUTPUTS)
+        self.invoke(wideband.FRONT_AF_PROCESS_ENTRY, {(a, 4) for a in self.wideband_outputs})
+        assert Counter(self.writes) == Counter((a, 4) for a in self.wideband_outputs)
+        return tuple(self.get_float(a) for a in self.wideband_outputs)
 
     def cut_step(self):
         entry = self.read(safety.LEAN_CUT_TASK_PTR, 4)
         self.invoke(entry, {(safety.FUEL_CUT_FLAG, 1), (RPM_FLAGS, 1),
-                            (safety.LEAN_STATE_RAM, 1), (safety.LEAN_COUNTER_RAM, 2), (INHIBIT_WORD, 2)})
+                            (self.lean_state_ram, 1), (self.lean_counter_ram, 2), (INHIBIT_WORD, 2)})
         assert self.entered.count(boost.REVWRAP_ADDR) == 1
         assert self.entered.count(boost.REVLIMITER) == 1
         assert self.entered.count(INHIBIT_BUILDER) == 1
-        return (self.read(safety.LEAN_STATE_RAM, 1), self.read(safety.LEAN_COUNTER_RAM, 2),
+        return (self.read(self.lean_state_ram, 1), self.read(self.lean_counter_ram, 2),
                 bool(self.read(safety.FUEL_CUT_FLAG, 1) & 128))
 
 
@@ -357,7 +369,10 @@ class GuardExecutionTests(unittest.TestCase):
         for a in range(safety.LEAN_COUNTER_RAM - 4, safety.LEAN_STATE_RAM + 8):
             cpu.write(a, 0xA5, 1)
         cpu.invoke(cpu.read(safety.LEAN_STATE_INIT_TASK_PTR, 4),
-                   {(safety.LEAN_COUNTER_RAM, 4), (safety.LEAN_STATE_RAM, 4)})
+                   {(safety.LEAN_COUNTER_RAM, 4), (safety.LEAN_STATE_RAM, 4),
+                    (0xFFFFC85C, 4), (0xFFFFC860, 4)})
+        self.assertEqual(cpu.get_float(0xFFFFC85C), 1)
+        self.assertEqual(cpu.get_float(0xFFFFC860), 1)
         self.assertEqual(cpu.read(safety.LEAN_COUNTER_RAM, 4), 0)
         self.assertEqual(cpu.read(safety.LEAN_STATE_RAM, 4), 0)
         self.assertEqual(cpu.read(safety.LEAN_COUNTER_RAM - 4, 4), 0xA5A5A5A5)

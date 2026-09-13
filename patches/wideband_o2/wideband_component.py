@@ -4,8 +4,9 @@
 This component is intentionally master-patch-only.  It replaces the stock
 dual-front A/F signal producer with a 0--5 V wideband decoder on the former MAF
 ADC channel, leaves the stock lambda conditioning/closed-loop consumers in
-place, bypasses the stock front pump-current diagnostic and every traced rear
-O2 processing stage, and clears all 18 mapped D2WD610H O2 DTC switches.
+place, bypasses the stock front pump-current diagnostic, and clears all 18
+mapped D2WD610H O2 DTC switches. Native AVCS current feedback, output and
+diagnostics remain active; those routines were previously mislabelled rear O2.
 
 The default calibration is the P0/P1 analog output documented by the supplied,
 seller-labelled AEM 50-4110 / 30-4110-style controller:
@@ -20,7 +21,7 @@ warm-up and disconnected-sensor voltages remain physically unverified and may
 fall inside the window.  An out-of-window input publishes 1.0 lambda to the
 front-sensor paths but forces both readiness metrics to zero, which makes the
 Ghidra-verified bank inhibit helpers return the stock inhibited value (2).  The
-logger value at 0xFFFFB098 becomes 0.0 on such a rejection. The former boost
+logger value at 0xFFFFAE8C becomes 0.0 on such a rejection. The former boost
 actuator guard is retired: its output was misidentified radiator-fan PWM.
 Its reserved allocation contains only a return and erased bytes. Stock fan
 control remains intact; independent overboost and lean fuel cuts are separate
@@ -30,6 +31,14 @@ The retained-sensor audit neutralizes factory atmospheric lambda correction,
 auxiliary fuel adders, and feedback-target corrections dependent on legacy O2
 voltages. Some other raw
 voltage consumers remain; this is not a claim of complete circuit independence.
+
+Process-flow finding, 2026-09-13: leaving the native feedback consumers in
+place does not preserve their operation. The installed 50/0 readiness scheme
+conflicts with 1903A: valid 50 clears B512/B513 bits C0, so 1EE0C publishes
+B90D/B90E=0 and each scheduled bank update resets B8D4/B8D8 to 1.0.
+See docs/reference/PATCH_PROCESS_FLOW.md and the connected native feedback
+tests. No readiness calibration change is made by this audit; heater and
+other consumers must be reviewed before changing this shared convention.
 """
 
 from __future__ import annotations
@@ -62,14 +71,17 @@ BANK1_INHIBIT_ENTRY_STOCK = bytes.fromhex("907a6000c8088f020009000b")
 BANK2_INHIBIT_ENTRY = 0x0006500C
 BANK2_INHIBIT_ENTRY_STOCK = bytes.fromhex("905c6000c901600c20088f02")
 
-REAR_O2_PROCESS_ENTRY = 0x0000E0D0
-REAR_O2_PROCESS_ENTRY_STOCK = bytes.fromhex("2fd6e020d521e700d421e600")
-REAR_O2_TASK_POINTERS = (
-    (0x00011488, 0x00033B12, "rear O2 threshold task"),
-    (0x0001148C, 0x00033AAC, "rear O2 filter task"),
-    (0x00011490, 0x00033970, "rear O2 response-integrator task"),
-    (0x00011494, 0x00034BE4, "rear O2 response-ratio task"),
-    (0x000114A0, 0x00069568, "rear O2 voltage-diagnostic task"),
+# 2026-09-13 full-flow correction: these belong to the OCV solenoids.
+# 34BE4 -> DF00 -> E290 writes BFR6A/B at F510/F512. 69568 reports
+# P2088/P2089/P2092/P2093. Never retire them as oxygen-sensor processing.
+AVCS_CURRENT_PROCESS_ENTRY = 0x0000E0D0
+AVCS_CURRENT_PROCESS_ENTRY_STOCK = bytes.fromhex("2fd6e020d521e700d421e600")
+PRESERVED_AVCS_TASK_POINTERS = (
+    (0x00011488, 0x00033B12, "AVCS current reference task"),
+    (0x0001148C, 0x00033AAC, "AVCS current filter/error task"),
+    (0x00011490, 0x00033970, "AVCS current integrator task"),
+    (0x00011494, 0x00034BE4, "AVCS duty/PWM output task"),
+    (0x000114A0, 0x00069568, "OCV solenoid circuit diagnostic task"),
 )
 NOOP_TASK = 0x000066C2  # sensor_processing_return_stub: rts; nop
 
@@ -85,12 +97,15 @@ FRONT_CURRENT_BANK1 = 0xFFFFAE68
 FRONT_CURRENT_BANK2 = 0xFFFFAE6C
 FRONT_READY_METRIC_BANK1 = 0xFFFFAE70
 FRONT_READY_METRIC_BANK2 = 0xFFFFAE74
-WIDEBAND_LOG_LAMBDA_BANK1 = 0xFFFFB098
-WIDEBAND_LOG_LAMBDA_BANK2 = 0xFFFFB09C
+# The replaced B690 producer owned this raw front-current pair. Its only
+# remaining writer is startup B49A, which zeroes both before task operation.
+# B098/B09C belong to native OCV-current feedback and must remain untouched.
+WIDEBAND_LOG_LAMBDA_BANK1 = 0xFFFFAE8C
+WIDEBAND_LOG_LAMBDA_BANK2 = 0xFFFFAE90
 
 # All D2WD610H O2 sensor/heater switches present in the matching definition.
 # No extra P0133/P0139/P0140/P0141/P0159/P0160/P0161 switches are mapped for
-# this calibration, so the traced runtime tasks are bypassed as well.
+# this calibration. Retained voltage workers are documented separately.
 DISABLED_O2_DTC_SWITCHES = {
     "P0031": 0x0005BDAC,
     "P0032": 0x0005BDAA,
@@ -142,6 +157,7 @@ LAMBDA_SLOPE = AFR_SLOPE_PER_VOLT / GASOLINE_STOICH_AFR
 LAMBDA_OFFSET = AFR_OFFSET / GASOLINE_STOICH_AFR
 VALID_MIN_VOLTS = 0.50
 VALID_MAX_VOLTS = 4.50
+# Known native-status incompatibility at this value; see module audit note.
 READY_VALID_VALUE = 50.0
 READY_THRESHOLD = 35.0
 
@@ -381,10 +397,47 @@ def checked_write(
     rom[address : address + len(replacement)] = replacement
 
 
+def check_avcs_dependencies(rom: bytes | bytearray) -> None:
+    """Reject the former OCV deletion or edits to the restored native loop."""
+    for pointer, target, label in PRESERVED_AVCS_TASK_POINTERS:
+        if bytes(rom[pointer:pointer+4]) != be32(target):
+            raise SystemExit(f"REFUSING: {label} must remain native @0x{pointer:05X}")
+    for start, end, digest in (
+        (0xDF00, 0xE314, "ed207f8dde9f0a56037bef64ff760746612ee2e9cd08bc0adb426a1abb606ab0"),
+        (0x33964, 0x33B92, "d37f9738a7145eb7da728a6727b61f7c8db086522e058e82d6db56666d14972e"),
+        (0x34BE4, 0x34D50, "a40b408e81c14ce087b53508a343db4fd4d5fec971f1352cd0769fc1a98eb2ee"),
+    ):
+        if hashlib.sha256(rom[start:end]).hexdigest() != digest:
+            raise SystemExit(f"REFUSING: native AVCS dependency changed @0x{start:05X}")
+
+
+def check_reclaimed_front_scratch(rom: bytes | bytearray) -> None:
+    """Prove the two native owners of relocated scratch are bypassed.
+
+    AE8C/AE90 were B690 raw-current values; B49A initializes them to zero.
+    AE9C/AEA0 are a two-bank intermediate owned only by B8CC, whose sole
+    runtime entry is B658 at task pointer 6A6C. The retained BAE0/BCB4 ADC
+    handshake uses AE84/88, AEC0/4 and AEC8, not either reclaimed range.
+    """
+    if bytes(rom[FRONT_AF_PROCESS_ENTRY:FRONT_AF_PROCESS_ENTRY+12]) != (
+            build_entry_hook(FRONT_AF_PROCESS_ENTRY, WIDEBAND_UPDATE_ADDR)):
+        raise SystemExit("REFUSING: raw front-current producer still owns WB logger RAM")
+    if bytes(rom[FRONT_PUMP_DIAG_TASK_PTR:FRONT_PUMP_DIAG_TASK_PTR+4]) != be32(NOOP_TASK):
+        raise SystemExit("REFUSING: front impedance producer still owns lean-cut RAM")
+    for start, end, digest in (
+        (0xB8CC, 0xBAE0, "96cbd035f8a247ce4e355f8048fe7ff6f7de72d90f9adee64b7626ca919b7a20"),
+        (0xB49A, 0xB554, "72add82c1fc228b74ce6c5e9456cb2a6a721dccd1d2300e6ec3de78aeb366984"),
+    ):
+        if hashlib.sha256(rom[start:end]).hexdigest() != digest:
+            raise SystemExit(f"REFUSING: reclaimed front scratch owner changed @0x{start:05X}")
+
+
 def apply_to_rom(rom: bytearray) -> list[tuple[str, int, bytes]]:
     """Apply the permanent master O2/wideband component to a stock-derived ROM."""
     if len(rom) != 0x80000:
         raise SystemExit("REFUSING: wideband component requires a 512 KiB ROM")
+
+    check_avcs_dependencies(rom)
 
     # Refuse an upstream fan hijack before making any O2 changes. This is an
     # identity check, never an output hook owned by this component.
@@ -441,15 +494,6 @@ def apply_to_rom(rom: bytearray) -> list[tuple[str, int, bytes]]:
         be32(NOOP_TASK),
         "front A/F pump-current diagnostic task pointer",
     )
-    checked_write(
-        rom,
-        REAR_O2_PROCESS_ENTRY,
-        REAR_O2_PROCESS_ENTRY_STOCK,
-        build_entry_hook(REAR_O2_PROCESS_ENTRY, NOOP_TASK),
-        "rear O2 pair ADC-conversion entry",
-    )
-    for pointer, stock_target, label in REAR_O2_TASK_POINTERS:
-        checked_write(rom, pointer, be32(stock_target), be32(NOOP_TASK), label)
     for code, address in DISABLED_O2_DTC_SWITCHES.items():
         checked_write(rom, address, b"\x01", b"\x00", "%s O2 DTC switch" % code)
 

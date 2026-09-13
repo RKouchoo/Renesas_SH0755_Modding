@@ -1,0 +1,1932 @@
+{
+  "date": "2026-09-12",
+  "stock_sha256": "ed0fe0341d97fb760c2cda3f07277f861495d32f6520e3ce8047b8b0f7bfd4ee",
+  "images": {
+    "v1": "697b9f3a48a95027cc048ed68967520e2de4692314d88cf1768564ef15471d3a",
+    "v2": "8ab70f32dce51857652fc2ab24e340dea9399f12d7042cf8f9afab851e0df6d5"
+  },
+  "scope": "Aligned native descriptor discovery with monotonic calibration axes, intersected with every assigned native calibration span.",
+  "limits": [
+    "This bounded format scan can miss computed or differently encoded descriptors.",
+    "MCP xrefs identify immediate consumers, not every downstream dependency.",
+    "Zero format fields require the actual native call contract to resolve storage width.",
+    "Non-table scalar/array spans below require separate direct and computed consumer tracing.",
+    "No BIN, runtime source, calibration, ECU state or logger file is changed."
+  ],
+  "descriptors": [
+    {
+      "descriptor": "0005EA2C",
+      "dimensions": "one_axis",
+      "format": "00000800",
+      "changed_or_assigned_parts": [
+        {
+          "role": "data",
+          "pointer": "00073E08",
+          "element_bytes": 2,
+          "elements": 4,
+          "bytes": 8,
+          "assigned_spans": [
+            {
+              "start": "00073E08",
+              "end_exclusive": "00073E10",
+              "labels": [
+                "external lambda: unity factory atmospheric correction"
+              ],
+              "profiles": [
+                "v1",
+                "v2"
+              ],
+              "changed_from_stock": true
+            }
+          ]
+        }
+      ],
+      "native_xrefs_from_mcp": [
+        "From 00018de0 in front_af_sensor_lambda_condition_filter [PARAM]",
+        "From 00018ee8 [DATA]"
+      ],
+      "integer_return_contract": null,
+      "process_flow_status": "Consumer identification; transitive process closure remains authored work."
+    },
+    {
+      "descriptor": "0005F470",
+      "dimensions": "one_axis",
+      "format": "00000400",
+      "changed_or_assigned_parts": [
+        {
+          "role": "data",
+          "pointer": "00076AC8",
+          "element_bytes": 1,
+          "elements": 8,
+          "bytes": 8,
+          "assigned_spans": [
+            {
+              "start": "00076AC8",
+              "end_exclusive": "00076AD0",
+              "labels": [
+                "Tip-in Enrichment Compensation (MRP)"
+              ],
+              "profiles": [
+                "v2"
+              ],
+              "changed_from_stock": true
+            }
+          ]
+        }
+      ],
+      "native_xrefs_from_mcp": [
+        "From 00023d3c in FUN_00023bae [PARAM]",
+        "From 00023db4 [DATA]"
+      ],
+      "integer_return_contract": null,
+      "process_flow_status": "Consumer identification; transitive process closure remains authored work."
+    },
+    {
+      "descriptor": "0005F508",
+      "dimensions": "one_axis",
+      "format": "00000800",
+      "changed_or_assigned_parts": [
+        {
+          "role": "data",
+          "pointer": "00076B76",
+          "element_bytes": 2,
+          "elements": 16,
+          "bytes": 32,
+          "assigned_spans": [
+            {
+              "start": "00076B76",
+              "end_exclusive": "00076B96",
+              "labels": [
+                "Cranking Fuel Injector Pulse Width A"
+              ],
+              "profiles": [
+                "v1",
+                "v2"
+              ],
+              "changed_from_stock": true
+            }
+          ]
+        }
+      ],
+      "native_xrefs_from_mcp": [
+        "From 0001d588 in FUN_0001d4d8 [PARAM]",
+        "From 0001d5e8 [DATA]"
+      ],
+      "integer_return_contract": null,
+      "process_flow_status": "Consumer identification; transitive process closure remains authored work."
+    },
+    {
+      "descriptor": "0005F51C",
+      "dimensions": "one_axis",
+      "format": "00000800",
+      "changed_or_assigned_parts": [
+        {
+          "role": "data",
+          "pointer": "00076B96",
+          "element_bytes": 2,
+          "elements": 16,
+          "bytes": 32,
+          "assigned_spans": [
+            {
+              "start": "00076B96",
+              "end_exclusive": "00076BB6",
+              "labels": [
+                "Cranking Fuel Injector Pulse Width B"
+              ],
+              "profiles": [
+                "v1",
+                "v2"
+              ],
+              "changed_from_stock": true
+            }
+          ]
+        }
+      ],
+      "native_xrefs_from_mcp": [
+        "From 0001d5ae in FUN_0001d4d8 [PARAM]",
+        "From 0001d5f8 [DATA]"
+      ],
+      "integer_return_contract": null,
+      "process_flow_status": "Consumer identification; transitive process closure remains authored work."
+    },
+    {
+      "descriptor": "0005F530",
+      "dimensions": "one_axis",
+      "format": "00000800",
+      "changed_or_assigned_parts": [
+        {
+          "role": "data",
+          "pointer": "00076BB6",
+          "element_bytes": 2,
+          "elements": 16,
+          "bytes": 32,
+          "assigned_spans": [
+            {
+              "start": "00076BB6",
+              "end_exclusive": "00076BD6",
+              "labels": [
+                "Cranking Fuel Injector Pulse Width C"
+              ],
+              "profiles": [
+                "v1",
+                "v2"
+              ],
+              "changed_from_stock": true
+            }
+          ]
+        }
+      ],
+      "native_xrefs_from_mcp": [
+        "From 0001d5fc in FUN_0001d4d8 [PARAM]",
+        "From 0001d6e8 [DATA]"
+      ],
+      "integer_return_contract": null,
+      "process_flow_status": "Consumer identification; transitive process closure remains authored work."
+    },
+    {
+      "descriptor": "0005F544",
+      "dimensions": "one_axis",
+      "format": "00000800",
+      "changed_or_assigned_parts": [
+        {
+          "role": "data",
+          "pointer": "00076BD6",
+          "element_bytes": 2,
+          "elements": 16,
+          "bytes": 32,
+          "assigned_spans": [
+            {
+              "start": "00076BD6",
+              "end_exclusive": "00076BF6",
+              "labels": [
+                "Cranking Fuel Injector Pulse Width D"
+              ],
+              "profiles": [
+                "v1",
+                "v2"
+              ],
+              "changed_from_stock": true
+            }
+          ]
+        }
+      ],
+      "native_xrefs_from_mcp": [
+        "From 0001d580 in FUN_0001d4d8 [PARAM]",
+        "From 0001d5e4 [DATA]"
+      ],
+      "integer_return_contract": null,
+      "process_flow_status": "Consumer identification; transitive process closure remains authored work."
+    },
+    {
+      "descriptor": "0005F5F4",
+      "dimensions": "one_axis",
+      "format": "00000800",
+      "changed_or_assigned_parts": [
+        {
+          "role": "data",
+          "pointer": "00076D08",
+          "element_bytes": 2,
+          "elements": 16,
+          "bytes": 32,
+          "assigned_spans": [
+            {
+              "start": "00076D08",
+              "end_exclusive": "00076D28",
+              "labels": [
+                "Transient Positive ECT Multiplier"
+              ],
+              "profiles": [
+                "v2"
+              ],
+              "changed_from_stock": true
+            }
+          ]
+        }
+      ],
+      "native_xrefs_from_mcp": [
+        "From 0001e974 in transient_load_fuel_compensation_update [PARAM]",
+        "From 0001ea64 [DATA]"
+      ],
+      "integer_return_contract": null,
+      "process_flow_status": "Consumer identification; transitive process closure remains authored work."
+    },
+    {
+      "descriptor": "0005F61C",
+      "dimensions": "one_axis",
+      "format": "00000800",
+      "changed_or_assigned_parts": [
+        {
+          "role": "data",
+          "pointer": "00076D48",
+          "element_bytes": 2,
+          "elements": 16,
+          "bytes": 32,
+          "assigned_spans": [
+            {
+              "start": "00076D48",
+              "end_exclusive": "00076D68",
+              "labels": [
+                "Transient Negative ECT Multiplier"
+              ],
+              "profiles": [
+                "v2"
+              ],
+              "changed_from_stock": true
+            }
+          ]
+        }
+      ],
+      "native_xrefs_from_mcp": [
+        "From 0001e982 in transient_load_fuel_compensation_update [PARAM]",
+        "From 0001ea6c [DATA]"
+      ],
+      "integer_return_contract": null,
+      "process_flow_status": "Consumer identification; transitive process closure remains authored work."
+    },
+    {
+      "descriptor": "0005F8FC",
+      "dimensions": "one_axis",
+      "format": "00000000",
+      "changed_or_assigned_parts": [
+        {
+          "role": "data",
+          "pointer": "000772DC",
+          "element_bytes": 2,
+          "elements": 2,
+          "bytes": 4,
+          "assigned_spans": [
+            {
+              "start": "000772DC",
+              "end_exclusive": "000772E0",
+              "labels": [
+                "CL to OL Delay"
+              ],
+              "profiles": [
+                "v1",
+                "v2"
+              ],
+              "changed_from_stock": true
+            }
+          ]
+        }
+      ],
+      "native_xrefs_from_mcp": [
+        "From 00022a10 in cl_ol_delay_condition_and_counter_update [PARAM]",
+        "From 00022a64 [DATA]"
+      ],
+      "integer_return_contract": {
+        "jsr": "00022A14",
+        "target": "00002118",
+        "descriptor_literal": "00022A64",
+        "target_literal": "00022A68",
+        "contract": "2118 -> 28A4 reads u16, independent of zero format field"
+      },
+      "process_flow_status": "Consumer identification; transitive process closure remains authored work."
+    },
+    {
+      "descriptor": "0005F978",
+      "dimensions": "one_axis",
+      "format": "00000800",
+      "changed_or_assigned_parts": [
+        {
+          "role": "data",
+          "pointer": "0007739C",
+          "element_bytes": 2,
+          "elements": 5,
+          "bytes": 10,
+          "assigned_spans": [
+            {
+              "start": "0007739C",
+              "end_exclusive": "000773A6",
+              "labels": [
+                "Throttle Tip-in Enrichment A"
+              ],
+              "profiles": [
+                "v1",
+                "v2"
+              ],
+              "changed_from_stock": true
+            }
+          ]
+        }
+      ],
+      "native_xrefs_from_mcp": [
+        "From 00023d1a in FUN_00023bae [PARAM]",
+        "From 00023da4 [DATA]"
+      ],
+      "integer_return_contract": null,
+      "process_flow_status": "Consumer identification; transitive process closure remains authored work."
+    },
+    {
+      "descriptor": "0005F98C",
+      "dimensions": "one_axis",
+      "format": "00000800",
+      "changed_or_assigned_parts": [
+        {
+          "role": "data",
+          "pointer": "000773BC",
+          "element_bytes": 2,
+          "elements": 5,
+          "bytes": 10,
+          "assigned_spans": [
+            {
+              "start": "000773BC",
+              "end_exclusive": "000773C6",
+              "labels": [
+                "Throttle Tip-in Enrichment B"
+              ],
+              "profiles": [
+                "v1",
+                "v2"
+              ],
+              "changed_from_stock": true
+            }
+          ]
+        }
+      ],
+      "native_xrefs_from_mcp": [
+        "From 00023d20 in FUN_00023bae [PARAM]",
+        "From 00023da8 [DATA]"
+      ],
+      "integer_return_contract": null,
+      "process_flow_status": "Consumer identification; transitive process closure remains authored work."
+    },
+    {
+      "descriptor": "0005FA9C",
+      "dimensions": "two_axis",
+      "format": "04000000",
+      "changed_or_assigned_parts": [
+        {
+          "role": "x_axis",
+          "pointer": "0007771C",
+          "element_bytes": 4,
+          "elements": 14,
+          "bytes": 56,
+          "assigned_spans": [
+            {
+              "start": "0007771C",
+              "end_exclusive": "00077754",
+              "labels": [
+                "Primary Open Loop Load Axis A"
+              ],
+              "profiles": [
+                "v1",
+                "v2"
+              ],
+              "changed_from_stock": true
+            }
+          ]
+        },
+        {
+          "role": "y_axis",
+          "pointer": "00077754",
+          "element_bytes": 4,
+          "elements": 10,
+          "bytes": 40,
+          "assigned_spans": [
+            {
+              "start": "00077754",
+              "end_exclusive": "0007777C",
+              "labels": [
+                "Primary Open Loop RPM Axis A"
+              ],
+              "profiles": [
+                "v1",
+                "v2"
+              ],
+              "changed_from_stock": true
+            }
+          ]
+        },
+        {
+          "role": "data",
+          "pointer": "0007777C",
+          "element_bytes": 1,
+          "elements": 140,
+          "bytes": 140,
+          "assigned_spans": [
+            {
+              "start": "0007777C",
+              "end_exclusive": "00077808",
+              "labels": [
+                "Primary Open Loop Fueling A"
+              ],
+              "profiles": [
+                "v1",
+                "v2"
+              ],
+              "changed_from_stock": true
+            }
+          ]
+        }
+      ],
+      "native_xrefs_from_mcp": [
+        "From 00022570 in primary_open_loop_fueling_target_update [PARAM]",
+        "From 00022688 [DATA]"
+      ],
+      "integer_return_contract": null,
+      "process_flow_status": "Consumer identification; transitive process closure remains authored work."
+    },
+    {
+      "descriptor": "0005FAB8",
+      "dimensions": "two_axis",
+      "format": "04000000",
+      "changed_or_assigned_parts": [
+        {
+          "role": "x_axis",
+          "pointer": "00077808",
+          "element_bytes": 4,
+          "elements": 14,
+          "bytes": 56,
+          "assigned_spans": [
+            {
+              "start": "00077808",
+              "end_exclusive": "00077840",
+              "labels": [
+                "Primary Open Loop Load Axis B"
+              ],
+              "profiles": [
+                "v1",
+                "v2"
+              ],
+              "changed_from_stock": true
+            }
+          ]
+        },
+        {
+          "role": "y_axis",
+          "pointer": "00077840",
+          "element_bytes": 4,
+          "elements": 10,
+          "bytes": 40,
+          "assigned_spans": [
+            {
+              "start": "00077840",
+              "end_exclusive": "00077868",
+              "labels": [
+                "Primary Open Loop RPM Axis B"
+              ],
+              "profiles": [
+                "v1",
+                "v2"
+              ],
+              "changed_from_stock": true
+            }
+          ]
+        },
+        {
+          "role": "data",
+          "pointer": "00077868",
+          "element_bytes": 1,
+          "elements": 140,
+          "bytes": 140,
+          "assigned_spans": [
+            {
+              "start": "00077868",
+              "end_exclusive": "000778F4",
+              "labels": [
+                "Primary Open Loop Fueling B"
+              ],
+              "profiles": [
+                "v1",
+                "v2"
+              ],
+              "changed_from_stock": true
+            }
+          ]
+        }
+      ],
+      "native_xrefs_from_mcp": [
+        "From 00022528 in primary_open_loop_fueling_target_update [PARAM]",
+        "From 0002257c in primary_open_loop_fueling_target_update [PARAM]",
+        "From 0002256c [DATA]",
+        "From 0002268c [DATA]"
+      ],
+      "integer_return_contract": null,
+      "process_flow_status": "Consumer identification; transitive process closure remains authored work."
+    },
+    {
+      "descriptor": "0005FB0C",
+      "dimensions": "two_axis",
+      "format": "08000000",
+      "changed_or_assigned_parts": [
+        {
+          "role": "x_axis",
+          "pointer": "00077958",
+          "element_bytes": 4,
+          "elements": 9,
+          "bytes": 36,
+          "assigned_spans": [
+            {
+              "start": "00077958",
+              "end_exclusive": "0007797C",
+              "labels": [
+                "CL Fueling Load Axis"
+              ],
+              "profiles": [
+                "v1",
+                "v2"
+              ],
+              "changed_from_stock": true
+            }
+          ]
+        },
+        {
+          "role": "data",
+          "pointer": "000779B0",
+          "element_bytes": 2,
+          "elements": 117,
+          "bytes": 234,
+          "assigned_spans": [
+            {
+              "start": "000779B0",
+              "end_exclusive": "00077A9A",
+              "labels": [
+                "CL Fueling Target Compensation"
+              ],
+              "profiles": [
+                "v1",
+                "v2"
+              ],
+              "changed_from_stock": false
+            }
+          ]
+        }
+      ],
+      "native_xrefs_from_mcp": [
+        "From 0002049a in engine_load_dependent_update_2046c [PARAM]",
+        "From 00020544 [DATA]"
+      ],
+      "integer_return_contract": null,
+      "process_flow_status": "Consumer identification; transitive process closure remains authored work."
+    },
+    {
+      "descriptor": "0005FC90",
+      "dimensions": "one_axis",
+      "format": "00000400",
+      "changed_or_assigned_parts": [
+        {
+          "role": "data",
+          "pointer": "0007834C",
+          "element_bytes": 1,
+          "elements": 7,
+          "bytes": 7,
+          "assigned_spans": [
+            {
+              "start": "0007834C",
+              "end_exclusive": "00078353",
+              "labels": [
+                "Timing Compensation IAT"
+              ],
+              "profiles": [
+                "v1",
+                "v2"
+              ],
+              "changed_from_stock": true
+            }
+          ]
+        }
+      ],
+      "native_xrefs_from_mcp": [
+        "From 000289f2 in engine_load_dependent_update_289e0 [PARAM]",
+        "From 00028a18 [DATA]"
+      ],
+      "integer_return_contract": null,
+      "process_flow_status": "Consumer identification; transitive process closure remains authored work."
+    },
+    {
+      "descriptor": "00060108",
+      "dimensions": "two_axis",
+      "format": "04000000",
+      "changed_or_assigned_parts": [
+        {
+          "role": "x_axis",
+          "pointer": "000780BC",
+          "element_bytes": 4,
+          "elements": 15,
+          "bytes": 60,
+          "assigned_spans": [
+            {
+              "start": "000780BC",
+              "end_exclusive": "000780F8",
+              "labels": [
+                "Base Timing Load Axis"
+              ],
+              "profiles": [
+                "v1",
+                "v2"
+              ],
+              "changed_from_stock": true
+            }
+          ]
+        },
+        {
+          "role": "data",
+          "pointer": "00078AA0",
+          "element_bytes": 1,
+          "elements": 210,
+          "bytes": 210,
+          "assigned_spans": [
+            {
+              "start": "00078AA0",
+              "end_exclusive": "00078B72",
+              "labels": [
+                "Base Timing A"
+              ],
+              "profiles": [
+                "v1",
+                "v2"
+              ],
+              "changed_from_stock": true
+            }
+          ]
+        }
+      ],
+      "native_xrefs_from_mcp": [
+        "From 00028430 in ign_base_timing_map_blend [PARAM]",
+        "From 00028580 [DATA]"
+      ],
+      "integer_return_contract": null,
+      "process_flow_status": "Consumer identification; transitive process closure remains authored work."
+    },
+    {
+      "descriptor": "00060124",
+      "dimensions": "two_axis",
+      "format": "04000000",
+      "changed_or_assigned_parts": [
+        {
+          "role": "x_axis",
+          "pointer": "000780BC",
+          "element_bytes": 4,
+          "elements": 15,
+          "bytes": 60,
+          "assigned_spans": [
+            {
+              "start": "000780BC",
+              "end_exclusive": "000780F8",
+              "labels": [
+                "Base Timing Load Axis"
+              ],
+              "profiles": [
+                "v1",
+                "v2"
+              ],
+              "changed_from_stock": true
+            }
+          ]
+        },
+        {
+          "role": "data",
+          "pointer": "00078BAC",
+          "element_bytes": 1,
+          "elements": 210,
+          "bytes": 210,
+          "assigned_spans": [
+            {
+              "start": "00078BAC",
+              "end_exclusive": "00078C7E",
+              "labels": [
+                "Base Timing B"
+              ],
+              "profiles": [
+                "v1",
+                "v2"
+              ],
+              "changed_from_stock": true
+            }
+          ]
+        }
+      ],
+      "native_xrefs_from_mcp": [
+        "From 0002843c in ign_base_timing_map_blend [PARAM]",
+        "From 00028584 [DATA]"
+      ],
+      "integer_return_contract": null,
+      "process_flow_status": "Consumer identification; transitive process closure remains authored work."
+    },
+    {
+      "descriptor": "00060140",
+      "dimensions": "two_axis",
+      "format": "04000000",
+      "changed_or_assigned_parts": [
+        {
+          "role": "x_axis",
+          "pointer": "000780BC",
+          "element_bytes": 4,
+          "elements": 15,
+          "bytes": 60,
+          "assigned_spans": [
+            {
+              "start": "000780BC",
+              "end_exclusive": "000780F8",
+              "labels": [
+                "Base Timing Load Axis"
+              ],
+              "profiles": [
+                "v1",
+                "v2"
+              ],
+              "changed_from_stock": true
+            }
+          ]
+        },
+        {
+          "role": "data",
+          "pointer": "00078CD0",
+          "element_bytes": 1,
+          "elements": 300,
+          "bytes": 300,
+          "assigned_spans": [
+            {
+              "start": "00078CD0",
+              "end_exclusive": "00078DFC",
+              "labels": [
+                "Base Timing C"
+              ],
+              "profiles": [
+                "v1",
+                "v2"
+              ],
+              "changed_from_stock": true
+            }
+          ]
+        }
+      ],
+      "native_xrefs_from_mcp": [
+        "From 00028448 in ign_base_timing_map_blend [PARAM]",
+        "From 00028588 [DATA]"
+      ],
+      "integer_return_contract": null,
+      "process_flow_status": "Consumer identification; transitive process closure remains authored work."
+    },
+    {
+      "descriptor": "0006015C",
+      "dimensions": "two_axis",
+      "format": "04000000",
+      "changed_or_assigned_parts": [
+        {
+          "role": "x_axis",
+          "pointer": "000780BC",
+          "element_bytes": 4,
+          "elements": 15,
+          "bytes": 60,
+          "assigned_spans": [
+            {
+              "start": "000780BC",
+              "end_exclusive": "000780F8",
+              "labels": [
+                "Base Timing Load Axis"
+              ],
+              "profiles": [
+                "v1",
+                "v2"
+              ],
+              "changed_from_stock": true
+            }
+          ]
+        },
+        {
+          "role": "data",
+          "pointer": "00078E34",
+          "element_bytes": 1,
+          "elements": 210,
+          "bytes": 210,
+          "assigned_spans": [
+            {
+              "start": "00078E34",
+              "end_exclusive": "00078F06",
+              "labels": [
+                "Base Timing D"
+              ],
+              "profiles": [
+                "v1",
+                "v2"
+              ],
+              "changed_from_stock": true
+            }
+          ]
+        }
+      ],
+      "native_xrefs_from_mcp": [
+        "From 00028454 in ign_base_timing_map_blend [PARAM]",
+        "From 0002858c [DATA]"
+      ],
+      "integer_return_contract": null,
+      "process_flow_status": "Consumer identification; transitive process closure remains authored work."
+    },
+    {
+      "descriptor": "00060178",
+      "dimensions": "two_axis",
+      "format": "04000000",
+      "changed_or_assigned_parts": [
+        {
+          "role": "x_axis",
+          "pointer": "000780BC",
+          "element_bytes": 4,
+          "elements": 15,
+          "bytes": 60,
+          "assigned_spans": [
+            {
+              "start": "000780BC",
+              "end_exclusive": "000780F8",
+              "labels": [
+                "Base Timing Load Axis"
+              ],
+              "profiles": [
+                "v1",
+                "v2"
+              ],
+              "changed_from_stock": true
+            }
+          ]
+        },
+        {
+          "role": "data",
+          "pointer": "00078F40",
+          "element_bytes": 1,
+          "elements": 210,
+          "bytes": 210,
+          "assigned_spans": [
+            {
+              "start": "00078F40",
+              "end_exclusive": "00079012",
+              "labels": [
+                "Base Timing E"
+              ],
+              "profiles": [
+                "v1",
+                "v2"
+              ],
+              "changed_from_stock": true
+            }
+          ]
+        }
+      ],
+      "native_xrefs_from_mcp": [
+        "From 00028460 in ign_base_timing_map_blend [PARAM]",
+        "From 00028590 [DATA]"
+      ],
+      "integer_return_contract": null,
+      "process_flow_status": "Consumer identification; transitive process closure remains authored work."
+    },
+    {
+      "descriptor": "00060194",
+      "dimensions": "two_axis",
+      "format": "04000000",
+      "changed_or_assigned_parts": [
+        {
+          "role": "x_axis",
+          "pointer": "000780BC",
+          "element_bytes": 4,
+          "elements": 15,
+          "bytes": 60,
+          "assigned_spans": [
+            {
+              "start": "000780BC",
+              "end_exclusive": "000780F8",
+              "labels": [
+                "Base Timing Load Axis"
+              ],
+              "profiles": [
+                "v1",
+                "v2"
+              ],
+              "changed_from_stock": true
+            }
+          ]
+        },
+        {
+          "role": "data",
+          "pointer": "00079064",
+          "element_bytes": 1,
+          "elements": 300,
+          "bytes": 300,
+          "assigned_spans": [
+            {
+              "start": "00079064",
+              "end_exclusive": "00079190",
+              "labels": [
+                "Base Timing F"
+              ],
+              "profiles": [
+                "v1",
+                "v2"
+              ],
+              "changed_from_stock": true
+            }
+          ]
+        }
+      ],
+      "native_xrefs_from_mcp": [
+        "From 0002846c in ign_base_timing_map_blend [PARAM]",
+        "From 00028594 [DATA]"
+      ],
+      "integer_return_contract": null,
+      "process_flow_status": "Consumer identification; transitive process closure remains authored work."
+    },
+    {
+      "descriptor": "000601CC",
+      "dimensions": "two_axis",
+      "format": "04000000",
+      "changed_or_assigned_parts": [
+        {
+          "role": "x_axis",
+          "pointer": "000791D8",
+          "element_bytes": 4,
+          "elements": 15,
+          "bytes": 60,
+          "assigned_spans": [
+            {
+              "start": "000791D8",
+              "end_exclusive": "00079214",
+              "labels": [
+                "Knock Correction Advance Max A Load Axis"
+              ],
+              "profiles": [
+                "v1",
+                "v2"
+              ],
+              "changed_from_stock": true
+            }
+          ]
+        },
+        {
+          "role": "data",
+          "pointer": "0007924C",
+          "element_bytes": 1,
+          "elements": 210,
+          "bytes": 210,
+          "assigned_spans": [
+            {
+              "start": "0007924C",
+              "end_exclusive": "0007931E",
+              "labels": [
+                "Knock Correction Advance Max A"
+              ],
+              "profiles": [
+                "v1",
+                "v2"
+              ],
+              "changed_from_stock": true
+            }
+          ]
+        }
+      ],
+      "native_xrefs_from_mcp": [
+        "From 0003eb94 in knock_correction_advance_max_select [PARAM]",
+        "From 0003ec50 [DATA]"
+      ],
+      "integer_return_contract": null,
+      "process_flow_status": "Consumer identification; transitive process closure remains authored work."
+    },
+    {
+      "descriptor": "000601E8",
+      "dimensions": "two_axis",
+      "format": "04000000",
+      "changed_or_assigned_parts": [
+        {
+          "role": "x_axis",
+          "pointer": "00079320",
+          "element_bytes": 4,
+          "elements": 15,
+          "bytes": 60,
+          "assigned_spans": [
+            {
+              "start": "00079320",
+              "end_exclusive": "0007935C",
+              "labels": [
+                "Knock Correction Advance Max B Load Axis"
+              ],
+              "profiles": [
+                "v1",
+                "v2"
+              ],
+              "changed_from_stock": true
+            }
+          ]
+        },
+        {
+          "role": "data",
+          "pointer": "000793AC",
+          "element_bytes": 1,
+          "elements": 300,
+          "bytes": 300,
+          "assigned_spans": [
+            {
+              "start": "000793AC",
+              "end_exclusive": "000794D8",
+              "labels": [
+                "Knock Correction Advance Max B"
+              ],
+              "profiles": [
+                "v1",
+                "v2"
+              ],
+              "changed_from_stock": true
+            }
+          ]
+        }
+      ],
+      "native_xrefs_from_mcp": [
+        "From 0003ebba in knock_correction_advance_max_select [PARAM]",
+        "From 0003ec58 [DATA]"
+      ],
+      "integer_return_contract": null,
+      "process_flow_status": "Consumer identification; transitive process closure remains authored work."
+    },
+    {
+      "descriptor": "000603B8",
+      "dimensions": "one_axis",
+      "format": "00000800",
+      "changed_or_assigned_parts": [
+        {
+          "role": "data",
+          "pointer": "00079C9C",
+          "element_bytes": 2,
+          "elements": 16,
+          "bytes": 32,
+          "assigned_spans": [
+            {
+              "start": "00079C9C",
+              "end_exclusive": "00079CBC",
+              "labels": [
+                "Base Idle Air (Normal)"
+              ],
+              "profiles": [
+                "v2"
+              ],
+              "changed_from_stock": true
+            }
+          ]
+        }
+      ],
+      "native_xrefs_from_mcp": [
+        "From 0002b8d8 [DATA]",
+        "From 0002b81a [PARAM]"
+      ],
+      "integer_return_contract": null,
+      "process_flow_status": "Consumer identification; transitive process closure remains authored work."
+    },
+    {
+      "descriptor": "000603CC",
+      "dimensions": "one_axis",
+      "format": "00000800",
+      "changed_or_assigned_parts": [
+        {
+          "role": "data",
+          "pointer": "00079CBC",
+          "element_bytes": 2,
+          "elements": 16,
+          "bytes": 32,
+          "assigned_spans": [
+            {
+              "start": "00079CBC",
+              "end_exclusive": "00079CDC",
+              "labels": [
+                "Base Idle Air (Alternate)"
+              ],
+              "profiles": [
+                "v2"
+              ],
+              "changed_from_stock": true
+            }
+          ]
+        }
+      ],
+      "native_xrefs_from_mcp": [
+        "From 0002b8dc [DATA]",
+        "From 0002b822 [PARAM]"
+      ],
+      "integer_return_contract": null,
+      "process_flow_status": "Consumer identification; transitive process closure remains authored work."
+    },
+    {
+      "descriptor": "0006041C",
+      "dimensions": "one_axis",
+      "format": "00000800",
+      "changed_or_assigned_parts": [
+        {
+          "role": "data",
+          "pointer": "00079D64",
+          "element_bytes": 2,
+          "elements": 16,
+          "bytes": 32,
+          "assigned_spans": [
+            {
+              "start": "00079D64",
+              "end_exclusive": "00079D84",
+              "labels": [
+                "Idle Speed Target A"
+              ],
+              "profiles": [
+                "v2"
+              ],
+              "changed_from_stock": true
+            }
+          ]
+        }
+      ],
+      "native_xrefs_from_mcp": [
+        "From 0002c01a in idle_target_c460_with_fan_duty_limits_update [PARAM]",
+        "From 0002c080 [DATA]"
+      ],
+      "integer_return_contract": null,
+      "process_flow_status": "Consumer identification; transitive process closure remains authored work."
+    },
+    {
+      "descriptor": "00060430",
+      "dimensions": "one_axis",
+      "format": "00000800",
+      "changed_or_assigned_parts": [
+        {
+          "role": "data",
+          "pointer": "00079D84",
+          "element_bytes": 2,
+          "elements": 16,
+          "bytes": 32,
+          "assigned_spans": [
+            {
+              "start": "00079D84",
+              "end_exclusive": "00079DA4",
+              "labels": [
+                "Idle Speed Target B"
+              ],
+              "profiles": [
+                "v2"
+              ],
+              "changed_from_stock": true
+            }
+          ]
+        }
+      ],
+      "native_xrefs_from_mcp": [
+        "From 0002c020 in idle_target_c460_with_fan_duty_limits_update [PARAM]",
+        "From 0002c084 [DATA]"
+      ],
+      "integer_return_contract": null,
+      "process_flow_status": "Consumer identification; transitive process closure remains authored work."
+    },
+    {
+      "descriptor": "00060444",
+      "dimensions": "one_axis",
+      "format": "00000800",
+      "changed_or_assigned_parts": [
+        {
+          "role": "data",
+          "pointer": "00079DA4",
+          "element_bytes": 2,
+          "elements": 16,
+          "bytes": 32,
+          "assigned_spans": [
+            {
+              "start": "00079DA4",
+              "end_exclusive": "00079DC4",
+              "labels": [
+                "Idle Speed Target C"
+              ],
+              "profiles": [
+                "v2"
+              ],
+              "changed_from_stock": true
+            }
+          ]
+        }
+      ],
+      "native_xrefs_from_mcp": [
+        "From 0002c026 in idle_target_c460_with_fan_duty_limits_update [PARAM]",
+        "From 0002c088 [DATA]"
+      ],
+      "integer_return_contract": null,
+      "process_flow_status": "Consumer identification; transitive process closure remains authored work."
+    },
+    {
+      "descriptor": "00060458",
+      "dimensions": "one_axis",
+      "format": "00000800",
+      "changed_or_assigned_parts": [
+        {
+          "role": "data",
+          "pointer": "00079DC4",
+          "element_bytes": 2,
+          "elements": 16,
+          "bytes": 32,
+          "assigned_spans": [
+            {
+              "start": "00079DC4",
+              "end_exclusive": "00079DE4",
+              "labels": [
+                "Idle Speed Target D"
+              ],
+              "profiles": [
+                "v2"
+              ],
+              "changed_from_stock": true
+            }
+          ]
+        }
+      ],
+      "native_xrefs_from_mcp": [
+        "From 0002c02c in idle_target_c460_with_fan_duty_limits_update [PARAM]",
+        "From 0002c08c [DATA]"
+      ],
+      "integer_return_contract": null,
+      "process_flow_status": "Consumer identification; transitive process closure remains authored work."
+    },
+    {
+      "descriptor": "0006046C",
+      "dimensions": "one_axis",
+      "format": "00000800",
+      "changed_or_assigned_parts": [
+        {
+          "role": "data",
+          "pointer": "00079DE4",
+          "element_bytes": 2,
+          "elements": 16,
+          "bytes": 32,
+          "assigned_spans": [
+            {
+              "start": "00079DE4",
+              "end_exclusive": "00079E04",
+              "labels": [
+                "Idle Speed Target E"
+              ],
+              "profiles": [
+                "v2"
+              ],
+              "changed_from_stock": false
+            }
+          ]
+        }
+      ],
+      "native_xrefs_from_mcp": [
+        "From 0002c032 in idle_target_c460_with_fan_duty_limits_update [PARAM]",
+        "From 0002c090 [DATA]"
+      ],
+      "integer_return_contract": null,
+      "process_flow_status": "Consumer identification; transitive process closure remains authored work."
+    },
+    {
+      "descriptor": "00060480",
+      "dimensions": "one_axis",
+      "format": "00000800",
+      "changed_or_assigned_parts": [
+        {
+          "role": "data",
+          "pointer": "00079E04",
+          "element_bytes": 2,
+          "elements": 16,
+          "bytes": 32,
+          "assigned_spans": [
+            {
+              "start": "00079E04",
+              "end_exclusive": "00079E24",
+              "labels": [
+                "Idle Speed Target F"
+              ],
+              "profiles": [
+                "v2"
+              ],
+              "changed_from_stock": false
+            }
+          ]
+        }
+      ],
+      "native_xrefs_from_mcp": [
+        "From 0002c03c in idle_target_c460_with_fan_duty_limits_update [PARAM]",
+        "From 0002c094 [DATA]"
+      ],
+      "integer_return_contract": null,
+      "process_flow_status": "Consumer identification; transitive process closure remains authored work."
+    },
+    {
+      "descriptor": "000607D4",
+      "dimensions": "two_axis",
+      "format": "08000000",
+      "changed_or_assigned_parts": [
+        {
+          "role": "data",
+          "pointer": "0007A738",
+          "element_bytes": 2,
+          "elements": 300,
+          "bytes": 600,
+          "assigned_spans": [
+            {
+              "start": "0007A738",
+              "end_exclusive": "0007A990",
+              "labels": [
+                "Target Throttle Plate Position"
+              ],
+              "profiles": [
+                "v2"
+              ],
+              "changed_from_stock": true
+            }
+          ]
+        }
+      ],
+      "native_xrefs_from_mcp": [
+        "From 0002af64 in FUN_0002af5c [PARAM]",
+        "From 0002b084 [DATA]"
+      ],
+      "integer_return_contract": null,
+      "process_flow_status": "Consumer identification; transitive process closure remains authored work."
+    },
+    {
+      "descriptor": "000607F0",
+      "dimensions": "two_axis",
+      "format": "08000000",
+      "changed_or_assigned_parts": [
+        {
+          "role": "data",
+          "pointer": "0007AA2C",
+          "element_bytes": 2,
+          "elements": 380,
+          "bytes": 760,
+          "assigned_spans": [
+            {
+              "start": "0007AA2C",
+              "end_exclusive": "0007AD24",
+              "labels": [
+                "Requested Torque (Accelerator Pedal)"
+              ],
+              "profiles": [
+                "v2"
+              ],
+              "changed_from_stock": true
+            }
+          ]
+        }
+      ],
+      "native_xrefs_from_mcp": [
+        "From 0002b362 in FUN_0002b35a [PARAM]",
+        "From 0002b3ec [DATA]"
+      ],
+      "integer_return_contract": null,
+      "process_flow_status": "Consumer identification; transitive process closure remains authored work."
+    },
+    {
+      "descriptor": "000608D8",
+      "dimensions": "one_axis",
+      "format": "00000000",
+      "changed_or_assigned_parts": [
+        {
+          "role": "data",
+          "pointer": "0007B318",
+          "element_bytes": 2,
+          "elements": 5,
+          "bytes": 10,
+          "assigned_spans": [
+            {
+              "start": "0007B318",
+              "end_exclusive": "0007B322",
+              "labels": [
+                "Injector Latency"
+              ],
+              "profiles": [
+                "v1",
+                "v2"
+              ],
+              "changed_from_stock": true
+            }
+          ]
+        }
+      ],
+      "native_xrefs_from_mcp": [
+        "From 000098d0 in injector_battery_voltage_latency_lookup [PARAM]",
+        "From 000098f0 [DATA]"
+      ],
+      "integer_return_contract": {
+        "jsr": "000098D4",
+        "target": "00002118",
+        "descriptor_literal": "000098F0",
+        "target_literal": "000098F4",
+        "contract": "2118 -> 28A4 reads u16, independent of zero format field"
+      },
+      "process_flow_status": "Consumer identification; transitive process closure remains authored work."
+    },
+    {
+      "descriptor": "000609B8",
+      "dimensions": "one_axis",
+      "format": "00000000",
+      "changed_or_assigned_parts": [
+        {
+          "role": "axis",
+          "pointer": "00072960",
+          "element_bytes": 4,
+          "elements": 30,
+          "bytes": 120,
+          "assigned_spans": [
+            {
+              "start": "00072960",
+              "end_exclusive": "000729D8",
+              "labels": [
+                "Haltech IAT Voltage Axis"
+              ],
+              "profiles": [
+                "v1",
+                "v2"
+              ],
+              "changed_from_stock": true
+            }
+          ]
+        },
+        {
+          "role": "data",
+          "pointer": "000729D8",
+          "element_bytes": 4,
+          "elements": 30,
+          "bytes": 120,
+          "assigned_spans": [
+            {
+              "start": "000729D8",
+              "end_exclusive": "00072A50",
+              "labels": [
+                "Haltech IAT Temperature Data"
+              ],
+              "profiles": [
+                "v1",
+                "v2"
+              ],
+              "changed_from_stock": true
+            }
+          ]
+        }
+      ],
+      "native_xrefs_from_mcp": [
+        "From 00007898 in intake_air_temperature_adc_conversion [PARAM]",
+        "From 000078f0 [DATA]"
+      ],
+      "integer_return_contract": null,
+      "process_flow_status": "Consumer identification; transitive process closure remains authored work."
+    },
+    {
+      "descriptor": "00060C34",
+      "dimensions": "two_axis",
+      "format": "08000000",
+      "changed_or_assigned_parts": [
+        {
+          "role": "x_axis",
+          "pointer": "0007C54C",
+          "element_bytes": 4,
+          "elements": 14,
+          "bytes": 56,
+          "assigned_spans": [
+            {
+              "start": "0007C54C",
+              "end_exclusive": "0007C584",
+              "labels": [
+                "Intake AVCS Target - AVLS Low Cam Load Axis"
+              ],
+              "profiles": [
+                "v1",
+                "v2"
+              ],
+              "changed_from_stock": true
+            }
+          ]
+        },
+        {
+          "role": "data",
+          "pointer": "0007C5B0",
+          "element_bytes": 2,
+          "elements": 154,
+          "bytes": 308,
+          "assigned_spans": [
+            {
+              "start": "0007C5B0",
+              "end_exclusive": "0007C6E4",
+              "labels": [
+                "Intake AVCS Target - AVLS Low Cam"
+              ],
+              "profiles": [
+                "v1",
+                "v2"
+              ],
+              "changed_from_stock": true
+            }
+          ]
+        }
+      ],
+      "native_xrefs_from_mcp": [
+        "From 0004990c in avcs_target_deficit_for_iam_timing_update [PARAM]",
+        "From 000355cc in intake_avcs_target_by_avls_mode_update [PARAM]",
+        "From 000355e4 in intake_avcs_target_by_avls_mode_update [PARAM]",
+        "From 0003560c [DATA]",
+        "From 000499e0 [DATA]"
+      ],
+      "integer_return_contract": null,
+      "process_flow_status": "Consumer identification; transitive process closure remains authored work."
+    },
+    {
+      "descriptor": "00060C50",
+      "dimensions": "two_axis",
+      "format": "08000000",
+      "changed_or_assigned_parts": [
+        {
+          "role": "x_axis",
+          "pointer": "0007C6E4",
+          "element_bytes": 4,
+          "elements": 14,
+          "bytes": 56,
+          "assigned_spans": [
+            {
+              "start": "0007C6E4",
+              "end_exclusive": "0007C71C",
+              "labels": [
+                "Intake AVCS Target - AVLS High Cam Load Axis"
+              ],
+              "profiles": [
+                "v1",
+                "v2"
+              ],
+              "changed_from_stock": true
+            }
+          ]
+        },
+        {
+          "role": "data",
+          "pointer": "0007C764",
+          "element_bytes": 2,
+          "elements": 252,
+          "bytes": 504,
+          "assigned_spans": [
+            {
+              "start": "0007C764",
+              "end_exclusive": "0007C95C",
+              "labels": [
+                "Intake AVCS Target - AVLS High Cam"
+              ],
+              "profiles": [
+                "v1",
+                "v2"
+              ],
+              "changed_from_stock": true
+            }
+          ]
+        }
+      ],
+      "native_xrefs_from_mcp": [
+        "From 00035624 in intake_avcs_target_by_avls_mode_update [PARAM]",
+        "From 0003563c in intake_avcs_target_by_avls_mode_update [PARAM]",
+        "From 000356fc [DATA]"
+      ],
+      "integer_return_contract": null,
+      "process_flow_status": "Consumer identification; transitive process closure remains authored work."
+    },
+    {
+      "descriptor": "00060F58",
+      "dimensions": "one_axis",
+      "format": "00000000",
+      "changed_or_assigned_parts": [
+        {
+          "role": "data",
+          "pointer": "0007D67C",
+          "element_bytes": 4,
+          "elements": 7,
+          "bytes": 28,
+          "assigned_spans": [
+            {
+              "start": "0007D67C",
+              "end_exclusive": "0007D698",
+              "labels": [
+                "AVLS Accelerator Pedal Threshold (Normal Oil Temperature)"
+              ],
+              "profiles": [
+                "v1",
+                "v2"
+              ],
+              "changed_from_stock": true
+            }
+          ]
+        }
+      ],
+      "native_xrefs_from_mcp": [
+        "From 00040246 in avls_cam_mode_state_machine [PARAM]",
+        "From 0004030c [DATA]"
+      ],
+      "integer_return_contract": null,
+      "process_flow_status": "Consumer identification; transitive process closure remains authored work."
+    },
+    {
+      "descriptor": "00060F64",
+      "dimensions": "one_axis",
+      "format": "00000000",
+      "changed_or_assigned_parts": [
+        {
+          "role": "data",
+          "pointer": "0007D6B4",
+          "element_bytes": 4,
+          "elements": 7,
+          "bytes": 28,
+          "assigned_spans": [
+            {
+              "start": "0007D6B4",
+              "end_exclusive": "0007D6D0",
+              "labels": [
+                "AVLS Accelerator Pedal Threshold (High Oil Temperature)"
+              ],
+              "profiles": [
+                "v1",
+                "v2"
+              ],
+              "changed_from_stock": true
+            }
+          ]
+        }
+      ],
+      "native_xrefs_from_mcp": [
+        "From 00040254 in avls_cam_mode_state_machine [PARAM]",
+        "From 00040318 [DATA]"
+      ],
+      "integer_return_contract": null,
+      "process_flow_status": "Consumer identification; transitive process closure remains authored work."
+    }
+  ],
+  "assigned_spans_without_scanned_table_overlap": [
+    {
+      "start": "00072810",
+      "end_exclusive": "00072818",
+      "labels": [
+        "MAP affine sensor transfer"
+      ],
+      "profiles": [
+        "v1",
+        "v2"
+      ],
+      "changed_from_stock": true
+    },
+    {
+      "start": "00072D54",
+      "end_exclusive": "00072D58",
+      "labels": [
+        "Fuel Consumption Injector Coefficient"
+      ],
+      "profiles": [
+        "v1",
+        "v2"
+      ],
+      "changed_from_stock": true
+    },
+    {
+      "start": "00073968",
+      "end_exclusive": "0007396C",
+      "labels": [
+        "retained stock load smoothing alpha"
+      ],
+      "profiles": [
+        "v1",
+        "v2"
+      ],
+      "changed_from_stock": false
+    },
+    {
+      "start": "00076014",
+      "end_exclusive": "00076018",
+      "labels": [
+        "Injector Flow Scaling"
+      ],
+      "profiles": [
+        "v1",
+        "v2"
+      ],
+      "changed_from_stock": true
+    },
+    {
+      "start": "00076050",
+      "end_exclusive": "00076054",
+      "labels": [
+        "Transient Fuel Falling Load Filter"
+      ],
+      "profiles": [
+        "v2"
+      ],
+      "changed_from_stock": true
+    },
+    {
+      "start": "000760F0",
+      "end_exclusive": "000760F4",
+      "labels": [
+        "legacy O2-voltage bank target offset disabled"
+      ],
+      "profiles": [
+        "v1",
+        "v2"
+      ],
+      "changed_from_stock": true
+    },
+    {
+      "start": "0007616C",
+      "end_exclusive": "00076178",
+      "labels": [
+        "A/F Learning Airflow Ranges"
+      ],
+      "profiles": [
+        "v2"
+      ],
+      "changed_from_stock": true
+    },
+    {
+      "start": "00076384",
+      "end_exclusive": "0007638C",
+      "labels": [
+        "legacy O2-voltage auxiliary fuel adders disabled"
+      ],
+      "profiles": [
+        "v1",
+        "v2"
+      ],
+      "changed_from_stock": true
+    },
+    {
+      "start": "000763E0",
+      "end_exclusive": "000763E4",
+      "labels": [
+        "Minimum Tip-in Enrichment Activation"
+      ],
+      "profiles": [
+        "v1",
+        "v2"
+      ],
+      "changed_from_stock": true
+    },
+    {
+      "start": "0007644C",
+      "end_exclusive": "00076454",
+      "labels": [
+        "Rev Limit A"
+      ],
+      "profiles": [
+        "v1",
+        "v2"
+      ],
+      "changed_from_stock": true
+    },
+    {
+      "start": "00077FD8",
+      "end_exclusive": "00077FDC",
+      "labels": [
+        "Advance Multiplier (Initial)"
+      ],
+      "profiles": [
+        "v2"
+      ],
+      "changed_from_stock": true
+    },
+    {
+      "start": "00077FEC",
+      "end_exclusive": "00077FFC",
+      "labels": [
+        "Rough Correction Range (Load)"
+      ],
+      "profiles": [
+        "v2"
+      ],
+      "changed_from_stock": true
+    },
+    {
+      "start": "00078040",
+      "end_exclusive": "00078050",
+      "labels": [
+        "Fine Correction Range (Load)"
+      ],
+      "profiles": [
+        "v2"
+      ],
+      "changed_from_stock": true
+    },
+    {
+      "start": "00078050",
+      "end_exclusive": "0007806C",
+      "labels": [
+        "Fine Correction Columns (Load)"
+      ],
+      "profiles": [
+        "v2"
+      ],
+      "changed_from_stock": true
+    },
+    {
+      "start": "0007963C",
+      "end_exclusive": "00079640",
+      "labels": [
+        "Deceleration Dashpot Air Decrement"
+      ],
+      "profiles": [
+        "v2"
+      ],
+      "changed_from_stock": true
+    },
+    {
+      "start": "0007B286",
+      "end_exclusive": "0007B288",
+      "labels": [
+        "MAP raw low-input CEL threshold"
+      ],
+      "profiles": [
+        "v1",
+        "v2"
+      ],
+      "changed_from_stock": true
+    },
+    {
+      "start": "0007D4AC",
+      "end_exclusive": "0007D4B0",
+      "labels": [
+        "AVLS Actuation Minimum RPM"
+      ],
+      "profiles": [
+        "v1",
+        "v2"
+      ],
+      "changed_from_stock": false
+    },
+    {
+      "start": "0007D4B0",
+      "end_exclusive": "0007D4B4",
+      "labels": [
+        "AVLS Stationary Oil Temperature Threshold A"
+      ],
+      "profiles": [
+        "v1",
+        "v2"
+      ],
+      "changed_from_stock": false
+    },
+    {
+      "start": "0007D4B4",
+      "end_exclusive": "0007D4B8",
+      "labels": [
+        "AVLS Stationary Oil Temperature Threshold B"
+      ],
+      "profiles": [
+        "v1",
+        "v2"
+      ],
+      "changed_from_stock": false
+    },
+    {
+      "start": "0007D4B8",
+      "end_exclusive": "0007D4BC",
+      "labels": [
+        "AVLS High Cam Release RPM"
+      ],
+      "profiles": [
+        "v1",
+        "v2"
+      ],
+      "changed_from_stock": true
+    },
+    {
+      "start": "0007D4BC",
+      "end_exclusive": "0007D4C0",
+      "labels": [
+        "AVLS High Cam Engage RPM"
+      ],
+      "profiles": [
+        "v1",
+        "v2"
+      ],
+      "changed_from_stock": true
+    }
+  ]
+}

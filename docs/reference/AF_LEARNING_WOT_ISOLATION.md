@@ -1,54 +1,62 @@
-# A/F Learning Range D Isolation for WOT / Boost Safety — 2026-09-09
+# Fuel-learning airflow ranges and open-loop application
 
-[Reference home](README.md) · [Signals](SIGNALS.md) · [Findings](FINDINGS.md)
+[Reference home](README.md) · [Process-flow audit](PATCH_PROCESS_FLOW.md) · [Tests](../../tests/test_fuel_learning_process_flow.py)
 
-## Background & Rationale
+**The earlier claim that v2's 500 g/s boundary guarantees zero learned trim
+in boost was incorrect.** The native ROM selects the trim region by airflow,
+including when the pressure guard has forced open loop. Moving a boundary
+does not erase retained values or stop their application.
 
-Subaru factory ECUs partition closed-loop fuel learning (`A/F Learning #1`) into four distinct airflow ranges (A, B, C, D) based on the table **`A/F Learning Airflow Ranges`** at `0x7616C`:
+## Actual native dependency
 
-| Range | Airflow Window (Stock) | Typical Operating Region |
-|---|---|---|
-| **Range A** | 0.0 to 5.0 g/s | Stationary Idle |
-| **Range B** | 5.0 to 10.0 g/s | Low-Speed City Cruise |
-| **Range C** | 10.0 to 22.0 g/s | Moderate Cruise |
-| **Range D** | **22.0 g/s to $\infty$** | **Highway Cruise & High Load** |
+`216EA` reads SD airflow `B420` and uses `7616C/76170/76174` to select
+`BCD3`. Stock/main boundaries are 5, 10 and 22 g/s; v2 uses 5, 10 and
+500 g/s. Running v2 therefore selects region C at 100 g/s. There is no
+branch here that substitutes region D because fueling is open loop.
 
----
+The separate output `BCFE` permits learning only for **2 <= airflow < 52
+g/s**, from unchanged `76168/76178`; stopped-state input `BCF1 == 1`
+forces region A and clears that permission. Region selection and permission
+to acquire a new value must not be conflated.
 
-### The Danger on a Turbo Engine
+The bank descriptors `4B2EC/4B314` point to four protected float records
+each, `81C0..81DF` and `81E0..81FF`. `20B28` calls the classifier,
+qualification stages, bank learning updates and final publication. `21024`
+can update the selected record through protected writer `49530`. Its
+prerequisites include the separate `20F9C` gate, with **80 <= coolant < 94
+C**, airflow permission and other stability/fault conditions.
 
-In factory Subaru firmware, **whatever long-term fuel trim is learned in Range D continues to be applied when the ECU enters Open Loop under Wide Open Throttle (WOT) and boost**:
+`21350` still selects the stored record using `BCD3`, filters a significant
+change, clamps it to `BCC0/BCC4`, and writes applied corrections
+`BCB8/BCBC`. That publication is not cancelled merely because new learning
+is ineligible. `1DD04` includes these corrections in bank fuel delivery,
+after the primary-target/pressure-guard path. `B7DC`, exported as Final
+Fueling Base, excludes these separate bank correction terms.
 
-1. **How it happens:** 
-   * On the highway at 100 km/h cruising in 5th/6th gear, airflow is typically **25 to 35 g/s**.
-   * Because 25–35 g/s is greater than the stock 22.0 g/s threshold, the ECU enters Range D.
-   * If fuel trims learn **-4% or -5%** during steady cruise (e.g. from slight canister purging or fuel temperature drift), that **-5% trim is saved into Range D**.
-2. **The WOT Lean-Out:**
-   * When you drop a gear and go Wide Open Throttle into full boost, the ECU enters Open Loop.
-   * However, the ECU applies Range D's trim to open-loop fueling:
-     $$\text{Final Fuel} = \text{Target Fuel} \times (1 + \mathbf{A/F\ Learning\ Range\ D})$$
-   * The ECU pulls **5% of fuel out of the engine under full boost**!
-   * On a high-compression turbo engine (like an EZ30R at 10.7:1 CR), pulling 5% of fuel under boost causes dangerous lean spikes, knock, and potential engine damage.
+## Native execution evidence
 
----
+Five test groups execute saved main, v2 and exact captured v2 instructions,
+including lookup helpers and the whole `20B28` pair publisher:
 
-### The Solution in `master_patch_v2`
+- At 100 g/s, v2 selects C while airflow-learning permission is zero.
+- With a valid stored C correction of +12.5% and D at zero, v2 applies
+  +12.5% to the fixture's open-loop bank pulses. Stock/main select D at
+  the same airflow. Other fuel terms are controlled inputs.
+- Crossing 500 g/s selects D and filters the applied transition. An
+  existing nonzero D record remains nonzero; the calibration does not
+  lock it at zero.
+- Starting with zero records and supplied qualifying feedback state,
+  native learning acquires signed 0.1% steps. Those values survive the
+  subsequent 100 g/s/open-loop transition.
+- Every write is checked against the reviewed state/record extents,
+  alongside the native calling-convention checks.
 
-The Range C $\rightarrow$ D transition threshold (`0x76174`) is raised from the stock `22.0 g/s` to **`500.0 g/s`**:
+These are conditional software results, not recovered trims from the car.
+The sustained September 12 bog at 77–85.25 seconds has logged coolant
+66–67 C, below the native learning gate. It contains no `BCB8/BCBC` or
+retained-record capture. A prior correction is unmeasured; this finding
+does not establish a fuel-learning cause of the cut.
 
-```python
-# A/F Learning Airflow Ranges at 0x7616C
-AF_LEARNING_RANGES = (5.0, 10.0, 500.0)
-```
-
-#### How this protects the engine:
-1. **Range C Now Covers All Normal Cruising (10.0 to 500.0 g/s):**
-   * Closed-loop fuel learning continues to work normally for idle (Range A) and all cruising (Ranges B and C).
-   * Emissions and fuel economy remain optimal.
-2. **Range D is Permanently Locked at 0.00%:**
-   * The car is never in Closed Loop at 500 g/s (the pressure guard forces Open Loop at ~90 kPa).
-   * Range D can never be populated or learned. It remains locked at **0.00%**.
-3. **Pure Open Loop Under Boost:**
-   * When you go WOT into boost, the ECU looks at Range D and sees **0.00%**.
-   * **Zero learned fuel trim is applied under boost.**
-   * Injected fuel stays 100% true to your calibrated VE and Primary Open Loop target tables with zero drift.
+The inaccurate explanation and source comment are corrected. The 500 g/s
+value, all calibration data, patch instructions and BINs are unchanged.
+Changing or bypassing learning is not justified as a cut fix by this evidence.

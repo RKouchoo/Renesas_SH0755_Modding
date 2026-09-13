@@ -102,7 +102,8 @@ establish permanent OL: native feedback consumers remain. See the
 | `AE60/AE64`, floats | Front-bank processed sensor values | Same synthetic lambda in both banks when valid. |
 | `AE68/AE6C`, floats | Pump-current-like values | Zero placeholders. |
 | `AE70/AE74`, floats | Front-sensor readiness | 50 valid / 0 invalid; inhibit helper requires greater than 35. |
-| `B098/B09C`, floats | Rear O2 voltage results | External-wideband logger mirrors; 0 is a fault sentinel, not lambda zero. |
+| `AE8C/AE90`, floats | Front-A/F raw-current intermediates | External-wideband logger mirrors after the original owner is replaced; 0 is a fault sentinel. |
+| `B098/B09C`, floats | OCV-current feedback | Preserved native `E0D0 -> DFB4 -> 33AAC` current measurements; the earlier rear-O2 identity was wrong. |
 | `B4E8/B4EC`, floats | Conditioned front feedback | Retained conditioning follows synthetic bank lambda. |
 | `ABCC/ABD0`, floats | Legacy front-O2 voltages | Still produced from AB22/AB0E; distinct from wideband. |
 | `BC64/BC68`, floats | Voltage snapshots | Retained `1F0D8` path. |
@@ -112,7 +113,8 @@ establish permanent OL: native feedback consumers remain. See the
 | `D114/D118`, floats | Auxiliary O2-dependent fuel adders | `49B20` now publishes zero through its zeroed constants. |
 | `B8F4/B8F8`, floats | Bank feedback targets | Produced by `202B8`; main lambda control remains. |
 | `BE60/BE64`, floats | Bank purge subtractions | Independently forced to zero by patched `23054`. |
-| `C85C`, u16; `C860`, u8 | Rear-response state storage | Reclaimed lean confirmation counter/state after runtime tasks are bypassed and initializer replaced. |
+| `AE9C`, u16; `AEA0`, u8 | Front-A/F processing intermediates | Lean confirmation counter/state, with four bytes reserved at each address and the former `B8CC` owner bypassed. |
+| `C85C/C860`, floats | AVCS current-feedback integrators | Preserved native state initialized to 1.0, consumed by `33970/34BE4`; never lean state in the repaired images. |
 
 `BE38` is the CL/OL flag byte. Bits 40 and 20 reflect threshold state;
 bit 80 permits CL in the primary target path. `22454` produces selected/ramped

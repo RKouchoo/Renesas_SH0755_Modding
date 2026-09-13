@@ -1,6 +1,12 @@
 #!/usr/bin/env python3
 """Build an OFFLINE-ONLY SD fault-path experiment in memory.
 
+HISTORICAL EXPERIMENT, NOT COMPATIBLE WITH THE CURRENT COMPONENT CONTRACT.
+Its C85E/C861/C862 allocation overlaps native AVCS integrators; the old
+rear-O2 ownership rationale was disproved on 2026-09-13. Keep this source only
+as an explanation of the abandoned offline experiment. It is not part of a
+current build or verification run. See AVCS_OCV_REPAIR_20260913.md.
+
 This module is deliberately outside build_master_patch.py. It never writes a
 BIN and is not a flash recommendation. It retains the current MAP transfer,
 VE calibration, negative transient gains and load filter. Electrical bounds
@@ -190,7 +196,8 @@ def build_experiment(source=None):
     assert source[safety.LEAN_CUT_WRAPPER_ADDR:safety.LEAN_CUT_WRAPPER_ADDR+len(safety.build_lean_cut_wrapper())] == safety.build_lean_cut_wrapper()
     assert source[safety.LEAN_STATE_INITIALIZE_ADDR:safety.LEAN_STATE_INITIALIZE_ADDR+len(safety.build_lean_state_initialize())] == safety.build_lean_state_initialize()
     assert struct.unpack_from('>I', source, safety.LEAN_STATE_INIT_TASK_PTR)[0] == safety.LEAN_STATE_INITIALIZE_ADDR
-    for address, _, _ in wideband.REAR_O2_TASK_POINTERS:
+    # Historical defect: these five AVCS tasks were incorrectly removed.
+    for address in (0x11488, 0x1148C, 0x11490, 0x11494, 0x114A0):
         assert struct.unpack_from('>I', source, address)[0] == wideband.NOOP_TASK
     assert struct.unpack_from('>HH', source, ADC_HIGH) == (0xFBF5, 0x0F5C)
     assert source[0x72818:0x7281A] == b'\x01\x00'

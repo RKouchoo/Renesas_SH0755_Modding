@@ -25,6 +25,7 @@ from analyze_20260912_fueling_adjustment import KEYS, flow, stats
 ROOT = _analysis_paths.ROOT
 sys.path.insert(0, str(ROOT / 'tests'))
 from test_primary_fueling_execution import PrimaryFuelMachine
+from test_dbw_table_execution import DBWMachine
 from test_native_fault_cut_execution import FaultCutMachine
 from test_idle_air_override_execution import FAULT_WRITES
 from test_throttle_link_execution import frame_with_status
@@ -52,11 +53,18 @@ def replay_other_diagnostic_cuts(image, rows):
         selected = []
         for row in rows:
             cpu.put_float(0xFFFFB46C, row['pedal'])
-            cpu.put_float(0xFFFFB2C8, row['ect'])
+            # P13 getter 316D0 encodes measured B2C4 using 31778
+            # (0.31372547 native degrees/count); RR displays count*100/255.
+            # Reconstruct the quantization centre, then execute 14CE6 so the
+            # imposed TPS fault can select its real 6.375-degree substitute.
+            # B2C8 is selected throttle angle, not coolant temperature.
+            count = round(row['throttle'] * 255 / 100)
+            selected_angle = cpu.select_throttle(
+                count * struct.unpack_from('>f', image, 0x31778)[0])
             word = cpu.fault_cut(row['rpm'])
             if 77 <= row['time'] <= 85.25:
                 selected.append({'word': word, 'pedal': row['pedal'],
-                                 'pw': row['pw']})
+                                 'pw': row['pw'], 'selected_throttle': selected_angle})
         assert selected
         words = {f'{word:04X}': sum(r['word'] == word for r in selected)
                  for word in sorted({r['word'] for r in selected})}
@@ -71,13 +79,69 @@ def replay_other_diagnostic_cuts(image, rows):
             'above_69_percent_pedal_samples': sum(r['pedal'] > 69 for r in selected),
             'above_69_percent_pedal_cut_samples': sum(r['pedal'] > 69 and bool(r['word'])
                                                        for r in selected),
+            'selected_throttle_native_degrees': stats([r['selected_throttle'] for r in selected]),
         })
     return {
         'fixtures': results,
+        'throttle_input': 'P13 B2C4 quantization centre followed by native14CE6 '
+                          'fault selection into B2C8; previous coolant substitution corrected. '
+                          'P13 saturates at255, so displayed100 percent provides only a lower bound.',
         'limit': 'Received faults are held active deliberately, not observed on the vehicle. '
                  'Other diagnostic cuts can outlast the 3000/2500 latch. All nonzero masks '
                  'in these fixtures include the P21 channel, so sustained operation would '
                  'still reduce its scheduled-pulse term after scheduler convergence.',
+    }
+
+
+def compare_dbw_maps(image, rows):
+    """Compare both native lookup callers with driver torque passed through.
+
+    This isolates the two calibration maps. Intervening torque arbitration,
+    final request composition and actual throttle tracking are not replayed.
+    """
+    cpus = [DBWMachine((ROOT / '2005 BLE MT.bin').read_bytes()), DBWMachine(image)]
+
+    def mapped(rpm, pedal):
+        values = []
+        for cpu in cpus:
+            cpu.put_float(0xFFFFB544, rpm)
+            cpu.put_float(0xFFFFB46C, pedal)
+            cpu.invoke(0x2B35A, {(0xFFFFC3DC, 4)})
+            torque = cpu.get_float(0xFFFFC3DC)
+            cpu.put_float(0xFFFFC3D4, torque)  # Explicit arbitration boundary.
+            cpu.invoke(0x2AF5C, {(0xFFFFC3D0, 4)})
+            values.append((torque, cpu.get_float(0xFFFFC3D0)))
+        return values
+
+    windows = []
+    for name, predicate in (
+            ('first_event_70_5_72_32s', lambda r: 70.5 <= r['time'] <= 72.32),
+            ('long_bog_77_85_25s', lambda r: 77 <= r['time'] <= 85.25),
+            ('moving_2500_3500_rpm_pedal_at_least_25',
+             lambda r: r['speed'] > 0 and 2500 <= r['rpm'] <= 3500 and r['pedal'] >= 25)):
+        points = []
+        for row in filter(predicate, rows):
+            stock, captured = mapped(row['rpm'], row['pedal'])
+            points.append((stock, captured))
+        windows.append({
+            'window': name, 'samples': len(points),
+            'different_map_output_samples': sum(a != b for a, b in points),
+            'captured_minus_stock_mapped_angle_degrees': stats([b[1] - a[1] for a, b in points]),
+            'captured_mapped_angle_degrees': stats([b[1] for _, b in points]),
+        })
+    # Verify that the comparison detects the installed light-pedal edits.
+    stock, captured = mapped(1000, 1)
+    assert stock != captured
+    return {
+        'windows': windows,
+        'changed_calibration_positive_control': {
+            'rpm': 1000, 'pedal_percent': 1,
+            'stock_torque_and_angle': stock, 'captured_torque_and_angle': captured},
+        'limit': 'Native 2B35A and 2AF5C callers execute with mathematical table interpolation. '
+                 'C3DC is copied into C3D4 as an explicit driver-only arbitration fixture. '
+                 'Outputs are mapped requests, not the unlogged final C2B4 request or a '
+                 'measurement of throttle-tracking error. Matching outputs in a window '
+                 'do not exclude faults or effects of earlier state.',
     }
 
 
@@ -130,7 +194,7 @@ def main():
             cpu.put_float(safety.MAP_PRESSURE, r['map'] / .1333224)
             cpu.put_float(boost.RPM_ADDR, r['rpm'])
             cpu.put_float(wideband.FRONT_READY_METRIC_BANK1, 50 if r['afr'] > 0 else 0)
-            cpu.put_float(wideband.WIDEBAND_LOG_LAMBDA_BANK1, r['afr'] / 14.64)
+            cpu.put_float(cpu.wideband_outputs[2], r['afr'] / 14.64)
             calls = (cpu.read(safety.LEAN_TRANSPORT_COUNT_ADDR, 2)
                      + cpu.read(safety.LEAN_CONFIRM_COUNT_ADDR, 2) + 4)
             for _ in range(calls):
@@ -179,6 +243,7 @@ def main():
             'limit': 'Observed RPM samples cannot establish the live cut history; unlogged faults and between-sample excursions remain unobserved.',
         },
         'other_native_diagnostic_cut_replays': replay_other_diagnostic_cuts(image, rows),
+        'dbw_map_comparison': compare_dbw_maps(image, rows),
         'limits': [
             'User reports persistent loaded misfire/bog and requests no more logs until a cause is fixed.',
             'Recorded commands and code explain fuel duration; they do not identify the physical cause of poor combustion/torque.',

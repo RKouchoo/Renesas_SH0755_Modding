@@ -5,7 +5,7 @@
   "rom_modified": false,
   "limp_followup": {
     "user_scan_clarification": "User confirms the empty DTC scan was performed while the engine was running after the cut. Connector state during that scan was not specified.",
-    "verification": "Seven native diagnostic-cut groups passed against both rolling integrations. These are imposed input fixtures, not a vehicle diagnosis.",
+    "verification": "Eleven native diagnostic-cut groups passed against both rolling integrations and the exact captured fd795813 image. They include corrected selected-throttle input and native local/received TPS-voltage comparison with imposed samples and enable. These are explicit fixtures, not a vehicle diagnosis.",
     "critical_limit": "Clearing the isolated 3000/2500 latch does not rule out the other branches of 253A8. The replay does not reconstruct unlogged live controller status.",
     "additional_replays": "logs/20260912_adjusted_drive_review.json:other_native_diagnostic_cut_replays",
     "idle_control_status": {
@@ -38,7 +38,7 @@
         "comment": "2026-09-12 clarification: returns2 for D26F mask20, otherwise0; sole traced caller253A8 qualifies the RPM/pedal diagnostic fuel-cut pattern. This bit is distinct from MAF load-fallback mask40/getter65168. Producer63CE6..63D40 checks descriptor5C5E8 (index102, P0519 idle-control malfunction, current status8EA6 mask20) under its existing global gates. DTC enable5BDBA remains01 in stock/currentv2. Do not relabel this bit as the retired MAF fault or bypass it without an established cause."
       }
     ],
-    "mcp_update_status": "Set-comment and subsequent readback calls timed out on 127.0.0.1:8080; writes are not confirmed. Exact comments retained here for retry.",
+    "mcp_update_status": "2026-09-12 retry: all four previously pending comments successfully written and exact disassembly readback confirmed; see loaded_cut_followup_20260912.json.",
     "mcp_readback_attempts": [
       {
         "address": "0x2564C",
@@ -1245,7 +1245,9 @@
         ],
         "isError": false
       }
-    }
+    },
+    "mcp_resolved_evidence": "docs/reference/evidence/loaded_cut_followup_20260912.json",
+    "throttle_replay_correction": "B2C8 is selected throttle angle, not coolant. P13 handler316D0 reads B2C4 with0.31372547deg/count; replay now recovers the quantization centre and executes14CE6. D271/80 or/40 selects6.375deg. Counts in the77..85.25s window are unchanged by this correction."
   },
   "standard_p21_correction": {
     "source": "SSM20, pointer4B77C -> 317B4 -> 258C; C0B8 + C0D8",

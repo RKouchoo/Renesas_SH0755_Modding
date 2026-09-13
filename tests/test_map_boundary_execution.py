@@ -8,6 +8,8 @@ fixtures are built in memory; original BINs and captures remain untouched.
 import _test_paths  # Shared offline-test imports and repository root.
 from itertools import product
 from io import StringIO
+import hashlib
+import json
 import math
 import struct
 import unittest
@@ -59,6 +61,14 @@ class MapBoundaryTests(unittest.TestCase):
         # suite. Pin its exact word before extending this historical scope.
         self.assertEqual(self.image[0x72D54:0x72D58], bytes.fromhex('4116109b'))
         allowed.update(range(0x72D54, 0x72D58))
+        # The later OCV repair restores native tasks and relocates WB/lean
+        # storage. Admit only its recorded, hash-pinned exact byte changes.
+        record = next(r for r in json.loads((master.ROOT / 'docs/reference/evidence/avcs_ocv_repair_20260913.json').read_text())['images']
+                      if r['after_sha256'] == hashlib.sha256(self.image).hexdigest())
+        for item in record['changed_ranges']:
+            address, data = int(item['address'], 16), bytes.fromhex(item['after_hex'])
+            self.assertEqual(self.image[address:address+len(data)], data)
+            allowed.update(range(address, address+len(data)))
         changed = {i for i, (a, b) in enumerate(zip(self.source, self.image)) if a != b}
         self.assertLessEqual(changed, allowed)
         self.assertEqual(len(self.image), 0x80000)

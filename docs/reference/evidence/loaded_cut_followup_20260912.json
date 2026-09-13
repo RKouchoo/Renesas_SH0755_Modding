@@ -1,0 +1,110 @@
+{
+  "schema": 1,
+  "audit_date": "2026-09-12",
+  "scope": "Loaded-cut investigation; no ROM mutation",
+  "annotations_verified": [
+    {
+      "address": "0x2564C",
+      "comment": "2026-09-12 limp-response follow-up: native RPM/pedal pattern selector, not a vehicle-speed map. Inputs are B544 RPM and B46C conditioned accelerator percent. Rising boundaries are 1000/1800/5000 RPM (764A8..764B0) and 34.5/69 percent (764B4/B8), with 100 RPM and 13.8 percent falling hysteresis (764BC/C0). BF92 holds the 0..11 region; switch targets use bytes 75E3A..75E43 to publish BF91=0/1/2. Caller 253A8 qualifies this classification with diagnostic requests and maps 1 to B744=0015 (three channels), 2 to 003F (six), 0 to no cut from this source. Two accepted C6F7/40 frames reproduce 2700 RPM at 45 percent ->0015, rising to 80 percent ->0000, falling to 60 percent holds0000, 50 percent ->0015, 20 percent ->003F. Explicit fault fixtures, not evidence that the vehicle requested limp operation.",
+      "readback": "0002564c: mov.l r14,@-r15 ; 2026-09-12 limp-response follow-up: native RPM/pedal pattern selector, not a vehicle-speed map. Inputs are B544 RPM and B46C conditioned accelerator percent. Rising boundaries are 1000/1800/5000 RPM (764A8..764B0) and 34.5/69 percent (764B4/B8), with 100 RPM and 13.8 percent falling hysteresis (764BC/C0). BF92 holds the 0..11 region; switch targets use bytes 75E3A..75E43 to publish BF91=0/1/2. Caller 253A8 qualifies this classification with diagnostic requests and maps 1 to B744=0015 (three channels), 2 to 003F (six), 0 to no cut from this source. Two accepted C6F7/40 frames reproduce 2700 RPM at 45 percent ->0015, rising to 80 percent ->0000, falling to 60 percent holds0000, 50 percent ->0015, 20 percent ->003F. Explicit fault fixtures, not evidence that the vehicle requested limp operation."
+    },
+    {
+      "address": "0x25546",
+      "comment": "2026-09-12 follow-up: after the separate 3000/2500 D273/02 branch, this path can still select partial/all-six inhibition using 2564C. Qualifiers include 6538E (D273/01), direct received 30B26 (C6F7/40), or 6508E (D26F/20) when configuration getter148EE is zero. Thus a cleared BF93/80 latch does not exclude every native diagnostic cut. Accepted C6FA/02 -> D271=80,D273=27 gives003F at3200 then0015 at2400 with45 percent pedal. Accepted C6F8/01 ->D271=00,D273=27 permits the earlier1000/800 first branch and remains003F at2400/2700 even with80 percent pedal. Both are imposed received-fault fixtures. None of these states was logged during the loaded failure.",
+      "readback": "00025546: mov #0x14,r0 ; 2026-09-12 follow-up: after the separate 3000/2500 D273/02 branch, this path can still select partial/all-six inhibition using 2564C. Qualifiers include 6538E (D273/01), direct received 30B26 (C6F7/40), or 6508E (D26F/20) when configuration getter148EE is zero. Thus a cleared BF93/80 latch does not exclude every native diagnostic cut. Accepted C6FA/02 -> D271=80,D273=27 gives003F at3200 then0015 at2400 with45 percent pedal. Accepted C6F8/01 ->D271=00,D273=27 permits the earlier1000/800 first branch and remains003F at2400/2700 even with80 percent pedal. Both are imposed received-fault fixtures. None of these states was logged during the loaded failure."
+    },
+    {
+      "address": "0x30B26",
+      "comment": "2026-09-12 limp-response follow-up: returns boolean C6F7 mask40 from accepted controller-link status. Its sole traced caller253A8 uses it as a direct qualification of the RPM/pedal fuel-cut pattern. This getter and selector do not consult the stored-DTC list for this input. Two accepted frames are required by30790; remote fault generation, reporting and live vehicle activation are not established by that fixture.",
+      "readback": "00030b26: mov.w 0x00030c12,r0 ; 2026-09-12 limp-response follow-up: returns boolean C6F7 mask40 from accepted controller-link status. Its sole traced caller253A8 uses it as a direct qualification of the RPM/pedal fuel-cut pattern. This getter and selector do not consult the stored-DTC list for this input. Two accepted frames are required by30790; remote fault generation, reporting and live vehicle activation are not established by that fixture."
+    },
+    {
+      "address": "0x6508E",
+      "comment": "2026-09-12 clarification: returns2 for D26F mask20, otherwise0; sole traced caller253A8 qualifies the RPM/pedal diagnostic fuel-cut pattern. This bit is distinct from MAF load-fallback mask40/getter65168. Producer63CE6..63D40 checks descriptor5C5E8 (index102, P0519 idle-control malfunction, current status8EA6 mask20) under its existing global gates. DTC enable5BDBA remains01 in stock/currentv2. Do not relabel this bit as the retired MAF fault or bypass it without an established cause.",
+      "readback": "0006508e: mov.w 0x000650cc,r0 ; 2026-09-12 clarification: returns2 for D26F mask20, otherwise0; sole traced caller253A8 qualifies the RPM/pedal diagnostic fuel-cut pattern. This bit is distinct from MAF load-fallback mask40/getter65168. Producer63CE6..63D40 checks descriptor5C5E8 (index102, P0519 idle-control malfunction, current status8EA6 mask20) under its existing global gates. DTC enable5BDBA remains01 in stock/currentv2. Do not relabel this bit as the retired MAF fault or bypass it without an established cause."
+    },
+    {
+      "address": "00024570",
+      "comment": "2026-09-12 loaded-cut trace correction: timed pedal-release/overrun injector-cut publisher, NOT an injector circuit diagnostic. Calls 2483C to qualify cut state; six BF21 channel flags compare elapsed BF62 against BF48..BF52 during cut, BF2C against BF2E..BF38 during restoration. Default ROM75E36=80 selects 18D1C/B484 mask08, produced by1831A/183CE from B470 pedal. Offline native replay with explicit qualified RPM/idle fixtures: reopening pedal after full cut releases channels1/3/5 immediately (B744=002A remains), then all after13 calls with stock restoration thresholds. This corrects the code contract; activation during the vehicle cut is unobserved.",
+      "readback": "00024570: sts.l PR,@-r15 ; 2026-09-12 loaded-cut trace correction: timed pedal-release/overrun injector-cut publisher, NOT an injector circuit diagnostic. Calls 2483C to qualify cut state; six BF21 channel flags compare elapsed BF62 against BF48..BF52 during cut, BF2C against BF2E..BF38 during restoration. Default ROM75E36=80 selects 18D1C/B484 mask08, produced by1831A/183CE from B470 pedal. Offline native replay with explicit qualified RPM/idle fixtures: reopening pedal after full cut releases channels1/3/5 immediately (B744=002A remains), then all after13 calls with stock restoration thresholds. This corrects the code contract; activation during the vehicle cut is unobserved."
+    },
+    {
+      "address": "0003f5f0",
+      "comment": "2026-09-12 loaded-cut spark trace: ignition-switch-off timeout and spark-inhibit publication, not a radiator-fan state routine. With getter19C04 (B51E mask10) on, clears CD50 mask80 and timeout. Switch off qualifies timeout before CD50/80; tail invokes27090, where CD50/80 contributes all-bit spark inhibit C0DC=FFFF. B51E/80 test connector is a separate bit. Native explicit-fixture replay confirms key-on clears this inhibit at2500..4144 RPM. Vehicle flag was not logged; no ROM change justified.",
+      "readback": "0003f5f0: mov.l r14,@-r15 ; 2026-09-12 loaded-cut spark trace: ignition-switch-off timeout and spark-inhibit publication, not a radiator-fan state routine. With getter19C04 (B51E mask10) on, clears CD50 mask80 and timeout. Switch off qualifies timeout before CD50/80; tail invokes27090, where CD50/80 contributes all-bit spark inhibit C0DC=FFFF. B51E/80 test connector is a separate bit. Native explicit-fixture replay confirms key-on clears this inhibit at2500..4144 RPM. Vehicle flag was not logged; no ROM change justified."
+    },
+    {
+      "address": "000365c0",
+      "comment": "2026-09-12 loaded-cut trace: 5E8F4 u16 bilinear lookup takes B544 RPM and B82C base injection duration (us), writes CA38 model output. CA3C=CA38*CCB8/12. Current injector scalar3266.667 vs stock6675 reduces this estimate at equal g/rev; e.g.2800RPM,1.975g/rev ->171.485 vs292.125. 3CE0A uses B250/CA38 for received-request cylinder-cut fraction, only active when146D2/B24C bit0 qualifies via3CE58. Lower CA38 alone cannot increase that cut for a fixed request. This is code analysis, not measured engine torque or an observed request.",
+      "readback": "000365c0: sts.l PR,@-r15 ; 2026-09-12 loaded-cut trace: 5E8F4 u16 bilinear lookup takes B544 RPM and B82C base injection duration (us), writes CA38 model output. CA3C=CA38*CCB8/12. Current injector scalar3266.667 vs stock6675 reduces this estimate at equal g/rev; e.g.2800RPM,1.975g/rev ->171.485 vs292.125. 3CE0A uses B250/CA38 for received-request cylinder-cut fraction, only active when146D2/B24C bit0 qualifies via3CE58. Lower CA38 alone cannot increase that cut for a fixed request. This is code analysis, not measured engine torque or an observed request."
+    },
+    {
+      "address": "00068814",
+      "comment": "2026-09-12 loaded-cut trace: local TPS voltage history for the local/received sensor agreement diagnostic. Reads raw u16 AB1A and converts with 5/65536 through 257C; ROM74D31=2 selects the value two calls earlier from D35C for D34C, then shifts D358 into D35C and current voltage into D358. Received comparator C6D8 is separately decoded by 30790 from C73C+6 with the same scale. This path does not consume patched MAP, MAF or wideband values. Code, conversion and lag selector are stock-identical in the captured fd795813 image.",
+      "readback": "00068814: sts.l PR,@-r15 ; 2026-09-12 loaded-cut trace: local TPS voltage history for the local/received sensor agreement diagnostic. Reads raw u16 AB1A and converts with 5/65536 through 257C; ROM74D31=2 selects the value two calls earlier from D35C for D34C, then shifts D358 into D35C and current voltage into D358. Received comparator C6D8 is separately decoded by 30790 from C73C+6 with the same scale. This path does not consume patched MAP, MAF or wideband values. Code, conversion and lag selector are stock-identical in the captured fd795813 image."
+    },
+    {
+      "address": "00068856",
+      "comment": "2026-09-12 loaded-cut trace: computes signed voltage error D34C-C6D8 and magnitude, resets D33C..D344 persistence on sign reversal, otherwise counts errors above 0.116/0.18/0.24/0.32/0.416 V. Enabled consumer 68984 publishes 81AC bit0 after thresholds 88/59/44/38/31 calls. Native offline replay with explicit enable and 0.59265 V mismatch faults on call31; 64874 gives D271=00,D273=27 and 253A8 can inhibit all six. Matching local/received histories do not fault. Enable, received samples and electrical behavior are unobserved in the loaded CSV; this is not an established vehicle cause.",
+      "readback": "00068856: fldi0 fr5 ; 2026-09-12 loaded-cut trace: computes signed voltage error D34C-C6D8 and magnitude, resets D33C..D344 persistence on sign reversal, otherwise counts errors above 0.116/0.18/0.24/0.32/0.416 V. Enabled consumer 68984 publishes 81AC bit0 after thresholds 88/59/44/38/31 calls. Native offline replay with explicit enable and 0.59265 V mismatch faults on call31; 64874 gives D271=00,D273=27 and 253A8 can inhibit all six. Matching local/received histories do not fault. Enable, received samples and electrical behavior are unobserved in the loaded CSV; this is not an established vehicle cause."
+    },
+    {
+      "address": "00014ce6",
+      "comment": "2026-09-12 loaded-cut replay correction: B2C8 is selected native throttle angle, not coolant (coolant is B3AC). Copies measured B2C4 unless 65230/D271 mask80 or 65258/D271 mask40 requests fixed 6.375 degrees from ROM73868. The first diagnostic cut branch in 253A8 compares B2C8 against 22.75 degrees. Standard P13 handler316D0 instead exports B2C4 in 0.31372547-degree counts, clamped to one byte; logger percent is count*100/255. It does not directly export B314, which later subtracts idle angle C3F8. Offline log replay now reconstructs the P13 count centre and runs this selector; quantization and saturation prevent exact raw-angle recovery.",
+      "readback": "00014ce6: sts.l PR,@-r15 ; 2026-09-12 loaded-cut replay correction: B2C8 is selected native throttle angle, not coolant (coolant is B3AC). Copies measured B2C4 unless 65230/D271 mask80 or 65258/D271 mask40 requests fixed 6.375 degrees from ROM73868. The first diagnostic cut branch in 253A8 compares B2C8 against 22.75 degrees. Standard P13 handler316D0 instead exports B2C4 in 0.31372547-degree counts, clamped to one byte; logger percent is count*100/255. It does not directly export B314, which later subtracts idle angle C3F8. Offline log replay now reconstructs the P13 count centre and runs this selector; quantization and saturation prevent exact raw-angle recovery."
+    },
+    {
+      "address": "0000f5fe",
+      "comment": "2026-09-12 loaded-cut check: actual native checksum and F97C range validation executed over the complete stock image and exact captured fd795813 v2 image. Both return0; flipping one injector-scalar byte at76017 in an in-memory copy returns1 for both. Each replay executes514938 instructions with four D6F0 watchdog service calls treated as hardware boundaries. No flash bytes are written. This rejects a failing native additive checksum as a property of the captured image, without establishing the vehicle's runtime fault state.",
+      "readback": "0000f5fe: mov.l r14,@-r15 ; 2026-09-12 loaded-cut check: actual native checksum and F97C range validation executed over the complete stock image and exact captured fd795813 v2 image. Both return0; flipping one injector-scalar byte at76017 in an in-memory copy returns1 for both. Each replay executes514938 instructions with four D6F0 watchdog service calls treated as hardware boundaries. No flash bytes are written. This rejects a failing native additive checksum as a property of the captured image, without establishing the vehicle's runtime fault state."
+    },
+    {
+      "address": "000654f0",
+      "comment": "2026-09-12 loaded-cut follow-up: compares final absolute throttle request C2B4 with measured absolute angle ABD4. Upstream 654A6 subtracts learned80F0 into D288(request) and D284(measured) for tolerance/delay lookups5EFE8 and5EFDC. Local RPM qualifier D294 engages at500 and clears below300 (74FB0/74FAC), not3000. D280 mask01 is a separate prerequisite; persistent tracking error can publish8150 mask01. Final request, absolute sensor sample, enable and counters are unlogged in the loaded capture, so P13 versus the driver-only map is not a measured tracking error. Separate exact-image replay finds stock-identical mapped driver requests at all18 first-event and80 sustained-bog points; intervening arbitration and request summation remain boundaries.",
+      "readback": "000654f0: mov.l r14,@-r15 ; 2026-09-12 loaded-cut follow-up: compares final absolute throttle request C2B4 with measured absolute angle ABD4. Upstream 654A6 subtracts learned80F0 into D288(request) and D284(measured) for tolerance/delay lookups5EFE8 and5EFDC. Local RPM qualifier D294 engages at500 and clears below300 (74FB0/74FAC), not3000. D280 mask01 is a separate prerequisite; persistent tracking error can publish8150 mask01. Final request, absolute sensor sample, enable and counters are unlogged in the loaded capture, so P13 versus the driver-only map is not a measured tracking error. Separate exact-image replay finds stock-identical mapped driver requests at all18 first-event and80 sustained-bog points; intervening arbitration and request summation remain boundaries."
+    }
+  ],
+  "renames": [
+    {
+      "address": "00024570",
+      "old_name": "injector_circuit_fault_monitor",
+      "new_name": "overrun_timed_injector_cut_publish",
+      "readback_confirmed": true
+    },
+    {
+      "address": "0003f5f0",
+      "old_name": "radiator_fan_state_timeout_update",
+      "new_name": "ignition_switch_off_spark_inhibit_update",
+      "readback_confirmed": true
+    },
+    {
+      "address": "000654f0",
+      "old_name": "FUN_000654f0",
+      "new_name": "throttle_request_tracking_monitor",
+      "readback_confirmed": true
+    }
+  ],
+  "limit": "These are code-contract findings and explicit offline fixtures. No unlogged cut request is established as having occurred in the vehicle.",
+  "verification": {
+    "native_fault_cut_groups": 11,
+    "native_fault_cut_images": [
+      "rolling_v1",
+      "rolling_v2",
+      "captured_fd795813"
+    ],
+    "runtime_checksum_groups": 2,
+    "runtime_checksum_cases": 4,
+    "runtime_checksum_images": [
+      "stock",
+      "captured_fd795813"
+    ],
+    "commands": [
+      "python3 -B tests/test_native_fault_cut_execution.py",
+      "python3 -B tests/test_runtime_rom_checksum_execution.py",
+      "python3 -B tools/analysis/analyze_20260912_adjusted_drive.py"
+    ],
+    "rom_mutation": false,
+    "causal_vehicle_fix": false,
+    "dbw_map_comparison": "logs/20260912_adjusted_drive_review.json: dbw_map_comparison"
+  }
+}

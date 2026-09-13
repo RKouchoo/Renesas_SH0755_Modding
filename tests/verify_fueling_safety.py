@@ -136,7 +136,8 @@ def verify_image(image: bytes) -> None:
     expect(image, safety.LEAN_STATE_INITIALIZE_ADDR, init_blob, "lean-state zero initializer")
     init_decoded = decode(
         image, safety.LEAN_STATE_INITIALIZE_ADDR, init_blob,
-        {safety.LEAN_COUNTER_RAM, safety.LEAN_STATE_RAM},
+        {safety.LEAN_COUNTER_RAM, safety.LEAN_STATE_RAM,
+         safety.STOCK_AVCS_INTEGRATOR_INITIALIZE},
     )
     if init_decoded.count("mov.l r0,@r1") != 2 or "mov #0,r0" not in init_decoded:
         raise AssertionError("lean-state initializer does not zero both reclaimed words")

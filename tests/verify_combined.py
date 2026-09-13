@@ -116,34 +116,18 @@ def main():
            bytes.fromhex("d106601088018b03"), "diagnostic-mirror enable branch")
     expect(image, front.BANK2_INHIBIT_SELECTOR_ADDR,
            bytes.fromhex("d107601088018b02"), "Bank-2 selector enable branch")
-    expect(image, front.REAR_O2_PROCESS_ENTRY,
-           front.build_entry_hook(front.REAR_O2_PROCESS_ENTRY,
-                                  front.REAR_O2_PROCESS_SELECTOR_ADDR),
-           "rear O2 process selector hook")
-    rear_task_hooks = (
-        (front.REAR_O2_THRESHOLD_TASK_PTR, front.REAR_O2_THRESHOLD_SELECTOR_ADDR),
-        (front.REAR_O2_FILTER_TASK_PTR, front.REAR_O2_FILTER_SELECTOR_ADDR),
-        (front.REAR_O2_INTEGRATOR_TASK_PTR, front.REAR_O2_INTEGRATOR_SELECTOR_ADDR),
-        (front.REAR_O2_RESPONSE_RATIO_TASK_PTR, front.REAR_O2_RESPONSE_RATIO_SELECTOR_ADDR),
-        (front.REAR_O2_VOLTAGE_DIAG_TASK_PTR, front.REAR_O2_VOLTAGE_DIAG_SELECTOR_ADDR),
-    )
-    for pointer, selector in rear_task_hooks:
-        expect(image, pointer, front.be32(selector),
-               "rear O2 task selector pointer @0x%05X" % pointer)
-    selector_prefix = bytes.fromhex("d104601088018b01000b0009d102412b")
-    for address in (
-            front.REAR_O2_PROCESS_SELECTOR_ADDR,
-            front.REAR_O2_THRESHOLD_SELECTOR_ADDR,
-            front.REAR_O2_FILTER_SELECTOR_ADDR,
-            front.REAR_O2_INTEGRATOR_SELECTOR_ADDR,
-            front.REAR_O2_RESPONSE_RATIO_SELECTOR_ADDR,
-            front.REAR_O2_VOLTAGE_DIAG_SELECTOR_ADDR):
-        expect(image, address, selector_prefix,
-               "rear O2 exact-01 no-op selector @0x%05X" % address)
     for code, address in front.DISABLED_FRONT_AF_DTC_SWITCHES.items():
         expect(image, address, b"\x00", "%s disabled" % code)
     for code, address in front.DISABLED_REAR_O2_DTC_SWITCHES.items():
         expect(image, address, b"\x00", "%s rear O2 disabled" % code)
+
+    # Exact native code, startup, device and dispatcher preservation. These
+    # addresses are independently pinned, not derived from a former O2 label.
+    for start, end in ((0xDF00, 0xE314), (0x33964, 0x33B92),
+                       (0x34BE4, 0x34D50), (0x69568, 0x69A00),
+                       (0x11488, 0x11498), (0x114A0, 0x114A4),
+                       (0x1055C, 0x10560), (0x7DA60, 0x7DB40)):
+        expect(image, start, stock[start:end], "native AVCS / retired selector reservation")
 
     # These paths must remain stock even in the combined image.
     expect(image, front.BANK1_INHIBIT_ENTRY,
@@ -159,7 +143,7 @@ def main():
     for label, address in retained_dtc_switches.items():
         expect(image, address, b"\x01", label)
     if image[0x7DB3C:0x7DB40] != stock[0x7DB3C:0x7DB40]:
-        raise SystemExit("FAIL: post-rear-patch free region is not stock/erased")
+        raise SystemExit("FAIL: post-wrapper free region is not stock/erased")
 
     instruction_spans = [
         (boost.REVWRAP_ADDR, 0x7D8FC),
@@ -167,13 +151,6 @@ def main():
         (front.FRONT_ORIGINAL_TRAMPOLINE_ADDR, 0x7D9B4),
         (front.FRONT_DIAG_MIRROR_WRAPPER_ADDR, 0x7DA00),
         (front.BANK2_INHIBIT_SELECTOR_ADDR, 0x7DA40),
-        (front.REAR_O2_PROCESS_SELECTOR_ADDR, 0x7DA74),
-        (front.REAR_O2_ORIGINAL_TRAMPOLINE_ADDR, 0x7DA94),
-        (front.REAR_O2_THRESHOLD_SELECTOR_ADDR, 0x7DAB4),
-        (front.REAR_O2_FILTER_SELECTOR_ADDR, 0x7DAD4),
-        (front.REAR_O2_INTEGRATOR_SELECTOR_ADDR, 0x7DAF4),
-        (front.REAR_O2_RESPONSE_RATIO_SELECTOR_ADDR, 0x7DB14),
-        (front.REAR_O2_VOLTAGE_DIAG_SELECTOR_ADDR, 0x7DB34),
     ]
     decoded = []
     for start, end in instruction_spans:
@@ -190,7 +167,7 @@ def main():
     print("  fan output     : 0x3FD8C remains stock 0x0000E8C4")
     print("  runtime enables: hard cut 0x%05X=01; front-A/F 0x%05X=01"
           % (boost.OVERBOOST_ENABLE_ADDR, front.FRONT_AF_ENABLE_ADDR))
-    print("  O2 architecture: retained Bank-1 factory A/F; both rear narrowbands bypassed")
+    print("  O2 architecture: retained Bank-1 factory A/F; 8 rear DTCs off; native AVCS intact")
     print("  regenerated    : byte-identical from fresh stock; no generated input stacking")
 
 

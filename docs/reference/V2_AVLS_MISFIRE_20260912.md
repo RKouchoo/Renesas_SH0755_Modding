@@ -7,6 +7,21 @@ a separate stock consumption coefficient in both rolling images. The 14:42
 log below remains tied to its original `fd795813…` image. Its sustained bog
 is rich, and the pump correction is not established as the cause or cure.
 
+The continuing [process-flow review](PATCH_PROCESS_FLOW.md) has also confirmed
+an external-WB/native-feedback readiness mismatch and corrected a false claim
+that the 500 g/s learning boundary prevents retained trim in open loop. These
+are documented dependencies, not an established explanation or repair of the
+loaded cut. Both findings apply to the captured image; neither has prompted
+an unproven runtime change.
+
+The September 13 [AVCS dependency repair](AVCS_OCV_REPAIR_20260913.md) restores
+a definite broken native actuator path in both rolling BINs. The captured
+image had removed normal cam-solenoid PWM output as part of a mistaken rear-O2
+bypass. The repair also preserves current feedback and initialization and
+relocates wideband/lean RAM. This is a demonstrated software defect, but the
+capture lacks actual cam/output state needed to establish its contribution to
+the driving cut. Both the pump and OCV repairs are later than this capture.
+
 ## 14:42 adjusted-VE drive: loaded fault persists
 
 The user reports that the engine still bogs/misfires near 3000 RPM under
@@ -205,11 +220,11 @@ during this loaded event. No new capture, flash or protection bypass was
 requested. The two added regression groups pass against both rolling BINs;
 the cause of the vehicle fault remains unresolved.
 
-Ghidra MCP supplied the native disassembly for this follow-up, but subsequent
-annotation writes and readbacks timed out. The four proposed comments and
-failed readback responses are retained in the `limp_followup` section of the
-[evidence file](evidence/native_fault_cut_20260912.json); those four updates
-are **not confirmed in the Ghidra project** and remain pending retry.
+The initial Ghidra annotation attempts timed out. After MCP access returned,
+all four comments were written and confirmed by reading the disassembly back.
+The original failures remain historical evidence in the `limp_followup`
+section of the [evidence file](evidence/native_fault_cut_20260912.json);
+successful readbacks are in the [follow-up record](evidence/loaded_cut_followup_20260912.json).
 
 ### Follow-up: spark permission and dwell
 
@@ -240,10 +255,80 @@ native `3D824` clears the six learned CCC8..CCDC timing corrections at RPM
 at least 2000; its below-threshold path clamps them to -5..+5 degrees.
 
 These checks do not diagnose an ignition fault or justify a ROM change.
-Ghidra MCP continued to time out, including a `3F5F0` read attempt. This
-follow-up used local disassembly of the stock ROM plus execution against the
-rolling images. No Ghidra annotation from this follow-up is confirmed saved;
-the `3F5F0` naming correction remains pending.
+This initial follow-up used local disassembly while MCP was unavailable.
+With access restored, `3F5F0` was renamed
+`ignition_switch_off_spark_inhibit_update`; its comment and name were both
+confirmed through MCP readback.
+
+### Follow-up with restored Ghidra access
+
+**The cause remains unresolved, and neither rolling BIN changed in this pass.**
+The earlier pump coefficient correction is still not established as a cure.
+
+The diagnostic replay contained an input error: it wrote coolant into `B2C8`,
+which is selected throttle angle. Standard P13 actually exports measured
+`B2C4`, in approximately 0.31372547-degree counts followed by percent display.
+The corrected replay reconstructs each count's centre and executes native
+`14CE6`, including its 6.375-degree fault substitution. Quantization and
+one-byte saturation prevent exact angle recovery. The three imposed-fault
+results in the sustained bog window remain unchanged. The native suite now
+tests the 22.75-degree cut threshold independently of coolant.
+
+The previously unresolved `D34C` source is raw throttle-sensor ADC `AB1A`,
+converted with 5/65536 and delayed two calls by `68814`. `30790` independently
+decodes received frame word `C73C+6` with the same conversion into `C6D8`.
+`68856` compares those voltages. Its five error thresholds are approximately
+0.116/0.18/0.24/0.32/0.416 V, with persistence thresholds of 88/59/44/38/31
+calls in `68984`; a sign reversal clears the error counters. These code,
+conversion, lag and tolerance bytes match stock in the exact captured image.
+They do not read the patched MAP or airflow channels.
+
+Native execution with matching delayed samples stays clear. An explicitly
+imposed 0.59265 V mismatch and enabled monitor sets `81AC/01` on call 31,
+then `64874` publishes `D271=00`, `D273=27`; the tested throttle/RPM conditions
+permit all-six inhibition. The electrical samples, remote endpoint, monitor
+enable and execution cadence are boundaries, not recovered vehicle states.
+This establishes another possible cut source, not its activation in the car.
+All **11 native fault-cut groups** pass on v1, v2 and the exact `fd795813…`
+captured image.
+
+A subsequent [DBW map comparison](../../logs/20260912_adjusted_drive_review.json)
+executes native callers `2B35A` and `2AF5C` against stock and the captured
+image, passing driver torque directly from `C3DC` to `C3D4` as an explicit
+arbitration boundary. Both mapped outputs are identical at all 18 samples in
+70.5–72.32 s and all 80 samples in 77–85.25 s. Among 330 moving samples at
+2500–3500 RPM and at least 25% pedal, 23 differ; the captured mapped angle
+increases by at most 2.2653 degrees and never decreases. A 1000-RPM, 1%-pedal
+positive control detects the installed changes, so this is not a comparison
+that accidentally reads the same calibration twice.
+
+That comparison does not recover the final throttle request. Native tracking
+monitor `654F0` compares **C2B4 with ABD4**, with separate tolerance and
+persistence lookup inputs produced by `654A6`. Its local RPM qualifier
+engages at 500 RPM and clears below 300, not at the reported cut speed.
+Code, tolerance/delay tables and RPM thresholds match stock. The final
+request, monitor enable and absolute sensor state are absent from the loaded
+capture; comparing P13 with the driver-only map would not establish an actual
+tracking fault. Ghidra now names this routine `throttle_request_tracking_monitor`.
+
+Two other conclusions were tightened:
+
+- `24570/BF21` publishes **timed overrun cuts**, not injector circuit faults.
+  It selects six channel flags from elapsed cut/restoration counters. In an
+  explicitly qualified offline fixture, reopening the pedal after full cut
+  leaves mask `002A` for 12 restoration calls and clears it on call 13.
+  Its activation during the bog remains unobserved. Ghidra now names the
+  routine `overrun_timed_injector_cut_publish`.
+- The actual native checksum routine `F5FE`, including `F97C` range validation,
+  passes both stock and the exact captured image. Flipping one injector-scalar
+  byte in memory makes both fail. Four watchdog-service calls are hardware
+  boundaries in the replay. The [reproducible test](../../tests/test_runtime_rom_checksum_execution.py)
+  writes no image and does not infer the ECU's runtime diagnostic state.
+
+Confirmed Ghidra annotations and their readbacks are preserved in the
+[follow-up evidence](evidence/loaded_cut_followup_20260912.json). These findings
+correct the analysis and close specific code questions; they do not justify
+a speculative cut bypass, fueling change or replacement flash image.
 
 ### Verification changes from this review
 

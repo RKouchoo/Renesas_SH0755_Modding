@@ -1,0 +1,7638 @@
+{
+  "sha256": "3e95b7508427f544e30a96c7aa78298b32560a6f3caf5c180e7949b8c2adc388",
+  "static_emitted_code": {
+    "speed_density": {
+      "instructions": 220,
+      "fpu_instructions": 105,
+      "operations": {
+        "FCMP/EQ": 17,
+        "FCMP/GT": 25,
+        "FLDI0": 8,
+        "FMOV": 46,
+        "FMUL": 6,
+        "FNEG": 3
+      },
+      "immediate_non_div_fp_dependencies": 42,
+      "dependency_sites": [
+        {
+          "producer": "0x7E192",
+          "consumer": "0x7E194",
+          "registers": [
+            "5"
+          ]
+        },
+        {
+          "producer": "0x7E198",
+          "consumer": "0x7E19A",
+          "registers": [
+            "3"
+          ]
+        },
+        {
+          "producer": "0x7E1AE",
+          "consumer": "0x7E1B0",
+          "registers": [
+            "4"
+          ]
+        },
+        {
+          "producer": "0x7E1B6",
+          "consumer": "0x7E1B8",
+          "registers": [
+            "3"
+          ]
+        },
+        {
+          "producer": "0x7E1BE",
+          "consumer": "0x7E1C0",
+          "registers": [
+            "2"
+          ]
+        },
+        {
+          "producer": "0x7E1C0",
+          "consumer": "0x7E1C2",
+          "registers": [
+            "2"
+          ]
+        },
+        {
+          "producer": "0x7E1CC",
+          "consumer": "0x7E1CE",
+          "registers": [
+            "3"
+          ]
+        },
+        {
+          "producer": "0x7E1D4",
+          "consumer": "0x7E1D6",
+          "registers": [
+            "2"
+          ]
+        },
+        {
+          "producer": "0x7E1E4",
+          "consumer": "0x7E1E6",
+          "registers": [
+            "3"
+          ]
+        },
+        {
+          "producer": "0x7E1EC",
+          "consumer": "0x7E1EE",
+          "registers": [
+            "2"
+          ]
+        },
+        {
+          "producer": "0x7E1EE",
+          "consumer": "0x7E1F0",
+          "registers": [
+            "2"
+          ]
+        },
+        {
+          "producer": "0x7E1FA",
+          "consumer": "0x7E1FC",
+          "registers": [
+            "3"
+          ]
+        },
+        {
+          "producer": "0x7E202",
+          "consumer": "0x7E204",
+          "registers": [
+            "2"
+          ]
+        },
+        {
+          "producer": "0x7E20C",
+          "consumer": "0x7E20E",
+          "registers": [
+            "4"
+          ]
+        },
+        {
+          "producer": "0x7E214",
+          "consumer": "0x7E216",
+          "registers": [
+            "3"
+          ]
+        },
+        {
+          "producer": "0x7E21C",
+          "consumer": "0x7E21E",
+          "registers": [
+            "2"
+          ]
+        },
+        {
+          "producer": "0x7E21E",
+          "consumer": "0x7E220",
+          "registers": [
+            "2"
+          ]
+        },
+        {
+          "producer": "0x7E22A",
+          "consumer": "0x7E22C",
+          "registers": [
+            "3"
+          ]
+        },
+        {
+          "producer": "0x7E232",
+          "consumer": "0x7E234",
+          "registers": [
+            "2"
+          ]
+        },
+        {
+          "producer": "0x7E23E",
+          "consumer": "0x7E240",
+          "registers": [
+            "2"
+          ]
+        },
+        {
+          "producer": "0x7E244",
+          "consumer": "0x7E246",
+          "registers": [
+            "3"
+          ]
+        },
+        {
+          "producer": "0x7E24C",
+          "consumer": "0x7E24E",
+          "registers": [
+            "3"
+          ]
+        },
+        {
+          "producer": "0x7E254",
+          "consumer": "0x7E256",
+          "registers": [
+            "2"
+          ]
+        },
+        {
+          "producer": "0x7E25A",
+          "consumer": "0x7E25C",
+          "registers": [
+            "3"
+          ]
+        },
+        {
+          "producer": "0x7E262",
+          "consumer": "0x7E264",
+          "registers": [
+            "3"
+          ]
+        },
+        {
+          "producer": "0x7E26A",
+          "consumer": "0x7E26C",
+          "registers": [
+            "2"
+          ]
+        },
+        {
+          "producer": "0x7E270",
+          "consumer": "0x7E272",
+          "registers": [
+            "3"
+          ]
+        },
+        {
+          "producer": "0x7E278",
+          "consumer": "0x7E27A",
+          "registers": [
+            "3"
+          ]
+        },
+        {
+          "producer": "0x7E2A4",
+          "consumer": "0x7E2A6",
+          "registers": [
+            "3"
+          ]
+        },
+        {
+          "producer": "0x7E2AC",
+          "consumer": "0x7E2AE",
+          "registers": [
+            "3"
+          ]
+        },
+        {
+          "producer": "0x7E2BA",
+          "consumer": "0x7E2BC",
+          "registers": [
+            "0"
+          ]
+        },
+        {
+          "producer": "0x7E2C0",
+          "consumer": "0x7E2C2",
+          "registers": [
+            "2"
+          ]
+        },
+        {
+          "producer": "0x7E2C6",
+          "consumer": "0x7E2C8",
+          "registers": [
+            "2"
+          ]
+        },
+        {
+          "producer": "0x7E2CC",
+          "consumer": "0x7E2CE",
+          "registers": [
+            "2"
+          ]
+        },
+        {
+          "producer": "0x7E2CE",
+          "consumer": "0x7E2D0",
+          "registers": [
+            "0"
+          ]
+        },
+        {
+          "producer": "0x7E2E0",
+          "consumer": "0x7E2E2",
+          "registers": [
+            "3"
+          ]
+        },
+        {
+          "producer": "0x7E2E8",
+          "consumer": "0x7E2EA",
+          "registers": [
+            "3"
+          ]
+        },
+        {
+          "producer": "0x7E2EE",
+          "consumer": "0x7E2F0",
+          "registers": [
+            "1"
+          ]
+        },
+        {
+          "producer": "0x7E2F0",
+          "consumer": "0x7E2F2",
+          "registers": [
+            "0"
+          ]
+        },
+        {
+          "producer": "0x7E2F6",
+          "consumer": "0x7E2F8",
+          "registers": [
+            "3"
+          ]
+        },
+        {
+          "producer": "0x7E2FE",
+          "consumer": "0x7E300",
+          "registers": [
+            "3"
+          ]
+        },
+        {
+          "producer": "0x7E30E",
+          "consumer": "0x7E310",
+          "registers": [
+            "2"
+          ]
+        }
+      ]
+    },
+    "wideband": {
+      "instructions": 78,
+      "fpu_instructions": 40,
+      "operations": {
+        "FADD": 1,
+        "FCMP/EQ": 4,
+        "FCMP/GT": 4,
+        "FLDI0": 3,
+        "FLDI1": 1,
+        "FLOAT": 1,
+        "FMOV": 23,
+        "FMUL": 2,
+        "FPUL transfer": 1
+      },
+      "immediate_non_div_fp_dependencies": 10,
+      "dependency_sites": [
+        {
+          "producer": "0x7E446",
+          "consumer": "0x7E448",
+          "registers": [
+            "FPUL"
+          ]
+        },
+        {
+          "producer": "0x7E44C",
+          "consumer": "0x7E44E",
+          "registers": [
+            "1"
+          ]
+        },
+        {
+          "producer": "0x7E44E",
+          "consumer": "0x7E450",
+          "registers": [
+            "0"
+          ]
+        },
+        {
+          "producer": "0x7E456",
+          "consumer": "0x7E458",
+          "registers": [
+            "1"
+          ]
+        },
+        {
+          "producer": "0x7E462",
+          "consumer": "0x7E464",
+          "registers": [
+            "1"
+          ]
+        },
+        {
+          "producer": "0x7E46E",
+          "consumer": "0x7E470",
+          "registers": [
+            "1"
+          ]
+        },
+        {
+          "producer": "0x7E474",
+          "consumer": "0x7E476",
+          "registers": [
+            "1"
+          ]
+        },
+        {
+          "producer": "0x7E476",
+          "consumer": "0x7E478",
+          "registers": [
+            "0"
+          ]
+        },
+        {
+          "producer": "0x7E47C",
+          "consumer": "0x7E47E",
+          "registers": [
+            "2"
+          ]
+        },
+        {
+          "producer": "0x7E484",
+          "consumer": "0x7E486",
+          "registers": [
+            "2"
+          ]
+        }
+      ]
+    },
+    "wideband_inhibit": {
+      "instructions": 10,
+      "fpu_instructions": 3,
+      "operations": {
+        "FCMP/GT": 1,
+        "FMOV": 2
+      },
+      "immediate_non_div_fp_dependencies": 1,
+      "dependency_sites": [
+        {
+          "producer": "0x7E526",
+          "consumer": "0x7E528",
+          "registers": [
+            "1"
+          ]
+        }
+      ]
+    },
+    "overboost": {
+      "instructions": 28,
+      "fpu_instructions": 3,
+      "operations": {
+        "FCMP/GT": 1,
+        "FMOV": 2
+      },
+      "immediate_non_div_fp_dependencies": 1,
+      "dependency_sites": [
+        {
+          "producer": "0x7D8E0",
+          "consumer": "0x7D8E2",
+          "registers": [
+            "3"
+          ]
+        }
+      ]
+    },
+    "pressure_open_loop": {
+      "instructions": 45,
+      "fpu_instructions": 16,
+      "operations": {
+        "FCMP/EQ": 5,
+        "FCMP/GT": 4,
+        "FLDI0": 1,
+        "FMOV": 5,
+        "FSUB": 1
+      },
+      "immediate_non_div_fp_dependencies": 6,
+      "dependency_sites": [
+        {
+          "producer": "0x7EB32",
+          "consumer": "0x7EB34",
+          "registers": [
+            "3"
+          ]
+        },
+        {
+          "producer": "0x7EB3A",
+          "consumer": "0x7EB3C",
+          "registers": [
+            "4"
+          ]
+        },
+        {
+          "producer": "0x7EB46",
+          "consumer": "0x7EB48",
+          "registers": [
+            "4"
+          ]
+        },
+        {
+          "producer": "0x7EB52",
+          "consumer": "0x7EB54",
+          "registers": [
+            "4"
+          ]
+        },
+        {
+          "producer": "0x7EB58",
+          "consumer": "0x7EB5A",
+          "registers": [
+            "2"
+          ]
+        },
+        {
+          "producer": "0x7EB62",
+          "consumer": "0x7EB64",
+          "registers": [
+            "2"
+          ]
+        }
+      ]
+    },
+    "lean_cut": {
+      "instructions": 211,
+      "fpu_instructions": 53,
+      "operations": {
+        "FCMP/EQ": 14,
+        "FCMP/GT": 16,
+        "FLDI0": 2,
+        "FMOV": 19,
+        "FSUB": 2
+      },
+      "immediate_non_div_fp_dependencies": 18,
+      "dependency_sites": [
+        {
+          "producer": "0x7EC32",
+          "consumer": "0x7EC34",
+          "registers": [
+            "2"
+          ]
+        },
+        {
+          "producer": "0x7EC3A",
+          "consumer": "0x7EC3C",
+          "registers": [
+            "4"
+          ]
+        },
+        {
+          "producer": "0x7EC46",
+          "consumer": "0x7EC48",
+          "registers": [
+            "4"
+          ]
+        },
+        {
+          "producer": "0x7EC52",
+          "consumer": "0x7EC54",
+          "registers": [
+            "3"
+          ]
+        },
+        {
+          "producer": "0x7EC5A",
+          "consumer": "0x7EC5C",
+          "registers": [
+            "4"
+          ]
+        },
+        {
+          "producer": "0x7EC66",
+          "consumer": "0x7EC68",
+          "registers": [
+            "4"
+          ]
+        },
+        {
+          "producer": "0x7EC74",
+          "consumer": "0x7EC76",
+          "registers": [
+            "3"
+          ]
+        },
+        {
+          "producer": "0x7EC7A",
+          "consumer": "0x7EC7C",
+          "registers": [
+            "4"
+          ]
+        },
+        {
+          "producer": "0x7EC9E",
+          "consumer": "0x7ECA0",
+          "registers": [
+            "1"
+          ]
+        },
+        {
+          "producer": "0x7ECA8",
+          "consumer": "0x7ECAA",
+          "registers": [
+            "4"
+          ]
+        },
+        {
+          "producer": "0x7ECB0",
+          "consumer": "0x7ECB2",
+          "registers": [
+            "1"
+          ]
+        },
+        {
+          "producer": "0x7ED2E",
+          "consumer": "0x7ED30",
+          "registers": [
+            "2"
+          ]
+        },
+        {
+          "producer": "0x7ED36",
+          "consumer": "0x7ED38",
+          "registers": [
+            "4"
+          ]
+        },
+        {
+          "producer": "0x7ED42",
+          "consumer": "0x7ED44",
+          "registers": [
+            "4"
+          ]
+        },
+        {
+          "producer": "0x7ED4E",
+          "consumer": "0x7ED50",
+          "registers": [
+            "3"
+          ]
+        },
+        {
+          "producer": "0x7ED56",
+          "consumer": "0x7ED58",
+          "registers": [
+            "4"
+          ]
+        },
+        {
+          "producer": "0x7ED62",
+          "consumer": "0x7ED64",
+          "registers": [
+            "4"
+          ]
+        },
+        {
+          "producer": "0x7ED74",
+          "consumer": "0x7ED76",
+          "registers": [
+            "4"
+          ]
+        }
+      ]
+    },
+    "lean_initialize": {
+      "instructions": 12,
+      "fpu_instructions": 0,
+      "operations": {},
+      "immediate_non_div_fp_dependencies": 0,
+      "dependency_sites": []
+    },
+    "rotational_idle": {
+      "instructions": 135,
+      "fpu_instructions": 62,
+      "operations": {
+        "FADD": 1,
+        "FCMP/EQ": 18,
+        "FCMP/GT": 13,
+        "FLDI0": 1,
+        "FMOV": 28,
+        "FNEG": 1
+      },
+      "immediate_non_div_fp_dependencies": 24,
+      "dependency_sites": [
+        {
+          "producer": "0x7DBA2",
+          "consumer": "0x7DBA4",
+          "registers": [
+            "4"
+          ]
+        },
+        {
+          "producer": "0x7DBAA",
+          "consumer": "0x7DBAC",
+          "registers": [
+            "3"
+          ]
+        },
+        {
+          "producer": "0x7DBB6",
+          "consumer": "0x7DBB8",
+          "registers": [
+            "4"
+          ]
+        },
+        {
+          "producer": "0x7DBBE",
+          "consumer": "0x7DBC0",
+          "registers": [
+            "3"
+          ]
+        },
+        {
+          "producer": "0x7DBCA",
+          "consumer": "0x7DBCC",
+          "registers": [
+            "4"
+          ]
+        },
+        {
+          "producer": "0x7DBD2",
+          "consumer": "0x7DBD4",
+          "registers": [
+            "3"
+          ]
+        },
+        {
+          "producer": "0x7DBDE",
+          "consumer": "0x7DBE0",
+          "registers": [
+            "4"
+          ]
+        },
+        {
+          "producer": "0x7DBE6",
+          "consumer": "0x7DBE8",
+          "registers": [
+            "3"
+          ]
+        },
+        {
+          "producer": "0x7DBF2",
+          "consumer": "0x7DBF4",
+          "registers": [
+            "4"
+          ]
+        },
+        {
+          "producer": "0x7DBFA",
+          "consumer": "0x7DBFC",
+          "registers": [
+            "3"
+          ]
+        },
+        {
+          "producer": "0x7DC06",
+          "consumer": "0x7DC08",
+          "registers": [
+            "4"
+          ]
+        },
+        {
+          "producer": "0x7DC0E",
+          "consumer": "0x7DC10",
+          "registers": [
+            "3"
+          ]
+        },
+        {
+          "producer": "0x7DC1A",
+          "consumer": "0x7DC1C",
+          "registers": [
+            "4"
+          ]
+        },
+        {
+          "producer": "0x7DC22",
+          "consumer": "0x7DC24",
+          "registers": [
+            "3"
+          ]
+        },
+        {
+          "producer": "0x7DC2E",
+          "consumer": "0x7DC30",
+          "registers": [
+            "4"
+          ]
+        },
+        {
+          "producer": "0x7DC36",
+          "consumer": "0x7DC38",
+          "registers": [
+            "3"
+          ]
+        },
+        {
+          "producer": "0x7DC48",
+          "consumer": "0x7DC4A",
+          "registers": [
+            "4"
+          ]
+        },
+        {
+          "producer": "0x7DC4C",
+          "consumer": "0x7DC4E",
+          "registers": [
+            "3"
+          ]
+        },
+        {
+          "producer": "0x7DC5E",
+          "consumer": "0x7DC60",
+          "registers": [
+            "2"
+          ]
+        },
+        {
+          "producer": "0x7DC64",
+          "consumer": "0x7DC66",
+          "registers": [
+            "2"
+          ]
+        },
+        {
+          "producer": "0x7DC70",
+          "consumer": "0x7DC72",
+          "registers": [
+            "3"
+          ]
+        },
+        {
+          "producer": "0x7DC76",
+          "consumer": "0x7DC78",
+          "registers": [
+            "2"
+          ]
+        },
+        {
+          "producer": "0x7DC86",
+          "consumer": "0x7DC88",
+          "registers": [
+            "4"
+          ]
+        },
+        {
+          "producer": "0x7DC8C",
+          "consumer": "0x7DC8E",
+          "registers": [
+            "4"
+          ]
+        }
+      ]
+    }
+  },
+  "sd_fixtures": [
+    {
+      "fixture": "idle",
+      "airflow_g_s": 15.976759910583496,
+      "wrapper": {
+        "instructions": 200,
+        "fpu_instructions": 101,
+        "operations": {
+          "FCMP/EQ": 17,
+          "FCMP/GT": 25,
+          "FLDI0": 7,
+          "FMOV": 43,
+          "FMUL": 6,
+          "FNEG": 3
+        },
+        "immediate_non_div_fp_dependencies": 42,
+        "dependency_sites": [
+          {
+            "producer": "0x7E192",
+            "consumer": "0x7E194",
+            "registers": [
+              "5"
+            ]
+          },
+          {
+            "producer": "0x7E198",
+            "consumer": "0x7E19A",
+            "registers": [
+              "3"
+            ]
+          },
+          {
+            "producer": "0x7E1AE",
+            "consumer": "0x7E1B0",
+            "registers": [
+              "4"
+            ]
+          },
+          {
+            "producer": "0x7E1B6",
+            "consumer": "0x7E1B8",
+            "registers": [
+              "3"
+            ]
+          },
+          {
+            "producer": "0x7E1BE",
+            "consumer": "0x7E1C0",
+            "registers": [
+              "2"
+            ]
+          },
+          {
+            "producer": "0x7E1C0",
+            "consumer": "0x7E1C2",
+            "registers": [
+              "2"
+            ]
+          },
+          {
+            "producer": "0x7E1CC",
+            "consumer": "0x7E1CE",
+            "registers": [
+              "3"
+            ]
+          },
+          {
+            "producer": "0x7E1D4",
+            "consumer": "0x7E1D6",
+            "registers": [
+              "2"
+            ]
+          },
+          {
+            "producer": "0x7E1E4",
+            "consumer": "0x7E1E6",
+            "registers": [
+              "3"
+            ]
+          },
+          {
+            "producer": "0x7E1EC",
+            "consumer": "0x7E1EE",
+            "registers": [
+              "2"
+            ]
+          },
+          {
+            "producer": "0x7E1EE",
+            "consumer": "0x7E1F0",
+            "registers": [
+              "2"
+            ]
+          },
+          {
+            "producer": "0x7E1FA",
+            "consumer": "0x7E1FC",
+            "registers": [
+              "3"
+            ]
+          },
+          {
+            "producer": "0x7E202",
+            "consumer": "0x7E204",
+            "registers": [
+              "2"
+            ]
+          },
+          {
+            "producer": "0x7E20C",
+            "consumer": "0x7E20E",
+            "registers": [
+              "4"
+            ]
+          },
+          {
+            "producer": "0x7E214",
+            "consumer": "0x7E216",
+            "registers": [
+              "3"
+            ]
+          },
+          {
+            "producer": "0x7E21C",
+            "consumer": "0x7E21E",
+            "registers": [
+              "2"
+            ]
+          },
+          {
+            "producer": "0x7E21E",
+            "consumer": "0x7E220",
+            "registers": [
+              "2"
+            ]
+          },
+          {
+            "producer": "0x7E22A",
+            "consumer": "0x7E22C",
+            "registers": [
+              "3"
+            ]
+          },
+          {
+            "producer": "0x7E232",
+            "consumer": "0x7E234",
+            "registers": [
+              "2"
+            ]
+          },
+          {
+            "producer": "0x7E23E",
+            "consumer": "0x7E240",
+            "registers": [
+              "2"
+            ]
+          },
+          {
+            "producer": "0x7E244",
+            "consumer": "0x7E246",
+            "registers": [
+              "3"
+            ]
+          },
+          {
+            "producer": "0x7E24C",
+            "consumer": "0x7E24E",
+            "registers": [
+              "3"
+            ]
+          },
+          {
+            "producer": "0x7E254",
+            "consumer": "0x7E256",
+            "registers": [
+              "2"
+            ]
+          },
+          {
+            "producer": "0x7E25A",
+            "consumer": "0x7E25C",
+            "registers": [
+              "3"
+            ]
+          },
+          {
+            "producer": "0x7E262",
+            "consumer": "0x7E264",
+            "registers": [
+              "3"
+            ]
+          },
+          {
+            "producer": "0x7E26A",
+            "consumer": "0x7E26C",
+            "registers": [
+              "2"
+            ]
+          },
+          {
+            "producer": "0x7E270",
+            "consumer": "0x7E272",
+            "registers": [
+              "3"
+            ]
+          },
+          {
+            "producer": "0x7E278",
+            "consumer": "0x7E27A",
+            "registers": [
+              "3"
+            ]
+          },
+          {
+            "producer": "0x7E2A4",
+            "consumer": "0x7E2A6",
+            "registers": [
+              "3"
+            ]
+          },
+          {
+            "producer": "0x7E2AC",
+            "consumer": "0x7E2AE",
+            "registers": [
+              "3"
+            ]
+          },
+          {
+            "producer": "0x7E2BA",
+            "consumer": "0x7E2BC",
+            "registers": [
+              "0"
+            ]
+          },
+          {
+            "producer": "0x7E2C0",
+            "consumer": "0x7E2C2",
+            "registers": [
+              "2"
+            ]
+          },
+          {
+            "producer": "0x7E2C6",
+            "consumer": "0x7E2C8",
+            "registers": [
+              "2"
+            ]
+          },
+          {
+            "producer": "0x7E2CC",
+            "consumer": "0x7E2CE",
+            "registers": [
+              "2"
+            ]
+          },
+          {
+            "producer": "0x7E2CE",
+            "consumer": "0x7E2D0",
+            "registers": [
+              "0"
+            ]
+          },
+          {
+            "producer": "0x7E2E0",
+            "consumer": "0x7E2E2",
+            "registers": [
+              "3"
+            ]
+          },
+          {
+            "producer": "0x7E2E8",
+            "consumer": "0x7E2EA",
+            "registers": [
+              "3"
+            ]
+          },
+          {
+            "producer": "0x7E2EE",
+            "consumer": "0x7E2F0",
+            "registers": [
+              "1"
+            ]
+          },
+          {
+            "producer": "0x7E2F0",
+            "consumer": "0x7E2F2",
+            "registers": [
+              "0"
+            ]
+          },
+          {
+            "producer": "0x7E2F6",
+            "consumer": "0x7E2F8",
+            "registers": [
+              "3"
+            ]
+          },
+          {
+            "producer": "0x7E2FE",
+            "consumer": "0x7E300",
+            "registers": [
+              "3"
+            ]
+          },
+          {
+            "producer": "0x7E30E",
+            "consumer": "0x7E310",
+            "registers": [
+              "2"
+            ]
+          }
+        ]
+      },
+      "including_native_lookups": {
+        "instructions": 476,
+        "fpu_instructions": 194,
+        "operations": {
+          "FCMP/EQ": 21,
+          "FCMP/GT": 49,
+          "FDIV": 3,
+          "FLDI0": 11,
+          "FMAC": 3,
+          "FMOV": 89,
+          "FMUL": 6,
+          "FNEG": 3,
+          "FSUB": 9
+        },
+        "immediate_non_div_fp_dependencies": 77,
+        "dependency_sites": [
+          {
+            "producer": "0x7E192",
+            "consumer": "0x7E194",
+            "registers": [
+              "5"
+            ]
+          },
+          {
+            "producer": "0x7E198",
+            "consumer": "0x7E19A",
+            "registers": [
+              "3"
+            ]
+          },
+          {
+            "producer": "0x7E1AE",
+            "consumer": "0x7E1B0",
+            "registers": [
+              "4"
+            ]
+          },
+          {
+            "producer": "0x7E1B6",
+            "consumer": "0x7E1B8",
+            "registers": [
+              "3"
+            ]
+          },
+          {
+            "producer": "0x7E1BE",
+            "consumer": "0x7E1C0",
+            "registers": [
+              "2"
+            ]
+          },
+          {
+            "producer": "0x7E1C0",
+            "consumer": "0x7E1C2",
+            "registers": [
+              "2"
+            ]
+          },
+          {
+            "producer": "0x7E1CC",
+            "consumer": "0x7E1CE",
+            "registers": [
+              "3"
+            ]
+          },
+          {
+            "producer": "0x7E1D4",
+            "consumer": "0x7E1D6",
+            "registers": [
+              "2"
+            ]
+          },
+          {
+            "producer": "0x7E1E4",
+            "consumer": "0x7E1E6",
+            "registers": [
+              "3"
+            ]
+          },
+          {
+            "producer": "0x7E1EC",
+            "consumer": "0x7E1EE",
+            "registers": [
+              "2"
+            ]
+          },
+          {
+            "producer": "0x7E1EE",
+            "consumer": "0x7E1F0",
+            "registers": [
+              "2"
+            ]
+          },
+          {
+            "producer": "0x7E1FA",
+            "consumer": "0x7E1FC",
+            "registers": [
+              "3"
+            ]
+          },
+          {
+            "producer": "0x7E202",
+            "consumer": "0x7E204",
+            "registers": [
+              "2"
+            ]
+          },
+          {
+            "producer": "0x7E20C",
+            "consumer": "0x7E20E",
+            "registers": [
+              "4"
+            ]
+          },
+          {
+            "producer": "0x7E214",
+            "consumer": "0x7E216",
+            "registers": [
+              "3"
+            ]
+          },
+          {
+            "producer": "0x7E21C",
+            "consumer": "0x7E21E",
+            "registers": [
+              "2"
+            ]
+          },
+          {
+            "producer": "0x7E21E",
+            "consumer": "0x7E220",
+            "registers": [
+              "2"
+            ]
+          },
+          {
+            "producer": "0x7E22A",
+            "consumer": "0x7E22C",
+            "registers": [
+              "3"
+            ]
+          },
+          {
+            "producer": "0x7E232",
+            "consumer": "0x7E234",
+            "registers": [
+              "2"
+            ]
+          },
+          {
+            "producer": "0x7E23E",
+            "consumer": "0x7E240",
+            "registers": [
+              "2"
+            ]
+          },
+          {
+            "producer": "0x7E244",
+            "consumer": "0x7E246",
+            "registers": [
+              "3"
+            ]
+          },
+          {
+            "producer": "0x7E24C",
+            "consumer": "0x7E24E",
+            "registers": [
+              "3"
+            ]
+          },
+          {
+            "producer": "0x7E254",
+            "consumer": "0x7E256",
+            "registers": [
+              "2"
+            ]
+          },
+          {
+            "producer": "0x7E25A",
+            "consumer": "0x7E25C",
+            "registers": [
+              "3"
+            ]
+          },
+          {
+            "producer": "0x7E262",
+            "consumer": "0x7E264",
+            "registers": [
+              "3"
+            ]
+          },
+          {
+            "producer": "0x7E26A",
+            "consumer": "0x7E26C",
+            "registers": [
+              "2"
+            ]
+          },
+          {
+            "producer": "0x7E270",
+            "consumer": "0x7E272",
+            "registers": [
+              "3"
+            ]
+          },
+          {
+            "producer": "0x7E278",
+            "consumer": "0x7E27A",
+            "registers": [
+              "3"
+            ]
+          },
+          {
+            "producer": "0x026E4",
+            "consumer": "0x026E6",
+            "registers": [
+              "1"
+            ]
+          },
+          {
+            "producer": "0x026F0",
+            "consumer": "0x026F2",
+            "registers": [
+              "1"
+            ]
+          },
+          {
+            "producer": "0x026F0",
+            "consumer": "0x026F2",
+            "registers": [
+              "1"
+            ]
+          },
+          {
+            "producer": "0x026F0",
+            "consumer": "0x026F2",
+            "registers": [
+              "1"
+            ]
+          },
+          {
+            "producer": "0x026F0",
+            "consumer": "0x026F2",
+            "registers": [
+              "1"
+            ]
+          },
+          {
+            "producer": "0x026F0",
+            "consumer": "0x026F2",
+            "registers": [
+              "1"
+            ]
+          },
+          {
+            "producer": "0x026F0",
+            "consumer": "0x026F2",
+            "registers": [
+              "1"
+            ]
+          },
+          {
+            "producer": "0x026F0",
+            "consumer": "0x026F2",
+            "registers": [
+              "1"
+            ]
+          },
+          {
+            "producer": "0x026F0",
+            "consumer": "0x026F2",
+            "registers": [
+              "1"
+            ]
+          },
+          {
+            "producer": "0x026F0",
+            "consumer": "0x026F2",
+            "registers": [
+              "1"
+            ]
+          },
+          {
+            "producer": "0x026F0",
+            "consumer": "0x026F2",
+            "registers": [
+              "1"
+            ]
+          },
+          {
+            "producer": "0x026F0",
+            "consumer": "0x026F2",
+            "registers": [
+              "1"
+            ]
+          },
+          {
+            "producer": "0x02700",
+            "consumer": "0x02702",
+            "registers": [
+              "2"
+            ]
+          },
+          {
+            "producer": "0x026E4",
+            "consumer": "0x026E6",
+            "registers": [
+              "1"
+            ]
+          },
+          {
+            "producer": "0x026F0",
+            "consumer": "0x026F2",
+            "registers": [
+              "1"
+            ]
+          },
+          {
+            "producer": "0x026F0",
+            "consumer": "0x026F2",
+            "registers": [
+              "1"
+            ]
+          },
+          {
+            "producer": "0x026F0",
+            "consumer": "0x026F2",
+            "registers": [
+              "1"
+            ]
+          },
+          {
+            "producer": "0x026F0",
+            "consumer": "0x026F2",
+            "registers": [
+              "1"
+            ]
+          },
+          {
+            "producer": "0x026F0",
+            "consumer": "0x026F2",
+            "registers": [
+              "1"
+            ]
+          },
+          {
+            "producer": "0x02700",
+            "consumer": "0x02702",
+            "registers": [
+              "2"
+            ]
+          },
+          {
+            "producer": "0x027FC",
+            "consumer": "0x027FE",
+            "registers": [
+              "1"
+            ]
+          },
+          {
+            "producer": "0x027FE",
+            "consumer": "0x02800",
+            "registers": [
+              "1"
+            ]
+          },
+          {
+            "producer": "0x0260C",
+            "consumer": "0x0260E",
+            "registers": [
+              "4"
+            ]
+          },
+          {
+            "producer": "0x027FC",
+            "consumer": "0x027FE",
+            "registers": [
+              "1"
+            ]
+          },
+          {
+            "producer": "0x027FE",
+            "consumer": "0x02800",
+            "registers": [
+              "1"
+            ]
+          },
+          {
+            "producer": "0x0261C",
+            "consumer": "0x0261E",
+            "registers": [
+              "2"
+            ]
+          },
+          {
+            "producer": "0x0216C",
+            "consumer": "0x02176",
+            "registers": [
+              "1"
+            ]
+          },
+          {
+            "producer": "0x7E2A4",
+            "consumer": "0x7E2A6",
+            "registers": [
+              "3"
+            ]
+          },
+          {
+            "producer": "0x7E2AC",
+            "consumer": "0x7E2AE",
+            "registers": [
+              "3"
+            ]
+          },
+          {
+            "producer": "0x7E2BA",
+            "consumer": "0x7E2BC",
+            "registers": [
+              "0"
+            ]
+          },
+          {
+            "producer": "0x7E2C0",
+            "consumer": "0x7E2C2",
+            "registers": [
+              "2"
+            ]
+          },
+          {
+            "producer": "0x7E2C6",
+            "consumer": "0x7E2C8",
+            "registers": [
+              "2"
+            ]
+          },
+          {
+            "producer": "0x7E2CC",
+            "consumer": "0x7E2CE",
+            "registers": [
+              "2"
+            ]
+          },
+          {
+            "producer": "0x7E2CE",
+            "consumer": "0x7E2D0",
+            "registers": [
+              "0"
+            ]
+          },
+          {
+            "producer": "0x026E4",
+            "consumer": "0x026E6",
+            "registers": [
+              "1"
+            ]
+          },
+          {
+            "producer": "0x026F0",
+            "consumer": "0x026F2",
+            "registers": [
+              "1"
+            ]
+          },
+          {
+            "producer": "0x026F0",
+            "consumer": "0x026F2",
+            "registers": [
+              "1"
+            ]
+          },
+          {
+            "producer": "0x026F0",
+            "consumer": "0x026F2",
+            "registers": [
+              "1"
+            ]
+          },
+          {
+            "producer": "0x026F0",
+            "consumer": "0x026F2",
+            "registers": [
+              "1"
+            ]
+          },
+          {
+            "producer": "0x026F0",
+            "consumer": "0x026F2",
+            "registers": [
+              "1"
+            ]
+          },
+          {
+            "producer": "0x02700",
+            "consumer": "0x02702",
+            "registers": [
+              "2"
+            ]
+          },
+          {
+            "producer": "0x020C8",
+            "consumer": "0x7E2DC",
+            "registers": [
+              "0"
+            ]
+          },
+          {
+            "producer": "0x7E2E0",
+            "consumer": "0x7E2E2",
+            "registers": [
+              "3"
+            ]
+          },
+          {
+            "producer": "0x7E2E8",
+            "consumer": "0x7E2EA",
+            "registers": [
+              "3"
+            ]
+          },
+          {
+            "producer": "0x7E2EE",
+            "consumer": "0x7E2F0",
+            "registers": [
+              "1"
+            ]
+          },
+          {
+            "producer": "0x7E2F0",
+            "consumer": "0x7E2F2",
+            "registers": [
+              "0"
+            ]
+          },
+          {
+            "producer": "0x7E2F6",
+            "consumer": "0x7E2F8",
+            "registers": [
+              "3"
+            ]
+          },
+          {
+            "producer": "0x7E2FE",
+            "consumer": "0x7E300",
+            "registers": [
+              "3"
+            ]
+          },
+          {
+            "producer": "0x7E30E",
+            "consumer": "0x7E310",
+            "registers": [
+              "2"
+            ]
+          }
+        ]
+      },
+      "divisions": [
+        {
+          "pc": "0x02702",
+          "non_fpu_instructions_before_next_fpu": 3
+        },
+        {
+          "pc": "0x02702",
+          "non_fpu_instructions_before_next_fpu": 4
+        },
+        {
+          "pc": "0x02702",
+          "non_fpu_instructions_before_next_fpu": 10
+        }
+      ]
+    },
+    {
+      "fixture": "opening",
+      "airflow_g_s": 50.48634719848633,
+      "wrapper": {
+        "instructions": 200,
+        "fpu_instructions": 101,
+        "operations": {
+          "FCMP/EQ": 17,
+          "FCMP/GT": 25,
+          "FLDI0": 7,
+          "FMOV": 43,
+          "FMUL": 6,
+          "FNEG": 3
+        },
+        "immediate_non_div_fp_dependencies": 42,
+        "dependency_sites": [
+          {
+            "producer": "0x7E192",
+            "consumer": "0x7E194",
+            "registers": [
+              "5"
+            ]
+          },
+          {
+            "producer": "0x7E198",
+            "consumer": "0x7E19A",
+            "registers": [
+              "3"
+            ]
+          },
+          {
+            "producer": "0x7E1AE",
+            "consumer": "0x7E1B0",
+            "registers": [
+              "4"
+            ]
+          },
+          {
+            "producer": "0x7E1B6",
+            "consumer": "0x7E1B8",
+            "registers": [
+              "3"
+            ]
+          },
+          {
+            "producer": "0x7E1BE",
+            "consumer": "0x7E1C0",
+            "registers": [
+              "2"
+            ]
+          },
+          {
+            "producer": "0x7E1C0",
+            "consumer": "0x7E1C2",
+            "registers": [
+              "2"
+            ]
+          },
+          {
+            "producer": "0x7E1CC",
+            "consumer": "0x7E1CE",
+            "registers": [
+              "3"
+            ]
+          },
+          {
+            "producer": "0x7E1D4",
+            "consumer": "0x7E1D6",
+            "registers": [
+              "2"
+            ]
+          },
+          {
+            "producer": "0x7E1E4",
+            "consumer": "0x7E1E6",
+            "registers": [
+              "3"
+            ]
+          },
+          {
+            "producer": "0x7E1EC",
+            "consumer": "0x7E1EE",
+            "registers": [
+              "2"
+            ]
+          },
+          {
+            "producer": "0x7E1EE",
+            "consumer": "0x7E1F0",
+            "registers": [
+              "2"
+            ]
+          },
+          {
+            "producer": "0x7E1FA",
+            "consumer": "0x7E1FC",
+            "registers": [
+              "3"
+            ]
+          },
+          {
+            "producer": "0x7E202",
+            "consumer": "0x7E204",
+            "registers": [
+              "2"
+            ]
+          },
+          {
+            "producer": "0x7E20C",
+            "consumer": "0x7E20E",
+            "registers": [
+              "4"
+            ]
+          },
+          {
+            "producer": "0x7E214",
+            "consumer": "0x7E216",
+            "registers": [
+              "3"
+            ]
+          },
+          {
+            "producer": "0x7E21C",
+            "consumer": "0x7E21E",
+            "registers": [
+              "2"
+            ]
+          },
+          {
+            "producer": "0x7E21E",
+            "consumer": "0x7E220",
+            "registers": [
+              "2"
+            ]
+          },
+          {
+            "producer": "0x7E22A",
+            "consumer": "0x7E22C",
+            "registers": [
+              "3"
+            ]
+          },
+          {
+            "producer": "0x7E232",
+            "consumer": "0x7E234",
+            "registers": [
+              "2"
+            ]
+          },
+          {
+            "producer": "0x7E23E",
+            "consumer": "0x7E240",
+            "registers": [
+              "2"
+            ]
+          },
+          {
+            "producer": "0x7E244",
+            "consumer": "0x7E246",
+            "registers": [
+              "3"
+            ]
+          },
+          {
+            "producer": "0x7E24C",
+            "consumer": "0x7E24E",
+            "registers": [
+              "3"
+            ]
+          },
+          {
+            "producer": "0x7E254",
+            "consumer": "0x7E256",
+            "registers": [
+              "2"
+            ]
+          },
+          {
+            "producer": "0x7E25A",
+            "consumer": "0x7E25C",
+            "registers": [
+              "3"
+            ]
+          },
+          {
+            "producer": "0x7E262",
+            "consumer": "0x7E264",
+            "registers": [
+              "3"
+            ]
+          },
+          {
+            "producer": "0x7E26A",
+            "consumer": "0x7E26C",
+            "registers": [
+              "2"
+            ]
+          },
+          {
+            "producer": "0x7E270",
+            "consumer": "0x7E272",
+            "registers": [
+              "3"
+            ]
+          },
+          {
+            "producer": "0x7E278",
+            "consumer": "0x7E27A",
+            "registers": [
+              "3"
+            ]
+          },
+          {
+            "producer": "0x7E2A4",
+            "consumer": "0x7E2A6",
+            "registers": [
+              "3"
+            ]
+          },
+          {
+            "producer": "0x7E2AC",
+            "consumer": "0x7E2AE",
+            "registers": [
+              "3"
+            ]
+          },
+          {
+            "producer": "0x7E2BA",
+            "consumer": "0x7E2BC",
+            "registers": [
+              "0"
+            ]
+          },
+          {
+            "producer": "0x7E2C0",
+            "consumer": "0x7E2C2",
+            "registers": [
+              "2"
+            ]
+          },
+          {
+            "producer": "0x7E2C6",
+            "consumer": "0x7E2C8",
+            "registers": [
+              "2"
+            ]
+          },
+          {
+            "producer": "0x7E2CC",
+            "consumer": "0x7E2CE",
+            "registers": [
+              "2"
+            ]
+          },
+          {
+            "producer": "0x7E2CE",
+            "consumer": "0x7E2D0",
+            "registers": [
+              "0"
+            ]
+          },
+          {
+            "producer": "0x7E2E0",
+            "consumer": "0x7E2E2",
+            "registers": [
+              "3"
+            ]
+          },
+          {
+            "producer": "0x7E2E8",
+            "consumer": "0x7E2EA",
+            "registers": [
+              "3"
+            ]
+          },
+          {
+            "producer": "0x7E2EE",
+            "consumer": "0x7E2F0",
+            "registers": [
+              "1"
+            ]
+          },
+          {
+            "producer": "0x7E2F0",
+            "consumer": "0x7E2F2",
+            "registers": [
+              "0"
+            ]
+          },
+          {
+            "producer": "0x7E2F6",
+            "consumer": "0x7E2F8",
+            "registers": [
+              "3"
+            ]
+          },
+          {
+            "producer": "0x7E2FE",
+            "consumer": "0x7E300",
+            "registers": [
+              "3"
+            ]
+          },
+          {
+            "producer": "0x7E30E",
+            "consumer": "0x7E310",
+            "registers": [
+              "2"
+            ]
+          }
+        ]
+      },
+      "including_native_lookups": {
+        "instructions": 446,
+        "fpu_instructions": 184,
+        "operations": {
+          "FCMP/EQ": 21,
+          "FCMP/GT": 44,
+          "FDIV": 3,
+          "FLDI0": 11,
+          "FMAC": 3,
+          "FMOV": 84,
+          "FMUL": 6,
+          "FNEG": 3,
+          "FSUB": 9
+        },
+        "immediate_non_div_fp_dependencies": 72,
+        "dependency_sites": [
+          {
+            "producer": "0x7E192",
+            "consumer": "0x7E194",
+            "registers": [
+              "5"
+            ]
+          },
+          {
+            "producer": "0x7E198",
+            "consumer": "0x7E19A",
+            "registers": [
+              "3"
+            ]
+          },
+          {
+            "producer": "0x7E1AE",
+            "consumer": "0x7E1B0",
+            "registers": [
+              "4"
+            ]
+          },
+          {
+            "producer": "0x7E1B6",
+            "consumer": "0x7E1B8",
+            "registers": [
+              "3"
+            ]
+          },
+          {
+            "producer": "0x7E1BE",
+            "consumer": "0x7E1C0",
+            "registers": [
+              "2"
+            ]
+          },
+          {
+            "producer": "0x7E1C0",
+            "consumer": "0x7E1C2",
+            "registers": [
+              "2"
+            ]
+          },
+          {
+            "producer": "0x7E1CC",
+            "consumer": "0x7E1CE",
+            "registers": [
+              "3"
+            ]
+          },
+          {
+            "producer": "0x7E1D4",
+            "consumer": "0x7E1D6",
+            "registers": [
+              "2"
+            ]
+          },
+          {
+            "producer": "0x7E1E4",
+            "consumer": "0x7E1E6",
+            "registers": [
+              "3"
+            ]
+          },
+          {
+            "producer": "0x7E1EC",
+            "consumer": "0x7E1EE",
+            "registers": [
+              "2"
+            ]
+          },
+          {
+            "producer": "0x7E1EE",
+            "consumer": "0x7E1F0",
+            "registers": [
+              "2"
+            ]
+          },
+          {
+            "producer": "0x7E1FA",
+            "consumer": "0x7E1FC",
+            "registers": [
+              "3"
+            ]
+          },
+          {
+            "producer": "0x7E202",
+            "consumer": "0x7E204",
+            "registers": [
+              "2"
+            ]
+          },
+          {
+            "producer": "0x7E20C",
+            "consumer": "0x7E20E",
+            "registers": [
+              "4"
+            ]
+          },
+          {
+            "producer": "0x7E214",
+            "consumer": "0x7E216",
+            "registers": [
+              "3"
+            ]
+          },
+          {
+            "producer": "0x7E21C",
+            "consumer": "0x7E21E",
+            "registers": [
+              "2"
+            ]
+          },
+          {
+            "producer": "0x7E21E",
+            "consumer": "0x7E220",
+            "registers": [
+              "2"
+            ]
+          },
+          {
+            "producer": "0x7E22A",
+            "consumer": "0x7E22C",
+            "registers": [
+              "3"
+            ]
+          },
+          {
+            "producer": "0x7E232",
+            "consumer": "0x7E234",
+            "registers": [
+              "2"
+            ]
+          },
+          {
+            "producer": "0x7E23E",
+            "consumer": "0x7E240",
+            "registers": [
+              "2"
+            ]
+          },
+          {
+            "producer": "0x7E244",
+            "consumer": "0x7E246",
+            "registers": [
+              "3"
+            ]
+          },
+          {
+            "producer": "0x7E24C",
+            "consumer": "0x7E24E",
+            "registers": [
+              "3"
+            ]
+          },
+          {
+            "producer": "0x7E254",
+            "consumer": "0x7E256",
+            "registers": [
+              "2"
+            ]
+          },
+          {
+            "producer": "0x7E25A",
+            "consumer": "0x7E25C",
+            "registers": [
+              "3"
+            ]
+          },
+          {
+            "producer": "0x7E262",
+            "consumer": "0x7E264",
+            "registers": [
+              "3"
+            ]
+          },
+          {
+            "producer": "0x7E26A",
+            "consumer": "0x7E26C",
+            "registers": [
+              "2"
+            ]
+          },
+          {
+            "producer": "0x7E270",
+            "consumer": "0x7E272",
+            "registers": [
+              "3"
+            ]
+          },
+          {
+            "producer": "0x7E278",
+            "consumer": "0x7E27A",
+            "registers": [
+              "3"
+            ]
+          },
+          {
+            "producer": "0x026E4",
+            "consumer": "0x026E6",
+            "registers": [
+              "1"
+            ]
+          },
+          {
+            "producer": "0x026F0",
+            "consumer": "0x026F2",
+            "registers": [
+              "1"
+            ]
+          },
+          {
+            "producer": "0x026F0",
+            "consumer": "0x026F2",
+            "registers": [
+              "1"
+            ]
+          },
+          {
+            "producer": "0x026F0",
+            "consumer": "0x026F2",
+            "registers": [
+              "1"
+            ]
+          },
+          {
+            "producer": "0x026F0",
+            "consumer": "0x026F2",
+            "registers": [
+              "1"
+            ]
+          },
+          {
+            "producer": "0x026F0",
+            "consumer": "0x026F2",
+            "registers": [
+              "1"
+            ]
+          },
+          {
+            "producer": "0x026F0",
+            "consumer": "0x026F2",
+            "registers": [
+              "1"
+            ]
+          },
+          {
+            "producer": "0x026F0",
+            "consumer": "0x026F2",
+            "registers": [
+              "1"
+            ]
+          },
+          {
+            "producer": "0x02700",
+            "consumer": "0x02702",
+            "registers": [
+              "2"
+            ]
+          },
+          {
+            "producer": "0x026E4",
+            "consumer": "0x026E6",
+            "registers": [
+              "1"
+            ]
+          },
+          {
+            "producer": "0x026F0",
+            "consumer": "0x026F2",
+            "registers": [
+              "1"
+            ]
+          },
+          {
+            "producer": "0x026F0",
+            "consumer": "0x026F2",
+            "registers": [
+              "1"
+            ]
+          },
+          {
+            "producer": "0x026F0",
+            "consumer": "0x026F2",
+            "registers": [
+              "1"
+            ]
+          },
+          {
+            "producer": "0x026F0",
+            "consumer": "0x026F2",
+            "registers": [
+              "1"
+            ]
+          },
+          {
+            "producer": "0x02700",
+            "consumer": "0x02702",
+            "registers": [
+              "2"
+            ]
+          },
+          {
+            "producer": "0x027FC",
+            "consumer": "0x027FE",
+            "registers": [
+              "1"
+            ]
+          },
+          {
+            "producer": "0x027FE",
+            "consumer": "0x02800",
+            "registers": [
+              "1"
+            ]
+          },
+          {
+            "producer": "0x0260C",
+            "consumer": "0x0260E",
+            "registers": [
+              "4"
+            ]
+          },
+          {
+            "producer": "0x027FC",
+            "consumer": "0x027FE",
+            "registers": [
+              "1"
+            ]
+          },
+          {
+            "producer": "0x027FE",
+            "consumer": "0x02800",
+            "registers": [
+              "1"
+            ]
+          },
+          {
+            "producer": "0x0261C",
+            "consumer": "0x0261E",
+            "registers": [
+              "2"
+            ]
+          },
+          {
+            "producer": "0x0216C",
+            "consumer": "0x02176",
+            "registers": [
+              "1"
+            ]
+          },
+          {
+            "producer": "0x7E2A4",
+            "consumer": "0x7E2A6",
+            "registers": [
+              "3"
+            ]
+          },
+          {
+            "producer": "0x7E2AC",
+            "consumer": "0x7E2AE",
+            "registers": [
+              "3"
+            ]
+          },
+          {
+            "producer": "0x7E2BA",
+            "consumer": "0x7E2BC",
+            "registers": [
+              "0"
+            ]
+          },
+          {
+            "producer": "0x7E2C0",
+            "consumer": "0x7E2C2",
+            "registers": [
+              "2"
+            ]
+          },
+          {
+            "producer": "0x7E2C6",
+            "consumer": "0x7E2C8",
+            "registers": [
+              "2"
+            ]
+          },
+          {
+            "producer": "0x7E2CC",
+            "consumer": "0x7E2CE",
+            "registers": [
+              "2"
+            ]
+          },
+          {
+            "producer": "0x7E2CE",
+            "consumer": "0x7E2D0",
+            "registers": [
+              "0"
+            ]
+          },
+          {
+            "producer": "0x026E4",
+            "consumer": "0x026E6",
+            "registers": [
+              "1"
+            ]
+          },
+          {
+            "producer": "0x026F0",
+            "consumer": "0x026F2",
+            "registers": [
+              "1"
+            ]
+          },
+          {
+            "producer": "0x026F0",
+            "consumer": "0x026F2",
+            "registers": [
+              "1"
+            ]
+          },
+          {
+            "producer": "0x026F0",
+            "consumer": "0x026F2",
+            "registers": [
+              "1"
+            ]
+          },
+          {
+            "producer": "0x026F0",
+            "consumer": "0x026F2",
+            "registers": [
+              "1"
+            ]
+          },
+          {
+            "producer": "0x026F0",
+            "consumer": "0x026F2",
+            "registers": [
+              "1"
+            ]
+          },
+          {
+            "producer": "0x02700",
+            "consumer": "0x02702",
+            "registers": [
+              "2"
+            ]
+          },
+          {
+            "producer": "0x020C8",
+            "consumer": "0x7E2DC",
+            "registers": [
+              "0"
+            ]
+          },
+          {
+            "producer": "0x7E2E0",
+            "consumer": "0x7E2E2",
+            "registers": [
+              "3"
+            ]
+          },
+          {
+            "producer": "0x7E2E8",
+            "consumer": "0x7E2EA",
+            "registers": [
+              "3"
+            ]
+          },
+          {
+            "producer": "0x7E2EE",
+            "consumer": "0x7E2F0",
+            "registers": [
+              "1"
+            ]
+          },
+          {
+            "producer": "0x7E2F0",
+            "consumer": "0x7E2F2",
+            "registers": [
+              "0"
+            ]
+          },
+          {
+            "producer": "0x7E2F6",
+            "consumer": "0x7E2F8",
+            "registers": [
+              "3"
+            ]
+          },
+          {
+            "producer": "0x7E2FE",
+            "consumer": "0x7E300",
+            "registers": [
+              "3"
+            ]
+          },
+          {
+            "producer": "0x7E30E",
+            "consumer": "0x7E310",
+            "registers": [
+              "2"
+            ]
+          }
+        ]
+      },
+      "divisions": [
+        {
+          "pc": "0x02702",
+          "non_fpu_instructions_before_next_fpu": 3
+        },
+        {
+          "pc": "0x02702",
+          "non_fpu_instructions_before_next_fpu": 4
+        },
+        {
+          "pc": "0x02702",
+          "non_fpu_instructions_before_next_fpu": 10
+        }
+      ]
+    },
+    {
+      "fixture": "low_first_intervals",
+      "airflow_g_s": 1.414162278175354,
+      "wrapper": {
+        "instructions": 200,
+        "fpu_instructions": 101,
+        "operations": {
+          "FCMP/EQ": 17,
+          "FCMP/GT": 25,
+          "FLDI0": 7,
+          "FMOV": 43,
+          "FMUL": 6,
+          "FNEG": 3
+        },
+        "immediate_non_div_fp_dependencies": 42,
+        "dependency_sites": [
+          {
+            "producer": "0x7E192",
+            "consumer": "0x7E194",
+            "registers": [
+              "5"
+            ]
+          },
+          {
+            "producer": "0x7E198",
+            "consumer": "0x7E19A",
+            "registers": [
+              "3"
+            ]
+          },
+          {
+            "producer": "0x7E1AE",
+            "consumer": "0x7E1B0",
+            "registers": [
+              "4"
+            ]
+          },
+          {
+            "producer": "0x7E1B6",
+            "consumer": "0x7E1B8",
+            "registers": [
+              "3"
+            ]
+          },
+          {
+            "producer": "0x7E1BE",
+            "consumer": "0x7E1C0",
+            "registers": [
+              "2"
+            ]
+          },
+          {
+            "producer": "0x7E1C0",
+            "consumer": "0x7E1C2",
+            "registers": [
+              "2"
+            ]
+          },
+          {
+            "producer": "0x7E1CC",
+            "consumer": "0x7E1CE",
+            "registers": [
+              "3"
+            ]
+          },
+          {
+            "producer": "0x7E1D4",
+            "consumer": "0x7E1D6",
+            "registers": [
+              "2"
+            ]
+          },
+          {
+            "producer": "0x7E1E4",
+            "consumer": "0x7E1E6",
+            "registers": [
+              "3"
+            ]
+          },
+          {
+            "producer": "0x7E1EC",
+            "consumer": "0x7E1EE",
+            "registers": [
+              "2"
+            ]
+          },
+          {
+            "producer": "0x7E1EE",
+            "consumer": "0x7E1F0",
+            "registers": [
+              "2"
+            ]
+          },
+          {
+            "producer": "0x7E1FA",
+            "consumer": "0x7E1FC",
+            "registers": [
+              "3"
+            ]
+          },
+          {
+            "producer": "0x7E202",
+            "consumer": "0x7E204",
+            "registers": [
+              "2"
+            ]
+          },
+          {
+            "producer": "0x7E20C",
+            "consumer": "0x7E20E",
+            "registers": [
+              "4"
+            ]
+          },
+          {
+            "producer": "0x7E214",
+            "consumer": "0x7E216",
+            "registers": [
+              "3"
+            ]
+          },
+          {
+            "producer": "0x7E21C",
+            "consumer": "0x7E21E",
+            "registers": [
+              "2"
+            ]
+          },
+          {
+            "producer": "0x7E21E",
+            "consumer": "0x7E220",
+            "registers": [
+              "2"
+            ]
+          },
+          {
+            "producer": "0x7E22A",
+            "consumer": "0x7E22C",
+            "registers": [
+              "3"
+            ]
+          },
+          {
+            "producer": "0x7E232",
+            "consumer": "0x7E234",
+            "registers": [
+              "2"
+            ]
+          },
+          {
+            "producer": "0x7E23E",
+            "consumer": "0x7E240",
+            "registers": [
+              "2"
+            ]
+          },
+          {
+            "producer": "0x7E244",
+            "consumer": "0x7E246",
+            "registers": [
+              "3"
+            ]
+          },
+          {
+            "producer": "0x7E24C",
+            "consumer": "0x7E24E",
+            "registers": [
+              "3"
+            ]
+          },
+          {
+            "producer": "0x7E254",
+            "consumer": "0x7E256",
+            "registers": [
+              "2"
+            ]
+          },
+          {
+            "producer": "0x7E25A",
+            "consumer": "0x7E25C",
+            "registers": [
+              "3"
+            ]
+          },
+          {
+            "producer": "0x7E262",
+            "consumer": "0x7E264",
+            "registers": [
+              "3"
+            ]
+          },
+          {
+            "producer": "0x7E26A",
+            "consumer": "0x7E26C",
+            "registers": [
+              "2"
+            ]
+          },
+          {
+            "producer": "0x7E270",
+            "consumer": "0x7E272",
+            "registers": [
+              "3"
+            ]
+          },
+          {
+            "producer": "0x7E278",
+            "consumer": "0x7E27A",
+            "registers": [
+              "3"
+            ]
+          },
+          {
+            "producer": "0x7E2A4",
+            "consumer": "0x7E2A6",
+            "registers": [
+              "3"
+            ]
+          },
+          {
+            "producer": "0x7E2AC",
+            "consumer": "0x7E2AE",
+            "registers": [
+              "3"
+            ]
+          },
+          {
+            "producer": "0x7E2BA",
+            "consumer": "0x7E2BC",
+            "registers": [
+              "0"
+            ]
+          },
+          {
+            "producer": "0x7E2C0",
+            "consumer": "0x7E2C2",
+            "registers": [
+              "2"
+            ]
+          },
+          {
+            "producer": "0x7E2C6",
+            "consumer": "0x7E2C8",
+            "registers": [
+              "2"
+            ]
+          },
+          {
+            "producer": "0x7E2CC",
+            "consumer": "0x7E2CE",
+            "registers": [
+              "2"
+            ]
+          },
+          {
+            "producer": "0x7E2CE",
+            "consumer": "0x7E2D0",
+            "registers": [
+              "0"
+            ]
+          },
+          {
+            "producer": "0x7E2E0",
+            "consumer": "0x7E2E2",
+            "registers": [
+              "3"
+            ]
+          },
+          {
+            "producer": "0x7E2E8",
+            "consumer": "0x7E2EA",
+            "registers": [
+              "3"
+            ]
+          },
+          {
+            "producer": "0x7E2EE",
+            "consumer": "0x7E2F0",
+            "registers": [
+              "1"
+            ]
+          },
+          {
+            "producer": "0x7E2F0",
+            "consumer": "0x7E2F2",
+            "registers": [
+              "0"
+            ]
+          },
+          {
+            "producer": "0x7E2F6",
+            "consumer": "0x7E2F8",
+            "registers": [
+              "3"
+            ]
+          },
+          {
+            "producer": "0x7E2FE",
+            "consumer": "0x7E300",
+            "registers": [
+              "3"
+            ]
+          },
+          {
+            "producer": "0x7E30E",
+            "consumer": "0x7E310",
+            "registers": [
+              "2"
+            ]
+          }
+        ]
+      },
+      "including_native_lookups": {
+        "instructions": 527,
+        "fpu_instructions": 213,
+        "operations": {
+          "FCMP/EQ": 21,
+          "FCMP/GT": 57,
+          "FDIV": 3,
+          "FLDI0": 11,
+          "FMAC": 4,
+          "FMOV": 98,
+          "FMUL": 6,
+          "FNEG": 3,
+          "FSUB": 10
+        },
+        "immediate_non_div_fp_dependencies": 87,
+        "dependency_sites": [
+          {
+            "producer": "0x7E192",
+            "consumer": "0x7E194",
+            "registers": [
+              "5"
+            ]
+          },
+          {
+            "producer": "0x7E198",
+            "consumer": "0x7E19A",
+            "registers": [
+              "3"
+            ]
+          },
+          {
+            "producer": "0x7E1AE",
+            "consumer": "0x7E1B0",
+            "registers": [
+              "4"
+            ]
+          },
+          {
+            "producer": "0x7E1B6",
+            "consumer": "0x7E1B8",
+            "registers": [
+              "3"
+            ]
+          },
+          {
+            "producer": "0x7E1BE",
+            "consumer": "0x7E1C0",
+            "registers": [
+              "2"
+            ]
+          },
+          {
+            "producer": "0x7E1C0",
+            "consumer": "0x7E1C2",
+            "registers": [
+              "2"
+            ]
+          },
+          {
+            "producer": "0x7E1CC",
+            "consumer": "0x7E1CE",
+            "registers": [
+              "3"
+            ]
+          },
+          {
+            "producer": "0x7E1D4",
+            "consumer": "0x7E1D6",
+            "registers": [
+              "2"
+            ]
+          },
+          {
+            "producer": "0x7E1E4",
+            "consumer": "0x7E1E6",
+            "registers": [
+              "3"
+            ]
+          },
+          {
+            "producer": "0x7E1EC",
+            "consumer": "0x7E1EE",
+            "registers": [
+              "2"
+            ]
+          },
+          {
+            "producer": "0x7E1EE",
+            "consumer": "0x7E1F0",
+            "registers": [
+              "2"
+            ]
+          },
+          {
+            "producer": "0x7E1FA",
+            "consumer": "0x7E1FC",
+            "registers": [
+              "3"
+            ]
+          },
+          {
+            "producer": "0x7E202",
+            "consumer": "0x7E204",
+            "registers": [
+              "2"
+            ]
+          },
+          {
+            "producer": "0x7E20C",
+            "consumer": "0x7E20E",
+            "registers": [
+              "4"
+            ]
+          },
+          {
+            "producer": "0x7E214",
+            "consumer": "0x7E216",
+            "registers": [
+              "3"
+            ]
+          },
+          {
+            "producer": "0x7E21C",
+            "consumer": "0x7E21E",
+            "registers": [
+              "2"
+            ]
+          },
+          {
+            "producer": "0x7E21E",
+            "consumer": "0x7E220",
+            "registers": [
+              "2"
+            ]
+          },
+          {
+            "producer": "0x7E22A",
+            "consumer": "0x7E22C",
+            "registers": [
+              "3"
+            ]
+          },
+          {
+            "producer": "0x7E232",
+            "consumer": "0x7E234",
+            "registers": [
+              "2"
+            ]
+          },
+          {
+            "producer": "0x7E23E",
+            "consumer": "0x7E240",
+            "registers": [
+              "2"
+            ]
+          },
+          {
+            "producer": "0x7E244",
+            "consumer": "0x7E246",
+            "registers": [
+              "3"
+            ]
+          },
+          {
+            "producer": "0x7E24C",
+            "consumer": "0x7E24E",
+            "registers": [
+              "3"
+            ]
+          },
+          {
+            "producer": "0x7E254",
+            "consumer": "0x7E256",
+            "registers": [
+              "2"
+            ]
+          },
+          {
+            "producer": "0x7E25A",
+            "consumer": "0x7E25C",
+            "registers": [
+              "3"
+            ]
+          },
+          {
+            "producer": "0x7E262",
+            "consumer": "0x7E264",
+            "registers": [
+              "3"
+            ]
+          },
+          {
+            "producer": "0x7E26A",
+            "consumer": "0x7E26C",
+            "registers": [
+              "2"
+            ]
+          },
+          {
+            "producer": "0x7E270",
+            "consumer": "0x7E272",
+            "registers": [
+              "3"
+            ]
+          },
+          {
+            "producer": "0x7E278",
+            "consumer": "0x7E27A",
+            "registers": [
+              "3"
+            ]
+          },
+          {
+            "producer": "0x026E4",
+            "consumer": "0x026E6",
+            "registers": [
+              "1"
+            ]
+          },
+          {
+            "producer": "0x026F0",
+            "consumer": "0x026F2",
+            "registers": [
+              "1"
+            ]
+          },
+          {
+            "producer": "0x026F0",
+            "consumer": "0x026F2",
+            "registers": [
+              "1"
+            ]
+          },
+          {
+            "producer": "0x026F0",
+            "consumer": "0x026F2",
+            "registers": [
+              "1"
+            ]
+          },
+          {
+            "producer": "0x026F0",
+            "consumer": "0x026F2",
+            "registers": [
+              "1"
+            ]
+          },
+          {
+            "producer": "0x026F0",
+            "consumer": "0x026F2",
+            "registers": [
+              "1"
+            ]
+          },
+          {
+            "producer": "0x026F0",
+            "consumer": "0x026F2",
+            "registers": [
+              "1"
+            ]
+          },
+          {
+            "producer": "0x026F0",
+            "consumer": "0x026F2",
+            "registers": [
+              "1"
+            ]
+          },
+          {
+            "producer": "0x026F0",
+            "consumer": "0x026F2",
+            "registers": [
+              "1"
+            ]
+          },
+          {
+            "producer": "0x026F0",
+            "consumer": "0x026F2",
+            "registers": [
+              "1"
+            ]
+          },
+          {
+            "producer": "0x026F0",
+            "consumer": "0x026F2",
+            "registers": [
+              "1"
+            ]
+          },
+          {
+            "producer": "0x026F0",
+            "consumer": "0x026F2",
+            "registers": [
+              "1"
+            ]
+          },
+          {
+            "producer": "0x026F0",
+            "consumer": "0x026F2",
+            "registers": [
+              "1"
+            ]
+          },
+          {
+            "producer": "0x02700",
+            "consumer": "0x02702",
+            "registers": [
+              "2"
+            ]
+          },
+          {
+            "producer": "0x026E4",
+            "consumer": "0x026E6",
+            "registers": [
+              "1"
+            ]
+          },
+          {
+            "producer": "0x026F0",
+            "consumer": "0x026F2",
+            "registers": [
+              "1"
+            ]
+          },
+          {
+            "producer": "0x026F0",
+            "consumer": "0x026F2",
+            "registers": [
+              "1"
+            ]
+          },
+          {
+            "producer": "0x026F0",
+            "consumer": "0x026F2",
+            "registers": [
+              "1"
+            ]
+          },
+          {
+            "producer": "0x026F0",
+            "consumer": "0x026F2",
+            "registers": [
+              "1"
+            ]
+          },
+          {
+            "producer": "0x026F0",
+            "consumer": "0x026F2",
+            "registers": [
+              "1"
+            ]
+          },
+          {
+            "producer": "0x026F0",
+            "consumer": "0x026F2",
+            "registers": [
+              "1"
+            ]
+          },
+          {
+            "producer": "0x026F0",
+            "consumer": "0x026F2",
+            "registers": [
+              "1"
+            ]
+          },
+          {
+            "producer": "0x026F0",
+            "consumer": "0x026F2",
+            "registers": [
+              "1"
+            ]
+          },
+          {
+            "producer": "0x02700",
+            "consumer": "0x02702",
+            "registers": [
+              "2"
+            ]
+          },
+          {
+            "producer": "0x027FC",
+            "consumer": "0x027FE",
+            "registers": [
+              "1"
+            ]
+          },
+          {
+            "producer": "0x027FE",
+            "consumer": "0x02800",
+            "registers": [
+              "1"
+            ]
+          },
+          {
+            "producer": "0x0260C",
+            "consumer": "0x0260E",
+            "registers": [
+              "4"
+            ]
+          },
+          {
+            "producer": "0x027FC",
+            "consumer": "0x027FE",
+            "registers": [
+              "1"
+            ]
+          },
+          {
+            "producer": "0x027FE",
+            "consumer": "0x02800",
+            "registers": [
+              "1"
+            ]
+          },
+          {
+            "producer": "0x0261C",
+            "consumer": "0x0261E",
+            "registers": [
+              "2"
+            ]
+          },
+          {
+            "producer": "0x0216C",
+            "consumer": "0x02176",
+            "registers": [
+              "1"
+            ]
+          },
+          {
+            "producer": "0x7E2A4",
+            "consumer": "0x7E2A6",
+            "registers": [
+              "3"
+            ]
+          },
+          {
+            "producer": "0x7E2AC",
+            "consumer": "0x7E2AE",
+            "registers": [
+              "3"
+            ]
+          },
+          {
+            "producer": "0x7E2BA",
+            "consumer": "0x7E2BC",
+            "registers": [
+              "0"
+            ]
+          },
+          {
+            "producer": "0x7E2C0",
+            "consumer": "0x7E2C2",
+            "registers": [
+              "2"
+            ]
+          },
+          {
+            "producer": "0x7E2C6",
+            "consumer": "0x7E2C8",
+            "registers": [
+              "2"
+            ]
+          },
+          {
+            "producer": "0x7E2CC",
+            "consumer": "0x7E2CE",
+            "registers": [
+              "2"
+            ]
+          },
+          {
+            "producer": "0x7E2CE",
+            "consumer": "0x7E2D0",
+            "registers": [
+              "0"
+            ]
+          },
+          {
+            "producer": "0x026E4",
+            "consumer": "0x026E6",
+            "registers": [
+              "1"
+            ]
+          },
+          {
+            "producer": "0x026F0",
+            "consumer": "0x026F2",
+            "registers": [
+              "1"
+            ]
+          },
+          {
+            "producer": "0x026F0",
+            "consumer": "0x026F2",
+            "registers": [
+              "1"
+            ]
+          },
+          {
+            "producer": "0x026F0",
+            "consumer": "0x026F2",
+            "registers": [
+              "1"
+            ]
+          },
+          {
+            "producer": "0x026F0",
+            "consumer": "0x026F2",
+            "registers": [
+              "1"
+            ]
+          },
+          {
+            "producer": "0x026F0",
+            "consumer": "0x026F2",
+            "registers": [
+              "1"
+            ]
+          },
+          {
+            "producer": "0x026F0",
+            "consumer": "0x026F2",
+            "registers": [
+              "1"
+            ]
+          },
+          {
+            "producer": "0x026F0",
+            "consumer": "0x026F2",
+            "registers": [
+              "1"
+            ]
+          },
+          {
+            "producer": "0x026F0",
+            "consumer": "0x026F2",
+            "registers": [
+              "1"
+            ]
+          },
+          {
+            "producer": "0x026F0",
+            "consumer": "0x026F2",
+            "registers": [
+              "1"
+            ]
+          },
+          {
+            "producer": "0x02700",
+            "consumer": "0x02702",
+            "registers": [
+              "2"
+            ]
+          },
+          {
+            "producer": "0x027FC",
+            "consumer": "0x027FE",
+            "registers": [
+              "1"
+            ]
+          },
+          {
+            "producer": "0x027FE",
+            "consumer": "0x02800",
+            "registers": [
+              "1"
+            ]
+          },
+          {
+            "producer": "0x020C8",
+            "consumer": "0x7E2DC",
+            "registers": [
+              "0"
+            ]
+          },
+          {
+            "producer": "0x7E2E0",
+            "consumer": "0x7E2E2",
+            "registers": [
+              "3"
+            ]
+          },
+          {
+            "producer": "0x7E2E8",
+            "consumer": "0x7E2EA",
+            "registers": [
+              "3"
+            ]
+          },
+          {
+            "producer": "0x7E2EE",
+            "consumer": "0x7E2F0",
+            "registers": [
+              "1"
+            ]
+          },
+          {
+            "producer": "0x7E2F0",
+            "consumer": "0x7E2F2",
+            "registers": [
+              "0"
+            ]
+          },
+          {
+            "producer": "0x7E2F6",
+            "consumer": "0x7E2F8",
+            "registers": [
+              "3"
+            ]
+          },
+          {
+            "producer": "0x7E2FE",
+            "consumer": "0x7E300",
+            "registers": [
+              "3"
+            ]
+          },
+          {
+            "producer": "0x7E30E",
+            "consumer": "0x7E310",
+            "registers": [
+              "2"
+            ]
+          }
+        ]
+      },
+      "divisions": [
+        {
+          "pc": "0x02702",
+          "non_fpu_instructions_before_next_fpu": 3
+        },
+        {
+          "pc": "0x02702",
+          "non_fpu_instructions_before_next_fpu": 4
+        },
+        {
+          "pc": "0x02702",
+          "non_fpu_instructions_before_next_fpu": 10
+        }
+      ]
+    },
+    {
+      "fixture": "high_first_intervals",
+      "airflow_g_s": 24.31373405456543,
+      "wrapper": {
+        "instructions": 198,
+        "fpu_instructions": 101,
+        "operations": {
+          "FCMP/EQ": 17,
+          "FCMP/GT": 25,
+          "FLDI0": 7,
+          "FMOV": 43,
+          "FMUL": 6,
+          "FNEG": 3
+        },
+        "immediate_non_div_fp_dependencies": 42,
+        "dependency_sites": [
+          {
+            "producer": "0x7E192",
+            "consumer": "0x7E194",
+            "registers": [
+              "5"
+            ]
+          },
+          {
+            "producer": "0x7E198",
+            "consumer": "0x7E19A",
+            "registers": [
+              "3"
+            ]
+          },
+          {
+            "producer": "0x7E1AE",
+            "consumer": "0x7E1B0",
+            "registers": [
+              "4"
+            ]
+          },
+          {
+            "producer": "0x7E1B6",
+            "consumer": "0x7E1B8",
+            "registers": [
+              "3"
+            ]
+          },
+          {
+            "producer": "0x7E1BE",
+            "consumer": "0x7E1C0",
+            "registers": [
+              "2"
+            ]
+          },
+          {
+            "producer": "0x7E1C0",
+            "consumer": "0x7E1C2",
+            "registers": [
+              "2"
+            ]
+          },
+          {
+            "producer": "0x7E1CC",
+            "consumer": "0x7E1CE",
+            "registers": [
+              "3"
+            ]
+          },
+          {
+            "producer": "0x7E1D4",
+            "consumer": "0x7E1D6",
+            "registers": [
+              "2"
+            ]
+          },
+          {
+            "producer": "0x7E1E4",
+            "consumer": "0x7E1E6",
+            "registers": [
+              "3"
+            ]
+          },
+          {
+            "producer": "0x7E1EC",
+            "consumer": "0x7E1EE",
+            "registers": [
+              "2"
+            ]
+          },
+          {
+            "producer": "0x7E1EE",
+            "consumer": "0x7E1F0",
+            "registers": [
+              "2"
+            ]
+          },
+          {
+            "producer": "0x7E1FA",
+            "consumer": "0x7E1FC",
+            "registers": [
+              "3"
+            ]
+          },
+          {
+            "producer": "0x7E202",
+            "consumer": "0x7E204",
+            "registers": [
+              "2"
+            ]
+          },
+          {
+            "producer": "0x7E20C",
+            "consumer": "0x7E20E",
+            "registers": [
+              "4"
+            ]
+          },
+          {
+            "producer": "0x7E214",
+            "consumer": "0x7E216",
+            "registers": [
+              "3"
+            ]
+          },
+          {
+            "producer": "0x7E21C",
+            "consumer": "0x7E21E",
+            "registers": [
+              "2"
+            ]
+          },
+          {
+            "producer": "0x7E21E",
+            "consumer": "0x7E220",
+            "registers": [
+              "2"
+            ]
+          },
+          {
+            "producer": "0x7E22A",
+            "consumer": "0x7E22C",
+            "registers": [
+              "3"
+            ]
+          },
+          {
+            "producer": "0x7E232",
+            "consumer": "0x7E234",
+            "registers": [
+              "2"
+            ]
+          },
+          {
+            "producer": "0x7E23E",
+            "consumer": "0x7E240",
+            "registers": [
+              "2"
+            ]
+          },
+          {
+            "producer": "0x7E244",
+            "consumer": "0x7E246",
+            "registers": [
+              "3"
+            ]
+          },
+          {
+            "producer": "0x7E24C",
+            "consumer": "0x7E24E",
+            "registers": [
+              "3"
+            ]
+          },
+          {
+            "producer": "0x7E254",
+            "consumer": "0x7E256",
+            "registers": [
+              "2"
+            ]
+          },
+          {
+            "producer": "0x7E25A",
+            "consumer": "0x7E25C",
+            "registers": [
+              "3"
+            ]
+          },
+          {
+            "producer": "0x7E262",
+            "consumer": "0x7E264",
+            "registers": [
+              "3"
+            ]
+          },
+          {
+            "producer": "0x7E26A",
+            "consumer": "0x7E26C",
+            "registers": [
+              "2"
+            ]
+          },
+          {
+            "producer": "0x7E270",
+            "consumer": "0x7E272",
+            "registers": [
+              "3"
+            ]
+          },
+          {
+            "producer": "0x7E278",
+            "consumer": "0x7E27A",
+            "registers": [
+              "3"
+            ]
+          },
+          {
+            "producer": "0x7E2A4",
+            "consumer": "0x7E2A6",
+            "registers": [
+              "3"
+            ]
+          },
+          {
+            "producer": "0x7E2AC",
+            "consumer": "0x7E2AE",
+            "registers": [
+              "3"
+            ]
+          },
+          {
+            "producer": "0x7E2BA",
+            "consumer": "0x7E2BC",
+            "registers": [
+              "0"
+            ]
+          },
+          {
+            "producer": "0x7E2C0",
+            "consumer": "0x7E2C2",
+            "registers": [
+              "2"
+            ]
+          },
+          {
+            "producer": "0x7E2C6",
+            "consumer": "0x7E2C8",
+            "registers": [
+              "2"
+            ]
+          },
+          {
+            "producer": "0x7E2CC",
+            "consumer": "0x7E2CE",
+            "registers": [
+              "2"
+            ]
+          },
+          {
+            "producer": "0x7E2CE",
+            "consumer": "0x7E2D0",
+            "registers": [
+              "0"
+            ]
+          },
+          {
+            "producer": "0x7E2E0",
+            "consumer": "0x7E2E2",
+            "registers": [
+              "3"
+            ]
+          },
+          {
+            "producer": "0x7E2E8",
+            "consumer": "0x7E2EA",
+            "registers": [
+              "3"
+            ]
+          },
+          {
+            "producer": "0x7E2EE",
+            "consumer": "0x7E2F0",
+            "registers": [
+              "1"
+            ]
+          },
+          {
+            "producer": "0x7E2F0",
+            "consumer": "0x7E2F2",
+            "registers": [
+              "0"
+            ]
+          },
+          {
+            "producer": "0x7E2F6",
+            "consumer": "0x7E2F8",
+            "registers": [
+              "3"
+            ]
+          },
+          {
+            "producer": "0x7E2FE",
+            "consumer": "0x7E300",
+            "registers": [
+              "3"
+            ]
+          },
+          {
+            "producer": "0x7E30E",
+            "consumer": "0x7E310",
+            "registers": [
+              "2"
+            ]
+          }
+        ]
+      },
+      "including_native_lookups": {
+        "instructions": 537,
+        "fpu_instructions": 217,
+        "operations": {
+          "FCMP/EQ": 21,
+          "FCMP/GT": 59,
+          "FDIV": 3,
+          "FLDI0": 11,
+          "FMAC": 4,
+          "FMOV": 100,
+          "FMUL": 6,
+          "FNEG": 3,
+          "FSUB": 10
+        },
+        "immediate_non_div_fp_dependencies": 89,
+        "dependency_sites": [
+          {
+            "producer": "0x7E192",
+            "consumer": "0x7E194",
+            "registers": [
+              "5"
+            ]
+          },
+          {
+            "producer": "0x7E198",
+            "consumer": "0x7E19A",
+            "registers": [
+              "3"
+            ]
+          },
+          {
+            "producer": "0x7E1AE",
+            "consumer": "0x7E1B0",
+            "registers": [
+              "4"
+            ]
+          },
+          {
+            "producer": "0x7E1B6",
+            "consumer": "0x7E1B8",
+            "registers": [
+              "3"
+            ]
+          },
+          {
+            "producer": "0x7E1BE",
+            "consumer": "0x7E1C0",
+            "registers": [
+              "2"
+            ]
+          },
+          {
+            "producer": "0x7E1C0",
+            "consumer": "0x7E1C2",
+            "registers": [
+              "2"
+            ]
+          },
+          {
+            "producer": "0x7E1CC",
+            "consumer": "0x7E1CE",
+            "registers": [
+              "3"
+            ]
+          },
+          {
+            "producer": "0x7E1D4",
+            "consumer": "0x7E1D6",
+            "registers": [
+              "2"
+            ]
+          },
+          {
+            "producer": "0x7E1E4",
+            "consumer": "0x7E1E6",
+            "registers": [
+              "3"
+            ]
+          },
+          {
+            "producer": "0x7E1EC",
+            "consumer": "0x7E1EE",
+            "registers": [
+              "2"
+            ]
+          },
+          {
+            "producer": "0x7E1EE",
+            "consumer": "0x7E1F0",
+            "registers": [
+              "2"
+            ]
+          },
+          {
+            "producer": "0x7E1FA",
+            "consumer": "0x7E1FC",
+            "registers": [
+              "3"
+            ]
+          },
+          {
+            "producer": "0x7E202",
+            "consumer": "0x7E204",
+            "registers": [
+              "2"
+            ]
+          },
+          {
+            "producer": "0x7E20C",
+            "consumer": "0x7E20E",
+            "registers": [
+              "4"
+            ]
+          },
+          {
+            "producer": "0x7E214",
+            "consumer": "0x7E216",
+            "registers": [
+              "3"
+            ]
+          },
+          {
+            "producer": "0x7E21C",
+            "consumer": "0x7E21E",
+            "registers": [
+              "2"
+            ]
+          },
+          {
+            "producer": "0x7E21E",
+            "consumer": "0x7E220",
+            "registers": [
+              "2"
+            ]
+          },
+          {
+            "producer": "0x7E22A",
+            "consumer": "0x7E22C",
+            "registers": [
+              "3"
+            ]
+          },
+          {
+            "producer": "0x7E232",
+            "consumer": "0x7E234",
+            "registers": [
+              "2"
+            ]
+          },
+          {
+            "producer": "0x7E23E",
+            "consumer": "0x7E240",
+            "registers": [
+              "2"
+            ]
+          },
+          {
+            "producer": "0x7E244",
+            "consumer": "0x7E246",
+            "registers": [
+              "3"
+            ]
+          },
+          {
+            "producer": "0x7E24C",
+            "consumer": "0x7E24E",
+            "registers": [
+              "3"
+            ]
+          },
+          {
+            "producer": "0x7E254",
+            "consumer": "0x7E256",
+            "registers": [
+              "2"
+            ]
+          },
+          {
+            "producer": "0x7E25A",
+            "consumer": "0x7E25C",
+            "registers": [
+              "3"
+            ]
+          },
+          {
+            "producer": "0x7E262",
+            "consumer": "0x7E264",
+            "registers": [
+              "3"
+            ]
+          },
+          {
+            "producer": "0x7E26A",
+            "consumer": "0x7E26C",
+            "registers": [
+              "2"
+            ]
+          },
+          {
+            "producer": "0x7E270",
+            "consumer": "0x7E272",
+            "registers": [
+              "3"
+            ]
+          },
+          {
+            "producer": "0x7E278",
+            "consumer": "0x7E27A",
+            "registers": [
+              "3"
+            ]
+          },
+          {
+            "producer": "0x026E4",
+            "consumer": "0x026E6",
+            "registers": [
+              "1"
+            ]
+          },
+          {
+            "producer": "0x026F0",
+            "consumer": "0x026F2",
+            "registers": [
+              "1"
+            ]
+          },
+          {
+            "producer": "0x026F0",
+            "consumer": "0x026F2",
+            "registers": [
+              "1"
+            ]
+          },
+          {
+            "producer": "0x026F0",
+            "consumer": "0x026F2",
+            "registers": [
+              "1"
+            ]
+          },
+          {
+            "producer": "0x026F0",
+            "consumer": "0x026F2",
+            "registers": [
+              "1"
+            ]
+          },
+          {
+            "producer": "0x026F0",
+            "consumer": "0x026F2",
+            "registers": [
+              "1"
+            ]
+          },
+          {
+            "producer": "0x026F0",
+            "consumer": "0x026F2",
+            "registers": [
+              "1"
+            ]
+          },
+          {
+            "producer": "0x026F0",
+            "consumer": "0x026F2",
+            "registers": [
+              "1"
+            ]
+          },
+          {
+            "producer": "0x026F0",
+            "consumer": "0x026F2",
+            "registers": [
+              "1"
+            ]
+          },
+          {
+            "producer": "0x026F0",
+            "consumer": "0x026F2",
+            "registers": [
+              "1"
+            ]
+          },
+          {
+            "producer": "0x026F0",
+            "consumer": "0x026F2",
+            "registers": [
+              "1"
+            ]
+          },
+          {
+            "producer": "0x026F0",
+            "consumer": "0x026F2",
+            "registers": [
+              "1"
+            ]
+          },
+          {
+            "producer": "0x026F0",
+            "consumer": "0x026F2",
+            "registers": [
+              "1"
+            ]
+          },
+          {
+            "producer": "0x02700",
+            "consumer": "0x02702",
+            "registers": [
+              "2"
+            ]
+          },
+          {
+            "producer": "0x026E4",
+            "consumer": "0x026E6",
+            "registers": [
+              "1"
+            ]
+          },
+          {
+            "producer": "0x026F0",
+            "consumer": "0x026F2",
+            "registers": [
+              "1"
+            ]
+          },
+          {
+            "producer": "0x026F0",
+            "consumer": "0x026F2",
+            "registers": [
+              "1"
+            ]
+          },
+          {
+            "producer": "0x026F0",
+            "consumer": "0x026F2",
+            "registers": [
+              "1"
+            ]
+          },
+          {
+            "producer": "0x026F0",
+            "consumer": "0x026F2",
+            "registers": [
+              "1"
+            ]
+          },
+          {
+            "producer": "0x026F0",
+            "consumer": "0x026F2",
+            "registers": [
+              "1"
+            ]
+          },
+          {
+            "producer": "0x026F0",
+            "consumer": "0x026F2",
+            "registers": [
+              "1"
+            ]
+          },
+          {
+            "producer": "0x026F0",
+            "consumer": "0x026F2",
+            "registers": [
+              "1"
+            ]
+          },
+          {
+            "producer": "0x026F0",
+            "consumer": "0x026F2",
+            "registers": [
+              "1"
+            ]
+          },
+          {
+            "producer": "0x026F0",
+            "consumer": "0x026F2",
+            "registers": [
+              "1"
+            ]
+          },
+          {
+            "producer": "0x026F0",
+            "consumer": "0x026F2",
+            "registers": [
+              "1"
+            ]
+          },
+          {
+            "producer": "0x02700",
+            "consumer": "0x02702",
+            "registers": [
+              "2"
+            ]
+          },
+          {
+            "producer": "0x027FC",
+            "consumer": "0x027FE",
+            "registers": [
+              "1"
+            ]
+          },
+          {
+            "producer": "0x027FE",
+            "consumer": "0x02800",
+            "registers": [
+              "1"
+            ]
+          },
+          {
+            "producer": "0x0260C",
+            "consumer": "0x0260E",
+            "registers": [
+              "4"
+            ]
+          },
+          {
+            "producer": "0x027FC",
+            "consumer": "0x027FE",
+            "registers": [
+              "1"
+            ]
+          },
+          {
+            "producer": "0x027FE",
+            "consumer": "0x02800",
+            "registers": [
+              "1"
+            ]
+          },
+          {
+            "producer": "0x0261C",
+            "consumer": "0x0261E",
+            "registers": [
+              "2"
+            ]
+          },
+          {
+            "producer": "0x0216C",
+            "consumer": "0x02176",
+            "registers": [
+              "1"
+            ]
+          },
+          {
+            "producer": "0x7E2A4",
+            "consumer": "0x7E2A6",
+            "registers": [
+              "3"
+            ]
+          },
+          {
+            "producer": "0x7E2AC",
+            "consumer": "0x7E2AE",
+            "registers": [
+              "3"
+            ]
+          },
+          {
+            "producer": "0x7E2BA",
+            "consumer": "0x7E2BC",
+            "registers": [
+              "0"
+            ]
+          },
+          {
+            "producer": "0x7E2C0",
+            "consumer": "0x7E2C2",
+            "registers": [
+              "2"
+            ]
+          },
+          {
+            "producer": "0x7E2C6",
+            "consumer": "0x7E2C8",
+            "registers": [
+              "2"
+            ]
+          },
+          {
+            "producer": "0x7E2CC",
+            "consumer": "0x7E2CE",
+            "registers": [
+              "2"
+            ]
+          },
+          {
+            "producer": "0x7E2CE",
+            "consumer": "0x7E2D0",
+            "registers": [
+              "0"
+            ]
+          },
+          {
+            "producer": "0x026E4",
+            "consumer": "0x026E6",
+            "registers": [
+              "1"
+            ]
+          },
+          {
+            "producer": "0x026F0",
+            "consumer": "0x026F2",
+            "registers": [
+              "1"
+            ]
+          },
+          {
+            "producer": "0x026F0",
+            "consumer": "0x026F2",
+            "registers": [
+              "1"
+            ]
+          },
+          {
+            "producer": "0x026F0",
+            "consumer": "0x026F2",
+            "registers": [
+              "1"
+            ]
+          },
+          {
+            "producer": "0x026F0",
+            "consumer": "0x026F2",
+            "registers": [
+              "1"
+            ]
+          },
+          {
+            "producer": "0x026F0",
+            "consumer": "0x026F2",
+            "registers": [
+              "1"
+            ]
+          },
+          {
+            "producer": "0x026F0",
+            "consumer": "0x026F2",
+            "registers": [
+              "1"
+            ]
+          },
+          {
+            "producer": "0x026F0",
+            "consumer": "0x026F2",
+            "registers": [
+              "1"
+            ]
+          },
+          {
+            "producer": "0x026F0",
+            "consumer": "0x026F2",
+            "registers": [
+              "1"
+            ]
+          },
+          {
+            "producer": "0x026F0",
+            "consumer": "0x026F2",
+            "registers": [
+              "1"
+            ]
+          },
+          {
+            "producer": "0x02700",
+            "consumer": "0x02702",
+            "registers": [
+              "2"
+            ]
+          },
+          {
+            "producer": "0x027FC",
+            "consumer": "0x027FE",
+            "registers": [
+              "1"
+            ]
+          },
+          {
+            "producer": "0x027FE",
+            "consumer": "0x02800",
+            "registers": [
+              "1"
+            ]
+          },
+          {
+            "producer": "0x020C8",
+            "consumer": "0x7E2DC",
+            "registers": [
+              "0"
+            ]
+          },
+          {
+            "producer": "0x7E2E0",
+            "consumer": "0x7E2E2",
+            "registers": [
+              "3"
+            ]
+          },
+          {
+            "producer": "0x7E2E8",
+            "consumer": "0x7E2EA",
+            "registers": [
+              "3"
+            ]
+          },
+          {
+            "producer": "0x7E2EE",
+            "consumer": "0x7E2F0",
+            "registers": [
+              "1"
+            ]
+          },
+          {
+            "producer": "0x7E2F0",
+            "consumer": "0x7E2F2",
+            "registers": [
+              "0"
+            ]
+          },
+          {
+            "producer": "0x7E2F6",
+            "consumer": "0x7E2F8",
+            "registers": [
+              "3"
+            ]
+          },
+          {
+            "producer": "0x7E2FE",
+            "consumer": "0x7E300",
+            "registers": [
+              "3"
+            ]
+          },
+          {
+            "producer": "0x7E30E",
+            "consumer": "0x7E310",
+            "registers": [
+              "2"
+            ]
+          }
+        ]
+      },
+      "divisions": [
+        {
+          "pc": "0x02702",
+          "non_fpu_instructions_before_next_fpu": 3
+        },
+        {
+          "pc": "0x02702",
+          "non_fpu_instructions_before_next_fpu": 4
+        },
+        {
+          "pc": "0x02702",
+          "non_fpu_instructions_before_next_fpu": 10
+        }
+      ]
+    },
+    {
+      "fixture": "high_running",
+      "airflow_g_s": 187.9125213623047,
+      "wrapper": {
+        "instructions": 198,
+        "fpu_instructions": 101,
+        "operations": {
+          "FCMP/EQ": 17,
+          "FCMP/GT": 25,
+          "FLDI0": 7,
+          "FMOV": 43,
+          "FMUL": 6,
+          "FNEG": 3
+        },
+        "immediate_non_div_fp_dependencies": 42,
+        "dependency_sites": [
+          {
+            "producer": "0x7E192",
+            "consumer": "0x7E194",
+            "registers": [
+              "5"
+            ]
+          },
+          {
+            "producer": "0x7E198",
+            "consumer": "0x7E19A",
+            "registers": [
+              "3"
+            ]
+          },
+          {
+            "producer": "0x7E1AE",
+            "consumer": "0x7E1B0",
+            "registers": [
+              "4"
+            ]
+          },
+          {
+            "producer": "0x7E1B6",
+            "consumer": "0x7E1B8",
+            "registers": [
+              "3"
+            ]
+          },
+          {
+            "producer": "0x7E1BE",
+            "consumer": "0x7E1C0",
+            "registers": [
+              "2"
+            ]
+          },
+          {
+            "producer": "0x7E1C0",
+            "consumer": "0x7E1C2",
+            "registers": [
+              "2"
+            ]
+          },
+          {
+            "producer": "0x7E1CC",
+            "consumer": "0x7E1CE",
+            "registers": [
+              "3"
+            ]
+          },
+          {
+            "producer": "0x7E1D4",
+            "consumer": "0x7E1D6",
+            "registers": [
+              "2"
+            ]
+          },
+          {
+            "producer": "0x7E1E4",
+            "consumer": "0x7E1E6",
+            "registers": [
+              "3"
+            ]
+          },
+          {
+            "producer": "0x7E1EC",
+            "consumer": "0x7E1EE",
+            "registers": [
+              "2"
+            ]
+          },
+          {
+            "producer": "0x7E1EE",
+            "consumer": "0x7E1F0",
+            "registers": [
+              "2"
+            ]
+          },
+          {
+            "producer": "0x7E1FA",
+            "consumer": "0x7E1FC",
+            "registers": [
+              "3"
+            ]
+          },
+          {
+            "producer": "0x7E202",
+            "consumer": "0x7E204",
+            "registers": [
+              "2"
+            ]
+          },
+          {
+            "producer": "0x7E20C",
+            "consumer": "0x7E20E",
+            "registers": [
+              "4"
+            ]
+          },
+          {
+            "producer": "0x7E214",
+            "consumer": "0x7E216",
+            "registers": [
+              "3"
+            ]
+          },
+          {
+            "producer": "0x7E21C",
+            "consumer": "0x7E21E",
+            "registers": [
+              "2"
+            ]
+          },
+          {
+            "producer": "0x7E21E",
+            "consumer": "0x7E220",
+            "registers": [
+              "2"
+            ]
+          },
+          {
+            "producer": "0x7E22A",
+            "consumer": "0x7E22C",
+            "registers": [
+              "3"
+            ]
+          },
+          {
+            "producer": "0x7E232",
+            "consumer": "0x7E234",
+            "registers": [
+              "2"
+            ]
+          },
+          {
+            "producer": "0x7E23E",
+            "consumer": "0x7E240",
+            "registers": [
+              "2"
+            ]
+          },
+          {
+            "producer": "0x7E244",
+            "consumer": "0x7E246",
+            "registers": [
+              "3"
+            ]
+          },
+          {
+            "producer": "0x7E24C",
+            "consumer": "0x7E24E",
+            "registers": [
+              "3"
+            ]
+          },
+          {
+            "producer": "0x7E254",
+            "consumer": "0x7E256",
+            "registers": [
+              "2"
+            ]
+          },
+          {
+            "producer": "0x7E25A",
+            "consumer": "0x7E25C",
+            "registers": [
+              "3"
+            ]
+          },
+          {
+            "producer": "0x7E262",
+            "consumer": "0x7E264",
+            "registers": [
+              "3"
+            ]
+          },
+          {
+            "producer": "0x7E26A",
+            "consumer": "0x7E26C",
+            "registers": [
+              "2"
+            ]
+          },
+          {
+            "producer": "0x7E270",
+            "consumer": "0x7E272",
+            "registers": [
+              "3"
+            ]
+          },
+          {
+            "producer": "0x7E278",
+            "consumer": "0x7E27A",
+            "registers": [
+              "3"
+            ]
+          },
+          {
+            "producer": "0x7E2A4",
+            "consumer": "0x7E2A6",
+            "registers": [
+              "3"
+            ]
+          },
+          {
+            "producer": "0x7E2AC",
+            "consumer": "0x7E2AE",
+            "registers": [
+              "3"
+            ]
+          },
+          {
+            "producer": "0x7E2BA",
+            "consumer": "0x7E2BC",
+            "registers": [
+              "0"
+            ]
+          },
+          {
+            "producer": "0x7E2C0",
+            "consumer": "0x7E2C2",
+            "registers": [
+              "2"
+            ]
+          },
+          {
+            "producer": "0x7E2C6",
+            "consumer": "0x7E2C8",
+            "registers": [
+              "2"
+            ]
+          },
+          {
+            "producer": "0x7E2CC",
+            "consumer": "0x7E2CE",
+            "registers": [
+              "2"
+            ]
+          },
+          {
+            "producer": "0x7E2CE",
+            "consumer": "0x7E2D0",
+            "registers": [
+              "0"
+            ]
+          },
+          {
+            "producer": "0x7E2E0",
+            "consumer": "0x7E2E2",
+            "registers": [
+              "3"
+            ]
+          },
+          {
+            "producer": "0x7E2E8",
+            "consumer": "0x7E2EA",
+            "registers": [
+              "3"
+            ]
+          },
+          {
+            "producer": "0x7E2EE",
+            "consumer": "0x7E2F0",
+            "registers": [
+              "1"
+            ]
+          },
+          {
+            "producer": "0x7E2F0",
+            "consumer": "0x7E2F2",
+            "registers": [
+              "0"
+            ]
+          },
+          {
+            "producer": "0x7E2F6",
+            "consumer": "0x7E2F8",
+            "registers": [
+              "3"
+            ]
+          },
+          {
+            "producer": "0x7E2FE",
+            "consumer": "0x7E300",
+            "registers": [
+              "3"
+            ]
+          },
+          {
+            "producer": "0x7E30E",
+            "consumer": "0x7E310",
+            "registers": [
+              "2"
+            ]
+          }
+        ]
+      },
+      "including_native_lookups": {
+        "instructions": 424,
+        "fpu_instructions": 176,
+        "operations": {
+          "FCMP/EQ": 20,
+          "FCMP/GT": 43,
+          "FDIV": 3,
+          "FLDI0": 10,
+          "FMAC": 2,
+          "FMOV": 81,
+          "FMUL": 6,
+          "FNEG": 3,
+          "FSUB": 8
+        },
+        "immediate_non_div_fp_dependencies": 70,
+        "dependency_sites": [
+          {
+            "producer": "0x7E192",
+            "consumer": "0x7E194",
+            "registers": [
+              "5"
+            ]
+          },
+          {
+            "producer": "0x7E198",
+            "consumer": "0x7E19A",
+            "registers": [
+              "3"
+            ]
+          },
+          {
+            "producer": "0x7E1AE",
+            "consumer": "0x7E1B0",
+            "registers": [
+              "4"
+            ]
+          },
+          {
+            "producer": "0x7E1B6",
+            "consumer": "0x7E1B8",
+            "registers": [
+              "3"
+            ]
+          },
+          {
+            "producer": "0x7E1BE",
+            "consumer": "0x7E1C0",
+            "registers": [
+              "2"
+            ]
+          },
+          {
+            "producer": "0x7E1C0",
+            "consumer": "0x7E1C2",
+            "registers": [
+              "2"
+            ]
+          },
+          {
+            "producer": "0x7E1CC",
+            "consumer": "0x7E1CE",
+            "registers": [
+              "3"
+            ]
+          },
+          {
+            "producer": "0x7E1D4",
+            "consumer": "0x7E1D6",
+            "registers": [
+              "2"
+            ]
+          },
+          {
+            "producer": "0x7E1E4",
+            "consumer": "0x7E1E6",
+            "registers": [
+              "3"
+            ]
+          },
+          {
+            "producer": "0x7E1EC",
+            "consumer": "0x7E1EE",
+            "registers": [
+              "2"
+            ]
+          },
+          {
+            "producer": "0x7E1EE",
+            "consumer": "0x7E1F0",
+            "registers": [
+              "2"
+            ]
+          },
+          {
+            "producer": "0x7E1FA",
+            "consumer": "0x7E1FC",
+            "registers": [
+              "3"
+            ]
+          },
+          {
+            "producer": "0x7E202",
+            "consumer": "0x7E204",
+            "registers": [
+              "2"
+            ]
+          },
+          {
+            "producer": "0x7E20C",
+            "consumer": "0x7E20E",
+            "registers": [
+              "4"
+            ]
+          },
+          {
+            "producer": "0x7E214",
+            "consumer": "0x7E216",
+            "registers": [
+              "3"
+            ]
+          },
+          {
+            "producer": "0x7E21C",
+            "consumer": "0x7E21E",
+            "registers": [
+              "2"
+            ]
+          },
+          {
+            "producer": "0x7E21E",
+            "consumer": "0x7E220",
+            "registers": [
+              "2"
+            ]
+          },
+          {
+            "producer": "0x7E22A",
+            "consumer": "0x7E22C",
+            "registers": [
+              "3"
+            ]
+          },
+          {
+            "producer": "0x7E232",
+            "consumer": "0x7E234",
+            "registers": [
+              "2"
+            ]
+          },
+          {
+            "producer": "0x7E23E",
+            "consumer": "0x7E240",
+            "registers": [
+              "2"
+            ]
+          },
+          {
+            "producer": "0x7E244",
+            "consumer": "0x7E246",
+            "registers": [
+              "3"
+            ]
+          },
+          {
+            "producer": "0x7E24C",
+            "consumer": "0x7E24E",
+            "registers": [
+              "3"
+            ]
+          },
+          {
+            "producer": "0x7E254",
+            "consumer": "0x7E256",
+            "registers": [
+              "2"
+            ]
+          },
+          {
+            "producer": "0x7E25A",
+            "consumer": "0x7E25C",
+            "registers": [
+              "3"
+            ]
+          },
+          {
+            "producer": "0x7E262",
+            "consumer": "0x7E264",
+            "registers": [
+              "3"
+            ]
+          },
+          {
+            "producer": "0x7E26A",
+            "consumer": "0x7E26C",
+            "registers": [
+              "2"
+            ]
+          },
+          {
+            "producer": "0x7E270",
+            "consumer": "0x7E272",
+            "registers": [
+              "3"
+            ]
+          },
+          {
+            "producer": "0x7E278",
+            "consumer": "0x7E27A",
+            "registers": [
+              "3"
+            ]
+          },
+          {
+            "producer": "0x026E4",
+            "consumer": "0x026E6",
+            "registers": [
+              "1"
+            ]
+          },
+          {
+            "producer": "0x026F0",
+            "consumer": "0x026F2",
+            "registers": [
+              "1"
+            ]
+          },
+          {
+            "producer": "0x026F0",
+            "consumer": "0x026F2",
+            "registers": [
+              "1"
+            ]
+          },
+          {
+            "producer": "0x026F0",
+            "consumer": "0x026F2",
+            "registers": [
+              "1"
+            ]
+          },
+          {
+            "producer": "0x026F0",
+            "consumer": "0x026F2",
+            "registers": [
+              "1"
+            ]
+          },
+          {
+            "producer": "0x02700",
+            "consumer": "0x02702",
+            "registers": [
+              "2"
+            ]
+          },
+          {
+            "producer": "0x026E4",
+            "consumer": "0x026E6",
+            "registers": [
+              "1"
+            ]
+          },
+          {
+            "producer": "0x026F0",
+            "consumer": "0x026F2",
+            "registers": [
+              "1"
+            ]
+          },
+          {
+            "producer": "0x026F0",
+            "consumer": "0x026F2",
+            "registers": [
+              "1"
+            ]
+          },
+          {
+            "producer": "0x026F0",
+            "consumer": "0x026F2",
+            "registers": [
+              "1"
+            ]
+          },
+          {
+            "producer": "0x026F0",
+            "consumer": "0x026F2",
+            "registers": [
+              "1"
+            ]
+          },
+          {
+            "producer": "0x026F0",
+            "consumer": "0x026F2",
+            "registers": [
+              "1"
+            ]
+          },
+          {
+            "producer": "0x026F0",
+            "consumer": "0x026F2",
+            "registers": [
+              "1"
+            ]
+          },
+          {
+            "producer": "0x02700",
+            "consumer": "0x02702",
+            "registers": [
+              "2"
+            ]
+          },
+          {
+            "producer": "0x027FC",
+            "consumer": "0x027FE",
+            "registers": [
+              "1"
+            ]
+          },
+          {
+            "producer": "0x027FE",
+            "consumer": "0x02800",
+            "registers": [
+              "1"
+            ]
+          },
+          {
+            "producer": "0x0260C",
+            "consumer": "0x0260E",
+            "registers": [
+              "4"
+            ]
+          },
+          {
+            "producer": "0x0216C",
+            "consumer": "0x02176",
+            "registers": [
+              "1"
+            ]
+          },
+          {
+            "producer": "0x7E2A4",
+            "consumer": "0x7E2A6",
+            "registers": [
+              "3"
+            ]
+          },
+          {
+            "producer": "0x7E2AC",
+            "consumer": "0x7E2AE",
+            "registers": [
+              "3"
+            ]
+          },
+          {
+            "producer": "0x7E2BA",
+            "consumer": "0x7E2BC",
+            "registers": [
+              "0"
+            ]
+          },
+          {
+            "producer": "0x7E2C0",
+            "consumer": "0x7E2C2",
+            "registers": [
+              "2"
+            ]
+          },
+          {
+            "producer": "0x7E2C6",
+            "consumer": "0x7E2C8",
+            "registers": [
+              "2"
+            ]
+          },
+          {
+            "producer": "0x7E2CC",
+            "consumer": "0x7E2CE",
+            "registers": [
+              "2"
+            ]
+          },
+          {
+            "producer": "0x7E2CE",
+            "consumer": "0x7E2D0",
+            "registers": [
+              "0"
+            ]
+          },
+          {
+            "producer": "0x026E4",
+            "consumer": "0x026E6",
+            "registers": [
+              "1"
+            ]
+          },
+          {
+            "producer": "0x026F0",
+            "consumer": "0x026F2",
+            "registers": [
+              "1"
+            ]
+          },
+          {
+            "producer": "0x026F0",
+            "consumer": "0x026F2",
+            "registers": [
+              "1"
+            ]
+          },
+          {
+            "producer": "0x026F0",
+            "consumer": "0x026F2",
+            "registers": [
+              "1"
+            ]
+          },
+          {
+            "producer": "0x026F0",
+            "consumer": "0x026F2",
+            "registers": [
+              "1"
+            ]
+          },
+          {
+            "producer": "0x026F0",
+            "consumer": "0x026F2",
+            "registers": [
+              "1"
+            ]
+          },
+          {
+            "producer": "0x02700",
+            "consumer": "0x02702",
+            "registers": [
+              "2"
+            ]
+          },
+          {
+            "producer": "0x027FC",
+            "consumer": "0x027FE",
+            "registers": [
+              "1"
+            ]
+          },
+          {
+            "producer": "0x027FE",
+            "consumer": "0x02800",
+            "registers": [
+              "1"
+            ]
+          },
+          {
+            "producer": "0x020C8",
+            "consumer": "0x7E2DC",
+            "registers": [
+              "0"
+            ]
+          },
+          {
+            "producer": "0x7E2E0",
+            "consumer": "0x7E2E2",
+            "registers": [
+              "3"
+            ]
+          },
+          {
+            "producer": "0x7E2E8",
+            "consumer": "0x7E2EA",
+            "registers": [
+              "3"
+            ]
+          },
+          {
+            "producer": "0x7E2EE",
+            "consumer": "0x7E2F0",
+            "registers": [
+              "1"
+            ]
+          },
+          {
+            "producer": "0x7E2F0",
+            "consumer": "0x7E2F2",
+            "registers": [
+              "0"
+            ]
+          },
+          {
+            "producer": "0x7E2F6",
+            "consumer": "0x7E2F8",
+            "registers": [
+              "3"
+            ]
+          },
+          {
+            "producer": "0x7E2FE",
+            "consumer": "0x7E300",
+            "registers": [
+              "3"
+            ]
+          },
+          {
+            "producer": "0x7E30E",
+            "consumer": "0x7E310",
+            "registers": [
+              "2"
+            ]
+          }
+        ]
+      },
+      "divisions": [
+        {
+          "pc": "0x02702",
+          "non_fpu_instructions_before_next_fpu": 3
+        },
+        {
+          "pc": "0x02702",
+          "non_fpu_instructions_before_next_fpu": 4
+        },
+        {
+          "pc": "0x02702",
+          "non_fpu_instructions_before_next_fpu": 10
+        }
+      ]
+    },
+    {
+      "fixture": "map_iat_lower_clamps",
+      "airflow_g_s": 0.7163338661193848,
+      "wrapper": {
+        "instructions": 200,
+        "fpu_instructions": 101,
+        "operations": {
+          "FCMP/EQ": 17,
+          "FCMP/GT": 25,
+          "FLDI0": 7,
+          "FMOV": 43,
+          "FMUL": 6,
+          "FNEG": 3
+        },
+        "immediate_non_div_fp_dependencies": 42,
+        "dependency_sites": [
+          {
+            "producer": "0x7E192",
+            "consumer": "0x7E194",
+            "registers": [
+              "5"
+            ]
+          },
+          {
+            "producer": "0x7E198",
+            "consumer": "0x7E19A",
+            "registers": [
+              "3"
+            ]
+          },
+          {
+            "producer": "0x7E1AE",
+            "consumer": "0x7E1B0",
+            "registers": [
+              "4"
+            ]
+          },
+          {
+            "producer": "0x7E1B6",
+            "consumer": "0x7E1B8",
+            "registers": [
+              "3"
+            ]
+          },
+          {
+            "producer": "0x7E1BE",
+            "consumer": "0x7E1C0",
+            "registers": [
+              "2"
+            ]
+          },
+          {
+            "producer": "0x7E1C0",
+            "consumer": "0x7E1C2",
+            "registers": [
+              "2"
+            ]
+          },
+          {
+            "producer": "0x7E1CC",
+            "consumer": "0x7E1CE",
+            "registers": [
+              "3"
+            ]
+          },
+          {
+            "producer": "0x7E1D4",
+            "consumer": "0x7E1D6",
+            "registers": [
+              "2"
+            ]
+          },
+          {
+            "producer": "0x7E1E4",
+            "consumer": "0x7E1E6",
+            "registers": [
+              "3"
+            ]
+          },
+          {
+            "producer": "0x7E1EC",
+            "consumer": "0x7E1EE",
+            "registers": [
+              "2"
+            ]
+          },
+          {
+            "producer": "0x7E1EE",
+            "consumer": "0x7E1F0",
+            "registers": [
+              "2"
+            ]
+          },
+          {
+            "producer": "0x7E1FA",
+            "consumer": "0x7E1FC",
+            "registers": [
+              "3"
+            ]
+          },
+          {
+            "producer": "0x7E202",
+            "consumer": "0x7E204",
+            "registers": [
+              "2"
+            ]
+          },
+          {
+            "producer": "0x7E20C",
+            "consumer": "0x7E20E",
+            "registers": [
+              "4"
+            ]
+          },
+          {
+            "producer": "0x7E214",
+            "consumer": "0x7E216",
+            "registers": [
+              "3"
+            ]
+          },
+          {
+            "producer": "0x7E21C",
+            "consumer": "0x7E21E",
+            "registers": [
+              "2"
+            ]
+          },
+          {
+            "producer": "0x7E21E",
+            "consumer": "0x7E220",
+            "registers": [
+              "2"
+            ]
+          },
+          {
+            "producer": "0x7E22A",
+            "consumer": "0x7E22C",
+            "registers": [
+              "3"
+            ]
+          },
+          {
+            "producer": "0x7E232",
+            "consumer": "0x7E234",
+            "registers": [
+              "2"
+            ]
+          },
+          {
+            "producer": "0x7E23E",
+            "consumer": "0x7E240",
+            "registers": [
+              "2"
+            ]
+          },
+          {
+            "producer": "0x7E244",
+            "consumer": "0x7E246",
+            "registers": [
+              "3"
+            ]
+          },
+          {
+            "producer": "0x7E24C",
+            "consumer": "0x7E24E",
+            "registers": [
+              "3"
+            ]
+          },
+          {
+            "producer": "0x7E254",
+            "consumer": "0x7E256",
+            "registers": [
+              "2"
+            ]
+          },
+          {
+            "producer": "0x7E25A",
+            "consumer": "0x7E25C",
+            "registers": [
+              "3"
+            ]
+          },
+          {
+            "producer": "0x7E262",
+            "consumer": "0x7E264",
+            "registers": [
+              "3"
+            ]
+          },
+          {
+            "producer": "0x7E26A",
+            "consumer": "0x7E26C",
+            "registers": [
+              "2"
+            ]
+          },
+          {
+            "producer": "0x7E270",
+            "consumer": "0x7E272",
+            "registers": [
+              "3"
+            ]
+          },
+          {
+            "producer": "0x7E278",
+            "consumer": "0x7E27A",
+            "registers": [
+              "3"
+            ]
+          },
+          {
+            "producer": "0x7E2A4",
+            "consumer": "0x7E2A6",
+            "registers": [
+              "3"
+            ]
+          },
+          {
+            "producer": "0x7E2AC",
+            "consumer": "0x7E2AE",
+            "registers": [
+              "3"
+            ]
+          },
+          {
+            "producer": "0x7E2BA",
+            "consumer": "0x7E2BC",
+            "registers": [
+              "0"
+            ]
+          },
+          {
+            "producer": "0x7E2C0",
+            "consumer": "0x7E2C2",
+            "registers": [
+              "2"
+            ]
+          },
+          {
+            "producer": "0x7E2C6",
+            "consumer": "0x7E2C8",
+            "registers": [
+              "2"
+            ]
+          },
+          {
+            "producer": "0x7E2CC",
+            "consumer": "0x7E2CE",
+            "registers": [
+              "2"
+            ]
+          },
+          {
+            "producer": "0x7E2CE",
+            "consumer": "0x7E2D0",
+            "registers": [
+              "0"
+            ]
+          },
+          {
+            "producer": "0x7E2E0",
+            "consumer": "0x7E2E2",
+            "registers": [
+              "3"
+            ]
+          },
+          {
+            "producer": "0x7E2E8",
+            "consumer": "0x7E2EA",
+            "registers": [
+              "3"
+            ]
+          },
+          {
+            "producer": "0x7E2EE",
+            "consumer": "0x7E2F0",
+            "registers": [
+              "1"
+            ]
+          },
+          {
+            "producer": "0x7E2F0",
+            "consumer": "0x7E2F2",
+            "registers": [
+              "0"
+            ]
+          },
+          {
+            "producer": "0x7E2F6",
+            "consumer": "0x7E2F8",
+            "registers": [
+              "3"
+            ]
+          },
+          {
+            "producer": "0x7E2FE",
+            "consumer": "0x7E300",
+            "registers": [
+              "3"
+            ]
+          },
+          {
+            "producer": "0x7E30E",
+            "consumer": "0x7E310",
+            "registers": [
+              "2"
+            ]
+          }
+        ]
+      },
+      "including_native_lookups": {
+        "instructions": 515,
+        "fpu_instructions": 201,
+        "operations": {
+          "FCMP/EQ": 21,
+          "FCMP/GT": 57,
+          "FDIV": 2,
+          "FLDI0": 12,
+          "FMAC": 1,
+          "FMOV": 94,
+          "FMUL": 6,
+          "FNEG": 3,
+          "FSUB": 5
+        },
+        "immediate_non_div_fp_dependencies": 80,
+        "dependency_sites": [
+          {
+            "producer": "0x7E192",
+            "consumer": "0x7E194",
+            "registers": [
+              "5"
+            ]
+          },
+          {
+            "producer": "0x7E198",
+            "consumer": "0x7E19A",
+            "registers": [
+              "3"
+            ]
+          },
+          {
+            "producer": "0x7E1AE",
+            "consumer": "0x7E1B0",
+            "registers": [
+              "4"
+            ]
+          },
+          {
+            "producer": "0x7E1B6",
+            "consumer": "0x7E1B8",
+            "registers": [
+              "3"
+            ]
+          },
+          {
+            "producer": "0x7E1BE",
+            "consumer": "0x7E1C0",
+            "registers": [
+              "2"
+            ]
+          },
+          {
+            "producer": "0x7E1C0",
+            "consumer": "0x7E1C2",
+            "registers": [
+              "2"
+            ]
+          },
+          {
+            "producer": "0x7E1CC",
+            "consumer": "0x7E1CE",
+            "registers": [
+              "3"
+            ]
+          },
+          {
+            "producer": "0x7E1D4",
+            "consumer": "0x7E1D6",
+            "registers": [
+              "2"
+            ]
+          },
+          {
+            "producer": "0x7E1E4",
+            "consumer": "0x7E1E6",
+            "registers": [
+              "3"
+            ]
+          },
+          {
+            "producer": "0x7E1EC",
+            "consumer": "0x7E1EE",
+            "registers": [
+              "2"
+            ]
+          },
+          {
+            "producer": "0x7E1EE",
+            "consumer": "0x7E1F0",
+            "registers": [
+              "2"
+            ]
+          },
+          {
+            "producer": "0x7E1FA",
+            "consumer": "0x7E1FC",
+            "registers": [
+              "3"
+            ]
+          },
+          {
+            "producer": "0x7E202",
+            "consumer": "0x7E204",
+            "registers": [
+              "2"
+            ]
+          },
+          {
+            "producer": "0x7E20C",
+            "consumer": "0x7E20E",
+            "registers": [
+              "4"
+            ]
+          },
+          {
+            "producer": "0x7E214",
+            "consumer": "0x7E216",
+            "registers": [
+              "3"
+            ]
+          },
+          {
+            "producer": "0x7E21C",
+            "consumer": "0x7E21E",
+            "registers": [
+              "2"
+            ]
+          },
+          {
+            "producer": "0x7E21E",
+            "consumer": "0x7E220",
+            "registers": [
+              "2"
+            ]
+          },
+          {
+            "producer": "0x7E22A",
+            "consumer": "0x7E22C",
+            "registers": [
+              "3"
+            ]
+          },
+          {
+            "producer": "0x7E232",
+            "consumer": "0x7E234",
+            "registers": [
+              "2"
+            ]
+          },
+          {
+            "producer": "0x7E23E",
+            "consumer": "0x7E240",
+            "registers": [
+              "2"
+            ]
+          },
+          {
+            "producer": "0x7E244",
+            "consumer": "0x7E246",
+            "registers": [
+              "3"
+            ]
+          },
+          {
+            "producer": "0x7E24C",
+            "consumer": "0x7E24E",
+            "registers": [
+              "3"
+            ]
+          },
+          {
+            "producer": "0x7E254",
+            "consumer": "0x7E256",
+            "registers": [
+              "2"
+            ]
+          },
+          {
+            "producer": "0x7E25A",
+            "consumer": "0x7E25C",
+            "registers": [
+              "3"
+            ]
+          },
+          {
+            "producer": "0x7E262",
+            "consumer": "0x7E264",
+            "registers": [
+              "3"
+            ]
+          },
+          {
+            "producer": "0x7E26A",
+            "consumer": "0x7E26C",
+            "registers": [
+              "2"
+            ]
+          },
+          {
+            "producer": "0x7E270",
+            "consumer": "0x7E272",
+            "registers": [
+              "3"
+            ]
+          },
+          {
+            "producer": "0x7E278",
+            "consumer": "0x7E27A",
+            "registers": [
+              "3"
+            ]
+          },
+          {
+            "producer": "0x026E4",
+            "consumer": "0x026E6",
+            "registers": [
+              "1"
+            ]
+          },
+          {
+            "producer": "0x026F0",
+            "consumer": "0x026F2",
+            "registers": [
+              "1"
+            ]
+          },
+          {
+            "producer": "0x026F0",
+            "consumer": "0x026F2",
+            "registers": [
+              "1"
+            ]
+          },
+          {
+            "producer": "0x026F0",
+            "consumer": "0x026F2",
+            "registers": [
+              "1"
+            ]
+          },
+          {
+            "producer": "0x026F0",
+            "consumer": "0x026F2",
+            "registers": [
+              "1"
+            ]
+          },
+          {
+            "producer": "0x026F0",
+            "consumer": "0x026F2",
+            "registers": [
+              "1"
+            ]
+          },
+          {
+            "producer": "0x026F0",
+            "consumer": "0x026F2",
+            "registers": [
+              "1"
+            ]
+          },
+          {
+            "producer": "0x026F0",
+            "consumer": "0x026F2",
+            "registers": [
+              "1"
+            ]
+          },
+          {
+            "producer": "0x026F0",
+            "consumer": "0x026F2",
+            "registers": [
+              "1"
+            ]
+          },
+          {
+            "producer": "0x026F0",
+            "consumer": "0x026F2",
+            "registers": [
+              "1"
+            ]
+          },
+          {
+            "producer": "0x026F0",
+            "consumer": "0x026F2",
+            "registers": [
+              "1"
+            ]
+          },
+          {
+            "producer": "0x026F0",
+            "consumer": "0x026F2",
+            "registers": [
+              "1"
+            ]
+          },
+          {
+            "producer": "0x026F0",
+            "consumer": "0x026F2",
+            "registers": [
+              "1"
+            ]
+          },
+          {
+            "producer": "0x026E4",
+            "consumer": "0x026E6",
+            "registers": [
+              "1"
+            ]
+          },
+          {
+            "producer": "0x026F0",
+            "consumer": "0x026F2",
+            "registers": [
+              "1"
+            ]
+          },
+          {
+            "producer": "0x026F0",
+            "consumer": "0x026F2",
+            "registers": [
+              "1"
+            ]
+          },
+          {
+            "producer": "0x026F0",
+            "consumer": "0x026F2",
+            "registers": [
+              "1"
+            ]
+          },
+          {
+            "producer": "0x026F0",
+            "consumer": "0x026F2",
+            "registers": [
+              "1"
+            ]
+          },
+          {
+            "producer": "0x026F0",
+            "consumer": "0x026F2",
+            "registers": [
+              "1"
+            ]
+          },
+          {
+            "producer": "0x026F0",
+            "consumer": "0x026F2",
+            "registers": [
+              "1"
+            ]
+          },
+          {
+            "producer": "0x026F0",
+            "consumer": "0x026F2",
+            "registers": [
+              "1"
+            ]
+          },
+          {
+            "producer": "0x026F0",
+            "consumer": "0x026F2",
+            "registers": [
+              "1"
+            ]
+          },
+          {
+            "producer": "0x02700",
+            "consumer": "0x02702",
+            "registers": [
+              "2"
+            ]
+          },
+          {
+            "producer": "0x0260C",
+            "consumer": "0x0260E",
+            "registers": [
+              "4"
+            ]
+          },
+          {
+            "producer": "0x0261C",
+            "consumer": "0x0261E",
+            "registers": [
+              "2"
+            ]
+          },
+          {
+            "producer": "0x0216C",
+            "consumer": "0x02176",
+            "registers": [
+              "1"
+            ]
+          },
+          {
+            "producer": "0x7E2A4",
+            "consumer": "0x7E2A6",
+            "registers": [
+              "3"
+            ]
+          },
+          {
+            "producer": "0x7E2AC",
+            "consumer": "0x7E2AE",
+            "registers": [
+              "3"
+            ]
+          },
+          {
+            "producer": "0x7E2BA",
+            "consumer": "0x7E2BC",
+            "registers": [
+              "0"
+            ]
+          },
+          {
+            "producer": "0x7E2C0",
+            "consumer": "0x7E2C2",
+            "registers": [
+              "2"
+            ]
+          },
+          {
+            "producer": "0x7E2C6",
+            "consumer": "0x7E2C8",
+            "registers": [
+              "2"
+            ]
+          },
+          {
+            "producer": "0x7E2CC",
+            "consumer": "0x7E2CE",
+            "registers": [
+              "2"
+            ]
+          },
+          {
+            "producer": "0x7E2CE",
+            "consumer": "0x7E2D0",
+            "registers": [
+              "0"
+            ]
+          },
+          {
+            "producer": "0x026E4",
+            "consumer": "0x026E6",
+            "registers": [
+              "1"
+            ]
+          },
+          {
+            "producer": "0x026F0",
+            "consumer": "0x026F2",
+            "registers": [
+              "1"
+            ]
+          },
+          {
+            "producer": "0x026F0",
+            "consumer": "0x026F2",
+            "registers": [
+              "1"
+            ]
+          },
+          {
+            "producer": "0x026F0",
+            "consumer": "0x026F2",
+            "registers": [
+              "1"
+            ]
+          },
+          {
+            "producer": "0x026F0",
+            "consumer": "0x026F2",
+            "registers": [
+              "1"
+            ]
+          },
+          {
+            "producer": "0x026F0",
+            "consumer": "0x026F2",
+            "registers": [
+              "1"
+            ]
+          },
+          {
+            "producer": "0x026F0",
+            "consumer": "0x026F2",
+            "registers": [
+              "1"
+            ]
+          },
+          {
+            "producer": "0x026F0",
+            "consumer": "0x026F2",
+            "registers": [
+              "1"
+            ]
+          },
+          {
+            "producer": "0x026F0",
+            "consumer": "0x026F2",
+            "registers": [
+              "1"
+            ]
+          },
+          {
+            "producer": "0x026F0",
+            "consumer": "0x026F2",
+            "registers": [
+              "1"
+            ]
+          },
+          {
+            "producer": "0x02700",
+            "consumer": "0x02702",
+            "registers": [
+              "2"
+            ]
+          },
+          {
+            "producer": "0x020C8",
+            "consumer": "0x7E2DC",
+            "registers": [
+              "0"
+            ]
+          },
+          {
+            "producer": "0x7E2E0",
+            "consumer": "0x7E2E2",
+            "registers": [
+              "3"
+            ]
+          },
+          {
+            "producer": "0x7E2E8",
+            "consumer": "0x7E2EA",
+            "registers": [
+              "3"
+            ]
+          },
+          {
+            "producer": "0x7E2EE",
+            "consumer": "0x7E2F0",
+            "registers": [
+              "1"
+            ]
+          },
+          {
+            "producer": "0x7E2F0",
+            "consumer": "0x7E2F2",
+            "registers": [
+              "0"
+            ]
+          },
+          {
+            "producer": "0x7E2F6",
+            "consumer": "0x7E2F8",
+            "registers": [
+              "3"
+            ]
+          },
+          {
+            "producer": "0x7E2FE",
+            "consumer": "0x7E300",
+            "registers": [
+              "3"
+            ]
+          },
+          {
+            "producer": "0x7E30E",
+            "consumer": "0x7E310",
+            "registers": [
+              "2"
+            ]
+          }
+        ]
+      },
+      "divisions": [
+        {
+          "pc": "0x02702",
+          "non_fpu_instructions_before_next_fpu": 4
+        },
+        {
+          "pc": "0x02702",
+          "non_fpu_instructions_before_next_fpu": 10
+        }
+      ]
+    },
+    {
+      "fixture": "upper_clamps",
+      "airflow_g_s": 317.8683166503906,
+      "wrapper": {
+        "instructions": 198,
+        "fpu_instructions": 101,
+        "operations": {
+          "FCMP/EQ": 17,
+          "FCMP/GT": 25,
+          "FLDI0": 7,
+          "FMOV": 43,
+          "FMUL": 6,
+          "FNEG": 3
+        },
+        "immediate_non_div_fp_dependencies": 42,
+        "dependency_sites": [
+          {
+            "producer": "0x7E192",
+            "consumer": "0x7E194",
+            "registers": [
+              "5"
+            ]
+          },
+          {
+            "producer": "0x7E198",
+            "consumer": "0x7E19A",
+            "registers": [
+              "3"
+            ]
+          },
+          {
+            "producer": "0x7E1AE",
+            "consumer": "0x7E1B0",
+            "registers": [
+              "4"
+            ]
+          },
+          {
+            "producer": "0x7E1B6",
+            "consumer": "0x7E1B8",
+            "registers": [
+              "3"
+            ]
+          },
+          {
+            "producer": "0x7E1BE",
+            "consumer": "0x7E1C0",
+            "registers": [
+              "2"
+            ]
+          },
+          {
+            "producer": "0x7E1C0",
+            "consumer": "0x7E1C2",
+            "registers": [
+              "2"
+            ]
+          },
+          {
+            "producer": "0x7E1CC",
+            "consumer": "0x7E1CE",
+            "registers": [
+              "3"
+            ]
+          },
+          {
+            "producer": "0x7E1D4",
+            "consumer": "0x7E1D6",
+            "registers": [
+              "2"
+            ]
+          },
+          {
+            "producer": "0x7E1E4",
+            "consumer": "0x7E1E6",
+            "registers": [
+              "3"
+            ]
+          },
+          {
+            "producer": "0x7E1EC",
+            "consumer": "0x7E1EE",
+            "registers": [
+              "2"
+            ]
+          },
+          {
+            "producer": "0x7E1EE",
+            "consumer": "0x7E1F0",
+            "registers": [
+              "2"
+            ]
+          },
+          {
+            "producer": "0x7E1FA",
+            "consumer": "0x7E1FC",
+            "registers": [
+              "3"
+            ]
+          },
+          {
+            "producer": "0x7E202",
+            "consumer": "0x7E204",
+            "registers": [
+              "2"
+            ]
+          },
+          {
+            "producer": "0x7E20C",
+            "consumer": "0x7E20E",
+            "registers": [
+              "4"
+            ]
+          },
+          {
+            "producer": "0x7E214",
+            "consumer": "0x7E216",
+            "registers": [
+              "3"
+            ]
+          },
+          {
+            "producer": "0x7E21C",
+            "consumer": "0x7E21E",
+            "registers": [
+              "2"
+            ]
+          },
+          {
+            "producer": "0x7E21E",
+            "consumer": "0x7E220",
+            "registers": [
+              "2"
+            ]
+          },
+          {
+            "producer": "0x7E22A",
+            "consumer": "0x7E22C",
+            "registers": [
+              "3"
+            ]
+          },
+          {
+            "producer": "0x7E232",
+            "consumer": "0x7E234",
+            "registers": [
+              "2"
+            ]
+          },
+          {
+            "producer": "0x7E23E",
+            "consumer": "0x7E240",
+            "registers": [
+              "2"
+            ]
+          },
+          {
+            "producer": "0x7E244",
+            "consumer": "0x7E246",
+            "registers": [
+              "3"
+            ]
+          },
+          {
+            "producer": "0x7E24C",
+            "consumer": "0x7E24E",
+            "registers": [
+              "3"
+            ]
+          },
+          {
+            "producer": "0x7E254",
+            "consumer": "0x7E256",
+            "registers": [
+              "2"
+            ]
+          },
+          {
+            "producer": "0x7E25A",
+            "consumer": "0x7E25C",
+            "registers": [
+              "3"
+            ]
+          },
+          {
+            "producer": "0x7E262",
+            "consumer": "0x7E264",
+            "registers": [
+              "3"
+            ]
+          },
+          {
+            "producer": "0x7E26A",
+            "consumer": "0x7E26C",
+            "registers": [
+              "2"
+            ]
+          },
+          {
+            "producer": "0x7E270",
+            "consumer": "0x7E272",
+            "registers": [
+              "3"
+            ]
+          },
+          {
+            "producer": "0x7E278",
+            "consumer": "0x7E27A",
+            "registers": [
+              "3"
+            ]
+          },
+          {
+            "producer": "0x7E2A4",
+            "consumer": "0x7E2A6",
+            "registers": [
+              "3"
+            ]
+          },
+          {
+            "producer": "0x7E2AC",
+            "consumer": "0x7E2AE",
+            "registers": [
+              "3"
+            ]
+          },
+          {
+            "producer": "0x7E2BA",
+            "consumer": "0x7E2BC",
+            "registers": [
+              "0"
+            ]
+          },
+          {
+            "producer": "0x7E2C0",
+            "consumer": "0x7E2C2",
+            "registers": [
+              "2"
+            ]
+          },
+          {
+            "producer": "0x7E2C6",
+            "consumer": "0x7E2C8",
+            "registers": [
+              "2"
+            ]
+          },
+          {
+            "producer": "0x7E2CC",
+            "consumer": "0x7E2CE",
+            "registers": [
+              "2"
+            ]
+          },
+          {
+            "producer": "0x7E2CE",
+            "consumer": "0x7E2D0",
+            "registers": [
+              "0"
+            ]
+          },
+          {
+            "producer": "0x7E2E0",
+            "consumer": "0x7E2E2",
+            "registers": [
+              "3"
+            ]
+          },
+          {
+            "producer": "0x7E2E8",
+            "consumer": "0x7E2EA",
+            "registers": [
+              "3"
+            ]
+          },
+          {
+            "producer": "0x7E2EE",
+            "consumer": "0x7E2F0",
+            "registers": [
+              "1"
+            ]
+          },
+          {
+            "producer": "0x7E2F0",
+            "consumer": "0x7E2F2",
+            "registers": [
+              "0"
+            ]
+          },
+          {
+            "producer": "0x7E2F6",
+            "consumer": "0x7E2F8",
+            "registers": [
+              "3"
+            ]
+          },
+          {
+            "producer": "0x7E2FE",
+            "consumer": "0x7E300",
+            "registers": [
+              "3"
+            ]
+          },
+          {
+            "producer": "0x7E30E",
+            "consumer": "0x7E310",
+            "registers": [
+              "2"
+            ]
+          }
+        ]
+      },
+      "including_native_lookups": {
+        "instructions": 313,
+        "fpu_instructions": 131,
+        "operations": {
+          "FCMP/EQ": 20,
+          "FCMP/GT": 28,
+          "FLDI0": 13,
+          "FMOV": 61,
+          "FMUL": 6,
+          "FNEG": 3
+        },
+        "immediate_non_div_fp_dependencies": 48,
+        "dependency_sites": [
+          {
+            "producer": "0x7E192",
+            "consumer": "0x7E194",
+            "registers": [
+              "5"
+            ]
+          },
+          {
+            "producer": "0x7E198",
+            "consumer": "0x7E19A",
+            "registers": [
+              "3"
+            ]
+          },
+          {
+            "producer": "0x7E1AE",
+            "consumer": "0x7E1B0",
+            "registers": [
+              "4"
+            ]
+          },
+          {
+            "producer": "0x7E1B6",
+            "consumer": "0x7E1B8",
+            "registers": [
+              "3"
+            ]
+          },
+          {
+            "producer": "0x7E1BE",
+            "consumer": "0x7E1C0",
+            "registers": [
+              "2"
+            ]
+          },
+          {
+            "producer": "0x7E1C0",
+            "consumer": "0x7E1C2",
+            "registers": [
+              "2"
+            ]
+          },
+          {
+            "producer": "0x7E1CC",
+            "consumer": "0x7E1CE",
+            "registers": [
+              "3"
+            ]
+          },
+          {
+            "producer": "0x7E1D4",
+            "consumer": "0x7E1D6",
+            "registers": [
+              "2"
+            ]
+          },
+          {
+            "producer": "0x7E1E4",
+            "consumer": "0x7E1E6",
+            "registers": [
+              "3"
+            ]
+          },
+          {
+            "producer": "0x7E1EC",
+            "consumer": "0x7E1EE",
+            "registers": [
+              "2"
+            ]
+          },
+          {
+            "producer": "0x7E1EE",
+            "consumer": "0x7E1F0",
+            "registers": [
+              "2"
+            ]
+          },
+          {
+            "producer": "0x7E1FA",
+            "consumer": "0x7E1FC",
+            "registers": [
+              "3"
+            ]
+          },
+          {
+            "producer": "0x7E202",
+            "consumer": "0x7E204",
+            "registers": [
+              "2"
+            ]
+          },
+          {
+            "producer": "0x7E20C",
+            "consumer": "0x7E20E",
+            "registers": [
+              "4"
+            ]
+          },
+          {
+            "producer": "0x7E214",
+            "consumer": "0x7E216",
+            "registers": [
+              "3"
+            ]
+          },
+          {
+            "producer": "0x7E21C",
+            "consumer": "0x7E21E",
+            "registers": [
+              "2"
+            ]
+          },
+          {
+            "producer": "0x7E21E",
+            "consumer": "0x7E220",
+            "registers": [
+              "2"
+            ]
+          },
+          {
+            "producer": "0x7E22A",
+            "consumer": "0x7E22C",
+            "registers": [
+              "3"
+            ]
+          },
+          {
+            "producer": "0x7E232",
+            "consumer": "0x7E234",
+            "registers": [
+              "2"
+            ]
+          },
+          {
+            "producer": "0x7E23E",
+            "consumer": "0x7E240",
+            "registers": [
+              "2"
+            ]
+          },
+          {
+            "producer": "0x7E244",
+            "consumer": "0x7E246",
+            "registers": [
+              "3"
+            ]
+          },
+          {
+            "producer": "0x7E24C",
+            "consumer": "0x7E24E",
+            "registers": [
+              "3"
+            ]
+          },
+          {
+            "producer": "0x7E254",
+            "consumer": "0x7E256",
+            "registers": [
+              "2"
+            ]
+          },
+          {
+            "producer": "0x7E25A",
+            "consumer": "0x7E25C",
+            "registers": [
+              "3"
+            ]
+          },
+          {
+            "producer": "0x7E262",
+            "consumer": "0x7E264",
+            "registers": [
+              "3"
+            ]
+          },
+          {
+            "producer": "0x7E26A",
+            "consumer": "0x7E26C",
+            "registers": [
+              "2"
+            ]
+          },
+          {
+            "producer": "0x7E270",
+            "consumer": "0x7E272",
+            "registers": [
+              "3"
+            ]
+          },
+          {
+            "producer": "0x7E278",
+            "consumer": "0x7E27A",
+            "registers": [
+              "3"
+            ]
+          },
+          {
+            "producer": "0x026E4",
+            "consumer": "0x026E6",
+            "registers": [
+              "1"
+            ]
+          },
+          {
+            "producer": "0x026E4",
+            "consumer": "0x026E6",
+            "registers": [
+              "1"
+            ]
+          },
+          {
+            "producer": "0x0260C",
+            "consumer": "0x0260E",
+            "registers": [
+              "4"
+            ]
+          },
+          {
+            "producer": "0x0216C",
+            "consumer": "0x02176",
+            "registers": [
+              "1"
+            ]
+          },
+          {
+            "producer": "0x7E2A4",
+            "consumer": "0x7E2A6",
+            "registers": [
+              "3"
+            ]
+          },
+          {
+            "producer": "0x7E2AC",
+            "consumer": "0x7E2AE",
+            "registers": [
+              "3"
+            ]
+          },
+          {
+            "producer": "0x7E2BA",
+            "consumer": "0x7E2BC",
+            "registers": [
+              "0"
+            ]
+          },
+          {
+            "producer": "0x7E2C0",
+            "consumer": "0x7E2C2",
+            "registers": [
+              "2"
+            ]
+          },
+          {
+            "producer": "0x7E2C6",
+            "consumer": "0x7E2C8",
+            "registers": [
+              "2"
+            ]
+          },
+          {
+            "producer": "0x7E2CC",
+            "consumer": "0x7E2CE",
+            "registers": [
+              "2"
+            ]
+          },
+          {
+            "producer": "0x7E2CE",
+            "consumer": "0x7E2D0",
+            "registers": [
+              "0"
+            ]
+          },
+          {
+            "producer": "0x026E4",
+            "consumer": "0x026E6",
+            "registers": [
+              "1"
+            ]
+          },
+          {
+            "producer": "0x020C8",
+            "consumer": "0x7E2DC",
+            "registers": [
+              "0"
+            ]
+          },
+          {
+            "producer": "0x7E2E0",
+            "consumer": "0x7E2E2",
+            "registers": [
+              "3"
+            ]
+          },
+          {
+            "producer": "0x7E2E8",
+            "consumer": "0x7E2EA",
+            "registers": [
+              "3"
+            ]
+          },
+          {
+            "producer": "0x7E2EE",
+            "consumer": "0x7E2F0",
+            "registers": [
+              "1"
+            ]
+          },
+          {
+            "producer": "0x7E2F0",
+            "consumer": "0x7E2F2",
+            "registers": [
+              "0"
+            ]
+          },
+          {
+            "producer": "0x7E2F6",
+            "consumer": "0x7E2F8",
+            "registers": [
+              "3"
+            ]
+          },
+          {
+            "producer": "0x7E2FE",
+            "consumer": "0x7E300",
+            "registers": [
+              "3"
+            ]
+          },
+          {
+            "producer": "0x7E30E",
+            "consumer": "0x7E310",
+            "registers": [
+              "2"
+            ]
+          }
+        ]
+      },
+      "divisions": []
+    },
+    {
+      "fixture": "stopped",
+      "airflow_g_s": 0.0,
+      "wrapper": {
+        "instructions": 27,
+        "fpu_instructions": 13,
+        "operations": {
+          "FCMP/EQ": 2,
+          "FLDI0": 2,
+          "FMOV": 9
+        },
+        "immediate_non_div_fp_dependencies": 2,
+        "dependency_sites": [
+          {
+            "producer": "0x7E192",
+            "consumer": "0x7E194",
+            "registers": [
+              "5"
+            ]
+          },
+          {
+            "producer": "0x7E198",
+            "consumer": "0x7E19A",
+            "registers": [
+              "3"
+            ]
+          }
+        ]
+      },
+      "including_native_lookups": {
+        "instructions": 27,
+        "fpu_instructions": 13,
+        "operations": {
+          "FCMP/EQ": 2,
+          "FLDI0": 2,
+          "FMOV": 9
+        },
+        "immediate_non_div_fp_dependencies": 2,
+        "dependency_sites": [
+          {
+            "producer": "0x7E192",
+            "consumer": "0x7E194",
+            "registers": [
+              "5"
+            ]
+          },
+          {
+            "producer": "0x7E198",
+            "consumer": "0x7E19A",
+            "registers": [
+              "3"
+            ]
+          }
+        ]
+      },
+      "divisions": []
+    },
+    {
+      "fixture": "invalid_map",
+      "airflow_g_s": 500.0,
+      "wrapper": {
+        "instructions": 33,
+        "fpu_instructions": 17,
+        "operations": {
+          "FCMP/EQ": 3,
+          "FLDI0": 1,
+          "FMOV": 13
+        },
+        "immediate_non_div_fp_dependencies": 3,
+        "dependency_sites": [
+          {
+            "producer": "0x7E192",
+            "consumer": "0x7E194",
+            "registers": [
+              "5"
+            ]
+          },
+          {
+            "producer": "0x7E198",
+            "consumer": "0x7E19A",
+            "registers": [
+              "3"
+            ]
+          },
+          {
+            "producer": "0x7E1AE",
+            "consumer": "0x7E1B0",
+            "registers": [
+              "4"
+            ]
+          }
+        ]
+      },
+      "including_native_lookups": {
+        "instructions": 33,
+        "fpu_instructions": 17,
+        "operations": {
+          "FCMP/EQ": 3,
+          "FLDI0": 1,
+          "FMOV": 13
+        },
+        "immediate_non_div_fp_dependencies": 3,
+        "dependency_sites": [
+          {
+            "producer": "0x7E192",
+            "consumer": "0x7E194",
+            "registers": [
+              "5"
+            ]
+          },
+          {
+            "producer": "0x7E198",
+            "consumer": "0x7E19A",
+            "registers": [
+              "3"
+            ]
+          },
+          {
+            "producer": "0x7E1AE",
+            "consumer": "0x7E1B0",
+            "registers": [
+              "4"
+            ]
+          }
+        ]
+      },
+      "divisions": []
+    }
+  ],
+  "other_hook_fixtures": [
+    {
+      "fixture": "wideband_valid",
+      "added_code": {
+        "instructions": 58,
+        "fpu_instructions": 30,
+        "operations": {
+          "FADD": 1,
+          "FCMP/EQ": 4,
+          "FCMP/GT": 4,
+          "FLDI0": 2,
+          "FLOAT": 1,
+          "FMOV": 15,
+          "FMUL": 2,
+          "FPUL transfer": 1
+        },
+        "immediate_non_div_fp_dependencies": 10,
+        "dependency_sites": [
+          {
+            "producer": "0x7E446",
+            "consumer": "0x7E448",
+            "registers": [
+              "FPUL"
+            ]
+          },
+          {
+            "producer": "0x7E44C",
+            "consumer": "0x7E44E",
+            "registers": [
+              "1"
+            ]
+          },
+          {
+            "producer": "0x7E44E",
+            "consumer": "0x7E450",
+            "registers": [
+              "0"
+            ]
+          },
+          {
+            "producer": "0x7E456",
+            "consumer": "0x7E458",
+            "registers": [
+              "1"
+            ]
+          },
+          {
+            "producer": "0x7E462",
+            "consumer": "0x7E464",
+            "registers": [
+              "1"
+            ]
+          },
+          {
+            "producer": "0x7E46E",
+            "consumer": "0x7E470",
+            "registers": [
+              "1"
+            ]
+          },
+          {
+            "producer": "0x7E474",
+            "consumer": "0x7E476",
+            "registers": [
+              "1"
+            ]
+          },
+          {
+            "producer": "0x7E476",
+            "consumer": "0x7E478",
+            "registers": [
+              "0"
+            ]
+          },
+          {
+            "producer": "0x7E47C",
+            "consumer": "0x7E47E",
+            "registers": [
+              "2"
+            ]
+          },
+          {
+            "producer": "0x7E484",
+            "consumer": "0x7E486",
+            "registers": [
+              "2"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "fixture": "wideband_invalid",
+      "added_code": {
+        "instructions": 36,
+        "fpu_instructions": 18,
+        "operations": {
+          "FCMP/EQ": 2,
+          "FCMP/GT": 1,
+          "FLDI0": 1,
+          "FLDI1": 1,
+          "FLOAT": 1,
+          "FMOV": 10,
+          "FMUL": 1,
+          "FPUL transfer": 1
+        },
+        "immediate_non_div_fp_dependencies": 4,
+        "dependency_sites": [
+          {
+            "producer": "0x7E446",
+            "consumer": "0x7E448",
+            "registers": [
+              "FPUL"
+            ]
+          },
+          {
+            "producer": "0x7E44C",
+            "consumer": "0x7E44E",
+            "registers": [
+              "1"
+            ]
+          },
+          {
+            "producer": "0x7E44E",
+            "consumer": "0x7E450",
+            "registers": [
+              "0"
+            ]
+          },
+          {
+            "producer": "0x7E456",
+            "consumer": "0x7E458",
+            "registers": [
+              "1"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "fixture": "wideband_inhibit_ready",
+      "added_code": {
+        "instructions": 8,
+        "fpu_instructions": 3,
+        "operations": {
+          "FCMP/GT": 1,
+          "FMOV": 2
+        },
+        "immediate_non_div_fp_dependencies": 1,
+        "dependency_sites": [
+          {
+            "producer": "0x7E526",
+            "consumer": "0x7E528",
+            "registers": [
+              "1"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "fixture": "pressure_open_loop_vacuum",
+      "added_code": {
+        "instructions": 41,
+        "fpu_instructions": 16,
+        "operations": {
+          "FCMP/EQ": 5,
+          "FCMP/GT": 4,
+          "FLDI0": 1,
+          "FMOV": 5,
+          "FSUB": 1
+        },
+        "immediate_non_div_fp_dependencies": 6,
+        "dependency_sites": [
+          {
+            "producer": "0x7EB32",
+            "consumer": "0x7EB34",
+            "registers": [
+              "3"
+            ]
+          },
+          {
+            "producer": "0x7EB3A",
+            "consumer": "0x7EB3C",
+            "registers": [
+              "4"
+            ]
+          },
+          {
+            "producer": "0x7EB46",
+            "consumer": "0x7EB48",
+            "registers": [
+              "4"
+            ]
+          },
+          {
+            "producer": "0x7EB52",
+            "consumer": "0x7EB54",
+            "registers": [
+              "4"
+            ]
+          },
+          {
+            "producer": "0x7EB58",
+            "consumer": "0x7EB5A",
+            "registers": [
+              "2"
+            ]
+          },
+          {
+            "producer": "0x7EB62",
+            "consumer": "0x7EB64",
+            "registers": [
+              "2"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "fixture": "pressure_open_loop_atmosphere",
+      "added_code": {
+        "instructions": 45,
+        "fpu_instructions": 16,
+        "operations": {
+          "FCMP/EQ": 5,
+          "FCMP/GT": 4,
+          "FLDI0": 1,
+          "FMOV": 5,
+          "FSUB": 1
+        },
+        "immediate_non_div_fp_dependencies": 6,
+        "dependency_sites": [
+          {
+            "producer": "0x7EB32",
+            "consumer": "0x7EB34",
+            "registers": [
+              "3"
+            ]
+          },
+          {
+            "producer": "0x7EB3A",
+            "consumer": "0x7EB3C",
+            "registers": [
+              "4"
+            ]
+          },
+          {
+            "producer": "0x7EB46",
+            "consumer": "0x7EB48",
+            "registers": [
+              "4"
+            ]
+          },
+          {
+            "producer": "0x7EB52",
+            "consumer": "0x7EB54",
+            "registers": [
+              "4"
+            ]
+          },
+          {
+            "producer": "0x7EB58",
+            "consumer": "0x7EB5A",
+            "registers": [
+              "2"
+            ]
+          },
+          {
+            "producer": "0x7EB62",
+            "consumer": "0x7EB64",
+            "registers": [
+              "2"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "fixture": "cut_vacuum",
+      "added_code": {
+        "instructions": 91,
+        "fpu_instructions": 25,
+        "operations": {
+          "FCMP/EQ": 7,
+          "FCMP/GT": 7,
+          "FLDI0": 1,
+          "FMOV": 9,
+          "FSUB": 1
+        },
+        "immediate_non_div_fp_dependencies": 9,
+        "dependency_sites": [
+          {
+            "producer": "0x7D8E0",
+            "consumer": "0x7D8E2",
+            "registers": [
+              "3"
+            ]
+          },
+          {
+            "producer": "0x7EC32",
+            "consumer": "0x7EC34",
+            "registers": [
+              "2"
+            ]
+          },
+          {
+            "producer": "0x7EC3A",
+            "consumer": "0x7EC3C",
+            "registers": [
+              "4"
+            ]
+          },
+          {
+            "producer": "0x7EC46",
+            "consumer": "0x7EC48",
+            "registers": [
+              "4"
+            ]
+          },
+          {
+            "producer": "0x7EC52",
+            "consumer": "0x7EC54",
+            "registers": [
+              "3"
+            ]
+          },
+          {
+            "producer": "0x7EC5A",
+            "consumer": "0x7EC5C",
+            "registers": [
+              "4"
+            ]
+          },
+          {
+            "producer": "0x7EC66",
+            "consumer": "0x7EC68",
+            "registers": [
+              "4"
+            ]
+          },
+          {
+            "producer": "0x7EC74",
+            "consumer": "0x7EC76",
+            "registers": [
+              "3"
+            ]
+          },
+          {
+            "producer": "0x7EC7A",
+            "consumer": "0x7EC7C",
+            "registers": [
+              "4"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "fixture": "cut_arm",
+      "added_code": {
+        "instructions": 96,
+        "fpu_instructions": 25,
+        "operations": {
+          "FCMP/EQ": 7,
+          "FCMP/GT": 7,
+          "FLDI0": 1,
+          "FMOV": 9,
+          "FSUB": 1
+        },
+        "immediate_non_div_fp_dependencies": 9,
+        "dependency_sites": [
+          {
+            "producer": "0x7D8E0",
+            "consumer": "0x7D8E2",
+            "registers": [
+              "3"
+            ]
+          },
+          {
+            "producer": "0x7EC32",
+            "consumer": "0x7EC34",
+            "registers": [
+              "2"
+            ]
+          },
+          {
+            "producer": "0x7EC3A",
+            "consumer": "0x7EC3C",
+            "registers": [
+              "4"
+            ]
+          },
+          {
+            "producer": "0x7EC46",
+            "consumer": "0x7EC48",
+            "registers": [
+              "4"
+            ]
+          },
+          {
+            "producer": "0x7EC52",
+            "consumer": "0x7EC54",
+            "registers": [
+              "3"
+            ]
+          },
+          {
+            "producer": "0x7EC5A",
+            "consumer": "0x7EC5C",
+            "registers": [
+              "4"
+            ]
+          },
+          {
+            "producer": "0x7EC66",
+            "consumer": "0x7EC68",
+            "registers": [
+              "4"
+            ]
+          },
+          {
+            "producer": "0x7EC74",
+            "consumer": "0x7EC76",
+            "registers": [
+              "3"
+            ]
+          },
+          {
+            "producer": "0x7EC7A",
+            "consumer": "0x7EC7C",
+            "registers": [
+              "4"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "fixture": "cut_monitor",
+      "added_code": {
+        "instructions": 122,
+        "fpu_instructions": 35,
+        "operations": {
+          "FCMP/EQ": 8,
+          "FCMP/GT": 11,
+          "FLDI0": 2,
+          "FMOV": 13,
+          "FSUB": 1
+        },
+        "immediate_non_div_fp_dependencies": 12,
+        "dependency_sites": [
+          {
+            "producer": "0x7D8E0",
+            "consumer": "0x7D8E2",
+            "registers": [
+              "3"
+            ]
+          },
+          {
+            "producer": "0x7EC32",
+            "consumer": "0x7EC34",
+            "registers": [
+              "2"
+            ]
+          },
+          {
+            "producer": "0x7EC3A",
+            "consumer": "0x7EC3C",
+            "registers": [
+              "4"
+            ]
+          },
+          {
+            "producer": "0x7EC46",
+            "consumer": "0x7EC48",
+            "registers": [
+              "4"
+            ]
+          },
+          {
+            "producer": "0x7EC52",
+            "consumer": "0x7EC54",
+            "registers": [
+              "3"
+            ]
+          },
+          {
+            "producer": "0x7EC5A",
+            "consumer": "0x7EC5C",
+            "registers": [
+              "4"
+            ]
+          },
+          {
+            "producer": "0x7EC66",
+            "consumer": "0x7EC68",
+            "registers": [
+              "4"
+            ]
+          },
+          {
+            "producer": "0x7EC74",
+            "consumer": "0x7EC76",
+            "registers": [
+              "3"
+            ]
+          },
+          {
+            "producer": "0x7EC7A",
+            "consumer": "0x7EC7C",
+            "registers": [
+              "4"
+            ]
+          },
+          {
+            "producer": "0x7EC9E",
+            "consumer": "0x7ECA0",
+            "registers": [
+              "1"
+            ]
+          },
+          {
+            "producer": "0x7ECA8",
+            "consumer": "0x7ECAA",
+            "registers": [
+              "4"
+            ]
+          },
+          {
+            "producer": "0x7ECB0",
+            "consumer": "0x7ECB2",
+            "registers": [
+              "1"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "fixture": "cut_latched",
+      "added_code": {
+        "instructions": 92,
+        "fpu_instructions": 24,
+        "operations": {
+          "FCMP/EQ": 6,
+          "FCMP/GT": 7,
+          "FMOV": 10,
+          "FSUB": 1
+        },
+        "immediate_non_div_fp_dependencies": 8,
+        "dependency_sites": [
+          {
+            "producer": "0x7D8E0",
+            "consumer": "0x7D8E2",
+            "registers": [
+              "3"
+            ]
+          },
+          {
+            "producer": "0x7ED2E",
+            "consumer": "0x7ED30",
+            "registers": [
+              "2"
+            ]
+          },
+          {
+            "producer": "0x7ED36",
+            "consumer": "0x7ED38",
+            "registers": [
+              "4"
+            ]
+          },
+          {
+            "producer": "0x7ED42",
+            "consumer": "0x7ED44",
+            "registers": [
+              "4"
+            ]
+          },
+          {
+            "producer": "0x7ED4E",
+            "consumer": "0x7ED50",
+            "registers": [
+              "3"
+            ]
+          },
+          {
+            "producer": "0x7ED56",
+            "consumer": "0x7ED58",
+            "registers": [
+              "4"
+            ]
+          },
+          {
+            "producer": "0x7ED62",
+            "consumer": "0x7ED64",
+            "registers": [
+              "4"
+            ]
+          },
+          {
+            "producer": "0x7ED74",
+            "consumer": "0x7ED76",
+            "registers": [
+              "4"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "fixture": "rotational_idle_disabled",
+      "added_code": {
+        "instructions": 11,
+        "fpu_instructions": 0,
+        "operations": {},
+        "immediate_non_div_fp_dependencies": 0,
+        "dependency_sites": []
+      }
+    }
+  ],
+  "limits": [
+    "Instruction counts and adjacency only, not CPU cycles or measured time.",
+    "Selected fixtures, not exhaustive path or whole-ECU coverage.",
+    "SD stock float table helpers execute native instructions; other guard boundaries remain as documented in their harness.",
+    "No bus waits, task rates, interrupt interference, FPSCR exception delivery, or deadline measurement."
+  ]
+}

@@ -1,0 +1,361 @@
+{
+  "date": "2026-09-13",
+  "status": "Implemented and verified in bounded native execution; not flashed; loaded-cut causality not proven; broader process-flow audit in progress",
+  "images": [
+    {
+      "name": "main",
+      "path": "master_patch/D2WD610H_master_patch.bin",
+      "before_sha256": "697b9f3a48a95027cc048ed68967520e2de4692314d88cf1768564ef15471d3a",
+      "after_sha256": "3e95b7508427f544e30a96c7aa78298b32560a6f3caf5c180e7949b8c2adc388",
+      "changed_bytes": 72,
+      "changed_ranges": [
+        {
+          "address": "0x0E0D0",
+          "before_hex": "d101412b00090009000066c2",
+          "after_hex": "2fd6e020d521e700d421e600"
+        },
+        {
+          "address": "0x11489",
+          "before_hex": "0066c2",
+          "after_hex": "033b12"
+        },
+        {
+          "address": "0x1148D",
+          "before_hex": "0066c2",
+          "after_hex": "033aac"
+        },
+        {
+          "address": "0x11491",
+          "before_hex": "0066c2",
+          "after_hex": "033970"
+        },
+        {
+          "address": "0x11495",
+          "before_hex": "0066c2",
+          "after_hex": "034be4"
+        },
+        {
+          "address": "0x114A1",
+          "before_hex": "0066c2",
+          "after_hex": "069568"
+        },
+        {
+          "address": "0x7E502",
+          "before_hex": "b098",
+          "after_hex": "ae8c"
+        },
+        {
+          "address": "0x7E506",
+          "before_hex": "b09c",
+          "after_hex": "ae90"
+        },
+        {
+          "address": "0x7EBA0",
+          "before_hex": "e000",
+          "after_hex": "4f22"
+        },
+        {
+          "address": "0x7EBA3",
+          "before_hex": "032102d1032102000b00090009ffffc85cffffc860ffffffff",
+          "after_hex": "05410b0009e000d1042102d10421024f26000b000900033964"
+        },
+        {
+          "address": "0x7EBBE",
+          "before_hex": "ffff",
+          "after_hex": "ae9c"
+        },
+        {
+          "address": "0x7EBC2",
+          "before_hex": "ffff",
+          "after_hex": "aea0"
+        },
+        {
+          "address": "0x7EDB6",
+          "before_hex": "c860",
+          "after_hex": "aea0"
+        },
+        {
+          "address": "0x7EDBA",
+          "before_hex": "c85c",
+          "after_hex": "ae9c"
+        },
+        {
+          "address": "0x7EDE2",
+          "before_hex": "b098",
+          "after_hex": "ae8c"
+        },
+        {
+          "address": "0x7FB88",
+          "before_hex": "b3311f6c",
+          "after_hex": "1adc9f24"
+        }
+      ]
+    },
+    {
+      "name": "v2",
+      "path": "master_patch_v2/D2WD610H_master_patch_v2.bin",
+      "before_sha256": "8ab70f32dce51857652fc2ab24e340dea9399f12d7042cf8f9afab851e0df6d5",
+      "after_sha256": "fabceb54359aca76e6e15835a51aa5cfd008e570dc002e886eaa62a6cb020ce5",
+      "changed_bytes": 72,
+      "changed_ranges": [
+        {
+          "address": "0x0E0D0",
+          "before_hex": "d101412b00090009000066c2",
+          "after_hex": "2fd6e020d521e700d421e600"
+        },
+        {
+          "address": "0x11489",
+          "before_hex": "0066c2",
+          "after_hex": "033b12"
+        },
+        {
+          "address": "0x1148D",
+          "before_hex": "0066c2",
+          "after_hex": "033aac"
+        },
+        {
+          "address": "0x11491",
+          "before_hex": "0066c2",
+          "after_hex": "033970"
+        },
+        {
+          "address": "0x11495",
+          "before_hex": "0066c2",
+          "after_hex": "034be4"
+        },
+        {
+          "address": "0x114A1",
+          "before_hex": "0066c2",
+          "after_hex": "069568"
+        },
+        {
+          "address": "0x7E502",
+          "before_hex": "b098",
+          "after_hex": "ae8c"
+        },
+        {
+          "address": "0x7E506",
+          "before_hex": "b09c",
+          "after_hex": "ae90"
+        },
+        {
+          "address": "0x7EBA0",
+          "before_hex": "e000",
+          "after_hex": "4f22"
+        },
+        {
+          "address": "0x7EBA3",
+          "before_hex": "032102d1032102000b00090009ffffc85cffffc860ffffffff",
+          "after_hex": "05410b0009e000d1042102d10421024f26000b000900033964"
+        },
+        {
+          "address": "0x7EBBE",
+          "before_hex": "ffff",
+          "after_hex": "ae9c"
+        },
+        {
+          "address": "0x7EBC2",
+          "before_hex": "ffff",
+          "after_hex": "aea0"
+        },
+        {
+          "address": "0x7EDB6",
+          "before_hex": "c860",
+          "after_hex": "aea0"
+        },
+        {
+          "address": "0x7EDBA",
+          "before_hex": "c85c",
+          "after_hex": "ae9c"
+        },
+        {
+          "address": "0x7EDE2",
+          "before_hex": "b098",
+          "after_hex": "ae8c"
+        },
+        {
+          "address": "0x7FB88",
+          "before_hex": "4295eb4b",
+          "after_hex": "aa416b03"
+        }
+      ]
+    }
+  ],
+  "semantic_corrections": [
+    {
+      "addresses": [
+        "0000E0D0",
+        "0000DFB4",
+        "FFFFB098",
+        "FFFFB09C"
+      ],
+      "withdrawn": "Rear oxygen-sensor converter/current state, safe for WB reuse",
+      "corrected": "Native AVCS OCV measured-current conversion, bank getter and two float measurements"
+    },
+    {
+      "addresses": [
+        "00033964",
+        "00033970",
+        "FFFFC85C",
+        "FFFFC860"
+      ],
+      "withdrawn": "Unused rear-O2 state, reclaimable for lean-cut counter/state",
+      "corrected": "Native AVCS current-feedback integrator floats initialized to 1.0 and multiplied into normal duty"
+    },
+    {
+      "addresses": [
+        "00033B12",
+        "00033AAC",
+        "00034BE4",
+        "00011488",
+        "0001148C",
+        "00011490",
+        "00011494"
+      ],
+      "withdrawn": "Rear-O2 tasks eligible for bypass",
+      "corrected": "AVCS requested current, filtered current error, integrator update and normal two-bank PWM publication"
+    },
+    {
+      "addresses": [
+        "00069568",
+        "000114A0"
+      ],
+      "withdrawn": "Rear-O2 diagnostic dispatcher",
+      "corrected": "AVCS OCV circuit diagnostics P2088/P2089/P2092/P2093; native enables remain 1"
+    },
+    {
+      "addresses": [
+        "0001055C"
+      ],
+      "withdrawn": "Standalone lean-state initializer replacement is sufficient",
+      "corrected": "Wrapper must call native 33964 before clearing relocated lean state"
+    },
+    {
+      "addresses": [
+        "FFFFD26F/10",
+        "000651A6"
+      ],
+      "withdrawn": "Could be confused with the separate MAF-status path",
+      "corrected": "Raw latched cam/OCV diagnostic aggregation, with AVCS permission, duty, ignition and knock-grid consumers; distinct from 65168"
+    }
+  ],
+  "native_flow": {
+    "periodic_controller_pointers": "00011444..00011494 inclusive, 21 consecutive pointers in parent11270",
+    "periodic_controller_entries": [
+      "34BAC",
+      "34D50",
+      "34D6A",
+      "33B92",
+      "34CD2",
+      "353B0",
+      "3475C",
+      "345F4",
+      "34880",
+      "34920",
+      "34F40",
+      "35BE8",
+      "35A3C",
+      "35CAA",
+      "35B34",
+      "35750",
+      "34A1E",
+      "33B12",
+      "33AAC",
+      "33970",
+      "34BE4"
+    ],
+    "capture_event": "E468 -> B0B0/B0B4; D004 -> C700(group1,event8) -> FCC8(queue2,one word,11EC8) -> 6170 -> queued bank callback 11EC8 -> 34194",
+    "queue": {
+      "descriptor": "FA1C",
+      "capacity_records": 30,
+      "record_bytes": 20,
+      "ram_inclusive": [
+        "FFFF94A0",
+        "FFFF96F7"
+      ],
+      "rtos_task": 3,
+      "payload": "Bank number only; callback reads latest shared angle",
+      "consumer": "C844 ->6270 dequeue ->11EC8 callback ->34194, through call to3F2C",
+      "scratch_record": "FFFFAFB8..FFFFAFCB",
+      "task_descriptor": "49CC",
+      "priority": 2,
+      "native_consumer_executed": true,
+      "kernel_completion_boundary": "Test stops at3F2C call, no claim to execute RTOS completion here"
+    },
+    "observations": "34194 descriptor4C618+52*bank ->34208 ->34304 ->3438E; actual angle C8C8/CC, target error C8E8/EC; learned protected offsets8264/826C",
+    "diagnostics": "69568 ->69572/697B4 ->50FF6 ->535C0 protected current status and raw DAB6 latch; healthy5108C ->55EC4 clears protected status, not DAB6",
+    "fallback": "63174 reads six cam/OCV raw bits at DAE4/DAE5 -> D26F/10 ->651A6 -> AVCS permission/duty,496C8 ignition,3DA30/3DA60/3DF56 knock state",
+    "raw_latch_reset": "5339C descriptor+16 reset metadata; parent564B0 invokes when8FA0!=DC08. Reset helper executed; parent transition supplied boundary.",
+    "pwm": "34BE4 ->DF00 ->E290 ->F510/F512 BFR6A/B; cycle match ->F518/F51A DTR6A/B",
+    "ignition_secondary_spark": "63174 current P0011/P0021/P0345/P0340 ->D270/80 ->6521C ->1A202 ->B52C/20,AC20 ->2A214/C290 ->29794 paired coil scheduler. Current recovery differs from raw-latched D26F/10.",
+    "cam_performance_monitor": "7198C copies C8E8/C8EC errors ->DA2C/30;719A8 requires ECT>60,readiness and both zero targets with RPM>=600 OR both nonzero with RPM>=12800 and C948/01. 71ADE reports2D/2E;71D2C healthy path independently clears current status. Stock thresholds unchanged.",
+    "shared_avls_timer": {
+      "native_entries": [
+        "F2A2",
+        "F12A",
+        "F0C0",
+        "F39C"
+      ],
+      "avls_buffers": [
+        "FFFFF514",
+        "FFFFF516"
+      ],
+      "avcs_buffers": [
+        "FFFFF510",
+        "FFFFF512"
+      ],
+      "shared_start_register": "FFFFF400 TSTR2; masks01/02 AVCS and04/08 AVLS",
+      "result": "Both native directions preserve buffer values and the complete shared start register in repaired main/v2 fixtures.",
+      "physical_boundary": "Supplied cycle matches; no hydraulic response or scheduler cadence inferred."
+    }
+  },
+  "verification": {
+    "consolidated_report": "docs/reference/evidence/process_flow_tests_20260912.json",
+    "passed": true,
+    "groups": 354,
+    "image_sha256": {
+      "main": "3e95b7508427f544e30a96c7aa78298b32560a6f3caf5c180e7949b8c2adc388",
+      "v2": "fabceb54359aca76e6e15835a51aa5cfd008e570dc002e886eaa62a6cb020ce5",
+      "captured": "fd795813febf817c845fc922e81e498539a539efeeb6e4d11822af47098094a2"
+    },
+    "avcs_groups": {
+      "test_avcs_target_process_flow": 4,
+      "test_avcs_actuator_process_flow": 8,
+      "test_avcs_controller_process_flow": 3,
+      "test_avcs_diagnostic_process_flow": 6,
+      "test_avcs_event_process_flow": 4,
+      "test_cam_performance_process_flow": 4
+    },
+    "main_verifier_passed": true,
+    "v2_verifier_groups_passed": 10,
+    "historical_log_flash_crc_blocks_matched": 16,
+    "historical_log_rows": 2747
+  },
+  "standalone_builders_corrected": {
+    "source": [
+      "patches/core/patch_single_front_af.py",
+      "tests/verify_single_front_af.py",
+      "tests/verify_combined.py"
+    ],
+    "scope": "Same erroneous AVCS deletions removed; temporary verification artifacts only, no new repository BINs",
+    "temporary_artifacts": [
+      {
+        "name": "single_front",
+        "sha256": "eee9c38e41a58929e966e8a06d6613d0c193956fb1f4d80f4f562fe6c0610c21",
+        "verified": true
+      },
+      {
+        "name": "combined",
+        "sha256": "e57bdd336c82d28ba85705a5e0d4990d0642aae3b12e1839117cb6300f92c585",
+        "verified": true
+      }
+    ]
+  },
+  "limits": [
+    "Native instruction and finite-fixture proof, not full ROM state coverage or a physical cam/torque model.",
+    "Actual OCV currents/outputs, cam angles, fallback state and queue occupancy are absent from the loaded capture.",
+    "The full-queue test is an imposed counterexample; actual queue exhaustion or patch-caused delay is unproven.",
+    "Diagnostic snapshot transport, mode-change eligibility and RTOS activation/dispatch are separate boundaries.",
+    "No ECU communication or flashing performed."
+  ]
+}

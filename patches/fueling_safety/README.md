@@ -25,11 +25,14 @@ v2 from releasing a latched cut even in vacuum; the September 12 correction
 changes this check without changing either integration's pressure calibration.
 `tests/test_lean_cut_hysteresis_execution.py` executes the release behavior.
 
-The component reclaims `0xFFFFC85C` (counter) and `0xFFFFC860` (state) from the
-deleted rear-O2 response integrator. Every traced runtime rear-O2 task is
-bypassed by the required master wideband component. Because the stock startup
-task writes float 1.0 rather than zero, this component also repoints it to an
-explicit integer-zero initializer. Do not install this component without those guards.
+The component reclaims four bytes at `0xFFFFAE9C` (16-bit counter) and four at
+`0xFFFFAEA0` (8-bit state) from the bypassed front-A/F processor `0xB8CC`.
+Its initializer calls native `0x33964` first, preserving the AVCS current
+integrators at `0xFFFFC85C/0xFFFFC860`, then zeros both new slots. Builders
+check the front-A/F ownership and preserved AVCS task/code contracts. The
+previous rear-O2 identification was wrong; those integrators and their normal
+PWM output must remain active. See the
+[AVCS dependency repair](../../docs/reference/AVCS_OCV_REPAIR_20260913.md).
 
 The delay values are task-call counts, not milliseconds. Log the new state and
 counter and measure the installed AEM sensor's delay before treating the

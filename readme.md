@@ -27,7 +27,7 @@ calibration tables.
 | Component | What it does |
 |---|---|
 | [Speed density](patches/speed_density/README.md) | Calculates airflow from native absolute MAP, RPM, IAT and displacement. Separate low- and high-lift VE tables follow committed AVLS state, and the result enters the factory load calculation. |
-| [External wideband](patches/wideband_o2/wideband_component.py) | Uses the former MAF ADC input for wideband voltage, publishes lambda and readiness to both banks, and integrates with retained fuel feedback. Replaces the four stock O2 processing paths and adjusts their remaining consumers. |
+| [External wideband](patches/wideband_o2/wideband_component.py) | Uses the former MAF ADC input for wideband voltage and publishes lambda to both banks. The ongoing [process review](docs/reference/PATCH_PROCESS_FLOW.md#native-feedback-readiness-mismatch-and-phase-dependent-clearing) found a readiness mismatch that disables normal native bank feedback. |
 | [Overboost protection](patches/core/patch_boost.py) | Adds a hard-overboost fuel cut alongside the stock rev limiter. Boost regulation uses the mechanical wastegate spring. |
 | [Fueling protection](patches/fueling_safety/README.md) | Requests open loop near atmospheric pressure and adds a delayed, latched lean fuel cut under boost. Added cuts publish native injector inhibition under the scheduler lock. |
 | [Purge removal](patches/purge_delete/purge_delete_component.py) | Zeros CPC purge duty, modeled purge airflow and both banks' purge fuel subtractions. |
@@ -61,24 +61,27 @@ producers, consumers and units are in the [signal reference](docs/reference/SIGN
 
 The SH7055SF RAM range is **`0xFFFF6000–0xFFFFDFFF` (32 KiB)**, with reset stack
 pointer `0xFFFFDFA0`. Most storage belongs to the factory firmware; the patches
-reuse identified signals and reclaim a small amount of retired O2 state.
+reuse identified signals and reclaim storage from replaced front-A/F processing.
 Floats below are 32-bit, big-endian values.
 
 ### Persistent patch state
 
-The lean-cut component reuses two four-byte rear-O2 response-integrator slots.
+The lean-cut component reuses two four-byte front-A/F processing slots.
 Its runtime fields occupy three bytes; initialization clears both complete
 slots, so the allocation covers **eight bytes**.
 
 | Reclaimed storage | Runtime field | Purpose |
 |---|---|---|
-| `0xFFFFC85C–0xFFFFC85F` | `uint16` at `0xFFFFC85C` | Sensor transport-delay and lean-confirmation counter, measured in task calls. |
-| `0xFFFFC860–0xFFFFC863` | `uint8` at `0xFFFFC860` | State: `0` idle, `1` delay, `2` monitoring, `3` cut latched. |
+| `0xFFFFAE9C–0xFFFFAE9F` | `uint16` at `0xFFFFAE9C` | Sensor transport-delay and lean-confirmation counter, measured in task calls. |
+| `0xFFFFAEA0–0xFFFFAEA3` | `uint8` at `0xFFFFAEA0` | State: `0` idle, `1` delay, `2` monitoring, `3` cut latched. |
 
-Installation requires all five traced rear-O2 runtime tasks to be bypassed and
-replaces their stock initializer with an explicit zero initializer. The
+Installation requires the former front-A/F owner to be bypassed and preserves
+the native AVCS current-feedback tasks and their float-1.0 initialization at
+`0xFFFFC85C/0xFFFFC860`. The
 [fueling-safety component](patches/fueling_safety/fueling_safety_component.py)
-checks these prerequisites before claiming the storage.
+checks these prerequisites before claiming the storage. See the
+[AVCS dependency repair](docs/reference/AVCS_OCV_REPAIR_20260913.md) for the
+ownership trace and connected PWM tests.
 
 ### Existing factory storage used by the patches
 
@@ -93,7 +96,7 @@ These are shared native allocations, with the listed patch interfaces:
 | `0xFFFFB428`, `0xFFFFB438` | Floats, g/rev | Raw and conditioned engine load produced by retained code. |
 | `0xFFFFAE60`, `0xFFFFAE64` | Two floats | Synthetic bank lambda values. |
 | `0xFFFFAE70`, `0xFFFFAE74` | Two floats | Synthetic bank sensor-readiness values. |
-| `0xFFFFB098`, `0xFFFFB09C` | Two floats | Wideband lambda mirrors for logging. |
+| `0xFFFFAE8C`, `0xFFFFAE90` | Two floats | Wideband lambda mirrors in replaced front-A/F storage. |
 | `0xFFFFBF6C`, `0xFFFFB744` | `uint8` flags / `uint16` inhibit | Native fuel-cut flag and injector-inhibit publication. |
 | `0xFFFFC0EC–0xFFFFC103` | Six floats, 24 bytes | Stock final per-cylinder ignition angles. The optional v1 rotational-idle component also uses these outputs. |
 | `0xFFFFCD86` | `uint8` | Committed AVLS mode used to select the VE surface. |

@@ -1,0 +1,728 @@
+{
+  "scope": "Bounded native process-flow tests, not a complete state-machine or vehicle proof.",
+  "image_sha256": {
+    "main": "3e95b7508427f544e30a96c7aa78298b32560a6f3caf5c180e7949b8c2adc388",
+    "v2": "fabceb54359aca76e6e15835a51aa5cfd008e570dc002e886eaa62a6cb020ce5",
+    "captured": "fd795813febf817c845fc922e81e498539a539efeeb6e4d11822af47098094a2"
+  },
+  "passed": true,
+  "groups": 354,
+  "results": [
+    {
+      "module": "test_runtime_rom_checksum_execution",
+      "variant": "internal",
+      "passed": true,
+      "groups": 4,
+      "elapsed_seconds": 25.253,
+      "transcript": "test_complete_captured_accumulation_has_valid_protected_records (test_runtime_rom_checksum_execution.RollingAccumulatorTests.test_complete_captured_accumulation_has_valid_protected_records) ... ok\ntest_fault_getter_checks_record_complements_not_stock_calibration_sum (test_runtime_rom_checksum_execution.RollingAccumulatorTests.test_fault_getter_checks_record_complements_not_stock_calibration_sum) ... ok\ntest_corrupted_injector_scalar_fails_native_checksum (test_runtime_rom_checksum_execution.RuntimeChecksumTests.test_corrupted_injector_scalar_fails_native_checksum) ... ok\ntest_exact_images_pass_native_checksum (test_runtime_rom_checksum_execution.RuntimeChecksumTests.test_exact_images_pass_native_checksum) ... ok\n\n----------------------------------------------------------------------\nRan 4 tests in 25.253s\n\nOK\n"
+    },
+    {
+      "module": "test_diagnostic_enable_flow",
+      "variant": "internal",
+      "passed": true,
+      "groups": 2,
+      "elapsed_seconds": 0.154,
+      "transcript": "test_all_22_changed_switches_gate_both_set_and_clear_reporters (test_diagnostic_enable_flow.DiagnosticEnableFlowTests.test_all_22_changed_switches_gate_both_set_and_clear_reporters) ... ok\ntest_periodic_mask_clears_disabled_retained_states_and_preserves_enabled_states (test_diagnostic_enable_flow.DiagnosticEnableFlowTests.test_periodic_mask_clears_disabled_retained_states_and_preserves_enabled_states) ... ok\n\n----------------------------------------------------------------------\nRan 2 tests in 0.154s\n\nOK\n"
+    },
+    {
+      "module": "test_cylinder_disable_process_flow",
+      "variant": "main",
+      "passed": true,
+      "groups": 3,
+      "elapsed_seconds": 0.087,
+      "transcript": "test_configured_injection_cut_is_copied_not_inverted (test_cylinder_disable_process_flow.CylinderDisableFlowTests.test_configured_injection_cut_is_copied_not_inverted) ... ok\ntest_default_configuration_stays_clear_across_idle_and_loaded_rpm (test_cylinder_disable_process_flow.CylinderDisableFlowTests.test_default_configuration_stays_clear_across_idle_and_loaded_rpm) ... ok\ntest_rpm_gate_does_not_clear_a_preexisting_request (test_cylinder_disable_process_flow.CylinderDisableFlowTests.test_rpm_gate_does_not_clear_a_preexisting_request) ... ok\n\n----------------------------------------------------------------------\nRan 3 tests in 0.087s\n\nOK\n"
+    },
+    {
+      "module": "test_cylinder_disable_process_flow",
+      "variant": "v2",
+      "passed": true,
+      "groups": 3,
+      "elapsed_seconds": 0.088,
+      "transcript": "test_configured_injection_cut_is_copied_not_inverted (test_cylinder_disable_process_flow.CylinderDisableFlowTests.test_configured_injection_cut_is_copied_not_inverted) ... ok\ntest_default_configuration_stays_clear_across_idle_and_loaded_rpm (test_cylinder_disable_process_flow.CylinderDisableFlowTests.test_default_configuration_stays_clear_across_idle_and_loaded_rpm) ... ok\ntest_rpm_gate_does_not_clear_a_preexisting_request (test_cylinder_disable_process_flow.CylinderDisableFlowTests.test_rpm_gate_does_not_clear_a_preexisting_request) ... ok\n\n----------------------------------------------------------------------\nRan 3 tests in 0.088s\n\nOK\n"
+    },
+    {
+      "module": "test_cylinder_disable_process_flow",
+      "variant": "captured",
+      "passed": true,
+      "groups": 3,
+      "elapsed_seconds": 0.087,
+      "transcript": "test_configured_injection_cut_is_copied_not_inverted (test_cylinder_disable_process_flow.CylinderDisableFlowTests.test_configured_injection_cut_is_copied_not_inverted) ... ok\ntest_default_configuration_stays_clear_across_idle_and_loaded_rpm (test_cylinder_disable_process_flow.CylinderDisableFlowTests.test_default_configuration_stays_clear_across_idle_and_loaded_rpm) ... ok\ntest_rpm_gate_does_not_clear_a_preexisting_request (test_cylinder_disable_process_flow.CylinderDisableFlowTests.test_rpm_gate_does_not_clear_a_preexisting_request) ... ok\n\n----------------------------------------------------------------------\nRan 3 tests in 0.087s\n\nOK\n"
+    },
+    {
+      "module": "test_wideband_monitor_process_flow",
+      "variant": "internal",
+      "passed": true,
+      "groups": 3,
+      "elapsed_seconds": 1.333,
+      "transcript": "test_imposed_current_span_sets_latches_then_native_window_reset_clears (test_wideband_monitor_process_flow.WidebandMonitorFlowTests.test_imposed_current_span_sets_latches_then_native_window_reset_clears) ... ok\ntest_prerequisite_loss_clears_only_span_bit_and_resets_extrema (test_wideband_monitor_process_flow.WidebandMonitorFlowTests.test_prerequisite_loss_clears_only_span_bit_and_resets_extrema) ... ok\ntest_zero_synthetic_current_never_sets_span_flag_across_two_monitor_windows (test_wideband_monitor_process_flow.WidebandMonitorFlowTests.test_zero_synthetic_current_never_sets_span_flag_across_two_monitor_windows) ... ok\n\n----------------------------------------------------------------------\nRan 3 tests in 1.333s\n\nOK\n"
+    },
+    {
+      "module": "test_cam_iam_timing_process_flow",
+      "variant": "internal",
+      "passed": true,
+      "groups": 4,
+      "elapsed_seconds": 3.929,
+      "transcript": "test_above_six_thousand_holds_old_state_until_producers_run_again (test_cam_iam_timing_process_flow.CamIAMFlowTests.test_above_six_thousand_holds_old_state_until_producers_run_again) ... ok\ntest_committed_high_lift_clears_cam_deficit_in_low_iam_fixture (test_cam_iam_timing_process_flow.CamIAMFlowTests.test_committed_high_lift_clears_cam_deficit_in_low_iam_fixture) ... ok\ntest_iam_one_zeroes_correction_through_cam_lift_and_rpm_states (test_cam_iam_timing_process_flow.CamIAMFlowTests.test_iam_one_zeroes_correction_through_cam_lift_and_rpm_states) ... ok\ntest_low_iam_positive_control_reaches_final_spark_and_recovers (test_cam_iam_timing_process_flow.CamIAMFlowTests.test_low_iam_positive_control_reaches_final_spark_and_recovers) ... ok\n\n----------------------------------------------------------------------\nRan 4 tests in 3.929s\n\nOK\n"
+    },
+    {
+      "module": "test_knock_cell_process_flow",
+      "variant": "internal",
+      "passed": true,
+      "groups": 4,
+      "elapsed_seconds": 0.232,
+      "transcript": "test_both_axis_directions_stay_in_the_64_cell_grid_and_consume_the_selected_cell (test_knock_cell_process_flow.KnockCellFlowTests.test_both_axis_directions_stay_in_the_64_cell_grid_and_consume_the_selected_cell) ... ok\ntest_last_grid_cell_ends_immediately_before_iam_without_overwriting_it (test_knock_cell_process_flow.KnockCellFlowTests.test_last_grid_cell_ends_immediately_before_iam_without_overwriting_it) ... ok\ntest_load_gate_transitions_preserve_unrelated_flags_and_iam (test_knock_cell_process_flow.KnockCellFlowTests.test_load_gate_transitions_preserve_unrelated_flags_and_iam) ... ok\ntest_selected_learned_correction_reaches_all_six_final_angles (test_knock_cell_process_flow.KnockCellFlowTests.test_selected_learned_correction_reaches_all_six_final_angles) ... ok\n\n----------------------------------------------------------------------\nRan 4 tests in 0.232s\n\nOK\n"
+    },
+    {
+      "module": "test_barometric_process_flow",
+      "variant": "internal",
+      "passed": true,
+      "groups": 6,
+      "elapsed_seconds": 0.484,
+      "transcript": "test_distance_increment_is_consumed_once_then_cleared_in_native_order (test_barometric_process_flow.BarometricFlowTests.test_distance_increment_is_consumed_once_then_cleared_in_native_order) ... ok\ntest_map_fault_priority_publishes_760_without_overwriting_sd_input (test_barometric_process_flow.BarometricFlowTests.test_map_fault_priority_publishes_760_without_overwriting_sd_input) ... ok\ntest_rising_packed_state_samples_once_and_clamps_only_baro (test_barometric_process_flow.BarometricFlowTests.test_rising_packed_state_samples_once_and_clamps_only_baro) ... ok\ntest_running_deep_vacuum_holds_estimate_and_never_clamps_native_map (test_barometric_process_flow.BarometricFlowTests.test_running_deep_vacuum_holds_estimate_and_never_clamps_native_map) ... ok\ntest_running_learning_delay_and_fault_disqualification_reset (test_barometric_process_flow.BarometricFlowTests.test_running_learning_delay_and_fault_disqualification_reset) ... ok\ntest_stopped_counter_sample_and_restart_reset_follow_native_order (test_barometric_process_flow.BarometricFlowTests.test_stopped_counter_sample_and_restart_reset_follow_native_order) ... ok\n\n----------------------------------------------------------------------\nRan 6 tests in 0.484s\n\nOK\n"
+    },
+    {
+      "module": "test_avls_phase_process_flow",
+      "variant": "internal",
+      "passed": true,
+      "groups": 8,
+      "elapsed_seconds": 17.599,
+      "transcript": "test_bank_one_precedes_bank_zero_and_extra_wait_clears (test_avls_phase_process_flow.AVLSPhaseFlowTests.test_bank_one_precedes_bank_zero_and_extra_wait_clears) ... ok\ntest_every_start_phase_completes_each_requested_transition (test_avls_phase_process_flow.AVLSPhaseFlowTests.test_every_start_phase_completes_each_requested_transition) ... ok\ntest_inhibit_holds_phase_and_bank_state_then_recovers (test_avls_phase_process_flow.AVLSPhaseFlowTests.test_inhibit_holds_phase_and_bank_state_then_recovers) ... ok\ntest_moving_rpm_release_latch_alone_does_not_force_a_low_mode_request (test_avls_phase_process_flow.AVLSPhaseFlowTests.test_moving_rpm_release_latch_alone_does_not_force_a_low_mode_request) ... ok\ntest_periodic_output_uses_bank_modes_through_initial_and_running_intervals (test_avls_phase_process_flow.AVLSPhaseFlowTests.test_periodic_output_uses_bank_modes_through_initial_and_running_intervals) ... ok\ntest_stopped_bank_reset_and_command_zero_are_separate_native_steps (test_avls_phase_process_flow.AVLSPhaseFlowTests.test_stopped_bank_reset_and_command_zero_are_separate_native_steps) ... ok\ntest_stored_bank_fault_can_override_output_without_changing_mode (test_avls_phase_process_flow.AVLSPhaseFlowTests.test_stored_bank_fault_can_override_output_without_changing_mode) ... ok\ntest_transition_phase_targets_stay_in_the_24_phase_domain (test_avls_phase_process_flow.AVLSPhaseFlowTests.test_transition_phase_targets_stay_in_the_24_phase_domain) ... ok\n\n----------------------------------------------------------------------\nRan 8 tests in 17.599s\n\nOK\n"
+    },
+    {
+      "module": "test_injector_device_process_flow",
+      "variant": "internal",
+      "passed": true,
+      "groups": 8,
+      "elapsed_seconds": 0.675,
+      "transcript": "test_active_duration_changes_and_shortening_clamp (test_injector_device_process_flow.InjectorDeviceFlowTests.test_active_duration_changes_and_shortening_clamp) ... ok\ntest_active_reschedule_with_bounded_snapshot_age_and_counter_wrap (test_injector_device_process_flow.InjectorDeviceFlowTests.test_active_reschedule_with_bounded_snapshot_age_and_counter_wrap) ... ok\ntest_deferred_request_uses_updated_width_in_native_end_handler (test_injector_device_process_flow.InjectorDeviceFlowTests.test_deferred_request_uses_updated_width_in_native_end_handler) ... ok\ntest_excessively_stale_timestamp_reproduces_native_counter_wrap (test_injector_device_process_flow.InjectorDeviceFlowTests.test_excessively_stale_timestamp_reproduces_native_counter_wrap) ... ok\ntest_native_interrupt_priorities_keep_crank_above_wideband_task (test_injector_device_process_flow.InjectorDeviceFlowTests.test_native_interrupt_priorities_keep_crank_above_wideband_task) ... ok\ntest_observed_pulse_range_reaches_nonzero_timer_words_at_all_rpms (test_injector_device_process_flow.InjectorDeviceFlowTests.test_observed_pulse_range_reaches_nonzero_timer_words_at_all_rpms) ... ok\ntest_pending_duration_update_recalculates_start_distance_without_zeroing (test_injector_device_process_flow.InjectorDeviceFlowTests.test_pending_duration_update_recalculates_start_distance_without_zeroing) ... ok\ntest_pending_end_angle_request_keeps_duration_when_promoted (test_injector_device_process_flow.InjectorDeviceFlowTests.test_pending_end_angle_request_keeps_duration_when_promoted) ... ok\n\n----------------------------------------------------------------------\nRan 8 tests in 0.675s\n\nOK\n"
+    },
+    {
+      "module": "test_ignition_device_process_flow",
+      "variant": "internal",
+      "passed": true,
+      "groups": 9,
+      "elapsed_seconds": 73.233,
+      "transcript": "test_cam_current_diagnostics_select_secondary_spark_and_healthy_recovery (test_ignition_device_process_flow.IgnitionDeviceProcessTests.test_cam_current_diagnostics_select_secondary_spark_and_healthy_recovery) ... ok\ntest_coil_enqueue_publishes_start_end_and_nonzero_downcounter (test_ignition_device_process_flow.IgnitionDeviceProcessTests.test_coil_enqueue_publishes_start_end_and_nonzero_downcounter) ... ok\ntest_device_cancellation_waits_for_an_armed_event_to_complete (test_ignition_device_process_flow.IgnitionDeviceProcessTests.test_device_cancellation_waits_for_an_armed_event_to_complete) ... ok\ntest_every_native_cylinder_cut_releases_without_a_stuck_queue (test_ignition_device_process_flow.IgnitionDeviceProcessTests.test_every_native_cylinder_cut_releases_without_a_stuck_queue) ... ok\ntest_mode_handoffs_and_phase_resynchronization_resume_running_outputs (test_ignition_device_process_flow.IgnitionDeviceProcessTests.test_mode_handoffs_and_phase_resynchronization_resume_running_outputs) ... ok\ntest_native_auxiliary_mask_changes_pulse_count_without_removing_all_coils (test_ignition_device_process_flow.IgnitionDeviceProcessTests.test_native_auxiliary_mask_changes_pulse_count_without_removing_all_coils) ... ok\ntest_native_record_setup_and_timing_conversion_preserve_all_six_values (test_ignition_device_process_flow.IgnitionDeviceProcessTests.test_native_record_setup_and_timing_conversion_preserve_all_six_values) ... ok\ntest_native_timer_initialization_retains_all_six_coil_links (test_ignition_device_process_flow.IgnitionDeviceProcessTests.test_native_timer_initialization_retains_all_six_coil_links) ... ok\ntest_running_phase_cycles_continue_for_all_coils_across_logged_range (test_ignition_device_process_flow.IgnitionDeviceProcessTests.test_running_phase_cycles_continue_for_all_coils_across_logged_range) ... ok\n\n----------------------------------------------------------------------\nRan 9 tests in 73.233s\n\nOK\n",
+      "followup_validation": {
+        "passed": true,
+        "scope": "Re-ran every-cylinder-cut method after extending all64 masks and releases to both C290=0 and C290=0FC0; remaining eight methods unchanged.",
+        "transcript": "test_every_native_cylinder_cut_releases_without_a_stuck_queue (test_ignition_device_process_flow.IgnitionDeviceProcessTests.test_every_native_cylinder_cut_releases_without_a_stuck_queue) ... ok\n\n----------------------------------------------------------------------\nRan 1 test in 85.564s\n\nOK\n"
+      }
+    },
+    {
+      "module": "test_tip_in_device_process_flow",
+      "variant": "internal",
+      "passed": true,
+      "groups": 3,
+      "elapsed_seconds": 0.665,
+      "transcript": "test_changed_pressure_gate_reaches_all_six_timer_registers (test_tip_in_device_process_flow.TipInDeviceFlowTests.test_changed_pressure_gate_reaches_all_six_timer_registers) ... ok\ntest_existing_pulse_is_extended_without_second_latency (test_tip_in_device_process_flow.TipInDeviceFlowTests.test_existing_pulse_is_extended_without_second_latency) ... ok\ntest_immediate_callback_obeys_every_inhibit_mask (test_tip_in_device_process_flow.TipInDeviceFlowTests.test_immediate_callback_obeys_every_inhibit_mask) ... ok\n\n----------------------------------------------------------------------\nRan 3 tests in 0.665s\n\nOK\n"
+    },
+    {
+      "module": "test_purge_process_flow",
+      "variant": "internal",
+      "passed": true,
+      "groups": 3,
+      "elapsed_seconds": 0.344,
+      "transcript": "test_stale_filter_state_decays_without_bank_fuel_subtraction (test_purge_process_flow.PurgeProcessTests.test_stale_filter_state_decays_without_bank_fuel_subtraction) ... ok\ntest_zero_producer_stays_zero_through_native_filter_transitions (test_purge_process_flow.PurgeProcessTests.test_zero_producer_stays_zero_through_native_filter_transitions) ... ok\ntest_zero_request_reaches_native_pwm_and_clears_prior_duty (test_purge_process_flow.PurgeProcessTests.test_zero_request_reaches_native_pwm_and_clears_prior_duty) ... ok\n\n----------------------------------------------------------------------\nRan 3 tests in 0.344s\n\nOK\n"
+    },
+    {
+      "module": "test_iat_process_flow",
+      "variant": "internal",
+      "passed": true,
+      "groups": 4,
+      "elapsed_seconds": 0.059,
+      "transcript": "test_fault_substitution_start_capture_and_raw_export_remain_distinct (test_iat_process_flow.IATProcessTests.test_fault_substitution_start_capture_and_raw_export_remain_distinct) ... ok\ntest_iat_gate_controls_retained_purge_inhibit_countdown (test_iat_process_flow.IATProcessTests.test_iat_gate_controls_retained_purge_inhibit_countdown) ... ok\ntest_native_adc_filter_and_temperature_lookup_cover_sensor_range (test_iat_process_flow.IATProcessTests.test_native_adc_filter_and_temperature_lookup_cover_sensor_range) ... ok\ntest_temperature_and_two_voltage_histories_share_adc_but_differ_units (test_iat_process_flow.IATProcessTests.test_temperature_and_two_voltage_histories_share_adc_but_differ_units) ... ok\n\n----------------------------------------------------------------------\nRan 4 tests in 0.059s\n\nOK\n"
+    },
+    {
+      "module": "test_iat_fault_process_flow",
+      "variant": "internal",
+      "passed": true,
+      "groups": 3,
+      "elapsed_seconds": 0.557,
+      "transcript": "test_electrical_thresholds_use_unsigned_filtered_counts_and_native_boundaries (test_iat_fault_process_flow.IATFaultProcessTests.test_electrical_thresholds_use_unsigned_filtered_counts_and_native_boundaries) ... ok\ntest_fault_reporting_substitutes_twenty_c_and_healthy_confirmation_recovers (test_iat_fault_process_flow.IATFaultProcessTests.test_fault_reporting_substitutes_twenty_c_and_healthy_confirmation_recovers) ... ok\ntest_readiness_loss_resets_electrical_qualification_counter (test_iat_fault_process_flow.IATFaultProcessTests.test_readiness_loss_resets_electrical_qualification_counter) ... ok\n\n----------------------------------------------------------------------\nRan 3 tests in 0.557s\n\nOK\n"
+    },
+    {
+      "module": "test_dbw_arbitration_process_flow",
+      "variant": "internal",
+      "passed": true,
+      "groups": 7,
+      "elapsed_seconds": 9.806,
+      "transcript": "test_can_monitor_enable_fresh_data_and_latched_timeout_are_distinct (test_dbw_arbitration_process_flow.DBWArbitrationTests.test_can_monitor_enable_fresh_data_and_latched_timeout_are_distinct) ... ok\ntest_connected_normal_driver_has_no_rpm_window_cut (test_dbw_arbitration_process_flow.DBWArbitrationTests.test_connected_normal_driver_has_no_rpm_window_cut) ... ok\ntest_native_can_mailbox_limit_publication_unsigned_byte_and_timeout (test_dbw_arbitration_process_flow.DBWArbitrationTests.test_native_can_mailbox_limit_publication_unsigned_byte_and_timeout) ... ok\ntest_native_final_composition_keeps_idle_term_and_releases_driver (test_dbw_arbitration_process_flow.DBWArbitrationTests.test_native_final_composition_keeps_idle_term_and_releases_driver) ... ok\ntest_native_override_order_clears_stale_shutdown_and_stop_requests (test_dbw_arbitration_process_flow.DBWArbitrationTests.test_native_override_order_clears_stale_shutdown_and_stop_requests) ... ok\ntest_qualified_rate_latch_ramps_recovers_and_does_not_hold_release (test_dbw_arbitration_process_flow.DBWArbitrationTests.test_qualified_rate_latch_ramps_recovers_and_does_not_hold_release) ... ok\ntest_received_limit_has_floor_fault_bypass_and_native_reset (test_dbw_arbitration_process_flow.DBWArbitrationTests.test_received_limit_has_floor_fault_bypass_and_native_reset) ... ok\n\n----------------------------------------------------------------------\nRan 7 tests in 9.806s\n\nOK\n"
+    },
+    {
+      "module": "test_throttle_tracking_process_flow",
+      "variant": "internal",
+      "passed": true,
+      "groups": 9,
+      "elapsed_seconds": 20.785,
+      "transcript": "test_driver_and_final_request_feed_same_monitor_storage (test_throttle_tracking_process_flow.ThrottleTrackingTests.test_driver_and_final_request_feed_same_monitor_storage) ... ok\ntest_each_enable_gate_clears_persistence_without_erasing_fault (test_throttle_tracking_process_flow.ThrottleTrackingTests.test_each_enable_gate_clears_persistence_without_erasing_fault) ... ok\ntest_excess_opening_fault_reaches_cut_and_remains_latched (test_throttle_tracking_process_flow.ThrottleTrackingTests.test_excess_opening_fault_reaches_cut_and_remains_latched) ... ok\ntest_good_qualification_and_both_native_reset_entries (test_throttle_tracking_process_flow.ThrottleTrackingTests.test_good_qualification_and_both_native_reset_entries) ... ok\ntest_low_rpm_has_separate_counter_and_500_300_hysteresis (test_throttle_tracking_process_flow.ThrottleTrackingTests.test_low_rpm_has_separate_counter_and_500_300_hysteresis) ... ok\ntest_measured_angle_offset_learning_is_bounded_and_protected (test_throttle_tracking_process_flow.ThrottleTrackingTests.test_measured_angle_offset_learning_is_bounded_and_protected) ... ok\ntest_native_position_axes_use_learned_offset_and_not_rpm (test_throttle_tracking_process_flow.ThrottleTrackingTests.test_native_position_axes_use_learned_offset_and_not_rpm) ... ok\ntest_request_shortfall_uses_fixed_125_calls_and_sign_resets (test_throttle_tracking_process_flow.ThrottleTrackingTests.test_request_shortfall_uses_fixed_125_calls_and_sign_resets) ... ok\ntest_shared_readiness_bits_have_distinct_hold_and_clear_rules (test_throttle_tracking_process_flow.ThrottleTrackingTests.test_shared_readiness_bits_have_distinct_hold_and_clear_rules) ... ok\n\n----------------------------------------------------------------------\nRan 9 tests in 20.785s\n\nOK\n"
+    },
+    {
+      "module": "test_fuel_learning_process_flow",
+      "variant": "internal",
+      "passed": true,
+      "groups": 5,
+      "elapsed_seconds": 4.277,
+      "transcript": "test_crossing_500_selects_existing_d_and_filters_the_applied_change (test_fuel_learning_process_flow.FuelLearningTests.test_crossing_500_selects_existing_d_and_filters_the_applied_change) ... ok\ntest_full_pair_publisher_keeps_stored_trim_when_new_learning_is_ineligible (test_fuel_learning_process_flow.FuelLearningTests.test_full_pair_publisher_keeps_stored_trim_when_new_learning_is_ineligible) ... ok\ntest_native_learning_update_survives_transition_to_open_loop (test_fuel_learning_process_flow.FuelLearningTests.test_native_learning_update_survives_transition_to_open_loop) ... ok\ntest_range_c_trim_can_reach_open_loop_despite_500_boundary (test_fuel_learning_process_flow.FuelLearningTests.test_range_c_trim_can_reach_open_loop_despite_500_boundary) ... ok\ntest_region_selection_is_separate_from_learning_airflow_eligibility (test_fuel_learning_process_flow.FuelLearningTests.test_region_selection_is_separate_from_learning_airflow_eligibility) ... ok\n\n----------------------------------------------------------------------\nRan 5 tests in 4.277s\n\nOK\n"
+    },
+    {
+      "module": "test_wideband_feedback_process_flow",
+      "variant": "internal",
+      "passed": true,
+      "groups": 6,
+      "elapsed_seconds": 3.762,
+      "transcript": "test_computed_history_and_coefficient_bounds_across_rpm_and_airflow (test_wideband_feedback_process_flow.WidebandFeedbackTests.test_computed_history_and_coefficient_bounds_across_rpm_and_airflow) ... ok\ntest_crank_phase_selection_resets_only_the_selected_bank_and_consumes_its_event (test_wideband_feedback_process_flow.WidebandFeedbackTests.test_crank_phase_selection_resets_only_the_selected_bank_and_consumes_its_event) ... ok\ntest_enriched_target_disables_feedback_then_phase_updates_remove_old_short_term_trim (test_wideband_feedback_process_flow.WidebandFeedbackTests.test_enriched_target_disables_feedback_then_phase_updates_remove_old_short_term_trim) ... ok\ntest_external_lambda_reaches_both_conditioned_banks_without_baro_distortion (test_wideband_feedback_process_flow.WidebandFeedbackTests.test_external_lambda_reaches_both_conditioned_banks_without_baro_distortion) ... ok\ntest_installed_ready_50_clears_native_feedback_flags_even_with_prior_history (test_wideband_feedback_process_flow.WidebandFeedbackTests.test_installed_ready_50_clears_native_feedback_flags_even_with_prior_history) ... ok\ntest_native_readiness_positive_control_activates_controller_and_invalid_wb_revokes_it (test_wideband_feedback_process_flow.WidebandFeedbackTests.test_native_readiness_positive_control_activates_controller_and_invalid_wb_revokes_it) ... ok\n\n----------------------------------------------------------------------\nRan 6 tests in 3.762s\n\nOK\n"
+    },
+    {
+      "module": "test_wideband_heater_process_flow",
+      "variant": "internal",
+      "passed": true,
+      "groups": 3,
+      "elapsed_seconds": 5.032,
+      "transcript": "test_native_pwm_initialization_and_independent_bank_activation (test_wideband_heater_process_flow.WidebandHeaterTests.test_native_pwm_initialization_and_independent_bank_activation) ... ok\ntest_raw_impedance_and_common_heater_enable_are_separate_from_external_readiness (test_wideband_heater_process_flow.WidebandHeaterTests.test_raw_impedance_and_common_heater_enable_are_separate_from_external_readiness) ... ok\ntest_valid_external_wb_keeps_cold_impedance_heater_branch_invalid_stops_output (test_wideband_heater_process_flow.WidebandHeaterTests.test_valid_external_wb_keeps_cold_impedance_heater_branch_invalid_stops_output) ... ok\n\n----------------------------------------------------------------------\nRan 3 tests in 5.032s\n\nOK\n"
+    },
+    {
+      "module": "test_adc_handoff_process_flow",
+      "variant": "internal",
+      "passed": true,
+      "groups": 6,
+      "elapsed_seconds": 0.386,
+      "transcript": "test_missing_front_completion_is_abandoned_by_next_normal_scan (test_adc_handoff_process_flow.ADCHandoffTests.test_missing_front_completion_is_abandoned_by_next_normal_scan) ... ok\ntest_one_off_module_two_sample_restores_scan_mode_and_leaves_wb_results_alone (test_adc_handoff_process_flow.ADCHandoffTests.test_one_off_module_two_sample_restores_scan_mode_and_leaves_wb_results_alone) ... ok\ntest_repeated_scan_handoff_preserves_wb_channel_and_resumes_after_both_banks (test_adc_handoff_process_flow.ADCHandoffTests.test_repeated_scan_handoff_preserves_wb_channel_and_resumes_after_both_banks) ... ok\ntest_retained_impedance_changes_only_the_assigned_excitation_timer_channels (test_adc_handoff_process_flow.ADCHandoffTests.test_retained_impedance_changes_only_the_assigned_excitation_timer_channels) ... ok\ntest_scan_widths_copy_only_the_selected_module_zero_prefix (test_adc_handoff_process_flow.ADCHandoffTests.test_scan_widths_copy_only_the_selected_module_zero_prefix) ... ok\ntest_startup_maps_all_32_hardware_channels_to_distinct_ram_words (test_adc_handoff_process_flow.ADCHandoffTests.test_startup_maps_all_32_hardware_channels_to_distinct_ram_words) ... ok\n\n----------------------------------------------------------------------\nRan 6 tests in 0.386s\n\nOK\n"
+    },
+    {
+      "module": "test_wideband_status_dependency_flow",
+      "variant": "internal",
+      "passed": true,
+      "groups": 3,
+      "elapsed_seconds": 0.457,
+      "transcript": "test_invalid_wb_reaches_native_permission_state_despite_disabled_o2_dtcs (test_wideband_status_dependency_flow.WidebandStatusDependencyTests.test_invalid_wb_reaches_native_permission_state_despite_disabled_o2_dtcs) ... ok\ntest_native_status_output_toggles_assigned_port_bit_without_writing_injector_mask (test_wideband_status_dependency_flow.WidebandStatusDependencyTests.test_native_status_output_toggles_assigned_port_bit_without_writing_injector_mask) ... ok\ntest_other_snapshot_consumer_retains_its_bit_until_caller_clears_workspace (test_wideband_status_dependency_flow.WidebandStatusDependencyTests.test_other_snapshot_consumer_retains_its_bit_until_caller_clears_workspace) ... ok\n\n----------------------------------------------------------------------\nRan 3 tests in 0.457s\n\nOK\n"
+    },
+    {
+      "module": "test_wideband_cruise_process_flow",
+      "variant": "internal",
+      "passed": true,
+      "groups": 5,
+      "elapsed_seconds": 24.382,
+      "transcript": "test_avls_cruise_override_has_a_separate_disabled_speed_gate (test_wideband_cruise_process_flow.WidebandCruiseTests.test_avls_cruise_override_has_a_separate_disabled_speed_gate) ... ok\ntest_cancelled_cruise_restores_driver_sample_instead_of_low_substitute (test_wideband_cruise_process_flow.WidebandCruiseTests.test_cancelled_cruise_restores_driver_sample_instead_of_low_substitute) ... ok\ntest_invalid_wb_cancels_native_cruise_without_automatic_reengagement (test_wideband_cruise_process_flow.WidebandCruiseTests.test_invalid_wb_cancels_native_cruise_without_automatic_reengagement) ... ok\ntest_overrun_still_requires_pedal_release_after_wb_cancellation (test_wideband_cruise_process_flow.WidebandCruiseTests.test_overrun_still_requires_pedal_release_after_wb_cancellation) ... ok\ntest_pedal_fault_substitution_is_independent_of_cruise_permission (test_wideband_cruise_process_flow.WidebandCruiseTests.test_pedal_fault_substitution_is_independent_of_cruise_permission) ... ok\n\n----------------------------------------------------------------------\nRan 5 tests in 24.382s\n\nOK\n"
+    },
+    {
+      "module": "test_wideband_readiness_diagnostics",
+      "variant": "internal",
+      "passed": true,
+      "groups": 4,
+      "elapsed_seconds": 1.768,
+      "transcript": "test_activity_failure_control_is_separate_and_disabled_reporters_do_not_publish (test_wideband_readiness_diagnostics.WBReadinessDiagnosticTests.test_activity_failure_control_is_separate_and_disabled_reporters_do_not_publish) ... ok\ntest_heater_activity_metric_50_passes_but_other_permissions_control_retention (test_wideband_readiness_diagnostics.WBReadinessDiagnosticTests.test_heater_activity_metric_50_passes_but_other_permissions_control_retention) ... ok\ntest_heater_history_is_initialized_and_then_updated_through_computed_bank_fields (test_wideband_readiness_diagnostics.WBReadinessDiagnosticTests.test_heater_history_is_initialized_and_then_updated_through_computed_bank_fields) ... ok\ntest_rear_monitor_uses_native_feedback_state_and_retains_counter_when_disqualified (test_wideband_readiness_diagnostics.WBReadinessDiagnosticTests.test_rear_monitor_uses_native_feedback_state_and_retains_counter_when_disqualified) ... ok\n\n----------------------------------------------------------------------\nRan 4 tests in 1.768s\n\nOK\n"
+    },
+    {
+      "module": "test_purge_monitor_shared_state_flow",
+      "variant": "internal",
+      "passed": true,
+      "groups": 5,
+      "elapsed_seconds": 3.196,
+      "transcript": "test_history_computed_writes_stay_in_six_by_39_bank_storage (test_purge_monitor_shared_state_flow.PurgeMonitorSharedStateTests.test_history_computed_writes_stay_in_six_by_39_bank_storage) ... ok\ntest_native_cell_selector_bounds_its_rpm_and_pressure_bands (test_purge_monitor_shared_state_flow.PurgeMonitorSharedStateTests.test_native_cell_selector_bounds_its_rpm_and_pressure_bands) ... ok\ntest_shared_monitor_flags_do_not_create_default_cylinder_disable_patterns (test_purge_monitor_shared_state_flow.PurgeMonitorSharedStateTests.test_shared_monitor_flags_do_not_create_default_cylinder_disable_patterns) ... ok\ntest_wb_readiness_revokes_monitor_and_resets_span_but_holds_learned_history (test_purge_monitor_shared_state_flow.PurgeMonitorSharedStateTests.test_wb_readiness_revokes_monitor_and_resets_span_but_holds_learned_history) ... ok\ntest_zero_duty_stability_resets_on_class_change_and_holds_above_low_rpm_gate (test_purge_monitor_shared_state_flow.PurgeMonitorSharedStateTests.test_zero_duty_stability_resets_on_class_change_and_holds_above_low_rpm_gate) ... ok\n\n----------------------------------------------------------------------\nRan 5 tests in 3.196s\n\nOK\n"
+    },
+    {
+      "module": "test_airflow_task_process_flow",
+      "variant": "internal",
+      "passed": true,
+      "groups": 7,
+      "elapsed_seconds": 1.455,
+      "transcript": "test_complete_task_publishes_current_sd_and_filters_load_in_each_lift_mode (test_airflow_task_process_flow.AirflowTaskProcessTests.test_complete_task_publishes_current_sd_and_filters_load_in_each_lift_mode) ... ok\ntest_engine_timeout_and_crank_event_publishers_preserve_other_state_bits (test_airflow_task_process_flow.AirflowTaskProcessTests.test_engine_timeout_and_crank_event_publishers_preserve_other_state_bits) ... ok\ntest_full_task_fault_fallback_and_nonfinite_obsolete_histories (test_airflow_task_process_flow.AirflowTaskProcessTests.test_full_task_fault_fallback_and_nonfinite_obsolete_histories) ... ok\ntest_native_crank_producer_phase_hysteresis_and_event_delay (test_airflow_task_process_flow.AirflowTaskProcessTests.test_native_crank_producer_phase_hysteresis_and_event_delay) ... ok\ntest_native_history_snapshot_precedes_wrapper_and_slow_filter_is_separate (test_airflow_task_process_flow.AirflowTaskProcessTests.test_native_history_snapshot_precedes_wrapper_and_slow_filter_is_separate) ... ok\ntest_obsolete_maf_histories_and_fault_do_not_override_final_sd_or_rearm_load_latch (test_airflow_task_process_flow.AirflowTaskProcessTests.test_obsolete_maf_histories_and_fault_do_not_override_final_sd_or_rearm_load_latch) ... ok\ntest_stop_and_crank_selectors_retain_native_load_initialization (test_airflow_task_process_flow.AirflowTaskProcessTests.test_stop_and_crank_selectors_retain_native_load_initialization) ... ok\n\n----------------------------------------------------------------------\nRan 7 tests in 1.455s\n\nOK\n"
+    },
+    {
+      "module": "test_legacy_o2_process_flow",
+      "variant": "internal",
+      "passed": true,
+      "groups": 5,
+      "elapsed_seconds": 4.452,
+      "transcript": "test_installed_wb_clears_legacy_controller_and_holds_protected_offsets (test_legacy_o2_process_flow.LegacyO2ProcessTests.test_installed_wb_clears_legacy_controller_and_holds_protected_offsets) ... ok\ntest_native_enabled_control_exercises_learning_then_disqualification_holds_records (test_legacy_o2_process_flow.LegacyO2ProcessTests.test_native_enabled_control_exercises_learning_then_disqualification_holds_records) ... ok\ntest_retained_legacy_offsets_do_not_reenter_removed_fuel_adder (test_legacy_o2_process_flow.LegacyO2ProcessTests.test_retained_legacy_offsets_do_not_reenter_removed_fuel_adder) ... ok\ntest_slow_airflow_accumulator_saturates_and_holds_while_cranking (test_legacy_o2_process_flow.LegacyO2ProcessTests.test_slow_airflow_accumulator_saturates_and_holds_while_cranking) ... ok\ntest_speed_qualifiers_are_not_airflow_or_rpm_thresholds (test_legacy_o2_process_flow.LegacyO2ProcessTests.test_speed_qualifiers_are_not_airflow_or_rpm_thresholds) ... ok\n\n----------------------------------------------------------------------\nRan 5 tests in 4.452s\n\nOK\n"
+    },
+    {
+      "module": "test_avcs_target_process_flow",
+      "variant": "internal",
+      "passed": true,
+      "groups": 4,
+      "elapsed_seconds": 0.997,
+      "transcript": "test_complete_sd_state_and_target_chain_selects_each_lift_map (test_avcs_target_process_flow.AVCSTargetProcessTests.test_complete_sd_state_and_target_chain_selects_each_lift_map) ... ok\ntest_feature_crank_and_unsupported_modes_clear_targets_and_histories (test_avcs_target_process_flow.AVCSTargetProcessTests.test_feature_crank_and_unsupported_modes_clear_targets_and_histories) ... ok\ntest_stored_state_fault_has_priority_and_native_low_runtime_qualifies_inhibit (test_avcs_target_process_flow.AVCSTargetProcessTests.test_stored_state_fault_has_priority_and_native_low_runtime_qualifies_inhibit) ... ok\ntest_tracking_consumer_publishes_history_and_resets_qualification_when_disabled (test_avcs_target_process_flow.AVCSTargetProcessTests.test_tracking_consumer_publishes_history_and_resets_qualification_when_disabled) ... ok\n\n----------------------------------------------------------------------\nRan 4 tests in 0.997s\n\nOK\n"
+    },
+    {
+      "module": "test_avcs_actuator_process_flow",
+      "variant": "internal",
+      "passed": true,
+      "groups": 8,
+      "elapsed_seconds": 1.12,
+      "transcript": "test_captured_bypass_removes_hardware_command_despite_nonzero_cam_duty (test_avcs_actuator_process_flow.AVCSActuatorProcessTests.test_captured_bypass_removes_hardware_command_despite_nonzero_cam_duty) ... ok\ntest_current_converter_has_native_ocv_calibration_and_feedback_consumer (test_avcs_actuator_process_flow.AVCSActuatorProcessTests.test_current_converter_has_native_ocv_calibration_and_feedback_consumer) ... ok\ntest_native_fault_and_enable_gates_zero_output_then_recover (test_avcs_actuator_process_flow.AVCSActuatorProcessTests.test_native_fault_and_enable_gates_zero_output_then_recover) ... ok\ntest_native_override_progression_completes_and_restores_both_latest_commands (test_avcs_actuator_process_flow.AVCSActuatorProcessTests.test_native_override_progression_completes_and_restores_both_latest_commands) ... ok\ntest_override_defers_normal_commands_and_restores_latest_value_on_release (test_avcs_actuator_process_flow.AVCSActuatorProcessTests.test_override_defers_normal_commands_and_restores_latest_value_on_release) ... ok\ntest_restoring_only_output_pointer_leaves_zero_integrator_and_broken_output (test_avcs_actuator_process_flow.AVCSActuatorProcessTests.test_restoring_only_output_pointer_leaves_zero_integrator_and_broken_output) ... ok\ntest_retained_front_initialization_and_adc_handoff_do_not_own_lean_scratch (test_avcs_actuator_process_flow.AVCSActuatorProcessTests.test_retained_front_initialization_and_adc_handoff_do_not_own_lean_scratch) ... ok\ntest_rolling_images_preserve_native_init_and_connected_control_output (test_avcs_actuator_process_flow.AVCSActuatorProcessTests.test_rolling_images_preserve_native_init_and_connected_control_output) ... ok\n\n----------------------------------------------------------------------\nRan 8 tests in 1.120s\n\nOK\n"
+    },
+    {
+      "module": "test_avcs_controller_process_flow",
+      "variant": "internal",
+      "passed": true,
+      "groups": 3,
+      "elapsed_seconds": 2.628,
+      "transcript": "test_bank_observation_descriptor_publishes_actual_angle_and_target_error (test_avcs_controller_process_flow.AVCSControllerProcessTests.test_bank_observation_descriptor_publishes_actual_angle_and_target_error) ... ok\ntest_complete_periodic_chain_uses_learned_permission_and_produces_pwm (test_avcs_controller_process_flow.AVCSControllerProcessTests.test_complete_periodic_chain_uses_learned_permission_and_produces_pwm) ... ok\ntest_native_rest_learning_qualifies_then_enables_loaded_controller (test_avcs_controller_process_flow.AVCSControllerProcessTests.test_native_rest_learning_qualifies_then_enables_loaded_controller) ... ok\n\n----------------------------------------------------------------------\nRan 3 tests in 2.628s\n\nOK\n"
+    },
+    {
+      "module": "test_avcs_diagnostic_process_flow",
+      "variant": "internal",
+      "passed": true,
+      "groups": 6,
+      "elapsed_seconds": 4.052,
+      "transcript": "test_avcs_fallback_transition_resets_knock_grid_without_overwriting_iam (test_avcs_diagnostic_process_flow.AVCSDiagnosticProcessTests.test_avcs_fallback_transition_resets_knock_grid_without_overwriting_iam) ... ok\ntest_cam_and_ocv_latched_status_sources_feed_the_same_fallback (test_avcs_diagnostic_process_flow.AVCSDiagnosticProcessTests.test_cam_and_ocv_latched_status_sources_feed_the_same_fallback) ... ok\ntest_native_healthy_confirmation_clears_current_fault_and_preserves_integrity (test_avcs_diagnostic_process_flow.AVCSDiagnosticProcessTests.test_native_healthy_confirmation_clears_current_fault_and_preserves_integrity) ... ok\ntest_native_readiness_and_feature_loss_reset_qualification (test_avcs_diagnostic_process_flow.AVCSDiagnosticProcessTests.test_native_readiness_and_feature_loss_reset_qualification) ... ok\ntest_ocv_fault_enters_native_fallback_and_revokes_learned_permission (test_avcs_diagnostic_process_flow.AVCSDiagnosticProcessTests.test_ocv_fault_enters_native_fallback_and_revokes_learned_permission) ... ok\ntest_restored_open_and_short_detection_reaches_correct_enabled_dtc_bits (test_avcs_diagnostic_process_flow.AVCSDiagnosticProcessTests.test_restored_open_and_short_detection_reaches_correct_enabled_dtc_bits) ... ok\n\n----------------------------------------------------------------------\nRan 6 tests in 4.052s\n\nOK\n"
+    },
+    {
+      "module": "test_avcs_event_process_flow",
+      "variant": "internal",
+      "passed": true,
+      "groups": 4,
+      "elapsed_seconds": 0.066,
+      "transcript": "test_capture_conversion_queues_each_bank_then_native_callback_updates_observation (test_avcs_event_process_flow.AVCSEventProcessTests.test_capture_conversion_queues_each_bank_then_native_callback_updates_observation) ... ok\ntest_full_queue_drops_callback_while_latest_capture_still_changes (test_avcs_event_process_flow.AVCSEventProcessTests.test_full_queue_drops_callback_while_latest_capture_still_changes) ... ok\ntest_invalid_capture_publishes_zero_and_queues_native_zero_observation (test_avcs_event_process_flow.AVCSEventProcessTests.test_invalid_capture_publishes_zero_and_queues_native_zero_observation) ... ok\ntest_native_consumer_drains_bank_records_and_requests_task_completion (test_avcs_event_process_flow.AVCSEventProcessTests.test_native_consumer_drains_bank_records_and_requests_task_completion) ... ok\n\n----------------------------------------------------------------------\nRan 4 tests in 0.066s\n\nOK\n"
+    },
+    {
+      "module": "test_cam_performance_process_flow",
+      "variant": "internal",
+      "passed": true,
+      "groups": 4,
+      "elapsed_seconds": 7.883,
+      "transcript": "test_complete_monitor_qualifier_has_different_zero_and_advanced_target_rpm_gates (test_cam_performance_process_flow.CamPerformanceProcessTests.test_complete_monitor_qualifier_has_different_zero_and_advanced_target_rpm_gates) ... ok\ntest_loaded_rpm_with_large_cam_error_does_not_qualify_this_report_path (test_cam_performance_process_flow.CamPerformanceProcessTests.test_loaded_rpm_with_large_cam_error_does_not_qualify_this_report_path) ... ok\ntest_qualified_positive_control_reports_then_clears_current_with_history_held (test_cam_performance_process_flow.CamPerformanceProcessTests.test_qualified_positive_control_reports_then_clears_current_with_history_held) ... ok\ntest_zero_target_rest_offset_failure_and_disqualification_reset (test_cam_performance_process_flow.CamPerformanceProcessTests.test_zero_target_rest_offset_failure_and_disqualification_reset) ... ok\n\n----------------------------------------------------------------------\nRan 4 tests in 7.883s\n\nOK\n"
+    },
+    {
+      "module": "test_avls_actuator_process_flow",
+      "variant": "internal",
+      "passed": true,
+      "groups": 5,
+      "elapsed_seconds": 3.864,
+      "transcript": "test_avcs_and_avls_updates_preserve_each_others_shared_timer_channels (test_avls_actuator_process_flow.AVLSActuatorProcessTests.test_avcs_and_avls_updates_preserve_each_others_shared_timer_channels) ... ok\ntest_full_lift_transition_and_periodic_controller_reach_native_pwm (test_avls_actuator_process_flow.AVLSActuatorProcessTests.test_full_lift_transition_and_periodic_controller_reach_native_pwm) ... ok\ntest_native_adc_current_conversion_preserves_two_independent_banks (test_avls_actuator_process_flow.AVLSActuatorProcessTests.test_native_adc_current_conversion_preserves_two_independent_banks) ... ok\ntest_native_startup_initializes_only_the_avls_timer_channels (test_avls_actuator_process_flow.AVLSActuatorProcessTests.test_native_startup_initializes_only_the_avls_timer_channels) ... ok\ntest_transition_and_periodic_duty_have_the_same_bank_and_q16_scaling (test_avls_actuator_process_flow.AVLSActuatorProcessTests.test_transition_and_periodic_duty_have_the_same_bank_and_q16_scaling) ... ok\n\n----------------------------------------------------------------------\nRan 5 tests in 3.864s\n\nOK\n",
+      "followup_validation": {
+        "scope": "Both directions additionally assert entire shared TSTR2 value, preserving A/B/C/D start bits and unrelated upper nibble.",
+        "passed": true,
+        "transcript": "test_avcs_and_avls_updates_preserve_each_others_shared_timer_channels (test_avls_actuator_process_flow.AVLSActuatorProcessTests.test_avcs_and_avls_updates_preserve_each_others_shared_timer_channels) ... ok\n\n----------------------------------------------------------------------\nRan 1 test in 0.009s\n\nOK\n"
+      }
+    },
+    {
+      "module": "test_avls_diagnostic_process_flow",
+      "variant": "internal",
+      "passed": true,
+      "groups": 6,
+      "elapsed_seconds": 22.851,
+      "transcript": "test_current_fault_aggregation_forces_low_lift_and_healthy_status_releases_it (test_avls_diagnostic_process_flow.AVLSDiagnosticProcessTests.test_current_fault_aggregation_forces_low_lift_and_healthy_status_releases_it) ... ok\ntest_healthy_confirmation_requires_success_in_both_output_states (test_avls_diagnostic_process_flow.AVLSDiagnosticProcessTests.test_healthy_confirmation_requires_success_in_both_output_states) ... ok\ntest_native_electrical_reports_are_bank_specific_and_clear_after_healthy_current (test_avls_diagnostic_process_flow.AVLSDiagnosticProcessTests.test_native_electrical_reports_are_bank_specific_and_clear_after_healthy_current) ... ok\ntest_native_reported_status_reaches_the_periodic_output_override (test_avls_diagnostic_process_flow.AVLSDiagnosticProcessTests.test_native_reported_status_reaches_the_periodic_output_override) ... ok\ntest_performance_qualification_uses_oil_runtime_readiness_and_feature (test_avls_diagnostic_process_flow.AVLSDiagnosticProcessTests.test_performance_qualification_uses_oil_runtime_readiness_and_feature) ... ok\ntest_switch_failure_reports_after_native_settle_and_mismatch_counters (test_avls_diagnostic_process_flow.AVLSDiagnosticProcessTests.test_switch_failure_reports_after_native_settle_and_mismatch_counters) ... ok\n\n----------------------------------------------------------------------\nRan 6 tests in 22.851s\n\nOK\n"
+    },
+    {
+      "module": "test_runtime_switch_process_flow",
+      "variant": "internal",
+      "passed": true,
+      "groups": 4,
+      "elapsed_seconds": 13.659,
+      "transcript": "test_isolated_port_glitch_is_filtered_before_native_avls_diagnostic (__main__.RuntimeSwitchProcessTests.test_isolated_port_glitch_is_filtered_before_native_avls_diagnostic) ... ok\ntest_retained_reset_input_is_serial_channel_two_bit_two_not_port_e (__main__.RuntimeSwitchProcessTests.test_retained_reset_input_is_serial_channel_two_bit_two_not_port_e) ... ok\ntest_startup_and_two_sample_debounce_preserve_each_port_e_bank_input (__main__.RuntimeSwitchProcessTests.test_startup_and_two_sample_debounce_preserve_each_port_e_bank_input) ... ok\ntest_wideband_status_gpio_writes_preserve_avls_input_bits_on_shared_port (__main__.RuntimeSwitchProcessTests.test_wideband_status_gpio_writes_preserve_avls_input_bits_on_shared_port) ... ok\n\n----------------------------------------------------------------------\nRan 4 tests in 13.659s\n\nOK\n"
+    },
+    {
+      "module": "test_shutdown_process_flow",
+      "variant": "internal",
+      "passed": true,
+      "groups": 7,
+      "elapsed_seconds": 4.954,
+      "transcript": "test_avls_enabled_control_emits_one_start_and_completion_event_per_bank (__main__.ShutdownProcessTests.test_avls_enabled_control_emits_one_start_and_completion_event_per_bank) ... ok\ntest_avls_zero_payload_events_reach_only_their_native_callback_counters (__main__.ShutdownProcessTests.test_avls_zero_payload_events_reach_only_their_native_callback_counters) ... ok\ntest_ignition_on_prevents_shutdown_and_resets_callback_accounting (__main__.ShutdownProcessTests.test_ignition_on_prevents_shutdown_and_resets_callback_accounting) ... ok\ntest_installed_avls_special_mode_gates_do_not_emit_shutdown_events (__main__.ShutdownProcessTests.test_installed_avls_special_mode_gates_do_not_emit_shutdown_events) ... ok\ntest_last_shutdown_queue_record_stops_before_digital_sample_workspace (__main__.ShutdownProcessTests.test_last_shutdown_queue_record_stops_before_digital_sample_workspace) ... ok\ntest_native_ignition_off_queues_shutdown_then_waits_for_callback_completion (__main__.ShutdownProcessTests.test_native_ignition_off_queues_shutdown_then_waits_for_callback_completion) ... ok\ntest_queued_shutdown_task_runs_counter_callback_before_native_completion (__main__.ShutdownProcessTests.test_queued_shutdown_task_runs_counter_callback_before_native_completion) ... ok\n\n----------------------------------------------------------------------\nRan 7 tests in 4.954s\n\nOK\n"
+    },
+    {
+      "module": "test_diagnostic_readiness_process_flow",
+      "variant": "internal",
+      "passed": true,
+      "groups": 6,
+      "elapsed_seconds": 4.368,
+      "transcript": "test_entire_publisher_preserves_distinct_battery_barometric_and_condition_gates (__main__.DiagnosticReadinessProcessTests.test_entire_publisher_preserves_distinct_battery_barometric_and_condition_gates) ... ok\ntest_installed_configuration_publisher_bypasses_only_its_specific_condition (__main__.DiagnosticReadinessProcessTests.test_installed_configuration_publisher_bypasses_only_its_specific_condition) ... ok\ntest_native_gate_loss_resets_partial_ocv_avls_and_iat_qualification (__main__.DiagnosticReadinessProcessTests.test_native_gate_loss_resets_partial_ocv_avls_and_iat_qualification) ... ok\ntest_native_temperature_history_uses_iat_and_retains_the_minimum_until_reinitialization (__main__.DiagnosticReadinessProcessTests.test_native_temperature_history_uses_iat_and_retains_the_minimum_until_reinitialization) ... ok\ntest_readiness_loss_retains_acquired_fault_until_native_healthy_confirmation (__main__.DiagnosticReadinessProcessTests.test_readiness_loss_retains_acquired_fault_until_native_healthy_confirmation) ... ok\ntest_reset_countdown_and_shutdown_control_all_six_native_publications (__main__.DiagnosticReadinessProcessTests.test_reset_countdown_and_shutdown_control_all_six_native_publications) ... ok\n\n----------------------------------------------------------------------\nRan 6 tests in 4.368s\n\nOK\n"
+    },
+    {
+      "module": "test_cam_sensor_process_flow",
+      "variant": "internal",
+      "passed": true,
+      "groups": 6,
+      "elapsed_seconds": 3.728,
+      "transcript": "test_crank_running_flag_and_cam_battery_gate_are_distinct_from_ocv_readiness (__main__.CamSensorProcessTests.test_crank_running_flag_and_cam_battery_gate_are_distinct_from_ocv_readiness) ... ok\ntest_event_count_classification_feeds_fast_fault_qualification_and_recovers (__main__.CamSensorProcessTests.test_event_count_classification_feeds_fast_fault_qualification_and_recovers) ... ok\ntest_fault_snapshot_payload_and_full_queue_leave_current_fault_publication_independent (__main__.CamSensorProcessTests.test_fault_snapshot_payload_and_full_queue_leave_current_fault_publication_independent) ... ok\ntest_missing_capture_uses_separate_running_counter_and_current_raw_recovery (__main__.CamSensorProcessTests.test_missing_capture_uses_separate_running_counter_and_current_raw_recovery) ... ok\ntest_native_capture_callbacks_publish_bank_specific_latches_counts_and_timestamps (__main__.CamSensorProcessTests.test_native_capture_callbacks_publish_bank_specific_latches_counts_and_timestamps) ... ok\ntest_qualification_loss_resets_counters_but_holds_local_and_reported_faults (__main__.CamSensorProcessTests.test_qualification_loss_resets_counters_but_holds_local_and_reported_faults) ... ok\n\n----------------------------------------------------------------------\nRan 6 tests in 3.728s\n\nOK\n"
+    },
+    {
+      "module": "test_diagnostic_mode_process_flow",
+      "variant": "internal",
+      "passed": true,
+      "groups": 7,
+      "elapsed_seconds": 5.564,
+      "transcript": "test_complete_mode_dispatch_honors_enabled_descriptor_rules_without_changing_current_status (__main__.DiagnosticModeProcessTests.test_complete_mode_dispatch_honors_enabled_descriptor_rules_without_changing_current_status) ... ok\ntest_connector_selects_mode_once_per_running_qualification_and_stopped_state_rearms_it (__main__.DiagnosticModeProcessTests.test_connector_selects_mode_once_per_running_qualification_and_stopped_state_rearms_it) ... ok\ntest_diagnostic_inhibit_timer_uses_raw_history_rpm_and_temperature_with_distinct_modes (__main__.DiagnosticModeProcessTests.test_diagnostic_inhibit_timer_uses_raw_history_rpm_and_temperature_with_distinct_modes) ... ok\ntest_mode_selection_uses_runtime_rpm_and_battery_boundaries_and_retained_a5_override (__main__.DiagnosticModeProcessTests.test_mode_selection_uses_runtime_rpm_and_battery_boundaries_and_retained_a5_override) ... ok\ntest_native_startup_resets_mode_latch_and_samples_connector_before_running (__main__.DiagnosticModeProcessTests.test_native_startup_resets_mode_latch_and_samples_connector_before_running) ... ok\ntest_normal_mode_transition_resets_eligible_raw_cam_latches_but_holds_current_status (__main__.DiagnosticModeProcessTests.test_normal_mode_transition_resets_eligible_raw_cam_latches_but_holds_current_status) ... ok\ntest_selected_modes_do_not_request_cut_with_other_fault_inputs_clear (__main__.DiagnosticModeProcessTests.test_selected_modes_do_not_request_cut_with_other_fault_inputs_clear) ... ok\n\n----------------------------------------------------------------------\nRan 7 tests in 5.564s\n\nOK\n"
+    },
+    {
+      "module": "test_diagnostic_record_process_flow",
+      "variant": "internal",
+      "passed": true,
+      "groups": 8,
+      "elapsed_seconds": 9.809,
+      "transcript": "test_all_enabled_class_zero_descriptors_have_bounded_current_independent_history_writes (__main__.DiagnosticRecordProcessTests.test_all_enabled_class_zero_descriptors_have_bounded_current_independent_history_writes) ... ok\ntest_disabled_p0111_is_not_reportable_and_periodic_mask_removes_retained_bit (__main__.DiagnosticRecordProcessTests.test_disabled_p0111_is_not_reportable_and_periodic_mask_removes_retained_bit) ... ok\ntest_history_age_reset_is_mode_sensitive_and_uses_distinct_exclusion_masks (__main__.DiagnosticRecordProcessTests.test_history_age_reset_is_mode_sensitive_and_uses_distinct_exclusion_masks) ... ok\ntest_misfire_snapshot_needs_aggregate_promotion_and_then_survives_ordinary_faults (__main__.DiagnosticRecordProcessTests.test_misfire_snapshot_needs_aggregate_promotion_and_then_survives_ordinary_faults) ... ok\ntest_native_missing_cam_fault_queue_drains_into_protected_history_and_snapshot (__main__.DiagnosticRecordProcessTests.test_native_missing_cam_fault_queue_drains_into_protected_history_and_snapshot) ... ok\ntest_only_fault_request_twenty_runs_callback_and_missing_raw_status_does_not_promote (__main__.DiagnosticRecordProcessTests.test_only_fault_request_twenty_runs_callback_and_missing_raw_status_does_not_promote) ... ok\ntest_snapshot_is_retained_for_later_ordinary_faults_and_sources_are_paired_exactly (__main__.DiagnosticRecordProcessTests.test_snapshot_is_retained_for_later_ordinary_faults_and_sources_are_paired_exactly) ... ok\ntest_two_trip_promotion_requires_prior_bank_running_and_trip_qualification (__main__.DiagnosticRecordProcessTests.test_two_trip_promotion_requires_prior_bank_running_and_trip_qualification) ... ok\n\n----------------------------------------------------------------------\nRan 8 tests in 9.809s\n\nOK\n"
+    },
+    {
+      "module": "test_cam_selector_process_flow",
+      "variant": "internal",
+      "passed": true,
+      "groups": 3,
+      "elapsed_seconds": 1.282,
+      "transcript": "test_actual_expected_count_reports_missing_or_extra_edges_and_clears_after_healthy_cycle (__main__.CamSelectorProcessTests.test_actual_expected_count_reports_missing_or_extra_edges_and_clears_after_healthy_cycle) ... ok\ntest_actual_twenty_four_phase_sequence_publishes_three_observations_per_bank (__main__.CamSelectorProcessTests.test_actual_twenty_four_phase_sequence_publishes_three_observations_per_bank) ... ok\ntest_native_refresh_copies_actual_cam_selectors_and_all_adjacent_interface_fields (__main__.CamSelectorProcessTests.test_native_refresh_copies_actual_cam_selectors_and_all_adjacent_interface_fields) ... ok\n\n----------------------------------------------------------------------\nRan 3 tests in 1.282s\n\nOK\n"
+    },
+    {
+      "module": "test_engine_timeout_process_flow",
+      "variant": "internal",
+      "passed": true,
+      "groups": 5,
+      "elapsed_seconds": 0.199,
+      "transcript": "test_current_cam_fault_selects_only_zero_or_one_and_secondary_timeout_does_not_stop_engine (__main__.EngineTimeoutProcessTests.test_current_cam_fault_selects_only_zero_or_one_and_secondary_timeout_does_not_stop_engine) ... ok\ntest_full_shared_cam_queue_drops_timeout_callback_but_keeps_immediate_signal_reset (__main__.EngineTimeoutProcessTests.test_full_shared_cam_queue_drops_timeout_callback_but_keeps_immediate_signal_reset) ... ok\ntest_native_startup_sets_timeouts_and_programs_shared_capture_without_fabricating_status (__main__.EngineTimeoutProcessTests.test_native_startup_sets_timeouts_and_programs_shared_capture_without_fabricating_status) ... ok\ntest_primary_compare_timeout_resets_signal_state_once_and_queues_native_reset_callback (__main__.EngineTimeoutProcessTests.test_primary_compare_timeout_resets_signal_state_once_and_queues_native_reset_callback) ... ok\ntest_queued_reset_cancels_all_pending_injectors_without_ending_active_hardware_pulses (__main__.EngineTimeoutProcessTests.test_queued_reset_cancels_all_pending_injectors_without_ending_active_hardware_pulses) ... ok\n\n----------------------------------------------------------------------\nRan 5 tests in 0.199s\n\nOK\n"
+    },
+    {
+      "module": "test_sync_transition_process_flow",
+      "variant": "internal",
+      "passed": true,
+      "groups": 5,
+      "elapsed_seconds": 0.188,
+      "transcript": "test_acquisition_rearms_spark_fuel_and_auxiliary_mode_without_overwriting_patch_ram (__main__.SyncTransitionProcessTests.test_acquisition_rearms_spark_fuel_and_auxiliary_mode_without_overwriting_patch_ram) ... ok\ntest_full_sync_queue_preserves_memory_but_sender_does_not_retry_event (__main__.SyncTransitionProcessTests.test_full_sync_queue_preserves_memory_but_sender_does_not_retry_event) ... ok\ntest_loss_cancels_both_scheduler_requests_and_resets_event_counters_without_patch_alias (__main__.SyncTransitionProcessTests.test_loss_cancels_both_scheduler_requests_and_resets_event_counters_without_patch_alias) ... ok\ntest_real_sync_event_payload_updates_period_seed_only_for_acquisition (__main__.SyncTransitionProcessTests.test_real_sync_event_payload_updates_period_seed_only_for_acquisition) ... ok\ntest_timeout_while_synchronized_posts_loss_before_separate_injector_reset (__main__.SyncTransitionProcessTests.test_timeout_while_synchronized_posts_loss_before_separate_injector_reset) ... ok\n\n----------------------------------------------------------------------\nRan 5 tests in 0.188s\n\nOK\n"
+    },
+    {
+      "module": "test_phase_activation_process_flow",
+      "variant": "internal",
+      "passed": true,
+      "groups": 5,
+      "elapsed_seconds": 2.515,
+      "transcript": "test_actual_phase_producer_preserves_context_and_dispatches_only_after_publication (__main__.PhaseActivationProcessTests.test_actual_phase_producer_preserves_context_and_dispatches_only_after_publication) ... ok\ntest_caller_interrupt_mask_defers_consumption_without_exposing_unpublished_slot (__main__.PhaseActivationProcessTests.test_caller_interrupt_mask_defers_consumption_without_exposing_unpublished_slot) ... ok\ntest_failed_activation_counter_saturates_and_never_overwrites_queued_phase (__main__.PhaseActivationProcessTests.test_failed_activation_counter_saturates_and_never_overwrites_queued_phase) ... ok\ntest_running_task6_has_one_remaining_activation_and_drops_later_mapped_phases (__main__.PhaseActivationProcessTests.test_running_task6_has_one_remaining_activation_and_drops_later_mapped_phases) ... ok\ntest_two_pending_phases_are_consumed_in_order_and_third_is_counted_lost (__main__.PhaseActivationProcessTests.test_two_pending_phases_are_consumed_in_order_and_third_is_counted_lost) ... ok\n\n----------------------------------------------------------------------\nRan 5 tests in 2.515s\n\nOK\n"
+    },
+    {
+      "module": "test_patch_preemption_process_flow",
+      "variant": "internal",
+      "passed": true,
+      "groups": 3,
+      "elapsed_seconds": 34.259,
+      "transcript": "test_sd_clamped_invalid_and_stopped_exits_resume_with_original_result_and_mask (__main__.PatchPreemptionProcessTests.test_sd_clamped_invalid_and_stopped_exits_resume_with_original_result_and_mask) ... ok\ntest_sd_interior_both_lift_modes_resume_bit_identically_at_every_reached_instruction_address (__main__.PatchPreemptionProcessTests.test_sd_interior_both_lift_modes_resume_bit_identically_at_every_reached_instruction_address) ... ok\ntest_wideband_valid_and_invalid_publications_resume_at_every_reached_instruction_address (__main__.PatchPreemptionProcessTests.test_wideband_valid_and_invalid_publications_resume_at_every_reached_instruction_address) ... ok\n\n----------------------------------------------------------------------\nRan 3 tests in 34.259s\n\nOK\n"
+    },
+    {
+      "module": "test_crank_observation_process_flow",
+      "variant": "internal",
+      "passed": true,
+      "groups": 5,
+      "elapsed_seconds": 0.324,
+      "transcript": "test_all_six_timestamp_pairs_publish_bounded_history_and_actual_queue_callback (__main__.CrankObservationProcessTests.test_all_six_timestamp_pairs_publish_bounded_history_and_actual_queue_callback) ... ok\ntest_delayed_zero_payload_callback_observes_latest_global_channel_and_history (__main__.CrankObservationProcessTests.test_delayed_zero_payload_callback_observes_latest_global_channel_and_history) ... ok\ntest_full_shared_queue_drops_callback_but_updates_global_history_without_alias (__main__.CrankObservationProcessTests.test_full_shared_queue_drops_callback_but_updates_global_history_without_alias) ... ok\ntest_native_edge_status_counter_checks_thirty_edge_window_and_saturates (__main__.CrankObservationProcessTests.test_native_edge_status_counter_checks_thirty_edge_window_and_saturates) ... ok\ntest_unsynchronized_or_missing_initial_sample_does_not_publish_observation (__main__.CrankObservationProcessTests.test_unsynchronized_or_missing_initial_sample_does_not_publish_observation) ... ok\n\n----------------------------------------------------------------------\nRan 5 tests in 0.324s\n\nOK\n"
+    },
+    {
+      "module": "test_crank_decoder_process_flow",
+      "variant": "internal",
+      "passed": true,
+      "groups": 6,
+      "elapsed_seconds": 3.957,
+      "transcript": "test_capture_inhibit_parent_uses_two_high_bits_and_resets_only_on_rising_request (__main__.CrankDecoderProcessTests.test_capture_inhibit_parent_uses_two_high_bits_and_resets_only_on_rising_request) ... ok\ntest_capture_inhibit_skips_decoder_while_secondary_latch_and_timeout_recovery_are_separate (__main__.CrankDecoderProcessTests.test_capture_inhibit_skips_decoder_while_secondary_latch_and_timeout_recovery_are_separate) ... ok\ntest_decoder_rejects_invalid_position_before_indexing_transition_table_and_posts_sync_loss (__main__.CrankDecoderProcessTests.test_decoder_rejects_invalid_position_before_indexing_transition_table_and_posts_sync_loss) ... ok\ntest_gap_search_resets_after_five_plain_edges_and_bounds_its_adjustment_lookup (__main__.CrankDecoderProcessTests.test_gap_search_resets_after_five_plain_edges_and_bounds_its_adjustment_lookup) ... ok\ntest_low_rpm_capture_inhibit_producer_clears_at_one_thousand_and_logged_speeds (__main__.CrankDecoderProcessTests.test_low_rpm_capture_inhibit_producer_clears_at_one_thousand_and_logged_speeds) ... ok\ntest_native_waveform_acquires_and_maintains_twenty_four_phases_in_both_modes (__main__.CrankDecoderProcessTests.test_native_waveform_acquires_and_maintains_twenty_four_phases_in_both_modes) ... ok\n\n----------------------------------------------------------------------\nRan 6 tests in 3.957s\n\nOK\n"
+    },
+    {
+      "module": "test_capture_inhibit_process_flow",
+      "variant": "internal",
+      "passed": true,
+      "groups": 4,
+      "elapsed_seconds": 2.095,
+      "transcript": "test_latch_propagates_to_decoder_loss_once_then_releases_capture (__main__.CaptureInhibitProcessTests.test_latch_propagates_to_decoder_loss_once_then_releases_capture) ... ok\ntest_near_zero_request_holds_latch_but_counter_decrements_without_rearming (__main__.CaptureInhibitProcessTests.test_near_zero_request_holds_latch_but_counter_decrements_without_rearming) ... ok\ntest_release_requires_native_ratio_and_all_four_gates_or_a_selected_fault (__main__.CaptureInhibitProcessTests.test_release_requires_native_ratio_and_all_four_gates_or_a_selected_fault) ... ok\ntest_startup_sets_only_the_high_bit_from_retained_validation_inputs (__main__.CaptureInhibitProcessTests.test_startup_sets_only_the_high_bit_from_retained_validation_inputs) ... ok\n\n----------------------------------------------------------------------\nRan 4 tests in 2.095s\n\nOK\n"
+    },
+    {
+      "module": "test_native_inhibit_sources_process_flow",
+      "variant": "internal",
+      "passed": true,
+      "groups": 8,
+      "elapsed_seconds": 9.958,
+      "transcript": "test_installed_zero_permission_resets_received_torque_pattern_to_twelve (__main__.NativeInhibitSourceTests.test_installed_zero_permission_resets_received_torque_pattern_to_twelve) ... ok\ntest_logged_loaded_rows_clear_stationary_cut_with_stale_latches (__main__.NativeInhibitSourceTests.test_logged_loaded_rows_clear_stationary_cut_with_stale_latches) ... ok\ntest_low_lift_limit_is_4600_on_and_below_4400_off_in_both_software_modes (__main__.NativeInhibitSourceTests.test_low_lift_limit_is_4600_on_and_below_4400_off_in_both_software_modes) ... ok\ntest_native_digital_loss_needs_two_calls_and_healthy_input_releases (__main__.NativeInhibitSourceTests.test_native_digital_loss_needs_two_calls_and_healthy_input_releases) ... ok\ntest_port_f_zero_bit_debounce_reaches_digital_cut_without_a_port_e_alias (__main__.NativeInhibitSourceTests.test_port_f_zero_bit_debounce_reaches_digital_cut_without_a_port_e_alias) ... ok\ntest_security_and_combined_digital_request_publish_and_release_independently (__main__.NativeInhibitSourceTests.test_security_and_combined_digital_request_publish_and_release_independently) ... ok\ntest_speed_limit_needs_262_kmh_and_5400_rpm_and_recovers_below_260 (__main__.NativeInhibitSourceTests.test_speed_limit_needs_262_kmh_and_5400_rpm_and_recovers_below_260) ... ok\ntest_stationary_timer_reaches_cut_and_moving_resets_even_with_saturated_history (__main__.NativeInhibitSourceTests.test_stationary_timer_reaches_cut_and_moving_resets_even_with_saturated_history) ... ok\n\n----------------------------------------------------------------------\nRan 8 tests in 9.958s\n\nOK\n"
+    },
+    {
+      "module": "test_received_cut_process_flow",
+      "variant": "internal",
+      "passed": true,
+      "groups": 11,
+      "elapsed_seconds": 9.095,
+      "transcript": "test_combined_cut_needs_both_received_requests_and_two_qualifying_messages (__main__.ReceivedCutProcessTests.test_combined_cut_needs_both_received_requests_and_two_qualifying_messages) ... ok\ntest_injector_scalar_model_alias_does_not_enable_received_permission (__main__.ReceivedCutProcessTests.test_injector_scalar_model_alias_does_not_enable_received_permission) ... ok\ntest_missing_messages_and_low_battery_reset_hold_latches_until_fresh_clear (__main__.ReceivedCutProcessTests.test_missing_messages_and_low_battery_reset_hold_latches_until_fresh_clear) ... ok\ntest_native_can_parent_copies_permission_and_timeout_resets_it (__main__.ReceivedCutProcessTests.test_native_can_parent_copies_permission_and_timeout_resets_it) ... ok\ntest_no_received_permission_keeps_all_twelve_pattern_slots_enabled (__main__.ReceivedCutProcessTests.test_no_received_permission_keeps_all_twelve_pattern_slots_enabled) ... ok\ntest_periodic_edge_aligns_phase_pattern_and_slow_summary_retains_release_history (__main__.ReceivedCutProcessTests.test_periodic_edge_aligns_phase_pattern_and_slow_summary_retains_release_history) ... ok\ntest_ratio_thresholds_and_native_rotation_keep_request_bounded (__main__.ReceivedCutProcessTests.test_ratio_thresholds_and_native_rotation_keep_request_bounded) ... ok\ntest_received_drop_resets_throttle_correction_and_rising_request_releases (__main__.ReceivedCutProcessTests.test_received_drop_resets_throttle_correction_and_rising_request_releases) ... ok\ntest_received_ratio_reaches_five_cylinder_cut_and_releases_at_update_boundary (__main__.ReceivedCutProcessTests.test_received_ratio_reaches_five_cylinder_cut_and_releases_at_update_boundary) ... ok\ntest_received_throttle_permission_needs_can_bit_and_clear_native_inhibit (__main__.ReceivedCutProcessTests.test_received_throttle_permission_needs_can_bit_and_clear_native_inhibit) ... ok\ntest_startup_battery_window_expires_without_creating_or_releasing_a_latch (__main__.ReceivedCutProcessTests.test_startup_battery_window_expires_without_creating_or_releasing_a_latch) ... ok\n\n----------------------------------------------------------------------\nRan 11 tests in 9.095s\n\nOK\n"
+    },
+    {
+      "module": "test_torque_mode_process_flow",
+      "variant": "internal",
+      "passed": true,
+      "groups": 6,
+      "elapsed_seconds": 19.576,
+      "transcript": "test_each_mode_reason_inhibits_received_cut_and_healthy_state_releases (__main__.TorqueModeProcessTests.test_each_mode_reason_inhibits_received_cut_and_healthy_state_releases) ... ok\ntest_native_coolant_window_and_hysteresis_bound_the_forced_cut_fixture (__main__.TorqueModeProcessTests.test_native_coolant_window_and_hysteresis_bound_the_forced_cut_fixture) ... ok\ntest_native_falling_edge_blocks_reentry_for_1250_calls_and_counter_saturates (__main__.TorqueModeProcessTests.test_native_falling_edge_blocks_reentry_for_1250_calls_and_counter_saturates) ... ok\ntest_ratio_and_low_rpm_hysteresis_inhibit_only_the_received_pattern (__main__.TorqueModeProcessTests.test_ratio_and_low_rpm_hysteresis_inhibit_only_the_received_pattern) ... ok\ntest_warm_parent_blocks_aggressive_received_cut_across_loaded_inputs (__main__.TorqueModeProcessTests.test_warm_parent_blocks_aggressive_received_cut_across_loaded_inputs) ... ok\ntest_warm_parent_releases_throttle_permission_but_keeps_cylinder_cut_inhibited (__main__.TorqueModeProcessTests.test_warm_parent_releases_throttle_permission_but_keeps_cylinder_cut_inhibited) ... ok\n\n----------------------------------------------------------------------\nRan 6 tests in 19.576s\n\nOK\n"
+    },
+    {
+      "module": "test_knock_retained_process_flow",
+      "variant": "internal",
+      "passed": true,
+      "groups": 11,
+      "elapsed_seconds": 5.405,
+      "transcript": "test_bad_grid_record_stops_validation_at_the_first_failure (__main__.KnockRetainedProcessTests.test_bad_grid_record_stops_validation_at_the_first_failure) ... ok\ntest_changed_upper_load_limit_alters_reset_eligibility_with_native_hysteresis (__main__.KnockRetainedProcessTests.test_changed_upper_load_limit_alters_reset_eligibility_with_native_hysteresis) ... ok\ntest_disabled_feature_preserves_iam_but_consumes_recovery_history (__main__.KnockRetainedProcessTests.test_disabled_feature_preserves_iam_but_consumes_recovery_history) ... ok\ntest_feature_and_fault_parents_force_zero_then_restore_calibrated_iam_on_recovery (__main__.KnockRetainedProcessTests.test_feature_and_fault_parents_force_zero_then_restore_calibrated_iam_on_recovery) ... ok\ntest_grid_validation_repairs_either_checksum_copy_without_reading_iam (__main__.KnockRetainedProcessTests.test_grid_validation_repairs_either_checksum_copy_without_reading_iam) ... ok\ntest_iam_learning_clamps_bounds_and_preserves_the_record_metadata (__main__.KnockRetainedProcessTests.test_iam_learning_clamps_bounds_and_preserves_the_record_metadata) ... ok\ntest_ignition_retained_parent_checks_all_groups_and_both_two_bit_status_fields (__main__.KnockRetainedProcessTests.test_ignition_retained_parent_checks_all_groups_and_both_two_bit_status_fields) ... ok\ntest_load_qualified_first_entry_resets_exactly_the_grid_and_iam_once (__main__.KnockRetainedProcessTests.test_load_qualified_first_entry_resets_exactly_the_grid_and_iam_once) ... ok\ntest_native_iam_learning_waits_for_qualified_events_and_halves_step_on_direction_change (__main__.KnockRetainedProcessTests.test_native_iam_learning_waits_for_qualified_events_and_halves_step_on_direction_change) ... ok\ntest_native_initializer_uses_each_images_iam_calibration_and_protects_adjacent_records (__main__.KnockRetainedProcessTests.test_native_initializer_uses_each_images_iam_calibration_and_protects_adjacent_records) ... ok\ntest_reset_parent_respects_load_window_feedback_permission_and_advance_threshold (__main__.KnockRetainedProcessTests.test_reset_parent_respects_load_window_feedback_permission_and_advance_threshold) ... ok\n\n----------------------------------------------------------------------\nRan 11 tests in 5.405s\n\nOK\n"
+    },
+    {
+      "module": "test_knock_learning_process_flow",
+      "variant": "internal",
+      "passed": true,
+      "groups": 7,
+      "elapsed_seconds": 1.068,
+      "transcript": "test_event_timer_saturates_and_knock_resets_it_before_learning (__main__.KnockLearningProcessTests.test_event_timer_saturates_and_knock_resets_it_before_learning) ... ok\ntest_feedback_rough_mode_and_load_gates_hold_records_during_knock (__main__.KnockLearningProcessTests.test_feedback_rough_mode_and_load_gates_hold_records_during_knock) ... ok\ntest_large_fine_correction_reenters_rough_mode_then_native_parent_resets_grid (__main__.KnockLearningProcessTests.test_large_fine_correction_reenters_rough_mode_then_native_parent_resets_grid) ... ok\ntest_new_learning_reaches_composition_on_the_next_native_publication (__main__.KnockLearningProcessTests.test_new_learning_reaches_composition_on_the_next_native_publication) ... ok\ntest_recovery_waits_for_same_cell_and_125_clean_event_calls (__main__.KnockLearningProcessTests.test_recovery_waits_for_same_cell_and_125_clean_event_calls) ... ok\ntest_selected_record_decrements_on_event_with_no_adjacent_or_iam_write (__main__.KnockLearningProcessTests.test_selected_record_decrements_on_event_with_no_adjacent_or_iam_write) ... ok\ntest_shared_offset_recovers_before_the_selected_protected_cell (__main__.KnockLearningProcessTests.test_shared_offset_recovers_before_the_selected_protected_cell) ... ok\n\n----------------------------------------------------------------------\nRan 7 tests in 1.068s\n\nOK\n"
+    },
+    {
+      "module": "test_dormant_patch_process_flow",
+      "variant": "internal",
+      "passed": true,
+      "groups": 6,
+      "elapsed_seconds": 0.075,
+      "transcript": "test_each_gate_exits_outside_window_and_accepts_its_native_float_boundary (__main__.DormantPatchProcessTests.test_each_gate_exits_outside_window_and_accepts_its_native_float_boundary) ... ok\ntest_non_one_switch_and_malformed_calibration_preserve_native_result (__main__.DormantPatchProcessTests.test_non_one_switch_and_malformed_calibration_preserve_native_result) ... ok\ntest_private_enabled_control_runs_native_first_and_restores_each_cylinder_next_call (__main__.DormantPatchProcessTests.test_private_enabled_control_runs_native_first_and_restores_each_cylinder_next_call) ... ok\ntest_retard_limits_and_original_angle_ceiling_hold_after_native_composition (__main__.DormantPatchProcessTests.test_retard_limits_and_original_angle_ceiling_hold_after_native_composition) ... ok\ntest_retired_entry_calls_do_not_read_state_or_write_outputs_for_any_old_switch (__main__.DormantPatchProcessTests.test_retired_entry_calls_do_not_read_state_or_write_outputs_for_any_old_switch) ... ok\ntest_saved_images_execute_native_timing_without_retard_across_idle_and_loaded_inputs (__main__.DormantPatchProcessTests.test_saved_images_execute_native_timing_without_retard_across_idle_and_loaded_inputs) ... ok\n\n----------------------------------------------------------------------\nRan 6 tests in 0.075s\n\nOK\n"
+    },
+    {
+      "module": "test_fan_retired_process_flow",
+      "variant": "internal",
+      "passed": true,
+      "groups": 6,
+      "elapsed_seconds": 1.455,
+      "transcript": "test_all_36_computed_mode_entries_stay_in_native_byte_data (__main__.FanRetiredProcessTests.test_all_36_computed_mode_entries_stay_in_native_byte_data) ... ok\ntest_all_native_mode_branches_publish_only_fan_pwm_and_preserve_shared_channels (__main__.FanRetiredProcessTests.test_all_native_mode_branches_publish_only_fan_pwm_and_preserve_shared_channels) ... ok\ntest_native_parent_temperature_transitions_reach_output_with_hysteresis (__main__.FanRetiredProcessTests.test_native_parent_temperature_transitions_reach_output_with_hysteresis) ... ok\ntest_native_period_reload_and_writer_use_fan_channel_only (__main__.FanRetiredProcessTests.test_native_period_reload_and_writer_use_fan_channel_only) ... ok\ntest_only_external_retired_address_literal_is_the_exclusive_checksum_boundary (__main__.FanRetiredProcessTests.test_only_external_retired_address_literal_is_the_exclusive_checksum_boundary) ... ok\ntest_poisoned_retired_descriptors_switches_and_data_do_not_change_native_fan_paths (__main__.FanRetiredProcessTests.test_poisoned_retired_descriptors_switches_and_data_do_not_change_native_fan_paths) ... ok\n\n----------------------------------------------------------------------\nRan 6 tests in 1.455s\n\nOK\n"
+    },
+    {
+      "module": "test_knock_feedback_process_flow",
+      "variant": "internal",
+      "passed": true,
+      "groups": 9,
+      "elapsed_seconds": 3.807,
+      "transcript": "test_all_six_final_timing_slots_affect_only_the_low_rpm_permission_gate (__main__.KnockFeedbackProcessTests.test_all_six_final_timing_slots_affect_only_the_low_rpm_permission_gate) ... ok\ntest_clean_event_and_permission_counters_saturate_and_clear_from_native_getters (__main__.KnockFeedbackProcessTests.test_clean_event_and_permission_counters_saturate_and_clear_from_native_getters) ... ok\ntest_feedback_handoff_preserves_retard_for_the_next_fine_publication (__main__.KnockFeedbackProcessTests.test_feedback_handoff_preserves_retard_for_the_next_fine_publication) ... ok\ntest_feedback_knock_is_bounded_and_clean_recovery_requires_125_event_calls (__main__.KnockFeedbackProcessTests.test_feedback_knock_is_bounded_and_clean_recovery_requires_125_event_calls) ... ok\ntest_lift_transition_and_activity_history_hold_then_release_learning (__main__.KnockFeedbackProcessTests.test_lift_transition_and_activity_history_hold_then_release_learning) ... ok\ntest_load_filter_routes_transitions_to_feedback_then_releases_without_a_latch (__main__.KnockFeedbackProcessTests.test_load_filter_routes_transitions_to_feedback_then_releases_without_a_latch) ... ok\ntest_native_fault_cam_and_transient_gates_select_feedback_without_grid_writes (__main__.KnockFeedbackProcessTests.test_native_fault_cam_and_transient_gates_select_feedback_without_grid_writes) ... ok\ntest_native_initializer_seeds_mode_timers_and_resets_filter_only_when_requested (__main__.KnockFeedbackProcessTests.test_native_initializer_seeds_mode_timers_and_resets_filter_only_when_requested) ... ok\ntest_stable_loaded_inputs_do_not_create_retard_without_a_knock_event (__main__.KnockFeedbackProcessTests.test_stable_loaded_inputs_do_not_create_retard_without_a_knock_event) ... ok\n\n----------------------------------------------------------------------\nRan 9 tests in 3.807s\n\nOK\n"
+    },
+    {
+      "module": "test_timing_feedback_process_flow",
+      "variant": "internal",
+      "passed": true,
+      "groups": 10,
+      "elapsed_seconds": 8.035,
+      "transcript": "test_any_of_six_low_final_angles_stops_growth_at_the_native_floor (__main__.TimingFeedbackProcessTests.test_any_of_six_low_final_angles_stops_growth_at_the_native_floor) ... ok\ntest_correction_is_subtracted_once_in_each_saved_images_native_final_path (__main__.TimingFeedbackProcessTests.test_correction_is_subtracted_once_in_each_saved_images_native_final_path) ... ok\ntest_logged_moving_speeds_release_retard_across_temperature_and_rpm_inputs (__main__.TimingFeedbackProcessTests.test_logged_moving_speeds_release_retard_across_temperature_and_rpm_inputs) ... ok\ntest_native_idle_chain_includes_compensation_once_and_does_not_reduce_driver_request (__main__.TimingFeedbackProcessTests.test_native_idle_chain_includes_compensation_once_and_does_not_reduce_driver_request) ... ok\ntest_native_monitor_threshold_branches_leave_actuator_words_untouched (__main__.TimingFeedbackProcessTests.test_native_monitor_threshold_branches_leave_actuator_words_untouched) ... ok\ntest_native_temperature_sample_holds_independently_of_live_coolant (__main__.TimingFeedbackProcessTests.test_native_temperature_sample_holds_independently_of_live_coolant) ... ok\ntest_native_zero_reset_and_completion_latch_have_explicit_rearm (__main__.TimingFeedbackProcessTests.test_native_zero_reset_and_completion_latch_have_explicit_rearm) ... ok\ntest_other_idle_timing_consumer_clears_its_correction_at_loaded_rpm (__main__.TimingFeedbackProcessTests.test_other_idle_timing_consumer_clears_its_correction_at_loaded_rpm) ... ok\ntest_repeated_stationary_updates_obey_the_native_dynamic_limit (__main__.TimingFeedbackProcessTests.test_repeated_stationary_updates_obey_the_native_dynamic_limit) ... ok\ntest_retard_air_compensation_rises_immediately_and_uses_both_native_decay_rates (__main__.TimingFeedbackProcessTests.test_retard_air_compensation_rises_immediately_and_uses_both_native_decay_rates) ... ok\n\n----------------------------------------------------------------------\nRan 10 tests in 8.035s\n\nOK\n"
+    },
+    {
+      "module": "test_knock_event_process_flow",
+      "variant": "internal",
+      "passed": true,
+      "groups": 9,
+      "elapsed_seconds": 18.674,
+      "transcript": "test_completion_callback_captures_an24_and_clears_only_its_interrupt_bit (__main__.KnockEventProcessTests.test_completion_callback_captures_an24_and_clears_only_its_interrupt_bit) ... ok\ntest_gain_selection_and_resync_keep_history_inside_its_native_bank (__main__.KnockEventProcessTests.test_gain_selection_and_resync_keep_history_inside_its_native_bank) ... ok\ntest_native_phase_handoff_bounds_all_six_arrays_and_skips_startup_sentinel (__main__.KnockEventProcessTests.test_native_phase_handoff_bounds_all_six_arrays_and_skips_startup_sentinel) ... ok\ntest_publication_qualifies_runtime_exact_event_and_native_reset (__main__.KnockEventProcessTests.test_publication_qualifies_runtime_exact_event_and_native_reset) ... ok\ntest_real_sample_event_reaches_feedback_without_an_inserted_knock_flag (__main__.KnockEventProcessTests.test_real_sample_event_reaches_feedback_without_an_inserted_knock_flag) ... ok\ntest_reference_filter_updates_only_between_500_and_2000_rpm (__main__.KnockEventProcessTests.test_reference_filter_updates_only_between_500_and_2000_rpm) ... ok\ntest_sample_subtraction_gain_and_adaptive_threshold_are_bounded_per_cylinder (__main__.KnockEventProcessTests.test_sample_subtraction_gain_and_adaptive_threshold_are_bounded_per_cylinder) ... ok\ntest_unrecognized_phase_bytes_do_not_enter_or_write_sample_state (__main__.KnockEventProcessTests.test_unrecognized_phase_bytes_do_not_enter_or_write_sample_state) ... ok\ntest_window_timing_handles_future_late_and_wrap_without_other_channel_writes (__main__.KnockEventProcessTests.test_window_timing_handles_future_late_and_wrap_without_other_channel_writes) ... ok\n\n----------------------------------------------------------------------\nRan 9 tests in 18.674s\n\nOK\n"
+    },
+    {
+      "module": "test_idle_feedback_process_flow",
+      "variant": "internal",
+      "passed": true,
+      "groups": 4,
+      "elapsed_seconds": 28.812,
+      "transcript": "test_loaded_pedal_release_gate_clears_old_feedback_from_every_cycle_position (__main__.IdleFeedbackProcessTests.test_loaded_pedal_release_gate_clears_old_feedback_from_every_cycle_position) ... ok\ntest_parent_and_limit_hold_output_outside_permission_or_eighth_call (__main__.IdleFeedbackProcessTests.test_parent_and_limit_hold_output_outside_permission_or_eighth_call) ... ok\ntest_timing_compensation_enters_native_lower_and_upper_headroom_bounds (__main__.IdleFeedbackProcessTests.test_timing_compensation_enters_native_lower_and_upper_headroom_bounds) ... ok\ntest_underspeed_chain_qualifies_and_opening_clears_feedback_with_native_tables (__main__.IdleFeedbackProcessTests.test_underspeed_chain_qualifies_and_opening_clears_feedback_with_native_tables) ... ok\n\n----------------------------------------------------------------------\nRan 4 tests in 28.812s\n\nOK\n"
+    },
+    {
+      "module": "test_startup_retained_process_flow",
+      "variant": "internal",
+      "passed": true,
+      "groups": 7,
+      "elapsed_seconds": 28.128,
+      "transcript": "test_cold_reset_invalidates_before_all_58_initializers_and_commits_last (__main__.StartupRetainedProcessTests.test_cold_reset_invalidates_before_all_58_initializers_and_commits_last) ... ok\ntest_diagnostic_sentinel_and_explicit_invalidation_reach_native_reset_and_link_flag (__main__.StartupRetainedProcessTests.test_diagnostic_sentinel_and_explicit_invalidation_reach_native_reset_and_link_flag) ... ok\ntest_ram_readback_failure_selects_native_result_and_never_tests_protected_bank (__main__.StartupRetainedProcessTests.test_ram_readback_failure_selects_native_result_and_never_tests_protected_bank) ... ok\ntest_ram_self_test_restores_low_ram_preserves_retained_bank_and_clears_patch_work (__main__.StartupRetainedProcessTests.test_ram_self_test_restores_low_ram_preserves_retained_bank_and_clears_patch_work) ... ok\ntest_single_checksum_copy_repairs_in_place_without_global_reset (__main__.StartupRetainedProcessTests.test_single_checksum_copy_repairs_in_place_without_global_reset) ... ok\ntest_unrecoverable_record_in_any_tested_family_requests_entire_bank_reset (__main__.StartupRetainedProcessTests.test_unrecoverable_record_in_any_tested_family_requests_entire_bank_reset) ... ok\ntest_valid_warm_bank_executes_all_18_validators_and_retains_learned_values (__main__.StartupRetainedProcessTests.test_valid_warm_bank_executes_all_18_validators_and_retains_learned_values) ... ok\n\n----------------------------------------------------------------------\nRan 7 tests in 28.128s\n\nOK\n"
+    },
+    {
+      "module": "test_retained_reset_process_flow",
+      "variant": "internal",
+      "passed": true,
+      "groups": 5,
+      "elapsed_seconds": 33.523,
+      "transcript": "test_installed_feature_is_enabled_but_cold_latch_blocks_either_serial_level (__main__.RetainedResetProcessTests.test_installed_feature_is_enabled_but_cold_latch_blocks_either_serial_level) ... ok\ntest_invalid_link_status_does_not_start_shutdown_while_native_ignition_input_is_on (__main__.RetainedResetProcessTests.test_invalid_link_status_does_not_start_shutdown_while_native_ignition_input_is_on) ... ok\ntest_native_rearm_then_request_latches_once_and_defers_learning_reset_to_startup (__main__.RetainedResetProcessTests.test_native_rearm_then_request_latches_once_and_defers_learning_reset_to_startup) ... ok\ntest_rearm_needs_shutdown_and_serial_bit_high_and_preserves_other_packed_fields (__main__.RetainedResetProcessTests.test_rearm_needs_shutdown_and_serial_bit_high_and_preserves_other_packed_fields) ... ok\ntest_request_checks_feature_shutdown_serial_and_all_four_packed_states (__main__.RetainedResetProcessTests.test_request_checks_feature_shutdown_serial_and_all_four_packed_states) ... ok\n\n----------------------------------------------------------------------\nRan 5 tests in 33.523s\n\nOK\n"
+    },
+    {
+      "module": "test_ssm_command_process_flow",
+      "variant": "internal",
+      "passed": true,
+      "groups": 6,
+      "elapsed_seconds": 15.347,
+      "transcript": "test_all_saved_profiles_run_native_read_and_two_complete_continuous_responses (__main__.SSMCommandProcessTests.test_all_saved_profiles_run_native_read_and_two_complete_continuous_responses) ... ok\ntest_bad_request_checksum_and_unreachable_44_address_checksum_never_dispatch (__main__.SSMCommandProcessTests.test_bad_request_checksum_and_unreachable_44_address_checksum_never_dispatch) ... ok\ntest_explicit_b8_parameter_write_reaches_reset_handler_and_checks_complete_word (__main__.SSMCommandProcessTests.test_explicit_b8_parameter_write_reaches_reset_handler_and_checks_complete_word) ... ok\ntest_native_signed_division_used_for_request_counts_matches_integer_quotients (__main__.SSMCommandProcessTests.test_native_signed_division_used_for_request_counts_matches_integer_quotients) ... ok\ntest_raw_b0_writes_to_retained_header_or_reset_word_are_blocked_by_native_address_check (__main__.SSMCommandProcessTests.test_raw_b0_writes_to_retained_header_or_reset_word_are_blocked_by_native_address_check) ... ok\ntest_reading_reset_parameter_uses_getter_and_leaves_retained_bytes_unchanged (__main__.SSMCommandProcessTests.test_reading_reset_parameter_uses_getter_and_leaves_retained_bytes_unchanged) ... ok\n\n----------------------------------------------------------------------\nRan 6 tests in 15.347s\n\nOK\n"
+    }
+  ],
+  "incremental_validation": [
+    {
+      "date": "2026-09-13",
+      "modules": [
+        "test_cam_performance_process_flow"
+      ],
+      "reason": "Added independent cam-performance module; earlier verified module results retained for the same three pinned ROM images. No existing shared harness or ROM changed."
+    },
+    {
+      "modules": [
+        "test_avls_actuator_process_flow",
+        "test_avls_diagnostic_process_flow",
+        "test_runtime_switch_process_flow"
+      ],
+      "groups": 14,
+      "reason": "New independent AVLS actuator/diagnostic and GPIO suites; ROMs and shared harnesses unchanged from prior passing run."
+    },
+    {
+      "date": "2026-09-13",
+      "modules": [
+        "test_shutdown_process_flow"
+      ],
+      "groups": 7,
+      "reason": "New independent shutdown suite. Existing shared harnesses and the three pinned ROM images are unchanged. Transcript records its complete seven-group run; subsequent edit only clarifies the module docstring."
+    },
+    {
+      "date": "2026-09-13",
+      "modules": [
+        "test_diagnostic_readiness_process_flow"
+      ],
+      "groups": 6,
+      "reason": "New independent diagnostic-readiness suite, including native temperature history. Existing modules, shared harnesses and pinned images unchanged."
+    },
+    {
+      "date": "2026-09-13",
+      "modules": [
+        "test_cam_sensor_process_flow"
+      ],
+      "groups": 6,
+      "reason": "New independent native cam-sensor suite, including report-queue success/full conditions. Existing modules, shared harnesses and pinned images unchanged. Initial fixture overran DE08 and was corrected before this passing run."
+    },
+    {
+      "date": "2026-09-13",
+      "modules": [
+        "test_diagnostic_mode_process_flow"
+      ],
+      "groups": 7,
+      "reason": "New independent native diagnostic-mode suite, including complete mode dispatch and cut handoff. Existing modules, shared harnesses and three image hashes unchanged."
+    },
+    {
+      "date": "2026-09-13",
+      "modules": [
+        "test_diagnostic_record_process_flow"
+      ],
+      "groups": 8,
+      "reason": "New independent diagnostic-record suite, including actual queue delivery, descriptor bounds, native snapshot/reset, and corrected stock-disabled P0111 closure. Shared harnesses and three pinned images unchanged; IAT suite edit only clarifies its docstring."
+    },
+    {
+      "date": "2026-09-13",
+      "modules": [
+        "test_cam_selector_process_flow",
+        "test_engine_timeout_process_flow"
+      ],
+      "groups": 8,
+      "reason": "New independent actual cam-selector and engine-timeout suites. Shared harnesses and three pinned images unchanged. Last selector edit only clarified a fixture comment. Timeout tests explicitly supply hardware flags/start events and callback delivery."
+    },
+    {
+      "date": "2026-09-13",
+      "modules": [
+        "test_sync_transition_process_flow"
+      ],
+      "groups": 5,
+      "reason": "New independent synchronization-transition suite with full native callback and timeout-driven producer. Existing shared harnesses and pinned images unchanged. Corrected expected coil order against the actual native initialization table before this passing run."
+    },
+    {
+      "date": "2026-09-13",
+      "modules": [
+        "test_phase_activation_process_flow",
+        "test_patch_preemption_process_flow"
+      ],
+      "groups": 8,
+      "reason": "New native phase/kernel integration and SD/WB preemption suites. Existing shared harnesses and pinned images unchanged. Full passing transcripts follow correction of explicit period/write-bound fixture errors; no production bytes changed."
+    },
+    {
+      "date": "2026-09-13",
+      "modules": [
+        "test_crank_observation_process_flow",
+        "test_crank_decoder_process_flow"
+      ],
+      "groups": 11,
+      "reason": "New native crank-observation/decoder suites. Explicit captures exercise six-channel histories, delayed/full shared queue, acquisition/loss, bounded gap search and capture-inhibit producer. Existing shared harnesses and all three pinned images unchanged. Final decoder run includes added source-byte pins."
+    },
+    {
+      "date": "2026-09-13",
+      "modules": [
+        "test_capture_inhibit_process_flow"
+      ],
+      "groups": 4,
+      "reason": "New independent native capture-inhibit startup/release suite with all getters, ratio/countdown and decoder loss/reacquisition. Existing shared harnesses and three pinned images unchanged."
+    },
+    {
+      "date": "2026-09-13",
+      "modules": [
+        "test_native_inhibit_sources_process_flow"
+      ],
+      "groups": 8,
+      "reason": "New native cut-source suite: complete source workers, full word vs six-bit cut distinction, actual port-F sampling/debounce, logged stationary-gate fixtures and cut/release. Missing explicit RAM fixtures/allowed getters and expected full-word masks were corrected before final passing run. Existing shared harnesses and pinned images unchanged."
+    },
+    {
+      "date": "2026-09-13",
+      "modules": [
+        "test_received_cut_process_flow"
+      ],
+      "groups": 11,
+      "reason": "New independent received-CAN, phase-cut and duration-model suite; all eleven groups passed together. Shared harnesses and three pinned images unchanged. The added local DIV0U/DIV1/ROTCL interpreter support follows the Renesas instruction manual. Initial fixture assumptions about minimum slots, delayed publication and reset behavior were corrected against native instructions before this passing run."
+    },
+    {
+      "date": "2026-09-13",
+      "modules": [
+        "test_torque_mode_process_flow"
+      ],
+      "groups": 6,
+      "reason": "New independent native torque-mode parent suite. The full parent exposed the unchanged -37/-38 C upper coolant gate that inhibits received cylinder cutting at normal temperatures; initial downstream-clear expectations were corrected against that native behavior. All six groups then passed together. Existing harnesses, received-request suite and pinned images unchanged."
+    },
+    {
+      "date": "2026-09-13",
+      "modules": [
+        "test_knock_retained_process_flow",
+        "test_knock_learning_process_flow"
+      ],
+      "groups": 18,
+      "reason": "New independent retained-knock and fine-learning suites. Earlier shared harnesses and all three pinned images are unchanged; earlier verified module results are retained. This is consolidated incremental evidence, not a fresh run of every suite."
+    },
+    {
+      "date": "2026-09-13",
+      "modules": [
+        "test_dormant_patch_process_flow",
+        "test_fan_retired_process_flow"
+      ],
+      "groups": 12,
+      "reason": "New independent dormant-wrapper and retained-fan suites. Earlier shared harnesses and all three pinned images are unchanged. Existing actuator-retirement edits only correct labels. Earlier verified results are retained; this is consolidated incremental evidence, not a fresh run of every suite."
+    },
+    {
+      "date": "2026-09-13",
+      "modules": [
+        "test_knock_feedback_process_flow"
+      ],
+      "groups": 9,
+      "reason": "New independent native knock-feedback suite. Earlier shared harnesses and all three pinned images are unchanged. Earlier verified results are retained; this is consolidated incremental evidence, not a fresh run of every suite."
+    },
+    {
+      "date": "2026-09-13",
+      "modules": [
+        "test_timing_feedback_process_flow"
+      ],
+      "groups": 10,
+      "reason": "New independent timing-feedback suite, including connected idle/driver requests and native held-temperature publication. Earlier shared harnesses and all three pinned images are unchanged. Earlier verified results are retained; this is consolidated incremental evidence, not a fresh run of every suite."
+    },
+    {
+      "date": "2026-09-13",
+      "modules": [
+        "test_knock_event_process_flow"
+      ],
+      "groups": 9,
+      "reason": "New independent native knock-event suite, including phase/index handoff, SCI0 command, ADCmodule2 capture, timer isolation and actual event-to-feedback publication. Hardware completion and physical input values are explicit. Existing shared harnesses and three pinned images unchanged; prior passing results retained, not a fresh full-suite run."
+    },
+    {
+      "date": "2026-09-13",
+      "modules": [
+        "test_idle_feedback_process_flow"
+      ],
+      "groups": 4,
+      "reason": "New independent idle-feedback suite connects native table helpers, pressure/output histories, timing-air compensation, all eight update phases and final driver request in main/v2/captured. Existing shared harnesses and image hashes unchanged. Prior passing results retained; not a fresh full-suite run."
+    },
+    {
+      "date": "2026-09-13",
+      "modules": [
+        "test_startup_retained_process_flow"
+      ],
+      "groups": 7,
+      "reason": "New independent startup/retained suite: native RAM test and stack relocation, explicit DMA completion, all 18 validators and 58 cold initializers, duplicate-checksum repair, global reset and invalid-bank link status. Existing shared harnesses and pinned images unchanged. Prior passing results retained; not a fresh full-suite run."
+    },
+    {
+      "date": "2026-09-13",
+      "modules": [
+        "test_runtime_switch_process_flow",
+        "test_retained_reset_process_flow",
+        "test_ssm_command_process_flow"
+      ],
+      "groups": 15,
+      "net_new_groups": 12,
+      "reason": "Runtime switch suite rerun with corrected AVLS/serial mapping assertions and one new group; five new native retained-request groups and six SSM command/response groups pass. Existing shared harnesses and all three pinned images unchanged. Earlier results retained; consolidated incremental evidence, not a fresh complete-suite run."
+    }
+  ]
+}

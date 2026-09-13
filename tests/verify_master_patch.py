@@ -73,9 +73,9 @@ LOGGER_DEFINITION = LOGGER_DIR / "D2WD610H_master_logger.xml"
 LOGGER_PROFILE = LOGGER_DIR / "D2WD610H_idle_diagnostic_profile.xml"
 # September 12: lean-reset repair, then six-byte stationary oil-gate repair
 # confined to 7D4B0/B4 and checksum. Both oil thresholds return to stock 15 C.
-EXPECTED_OUTPUT_SHA256 = "697b9f3a48a95027cc048ed68967520e2de4692314d88cf1768564ef15471d3a"
+EXPECTED_OUTPUT_SHA256 = "3e95b7508427f544e30a96c7aa78298b32560a6f3caf5c180e7949b8c2adc388"
 # Canonical E524 plus AVLS/cut diagnostics; prior 123 signal conversions retained.
-EXPECTED_LOGGER_SHA256 = "ea00d00a7fbe174c8292f4090bc01d939018725cb1637dcb11beaa52cfe5971f"
+EXPECTED_LOGGER_SHA256 = "e2bf2106b81fb146a138981e8a5367132a9eb405c0cba199465deac3f147428a"
 
 
 def fail(message: str) -> None:
@@ -218,7 +218,6 @@ def verify_layout(
         (wideband.BANK1_INHIBIT_ENTRY, 12, "bank-1 inhibit hook"),
         (wideband.BANK2_INHIBIT_ENTRY, 12, "bank-2 inhibit hook"),
         (wideband.FRONT_PUMP_DIAG_TASK_PTR, 4, "front pump diagnostic bypass"),
-        (wideband.REAR_O2_PROCESS_ENTRY, 12, "rear O2 process bypass"),
         (fueling_safety.PRIMARY_OL_TASK_PTR, 4, "pressure-forced OL task hook"),
         (fueling_safety.LEAN_STATE_INIT_TASK_PTR, 4, "lean-state initialization hook"),
         (rotational_idle.FINAL_TIMING_TASK_PTR, 4, "rotational-idle timing task hook"),
@@ -234,8 +233,6 @@ def verify_layout(
         add_range(hook_owned, address, 4, f"hook/MAF temperature bypass @0x{address:05X}")
     for address in (speed_density.P0102_SWITCH_ADDR, speed_density.P0103_SWITCH_ADDR):
         add_range(hook_owned, address, 1, f"hook/MAF DTC switch @0x{address:05X}")
-    for address, _, _ in wideband.REAR_O2_TASK_POINTERS:
-        add_range(hook_owned, address, 4, f"hook/rear O2 task bypass @0x{address:05X}")
     for address in wideband.DISABLED_O2_DTC_SWITCHES.values():
         add_range(hook_owned, address, 1, f"hook/O2 DTC switch @0x{address:05X}")
 
@@ -439,14 +436,8 @@ def verify_wideband(image: bytes) -> None:
         wideband.be32(wideband.NOOP_TASK),
         "front pump diagnostic task bypass",
     )
-    expect(
-        image,
-        wideband.REAR_O2_PROCESS_ENTRY,
-        wideband.build_entry_hook(wideband.REAR_O2_PROCESS_ENTRY, wideband.NOOP_TASK),
-        "rear O2 conversion bypass",
-    )
-    for pointer, _, label in wideband.REAR_O2_TASK_POINTERS:
-        expect(image, pointer, wideband.be32(wideband.NOOP_TASK), label)
+    wideband.check_avcs_dependencies(image)
+    wideband.check_reclaimed_front_scratch(image)
     for code, address in wideband.DISABLED_O2_DTC_SWITCHES.items():
         expect(image, address, b"\x00", f"{code} O2 DTC disable")
     expect(
@@ -853,7 +844,7 @@ def verify_logger_fragment() -> None:
         fail(f"master logger fragment root is <{root.tag}>, expected <ecuparams>")
 
     expected = {
-        "E500": ("0xFFB098", "4", "float", {"x", "x*14.64"}),
+        "E500": ("0xFFAE8C", "4", "float", {"x", "x*14.64"}),
         "E501": (
             "0xFFAB06",
             "2",
@@ -862,8 +853,8 @@ def verify_logger_fragment() -> None:
         ),
         "E502": ("0xFFAE70", "4", "float", {"x"}),
         "E503": ("0xFFCD86", "1", "uint8", {"x"}),
-        "E504": ("0xFFC860", "1", "uint8", {"x"}),
-        "E505": ("0xFFC85C", "2", "uint16", {"x"}),
+        "E504": ("0xFFAEA0", "1", "uint8", {"x"}),
+        "E505": ("0xFFAE9C", "2", "uint16", {"x"}),
         "E506": ("0xFFBE38", "1", "uint8", {"x"}),
         "E507": ("0xFFB688", "2", "uint16", {"x", "x*.008"}),
         "E508": ("0xFFB834", "4", "float", {"x"}),

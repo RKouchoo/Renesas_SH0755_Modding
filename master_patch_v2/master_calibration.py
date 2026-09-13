@@ -317,7 +317,9 @@ TRANSIENT_NEGATIVE_ECT_RAW = struct.pack(
     ">16H",
     *[min(v, 4096) for v in (29696, 29696, 27034, 25190, 24166, 24166, 24166, 22528, 21914, 21094, 18432, 12288, 4096, 2048, 2048, 2048)]
 )
-# A/F Learning Range D threshold set to 500 g/s so learned fuel trims never corrupt WOT/boost
+# Range C extends to 500 g/s; this does not isolate open-loop fuel from learned
+# trim. Native 216EA selects C below that boundary and 21350/1DD04 still apply
+# its stored correction. See docs/reference/AF_LEARNING_WOT_ISOLATION.md.
 AF_LEARNING_RANGES_ADDR = 0x7616C
 AF_LEARNING_RANGES = (5.0, 10.0, 500.0)
 

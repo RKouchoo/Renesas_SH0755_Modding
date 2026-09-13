@@ -2,6 +2,19 @@
 
 [Reference home](README.md) · [Address index](ADDRESS_INDEX.md) · [Ghidra changes](GHIDRA.md)
 
+The later [full process-flow review](PATCH_PROCESS_FLOW.md) is in progress.
+It found and [repaired the OCV feedback/output loop](AVCS_OCV_REPAIR_20260913.md)
+that the old O2 patch had removed. Both rolling BINs include that correction;
+resolution of the loaded cut remains unproven.
+
+The review also confirms an [external-WB/native-feedback readiness mismatch](PATCH_PROCESS_FLOW.md#native-feedback-readiness-mismatch-and-phase-dependent-clearing)
+and retracts the [500 g/s zero-learned-trim guarantee](AF_LEARNING_WOT_ISOLATION.md).
+The [cam performance monitor](PATCH_PROCESS_FLOW.md#cam-performance-reporting-has-a-restrictive-native-rpm-gate)
+is gated off below 12,800 RPM when both cam targets are nonzero: no
+P0011/P0021 report cannot establish successful cam actuation. These findings
+are separate from the historical corrections below and are not additional
+proven causes of the loaded cut.
+
 ## Corrections from this audit
 
 | ID | Previous claim | Corrected result and evidence | Action |
@@ -42,6 +55,7 @@
 | C34 | The native rev limiter is stateless. | `BF6D/80` and `/40` hold state between their engage and resume thresholds before final selection. | Document hysteresis and annotate `24B36` through MCP. |
 | C35 | `7D4B0/B4` are fixed/fallback pedal thresholds and should be raised to 110 percent. | `403C4` compares them against **CF94 oil temperature** in the stationary AVLS path. Raising stock 15 C to 110 C blocks the intended warm neutral transition. | [September 12 native execution and repair](V2_AVLS_NEUTRAL_20260912.md): restore 15 C in both rolling builds, correct labels and add regression coverage. The loaded misfire remains unresolved. |
 | C36 | Changing injector duration scaling leaves all native fuel-pump demand inputs consistent. | `13CA8` converts effective pulse through separate `72D54=4.59` into B1C4; `2A910` consumes it for pump demand. The coefficient remained stock while the main duration scalar approximately halved. | [Repair](FUEL_PUMP_SCALING_20260912.md): pair the coefficient inversely with duration scaling, approximately 9.379054, in both rolling builds. Actual pump mode/pressure during the rich bog is unlogged; root cause remains unresolved. |
+| C37 | E0D0, 33B12/33AAC/33970/34BE4 and 69568 are disposable rear-O2 tasks; C85C/C860 are safe lean scratch. | These form the AVCS OCV-current feedback and PWM-output loop. 34BE4 → DF00 → E290 writes F510/F512; 69568 reports P2088/P2089/P2092/P2093. Their bypass removes normal cam duty publication. | [September 13 repair](AVCS_OCV_REPAIR_20260913.md): restore all native stages and unity initialization, move WB mirrors to AE8C/AE90 and lean state to AE9C/AEA0, update logger definitions. Offline defect reproduced and repair tested; full vehicle cure unproven. |
 
 The [image-contract script](../../tools/audit_image_contracts.py) pins all three
 images, checks the descriptor records and fan pointers, and reproduces C08.

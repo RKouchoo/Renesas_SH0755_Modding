@@ -31,6 +31,17 @@ the emitted SD arithmetic does not divide by temperature.
 
 ## Corrections that changed the architecture
 
+The September 13 full-flow review found another physical-identity error:
+the supposed rear-O2 converter and response loop were actually AVCS oil-control
+solenoid current feedback and PWM output. Removing those tasks broke normal
+cam actuation, while wideband mirrors and lean state overwrote its measurements
+and integrators. Both rolling images now preserve the native loop and its
+unity initialization; patch state moved into replaced front-A/F processing
+storage. The old failure and repaired PWM publication are reproduced in
+[connected native tests](AVCS_OCV_REPAIR_20260913.md). Whether it explains the
+observed driving cut remains unproven because actual cam/output state was not
+in the capture. The earlier address audit had accepted an incorrect identity.
+
 The first proposed boost actuator used a misidentified output. The
 `3FC0A -> CD54 -> E8C4` path is radiator-fan control. An EBCS-OFF switch
 did not restore that old hook to stock. The repair restored `3FD8C -> E8C4`,

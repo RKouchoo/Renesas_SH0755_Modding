@@ -5,18 +5,23 @@ patch's history, current architecture, address evidence and unresolved issues.
 The September 8–9 audit uses the stock Ghidra program through MCP, the saved
 stock/main/v2 images, their builders and the offline instruction fixtures.
 
-**The near-stall is still unresolved.** Passing the build and execution checks
+**The loaded cut is not yet proven cured.** The full-flow audit found and repaired
+a separate, definite failure of the native AVCS feedback/PWM path; both rolling
+BINs and the logger definition now contain that correction. Passing the build and execution checks
 establishes the tested software contracts, not a vehicle-validated calibration.
 See [findings](FINDINGS.md) before relying on an older address label.
 
 | Read | Covers |
 |---|---|
+| [Full patch process-flow review](PATCH_PROCESS_FLOW.md) | Ongoing dependency audit beyond the earlier address review: every build assignment, producers, consumers, initialization, latches and scheduling. |
+| [AVCS actuator dependency repair](AVCS_OCV_REPAIR_20260913.md) | Corrects the false rear-O2 identity, restores current feedback and PWM, and moves patch RAM out of the cam controller. |
 | [Patch story and operation](PATCH_STORY.md) | Why the patch exists, how the pieces interact, and the investigation's history. |
 | [Images and calibration](IMAGES.md) | Exact stock/main/v2 identities, differences, ownership and build commands. |
 | [V2 load-fallback repair](V2_LOAD_FALLBACK_FIX.md) | Local bypass added to v2 while preserving its timing, MAP tip-in and other calibrations. |
 | [September 12 AVLS/misfire review](V2_AVLS_MISFIRE_20260912.md) | Repeated disturbance after high-lift selection, captured-image verification and a separate corrected lean-cut release defect. |
 | [Neutral AVLS captures and fueling adjustment](V2_AVLS_NEUTRAL_20260912.md) | Oil-gate repair, stationary changeover evidence, warm rich/lean fueling observations and the requested v2 idle/high-lift VE correction. |
 | [Injector and pump-demand scaling](FUEL_PUMP_SCALING_20260912.md) | Separate consumption coefficient corrected for larger injectors; native pump replay and the limits of its relationship to the rich bog. |
+| [Fuel learning and open-loop application](AF_LEARNING_WOT_ISOLATION.md) | Corrects the unsupported 500 g/s isolation claim; native tests show retained trim still reaches OL fuel. |
 | [Memory and hardware](MEMORY_AND_IO.md) | Correct RAM range, timer descriptors, fan/purge paths and checksum boundaries. |
 | [Signals and routines](SIGNALS.md) | Types, units, producers, consumers and sensor sources. |
 | [Methods](METHODS.md) | Lookup descriptors, SH-2E arithmetic, literal decoding, scheduling and test limits. |

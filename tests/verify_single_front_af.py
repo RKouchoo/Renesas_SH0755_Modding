@@ -61,26 +61,6 @@ def main():
          patch.build_front_diag_mirror_wrapper()),
         ("bank-2 inhibit selector", patch.BANK2_INHIBIT_SELECTOR_ADDR,
          patch.build_bank2_inhibit_selector()),
-        ("rear O2 process selector", patch.REAR_O2_PROCESS_SELECTOR_ADDR,
-         patch.build_runtime_noop_selector(patch.REAR_O2_PROCESS_SELECTOR_ADDR,
-                                           patch.REAR_O2_ORIGINAL_TRAMPOLINE_ADDR)),
-        ("rear O2 original trampoline", patch.REAR_O2_ORIGINAL_TRAMPOLINE_ADDR,
-         patch.build_rear_o2_original_trampoline()),
-        ("rear O2 threshold selector", patch.REAR_O2_THRESHOLD_SELECTOR_ADDR,
-         patch.build_runtime_noop_selector(patch.REAR_O2_THRESHOLD_SELECTOR_ADDR,
-                                           patch.STOCK_REAR_O2_THRESHOLD_UPDATE)),
-        ("rear O2 filter selector", patch.REAR_O2_FILTER_SELECTOR_ADDR,
-         patch.build_runtime_noop_selector(patch.REAR_O2_FILTER_SELECTOR_ADDR,
-                                           patch.STOCK_REAR_O2_FILTER_UPDATE)),
-        ("rear O2 integrator selector", patch.REAR_O2_INTEGRATOR_SELECTOR_ADDR,
-         patch.build_runtime_noop_selector(patch.REAR_O2_INTEGRATOR_SELECTOR_ADDR,
-                                           patch.STOCK_REAR_O2_INTEGRATOR_UPDATE)),
-        ("rear O2 response-ratio selector", patch.REAR_O2_RESPONSE_RATIO_SELECTOR_ADDR,
-         patch.build_runtime_noop_selector(patch.REAR_O2_RESPONSE_RATIO_SELECTOR_ADDR,
-                                           patch.STOCK_REAR_O2_RESPONSE_RATIO_UPDATE)),
-        ("rear O2 voltage diagnostic selector", patch.REAR_O2_VOLTAGE_DIAG_SELECTOR_ADDR,
-         patch.build_runtime_noop_selector(patch.REAR_O2_VOLTAGE_DIAG_SELECTOR_ADDR,
-                                           patch.STOCK_REAR_O2_VOLTAGE_DIAG_DISPATCH)),
     ]
     for label, address, data in blobs:
         expect(image, address, data, label)
@@ -94,22 +74,6 @@ def main():
          "bank-2 runtime inhibit-selector hook"),
         (patch.FRONT_PUMP_DIAG_TASK_PTR, patch.be32(patch.FRONT_DIAG_MIRROR_WRAPPER_ADDR),
          "front diagnostic wrapper pointer"),
-        (patch.REAR_O2_PROCESS_ENTRY,
-         patch.build_entry_hook(patch.REAR_O2_PROCESS_ENTRY,
-                                patch.REAR_O2_PROCESS_SELECTOR_ADDR),
-         "rear O2 process selector hook"),
-        (patch.REAR_O2_THRESHOLD_TASK_PTR, patch.be32(patch.REAR_O2_THRESHOLD_SELECTOR_ADDR),
-         "rear O2 threshold selector pointer"),
-        (patch.REAR_O2_FILTER_TASK_PTR, patch.be32(patch.REAR_O2_FILTER_SELECTOR_ADDR),
-         "rear O2 filter selector pointer"),
-        (patch.REAR_O2_INTEGRATOR_TASK_PTR, patch.be32(patch.REAR_O2_INTEGRATOR_SELECTOR_ADDR),
-         "rear O2 integrator selector pointer"),
-        (patch.REAR_O2_RESPONSE_RATIO_TASK_PTR,
-         patch.be32(patch.REAR_O2_RESPONSE_RATIO_SELECTOR_ADDR),
-         "rear O2 response-ratio selector pointer"),
-        (patch.REAR_O2_VOLTAGE_DIAG_TASK_PTR,
-         patch.be32(patch.REAR_O2_VOLTAGE_DIAG_SELECTOR_ADDR),
-         "rear O2 voltage diagnostic selector pointer"),
     ]
     for address, data, label in fixed_edits:
         expect(image, address, data, label)
@@ -130,18 +94,13 @@ def main():
     expect(image, patch.BANK2_INHIBIT_SELECTOR_ADDR + 14,
            bytes.fromhex("d1066010c90120088b01000be000000be002"),
            "reconstructed stock Bank-2 inhibit behavior")
-    selector_prefix = bytes.fromhex("d104601088018b01000b0009d102412b")
-    rear_selectors = (
-        patch.REAR_O2_PROCESS_SELECTOR_ADDR,
-        patch.REAR_O2_THRESHOLD_SELECTOR_ADDR,
-        patch.REAR_O2_FILTER_SELECTOR_ADDR,
-        patch.REAR_O2_INTEGRATOR_SELECTOR_ADDR,
-        patch.REAR_O2_RESPONSE_RATIO_SELECTOR_ADDR,
-        patch.REAR_O2_VOLTAGE_DIAG_SELECTOR_ADDR,
-    )
-    for address in rear_selectors:
-        expect(image, address, selector_prefix,
-               "rear O2 exact-01 no-op selector @0x%05X" % address)
+    # Exact native code, startup, device and dispatcher preservation. These
+    # addresses are independently pinned, not derived from a former O2 label.
+    for start, end in ((0xDF00, 0xE314), (0x33964, 0x33B92),
+                       (0x34BE4, 0x34D50), (0x69568, 0x69A00),
+                       (0x11488, 0x11498), (0x114A0, 0x114A4),
+                       (0x1055C, 0x10560), (0x7DA60, 0x7DB40)):
+        expect(image, start, stock[start:end], "native AVCS / retired selector reservation")
 
     # Retained paths are safety-critical to the architecture.
     expect(image, patch.BANK1_INHIBIT_ENTRY,
@@ -181,7 +140,7 @@ def main():
             stock[patch.FRONT_AF_ENABLE_ADDR + 1:patch.FRONT_MIRROR_WRAPPER_ADDR]):
         raise SystemExit("FAIL: unused pre-wrapper free space is not stock/erased")
     if image[0x7DB3C:0x7DB40] != stock[0x7DB3C:0x7DB40]:
-        raise SystemExit("FAIL: post-rear-patch free region is not stock/erased")
+        raise SystemExit("FAIL: post-wrapper free region is not stock/erased")
 
     # Instruction ends are the aligned literal-pool starts produced by Asm.
     instruction_spans = [
@@ -189,13 +148,6 @@ def main():
         (patch.FRONT_ORIGINAL_TRAMPOLINE_ADDR, 0x7D9B4),
         (patch.FRONT_DIAG_MIRROR_WRAPPER_ADDR, 0x7DA00),
         (patch.BANK2_INHIBIT_SELECTOR_ADDR, 0x7DA40),
-        (patch.REAR_O2_PROCESS_SELECTOR_ADDR, 0x7DA74),
-        (patch.REAR_O2_ORIGINAL_TRAMPOLINE_ADDR, 0x7DA94),
-        (patch.REAR_O2_THRESHOLD_SELECTOR_ADDR, 0x7DAB4),
-        (patch.REAR_O2_FILTER_SELECTOR_ADDR, 0x7DAD4),
-        (patch.REAR_O2_INTEGRATOR_SELECTOR_ADDR, 0x7DAF4),
-        (patch.REAR_O2_RESPONSE_RATIO_SELECTOR_ADDR, 0x7DB14),
-        (patch.REAR_O2_VOLTAGE_DIAG_SELECTOR_ADDR, 0x7DB34),
     ]
     decoded = []
     for start, end in instruction_spans:
@@ -206,12 +158,6 @@ def main():
     expect(image, patch.FRONT_ORIGINAL_TRAMPOLINE_ADDR,
            bytes.fromhex("2fe62fd62fc62fb62fa62f96"),
            "replayed front-A/F prologue")
-    expect(image, patch.REAR_O2_ORIGINAL_TRAMPOLINE_ADDR,
-           bytes.fromhex("2fd6e020"), "replayed rear-O2 prologue start")
-    expect(image, patch.REAR_O2_ORIGINAL_TRAMPOLINE_ADDR + 20,
-           bytes.fromhex("ffffab00ffffb0940000e0dc"),
-           "rear-O2 relocated literals and resume target")
-
     print("single-front-A/F binary audit PASS")
     print("  stock SHA-256  : %s" % hashlib.sha256(stock).hexdigest())
     print("  output SHA-256 : %s" % hashlib.sha256(image).hexdigest())
@@ -220,10 +166,10 @@ def main():
     print("  injected code  : %d decoded instructions; no unknown opcodes; enable branches pinned"
           % len(decoded))
     print("  front feedback : stock Bank 1 mirrored to Bank 2; Bank-1 diagnostics retained")
-    print("  runtime switch : 0x%05X=01; 00 selects stock front/rear runtime logic"
+    print("  runtime switch : 0x%05X=01; 00 selects stock front runtime logic"
           % patch.FRONT_AF_ENABLE_ADDR)
     print("  OFF caveat     : all 13 removed-sensor DTC bytes remain disabled until re-enabled")
-    print("  rear O2 paths  : ADC conversion and five monitor stages bypassed; 8 DTCs disabled")
+    print("  rear O2 paths  : 8 mapped DTCs disabled; native AVCS ADC/feedback/PWM retained")
     print("  ext. wideband  : no ECU hook, ADC conversion, RAM publication, or definition")
     print("  boost region   : 0x7D790..0x7D91B unchanged")
 

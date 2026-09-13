@@ -6,9 +6,10 @@ build fails on any overlap except the explicit replacement of boost seed data,
 the SD MAP minimum and ten low-lift VE cells by their final calibration.
 
 Current corrected master SHA-256 is
-`154760a5f2fdadbf6d9221480595f58dc77c6a4eccc492f50899c815aca79e4d`
-(checksum `0x16F63B0D`). The MAP/idle-VE integration changes calibration only,
-with build marker `26090804` at `0x7FC4C`; no instructions or RAM are added.
+`3e95b7508427f544e30a96c7aa78298b32560a6f3caf5c180e7949b8c2adc388`
+(checksum `0x1ADC9F24`). Build marker `26090804` at `0x7FC4C` is unchanged.
+The AVCS dependency repair restores native feedback/output tasks and moves
+wideband mirrors and lean state into replaced front-A/F storage.
 The fan/purge repair adds no RAM or free-flash
 allocation. The later injector-cut and scheduler-lock repairs grow two existing
 wrappers; the contiguous unallocated tail is now 3,320 bytes.
@@ -36,7 +37,7 @@ wrappers; the contiguous unallocated tail is now 3,320 bytes.
 | `0x7E6B8..0x7EAC7` | Low/high dual-VE data. |
 | `0x7EAC8..0x7EAEB` | Pressure-open-loop and lean-cut switches/calibration. |
 | `0x7EB20..0x7EB9B` | Stock-target-first pressure/open-loop wrapper. |
-| `0x7EBA0..0x7EBB7` | Explicit lean-state zero initializer. |
+| `0x7EBA0..0x7EBC3` | Calls native AVCS integrator initialization, then zeros the two relocated lean-state slots. |
 | `0x7EC00..0x7EDFF` | Composed rev-limit/overboost/latched-lean-cut wrapper, including injector inhibit publication and scheduler lock (512 bytes). |
 | `0x7EE00..0x7FAF7` | Unallocated contiguous verified free flash remaining in the checksum range (3,320 bytes). |
 
@@ -103,13 +104,21 @@ the wrappers to 512 and 88 bytes. It adds one four-byte saved-mask slot to each
 wrapper, eight bytes for the composed path, and no static RAM. The native
 `3AF4/3B08` lock/unlock code and the signature at `7D91C` remain unchanged.
 
-The fueling-safety component reserves `0xFFFFC85C` as a 16-bit task-call counter
-and `0xFFFFC860` as an 8-bit state (`0` idle, `1` sensor delay, `2` monitoring,
-`3` cut latched). These were rear-O2 response-integrator locations. The component
-refuses to install unless all five traced rear-O2 runtime tasks have already been
-bypassed. It repoints the stock float-1.0 initializer at task pointer `0x1055C`
-to an explicit zero initializer at `0x7EBA0`. Other injected code uses only the
-SH stack and already-mapped stock signals.
+The fueling-safety component reserves four bytes at `0xFFFFAE9C` for its
+16-bit task-call counter and four at `0xFFFFAEA0` for its 8-bit state
+(`0` idle, `1` sensor delay, `2` monitoring, `3` cut latched). Their former
+front-A/F owner `0xB8CC` is bypassed through `0x6A6C`. Wideband logger mirrors
+use `0xFFFFAE8C/0xFFFFAE90`, whose runtime owner `0xB690` is fully replaced.
+The builders check both ownership contracts and preserve the native AVCS
+ADC converter and five feedback/output/diagnostic task pointers.
+
+`0xFFFFC85C/0xFFFFC860` remain native AVCS current-integrator floats;
+`0xFFFFB098/0xFFFFB09C` remain measured OCV currents. The wrapper at
+`0x7EBA0`, selected by `0x1055C`, calls native `0x33964` to initialize both
+integrators to 1.0 before clearing the relocated lean slots. It saves PR in
+a four-byte stack frame. Restoring the output task without this initialization
+would still leave the ordinary PWM command at zero. See the
+[complete repair and RAM ownership evidence](../docs/reference/AVCS_OCV_REPAIR_20260913.md).
 The purge delete writes only its existing stock duty, modeled-flow, mode and
 bank-subtraction locations. It claims no new RAM and does not repurpose any
 fan or cam state.

@@ -2510,7 +2510,12 @@
           "max": 8.7
         },
         "above_69_percent_pedal_samples": 24,
-        "above_69_percent_pedal_cut_samples": 0
+        "above_69_percent_pedal_cut_samples": 0,
+        "selected_throttle_native_degrees": {
+          "min": 36.07843017578125,
+          "median": 55.21568298339844,
+          "max": 73.41175842285156
+        }
       },
       {
         "received_fault_fixture": "C6FA/02",
@@ -2530,7 +2535,12 @@
           "max": 8.7
         },
         "above_69_percent_pedal_samples": 24,
-        "above_69_percent_pedal_cut_samples": 0
+        "above_69_percent_pedal_cut_samples": 0,
+        "selected_throttle_native_degrees": {
+          "min": 6.375,
+          "median": 6.375,
+          "max": 6.375
+        }
       },
       {
         "received_fault_fixture": "C6F8/01",
@@ -2549,10 +2559,78 @@
           "max": 9.47
         },
         "above_69_percent_pedal_samples": 24,
-        "above_69_percent_pedal_cut_samples": 24
+        "above_69_percent_pedal_cut_samples": 24,
+        "selected_throttle_native_degrees": {
+          "min": 36.07843017578125,
+          "median": 55.21568298339844,
+          "max": 73.41175842285156
+        }
       }
     ],
+    "throttle_input": "P13 B2C4 quantization centre followed by native14CE6 fault selection into B2C8; previous coolant substitution corrected. P13 saturates at255, so displayed100 percent provides only a lower bound.",
     "limit": "Received faults are held active deliberately, not observed on the vehicle. Other diagnostic cuts can outlast the 3000/2500 latch. All nonzero masks in these fixtures include the P21 channel, so sustained operation would still reduce its scheduled-pulse term after scheduler convergence."
+  },
+  "dbw_map_comparison": {
+    "windows": [
+      {
+        "window": "first_event_70_5_72_32s",
+        "samples": 18,
+        "different_map_output_samples": 0,
+        "captured_minus_stock_mapped_angle_degrees": {
+          "min": 0.0,
+          "median": 0.0,
+          "max": 0.0
+        },
+        "captured_mapped_angle_degrees": {
+          "min": 48.75584411621094,
+          "median": 55.659488677978516,
+          "max": 74.90644073486328
+        }
+      },
+      {
+        "window": "long_bog_77_85_25s",
+        "samples": 80,
+        "different_map_output_samples": 0,
+        "captured_minus_stock_mapped_angle_degrees": {
+          "min": 0.0,
+          "median": 0.0,
+          "max": 0.0
+        },
+        "captured_mapped_angle_degrees": {
+          "min": 29.63490867614746,
+          "median": 49.40740966796875,
+          "max": 70.86372375488281
+        }
+      },
+      {
+        "window": "moving_2500_3500_rpm_pedal_at_least_25",
+        "samples": 330,
+        "different_map_output_samples": 23,
+        "captured_minus_stock_mapped_angle_degrees": {
+          "min": 0.0,
+          "median": 0.0,
+          "max": 2.2652435302734375
+        },
+        "captured_mapped_angle_degrees": {
+          "min": 23.341428756713867,
+          "median": 48.42270088195801,
+          "max": 83.9996337890625
+        }
+      }
+    ],
+    "changed_calibration_positive_control": {
+      "rpm": 1000,
+      "pedal_percent": 1,
+      "stock_torque_and_angle": [
+        9.296875,
+        0.3701344430446625
+      ],
+      "captured_torque_and_angle": [
+        20.0,
+        3.056755304336548
+      ]
+    },
+    "limit": "Native 2B35A and 2AF5C callers execute with mathematical table interpolation. C3DC is copied into C3D4 as an explicit driver-only arbitration fixture. Outputs are mapped requests, not the unlogged final C2B4 request or a measurement of throttle-tracking error. Matching outputs in a window do not exclude faults or effects of earlier state."
   },
   "limits": [
     "User reports persistent loaded misfire/bog and requests no more logs until a cause is fixed.",

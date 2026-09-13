@@ -31,11 +31,12 @@ RETURN_NOP = bytes.fromhex("000b0009")
 IMAGE: bytes | None = None
 
 # Ghidra-confirmed function bodies and their adjacent literal pools. The
-# contiguous 3F5F0..3FD9B block is the fan timeout/control/mode/state/duty/counter
-# group; it ends before the next subsystem. The remaining ranges are only
+# contiguous 3F5F0..3FD9B block includes the adjacent ignition-off spark-inhibit
+# routine at 3F5F0, then fan control/mode/state/duty/counter routines from 3F650.
+# It ends before the next subsystem. The remaining ranges are only
 # fan-owned calibration or literal bytes, not neighboring MAP calibration.
 FAN_STOCK_RANGES = (
-    ("fan control functions and literal pools", 0x3F5F0, 0x3FD9C),
+    ("adjacent spark timeout and fan functions/literal pools", 0x3F5F0, 0x3FD9C),
     ("fan PWM period reload", 0xE8B4, 0xE8C4),
     ("fan PWM output writer", 0xE8C4, 0xE8F0),
     ("fan PWM period register literal", 0xE8F4, 0xE8F6),
@@ -45,13 +46,13 @@ FAN_STOCK_RANGES = (
     ("fan PWM period RAM literal", 0xE908, 0xE90C),
     ("fan PWM scaling and request RAM literal", 0xE910, 0xE918),
     ("fan PWM period calibration", 0x72808, 0x7280A),
-    ("fan timeout threshold", 0x77D2E, 0x77D30),
+    ("adjacent ignition-off spark timeout threshold", 0x77D2E, 0x77D30),
     ("fan coolant-to-duty descriptors", 0x609C4, 0x609EC),
     ("fan mode thresholds, axes, and duty data", 0x7BCEC, 0x7BD9C),
 )
 
 FAN_SCHEDULER = (
-    (0x11754, 0x3F5F0, 0x11556),
+    (0x11754, 0x3F5F0, 0x11556),  # Adjacent spark path, also preserved.
     (0x11770, 0x3F650, 0x11580),
     (0x11768, 0x3F878, 0x11574),
     (0x1176C, 0x3F9E4, 0x1157A),

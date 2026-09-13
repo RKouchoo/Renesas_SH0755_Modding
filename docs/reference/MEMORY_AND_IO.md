@@ -44,21 +44,35 @@ assignment is not established by this audit.
 | Full register address | Hardware identity | Correct interpretation |
 |---|---|---|
 | `FFFFF444` | `GR1A` | A-table general register. |
+| `FFFFF510/512` | `BFR6A/BFR6B` | Native OCV duty buffers written by `34BE4 -> DF00 -> E290`. |
+| `FFFFF518/51A` | `DTR6A/DTR6B` | OCV PWM duty registers loaded from those buffers at cycle match. |
 | `FFFFF590` | `BFR7A` | Fan PWM buffer. |
 | `FFFFF592` | `BFR7B` | Separate buffer in traced fuel-pump path. |
 | `FFFFF598` | `DTR7A` | Duty register. |
 | `FFFFF602` | `TCNT2B` | Counter, not channel-enable word. |
 | `FFFFF604/606` | `GR2A/GR2B` | B-table series starts at 604. |
 | `FFFFF614/616` | `OCR2A/OCR2B` | B-table series starts at 614. |
+| `FFFFF610/F620` | `GR2G/OCR2G` | Native knock-window end/start comparisons from `ADD8`; WB uses separate OCR2H `F622`. |
 | `FFFFF640` | `DCNT8A` | A-table down-counter series. |
 | `FFFFF650/652` | `DCNT8I/DCNT8J` | B-table series starts at 650. |
 | `FFFFF666` | `DSTR` | Down-count start register. |
+| `FFFFF65C` | `DCNT8O` | Native knock-window down-counter; distinct from injector A–F, ignition I–N and WB G/H/P. |
+| `FFFFF66A/F66C` | `TSR8/TIER8` | Knock window uses bit `4000`; read-then-write-zero status clearing preserves other channels. |
 | `FFFFEC26` | `RAMER` | Flash/RAM emulation control. |
 | `FFFFF718/71C` | `CMCSR1/CMCOR1` | CMT1 control/status and compare. |
 | `FFFFF804` | `ADDR2` | MAP ADC word copied to `AB04` at `7060`. |
 
 Native drivers also handle timing, status, counters and interrupt constraints.
 The register table is not a replacement for those drivers.
+
+## Native OCV ownership
+
+`E0D0` converts AN16/AN6 samples at `AB20/AB0C` into measured OCV current
+`B098/B09C`. The `33B12/33AAC/33970/34BE4` loop uses native current
+integrators `C85C/C860` and drives BFR6A/B. These locations were previously
+misidentified as rear-O2 state. The repaired patch preserves them and uses
+front-A/F scratch `AE8C/AE90` for wideband mirrors and `AE9C/AEA0` for lean
+state. See the [ADC-to-PWM flow and RAM checks](AVCS_OCV_REPAIR_20260913.md).
 
 ## Fan, purge, fuel pump and injector state
 
@@ -86,10 +100,35 @@ pump-off gates intact.
 
 The injector scheduler owns six records at `BFB8 + n*0x28`, through `C0A7`
 inclusive. `BFF0` and `BFF8` are inside those records even without direct
-xrefs. `B744` is a u16 inhibit word, `BF21` a circuit-fault byte and `D94C`
-channel-status bits. The old cam-solenoid identity is retracted.
+xrefs. `B744` is a u16 inhibit word. `BF21` holds six **timed overrun-cut**
+channel flags, published by `24570`; it is not an injector circuit diagnostic.
+`D94C` contains configured injector-disable bits in its low six positions and
+spark-disable bits in its upper two positions. Native producers `6FAD4/6F4B8`
+run under the `6A636` low-RPM gate; a previously set request persists above
+that gate. Both the old cam-solenoid identity and the circuit-fault label are
+retracted. See the [producer and reset trace](PATCH_PROCESS_FLOW.md#configured-cylinder-disable-flow).
+
+Native selected throttle angle is `B2C8`, copied from measured `B2C4` by
+`14CE6` or replaced with 6.375 degrees under its two fault flags. Coolant is
+`B3AC`. Standard P13 reads `B2C4` through `316D0`, quantizes in approximately
+0.31372547-degree counts, and saturates at 255; RomRaider displays count*100/255.
+It does not directly read `B314`, the later angle after subtracting idle offset
+`C3F8`. The diagnostic-cut replay now uses this distinction.
 
 ## Protected records and feedback arrays
+
+The application startup RAM test preserves `8000..92FF`. It tests work RAM
+`9300..DFFB`, relocates SP to `DFF8`, backs up/tests/restores `6000..7FFF`,
+then clears work RAM through DMA. `DFFC..DFFF` is outside those ranges and
+has a separate native owner; it is not spare RAM.
+
+Header `8000:u16` is **`AA55` when valid, `55AA` during reset/invalidation**.
+`F710/FD5C` validate the bank; `B134:u8` requests the 58-initializer cold
+reset through `F754/10690`. A failed protected record can therefore reset
+learning across several subsystems. `B135:u8` instead holds the independent
+startup RAM-test result (0 healthy, 1 work-region failure, 2 low-region
+failure). See the [complete retained-startup flow](PATCH_PROCESS_FLOW.md#retained-bank-validation-and-global-reset)
+and its native execution checks.
 
 `49530` writes an eight-byte protected float record: four float bytes followed
 by two copies of a complemented halfword-sum checksum. `4963A` accepts either

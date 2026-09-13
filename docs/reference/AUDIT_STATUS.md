@@ -2,6 +2,19 @@
 
 [Reference home](README.md) · [Findings](FINDINGS.md) · [Address index](ADDRESS_INDEX.md)
 
+The later [full process-flow review](PATCH_PROCESS_FLOW.md) is **in progress**.
+It expands the scope to every patch touchpoint and its transitive native
+dependencies. Completion of the historical address inventory below does not
+mean that broader state-machine review is complete.
+
+Its latest [consolidated native results](evidence/process_flow_tests_20260912.json)
+passes 354 groups with the captured loaded-drive image explicitly pinned.
+The new [flow document](PATCH_PROCESS_FLOW.md) separates those bounded results
+from open fault/arbitration edges and unmeasured scheduling limits. The [OCV repair](AVCS_OCV_REPAIR_20260913.md) now changes both rolling BINs: the
+former rear-O2 bypass removed native AVCS feedback/output. Earlier conclusions
+endorsing that deletion and its RAM reclamation are retracted. Vehicle
+resolution remains unproven.
+
 Started September 8, 2026 from commit `2d95301`; this report was finalized
 September 9 in Australia/Sydney. The audit used the connected Ghidra MCP
 server, saved images, source builders and offline instruction fixtures.

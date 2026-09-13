@@ -1,94 +1,81 @@
-# Denso Scaling Architecture, FPU Latency, and Math Optimizations
+# Denso scaling and SH-2E arithmetic
 
-[Reference home](README.md) · [Signals](SIGNALS.md) · [Findings](FINDINGS.md)
+[Reference home](README.md) · [Methods](METHODS.md) · [Dependency review](PATCH_PROCESS_FLOW.md)
 
-## 1. The Hitachi / Renesas SH-2E FPU Architecture
+The earlier version of this page gave incorrect wideband addresses, mixed
+instruction issue rate with result latency, and asserted unmeasured execution
+times. Those claims must not be used to close the scheduler dependency audit.
+The observations below distinguish saved instructions from hardware timing.
 
-The `SH7055F` microcontroller powering the D2WD610H ECU utilizes an **SH-2E 32-bit RISC core** running at 40 MHz.
+## Hardware timing
 
-### Instruction Latencies on SH-2E
-| Instruction Category | Instructions | Execution Latency |
-|---|---|:---:|
-| **Integer Arithmetic** | `ADD`, `SUB`, `MOV`, `SHLL`, `SHLR`, `CMP` | **1 clock cycle** (25 ns) |
-| **Integer Multiply** | `DMULS.L` ($32 \times 32 \rightarrow 64$-bit `MACH:MACL`) | **2–4 clock cycles** |
-| **Float Arithmetic** | `FADD`, `FSUB`, `FLOAT`, `FTRC` | **1 clock cycle** |
-| **Float Multiply** | `FMUL`, `FMAC` | **2–4 clock cycles** |
-| **Float Division** | `FDIV` | **34 to 36 clock cycles** (850–900 ns) |
-| **Float Square Root**| `FSQRT` | **34+ clock cycles** |
+The Renesas SH7055S manual lists `FDIV` at 13 execution cycles. For
+`FADD`, `FSUB`, `FMUL` and `FMAC`, it distinguishes a one-cycle execution pitch
+from a two-cycle instruction delay. Instruction counts alone do not establish
+elapsed time with dependencies, memory traffic or interrupts. The device's
+40-MHz maximum is not a measurement of this ECU's operating clock.
+[Renesas manual, tables 1.1 and 2.18](https://www.renesas.com/en/document/mah/sh-2e-sh7055s-hardware-manual).
 
----
+A dependent instruction can wait for an FPU result. That is not evidence that
+the ECU has lost synchronization or missed an injector/ignition deadline.
+There is no measured deadline margin for the complete patched task graph.
 
-## 2. Denso's Fixed-Point Integer Trick ($2^{16} = 65,536$)
+## Installed code and observed instruction paths
 
-Because a single `FDIV` consumes up to 36 cycles, Denso automotive engineers strictly avoided float division in real-time execution loops. To achieve ultra-fast division without an `FDIV`, Denso stored table parameters as **16-bit integers (`uint16`) scaled by $2^{16} = 65,536$**:
+The opcode census runs saved machine instructions, including the native SD
+lookup routines. It does not estimate microseconds. Current main SHA-256:
+`3e95b7508427f544e30a96c7aa78298b32560a6f3caf5c180e7949b8c2adc388`.
 
-$$\frac{1}{65,536} = \mathbf{0.0000152587890625}$$
+| Path | Evidence |
+|---|---|
+| SD wrapper `7E18C` | Six emitted `FMUL` instructions and no emitted `FDIV`. Native lookup calls remain part of its execution. |
+| Interior SD fixtures | Three native lookup divisions; sampled full paths execute 424–537 instructions. These are selected cases, not worst-case timing bounds. |
+| Clamped SD fixtures | Zero to two lookup divisions, depending on which axes require interpolation. |
+| Stopped / invalid-MAP SD fixtures | 27 / 33 instructions in the sampled early-return paths. |
+| Wideband update `7E440`, entered through `B690` | Reads unsigned ADC `FFFFAB06`; accepted fixture executes 58 added instructions, rejected fixture 36. |
+| Accepted wideband arithmetic | Two `FMUL`, one `FADD`, one `FLOAT`, plus comparisons, loads, stores and branches. No `FDIV`. |
+| Lean initializer `7EBA0` after the OCV repair | Twelve emitted instructions, plus the native `33964` call that initializes both AVCS integrators to 1.0. This is startup work, not added to every lean-cut update. |
 
-### Why This Is Free in Hardware:
-When the SH-2E executes a 32-bit integer multiplication (`DMULS.L`), the 64-bit result lands across two dedicated registers:
-* `MACL` (lower 32 bits)
-* `MACH` (upper 32 bits)
+The previously stated wideband entry `7F100`, ADC `FFFF87E2`, sub-40-cycle
+execution, and SD total of about 150 cycles do not describe this build.
+The stock MAF converter uses a table lookup; a polynomial was not established.
 
-Dividing any number by 65,536 is physically identical to reading the upper 16 bits or taking `MACH`. It requires **zero division instructions** and takes only 2 clock cycles.
+Reproduce the census with:
 
----
-
-## 3. Demystifying the "Big Scale Factor Floats"
-
-### A. The Hardware Scaling: `0.0019073486328125`
-In the Target Throttle Plate Position descriptor at `0x607D4`, the scale factor is stored as:
-$$\frac{125}{65,536} = \mathbf{0.0019073486328125}$$
-
-* **What it actually measures:** Physical throttle plate opening in **degrees ($0.0^\circ$ to $84.0^\circ$)**.
-* **Why 84 degrees:** The Hitachi electronic drive-by-wire throttle body on the EZ30 physically rotates through an arc of exactly $84^\circ$ from the mechanical idle stop to the wide-open stop.
-
-### B. The RomRaider Helper Float: `0.002270655357`
-In the RomRaider XML definitions (`D2WD610H.xml` and `D2WD610H_AVLS.xml`), the display expression for Target Throttle Plate Position is:
-```xml
-<scaling units="Target Throttle Plate Opening Angle (%)" expression="x*.002270655357" ... />
+```sh
+python3 -B tools/analysis/audit_fpu_usage.py
 ```
-* **Why it differs:** Tuners find $0^\circ$–$84^\circ$ confusing and expect throttle to read on a normalized **$0\%$ to $100\%$ scale**.
-* **The conversion:**
-  $$0.0019073486328125 \times \frac{100\%}{84^\circ} = \mathbf{0.002270653134...}$$
-* RomRaider's `0.002270655357` is simply a **convenience helper float** designed to display human-readable percentages in the GUI. The ECU hardware itself computes native degrees via `0.0019073486328125`.
 
-### C. Base Idle Air: `0.00152587890625`
-The Base Idle Air tables at `0x79C9C` and `0x79CBC` use:
-$$\frac{100}{65,536} = \mathbf{0.00152587890625}$$
-Denso takes the 16-bit raw integer, multiplies by 100, and drops the lower 16 bits to produce grams per second.
+That command currently expects main's default-OFF rotational-idle allocation.
+V2 removes that allocation. Matching shared wrapper bytes establishes their
+instruction identity, but does not make every main fixture a v2 calibration
+or whole-scheduler test.
 
----
+## Integer storage and native lookup results
 
-## 4. Can This Math Trick Optimize Our Patches?
+A 16-bit table element is not proof of integer-only runtime arithmetic.
+The descriptor selects a data format and supplies scale/offset values; the
+native helper's instructions determine whether the result is raw integer or
+scaled float. See [lookup contracts](METHODS.md).
 
-### Speed Density Analysis (`speed_density_component.py`):
-* Our SD airflow wrapper (`0x0007E18C`) was designed from inception with **pre-inverted scalar constants**:
-  * Instead of dividing by temperature $T$, it pre-calculates the 20°C standard scalar and uses an IAT compensation multiplier curve.
-  * Instead of dividing by displacement or gas constants, it pre-computes:
-    $$\text{Airflow Constant} = \frac{1}{2 \times 60 \times R \times T_{\text{std}}}$$
-* **Instruction Count:** The SD wrapper executes exactly **6 `FMUL` instructions** (2–4 cycles each) and **zero `FDIV` instructions**.
-* **Execution Time:** ~150 clock cycles total (~3.7 microseconds at 40 MHz).
-* **Conclusion:** Converting to fixed-point integer math is **unnecessary and counterproductive**:
-  * The native ECU signals consumed by SD (`0xFFFFB420` MAF, `0xFFFFB544` RPM, `0xFFFFABC4` MAP, `0xFFFFB3B8` IAT) are already native single-precision IEEE 754 floats in RAM.
-  * Converting float $\rightarrow$ integer $\rightarrow$ float would add register shuffling and conversion latency for zero performance gain.
+For a 64-bit product `P`, division by 65,536 selects `P >> 16`. `MACH` alone
+contains `P >> 32`, so reading `MACH` is not generally division by 65,536.
+The earlier explanation conflated these operations.
 
----
+| Descriptor / storage | Verified interpretation |
+|---|---|
+| DBW descriptor `607D4`, data `7A738` | Native u16 scaling is `125/65536` into the requested-angle path. |
+| DBW XML factor near `0.002270655357` | Display conversion differs from the native scale. It does not prove the throttle body's physical travel or describe P13's separate logger conversion. |
+| Idle-air descriptors, data `79C9C/79CBC` | Scale `100/65536` produces the lookup's float result. It does not establish a multiply-and-drop-halfword implementation. |
+| Tracking descriptors `5EFE8/5EFDC` | Requested/measured position axes, not RPM. The first returns scaled float tolerance through `209C`; the second returns raw integer persistence through `2118`. Both still execute FPU interpolation internally. [Native flow](PATCH_PROCESS_FLOW.md#tracking-enable-position-axes-latches-and-cut-selection). |
 
-## 5. Is the Wideband AFR ADC Conversion Intensive on the FPU?
+## Optimization boundary
 
-**No. It is virtually instantaneous.**
+SD tabulates the IAT density factor, but still calls the native interpolation
+helpers. The complete caller subsequently divides airflow by RPM to obtain
+load. It is incorrect to describe the entire path as division-free.
 
-### Exact Instruction Audit of `build_wideband_update` (`0x0007F100`):
-1. `mov.w @r1, r0` $\rightarrow$ reads raw 16-bit MAF ADC count (`0xFFFF87E2`) (1 cycle).
-2. `float fpul, fr0` $\rightarrow$ converts unsigned ADC count to float (1 cycle).
-3. `fmul fr1, fr0` $\rightarrow$ multiplies by `5.0 / 65536.0` (`RAW_TO_VOLTS`) (3 cycles).
-4. `fcmp/gt` $\rightarrow$ checks $0.50\text{ V} \le \text{volts} \le 4.50\text{ V}$ window (2 cycles).
-5. `fmul fr1, fr0` $\rightarrow$ multiplies volts by `LAMBDA_SLOPE` ($2.0 / 14.64$) (3 cycles).
-6. `fadd fr1, fr0` $\rightarrow$ adds `LAMBDA_OFFSET` ($10.0 / 14.64$) (1 cycle).
-7. `fmov.s fr0, @r1` $\rightarrow$ publishes to Bank 1/2 and logger mirrors.
-
-### Summary:
-* **Zero `FDIV` instructions.**
-* **Only 2 `FMUL` and 1 `FADD` instructions.**
-* **Total execution time:** **Under 40 clock cycles (~1.0 microsecond)**.
-* The wideband decoding routine is lighter than the stock factory MAF polynomial lookup that it replaced. It places virtually zero load on the SH-2E FPU.
+A useful optimization would need equivalent results at table boundaries,
+invalid inputs and state changes, preservation of the native calling convention,
+and evidence that the affected task lacks time margin. None of the current
+opcode counts establishes FPU interlocks as the cause of the loaded cut.

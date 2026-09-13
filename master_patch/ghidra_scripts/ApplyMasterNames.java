@@ -40,6 +40,171 @@ public class ApplyMasterNames extends GhidraScript {
 
     @Override
     public void run() throws Exception {
+        setPlateComment(
+            toAddr("000193d0"),
+            "Corrected September 13: PE14/15 from AAE6 publish to B51C/20,10 and " +
+            "B51E/04,02 with the same polarity. B51A/04 and B51B/02 instead invert " +
+            "serial input channel 2 bit 2 (AAEC), after two-sample debounce. " +
+            "19C90 reads that separate serial request for retained-bank path 4892C. " +
+            "The earlier inverse-AVLS-switch claim was incorrect."
+        );
+        // September 13 retained reset input and SSM command separation.
+        createOrRename("0000766c", "serial_input_mux_read_channel");
+        createOrRename("00019c90", "serial_input2_bit2_low_get");
+        createOrRename("00048830", "retained_bank_shutdown_request_rearm");
+        createOrRename("0004892c", "retained_bank_serial_request_invalidate");
+        createOrRename("0004898c", "retained_bank_serial_request_latch_initialize");
+        createOrRename("000313f2", "retained_bank_request_word_set_4055");
+        createOrRename("00032fec", "ssm_standard_command_decode");
+        createOrRename("0003322c", "ssm_standard_response_chunk_dispatch");
+        createOrRename("00033668", "ssm_standard_read_byte_or_parameter");
+        createOrRename("000336e6", "ssm_standard_write_byte_or_parameter");
+        createOrRename("00032bb4", "ssm_receive_byte_or_transmit_echo");
+        createOrRename("00032b24", "ssm_timer_and_initial_transmit_service");
+        createOrRename("00032de8", "ssm_transmit_echo_advance_and_repeat");
+        // September 13 retained knock records, learning and mode handoffs.
+        createOrRename("00029570", "ignition_retained_records_validate");
+        createOrRename("0003d9e8", "knock_grid_records_validate");
+        createOrRename("0003e9fc", "iam_retained_records_initialize");
+        createOrRename("0003ec6c", "iam_learning_reset_eligibility_update");
+        createOrRename("0003ecb6", "iam_first_qualified_entry_reset");
+        createOrRename("0003ed6c", "iam_rough_learning_event_update");
+        createOrRename("0003f020", "iam_avcs_fault_recovery_update");
+        createOrRename("0003dc9c", "knock_fine_selected_record_learn");
+        createOrRename("0003dfd6", "knock_clean_event_counter_update");
+        createOrRename("0003ef74", "knock_fine_to_rough_mode_reentry");
+        createOrRename("0003e7dc", "knock_load_stability_filter_update");
+        createOrRename("0003e45c", "knock_learning_inhibit_update");
+        createOrRename("0003e760", "knock_feedback_entry_edge_update");
+        createOrRename("0003e20e", "knock_feedback_retard_update");
+        createOrRename("0003e83c", "knock_learning_transition_timers_update");
+        createOrRename("0003e80a", "knock_feedback_clean_event_timer_update");
+        createOrRename("0003e72e", "knock_permission_activity_timer_update");
+        createOrRename("0003e1b0", "knock_feedback_history_initialize");
+        createOrRename("0000a8f0", "knock_phase_window_dispatch");
+        createOrRename("0000aa50", "knock_sample_threshold_and_event_update");
+        createOrRename("0000add8", "knock_window_timer_arm");
+        createOrRename("0000aeec", "knock_window_close_and_next_gain_select");
+        createOrRename("0000a7ea", "knock_window_an24_capture");
+        createOrRename("00017914", "knock_sample_event_publish");
+        createOrRename("00017942", "knock_sample_event_reset");
+        createOrRename("00007748", "knock_sci0_command_publish");
+        createOrRename("000077aa", "sci0_framed_byte_transfer");
+        createOrRename("00005cd8", "knock_window_completion_callback");
+        createOrRename("00028c38", "timing_retard_c1bc_update");
+        createOrRename("0002e8cc", "idle_timing_retard_air_compensation_update");
+        createOrRename("0002b570", "idle_base_air_compensation_sum_update");
+        createOrRename("0002b432", "idle_total_air_request_update");
+        createOrRename("0002b408", "idle_air_to_throttle_request_update");
+        createOrRename("0006bb30", "monitor_timing_temperature_gain_update");
+        createOrRename("00028a82", "idle_speed_timing_c1a8_update");
+        createOrRename("0002c760", "idle_air_feedback_permission_update");
+        createOrRename("0002ce50", "idle_pressure_demand_update");
+        createOrRename("0002cf9c", "idle_pressure_error_terms_update");
+        createOrRename("0002d0ac", "idle_air_feedback_output_and_history_update");
+        createOrRename("0002d1fc", "idle_air_feedback_headroom_limits_update");
+        // September 13 native inhibit producers and release paths.
+        createOrRename("00024c34", "digital_input_loss_injector_cut_update");
+        createOrRename("00024cb0", "stationary_speed_plausibility_update");
+        createOrRename("00024e0c", "stationary_timed_rpm_injector_cut_update");
+        createOrRename("0002513c", "vehicle_speed_injector_cut_pattern_update");
+        createOrRename("0004551c", "low_lift_high_rpm_injector_cut_update");
+        createOrRename("00025ac0", "received_torque_cut_pattern_demand_update");
+        // September 13 received requests, phase patterns and torque model.
+        createOrRename("00014374", "can_powertrain_torque_request_receive");
+        createOrRename("0003bee4", "can_startup_cut_request_receive");
+        createOrRename("0003ce0a", "received_torque_cut_ratio_update");
+        createOrRename("0003ce58", "received_torque_enabled_slots_update");
+        createOrRename("0003d050", "received_torque_cut_phase_publish");
+        createOrRename("0003d3a2", "received_torque_cut_release_history_update");
+        createOrRename("0002ee6c", "received_torque_model_error_update");
+        createOrRename("0003d48c", "received_torque_cut_alignment_edge_update");
+        createOrRename("00036190", "received_torque_common_inhibit_reasons_update");
+        createOrRename("00036370", "received_torque_cylinder_cut_inhibit_update");
+        createOrRename("0003d28e", "received_torque_cut_reentry_delay_update");
+        // September 13 capture decoder and shared observation queue.
+        createOrRename("00008218", "crank_primary_capture_process");
+        createOrRename("00008248", "crank_secondary_capture_process");
+        createOrRename("00008428", "crank_capture_decode_and_phase_publish");
+        createOrRename("000084b2", "crank_capture_pattern_state_update");
+        createOrRename("0001a0ba", "engine_capture_inhibit_request_publish");
+        createOrRename("0000d92c", "crank_interval_observation_publish");
+        createOrRename("0000db50", "crank_edge_window_status_update");
+        // September 13 native phase activation and period publication.
+        createOrRename("000087f2", "crank_phase_publish_and_activate");
+        createOrRename("00008be6", "crank_phase_period_and_rpm_publish");
+        createOrRename("0000cf58", "crank_phase_task5_activate_and_queue");
+        createOrRename("0000cf7e", "crank_phase_task6_activate_and_queue");
+        // September 13 synchronization and adjacent computed RAM.
+        createOrRename("00008298", "engine_sync_transition_publish");
+        createOrRename("00029c08", "ignition_all_schedule_requests_cancel");
+        createOrRename("0000a76c", "knock_sample_history_initialize");
+        // September 13 actual cam selectors and engine timeout dependencies.
+        createOrRename("0002fddc", "sensor_interface_calibration_refresh");
+        createOrRename("000081c0", "engine_signal_timeout_periodic_poll");
+        // No live MCP function exists at813C; this is for later reapplication.
+        createOrRename("0000813c", "engine_signal_state_initialize");
+        createOrRename("00008eda", "injector_all_pending_requests_cancel");
+        // September 13 queued fault history and bounded snapshot records.
+        createOrRename("00053da8", "diagnostic_class0_history_promote");
+        createOrRename("00054d60", "diagnostic_snapshot_select");
+        createOrRename("00055064", "diagnostic_snapshot_capture_sources");
+        createOrRename("00055518", "diagnostic_snapshot_clear");
+        setEOLComment(toAddr("0005bda8"),
+            "P0111 ID54 enable is00 in stock and both patches. Descriptor " +
+            "5C480 exists but native reporters return early;511F8 clears " +
+            "its bit04 while preserving enabled P0112/P0113 bits01/02.");
+        // September 13 retained diagnostic mode and reset dispatch.
+        createOrRename("00051124", "diagnostic_mode_process_dispatch");
+        createOrRename("000567b4", "diagnostic_mode_select_and_publish");
+        createOrRename("00051378", "diagnostic_mode_startup_initialize");
+        createOrRename("0005690e", "diagnostic_mode_inhibit_publish");
+        // September 13 cam edge producers, fault qualification and recovery.
+        createOrRename("00069318", "cam_sensor_diagnostic_slow_dispatch");
+        createOrRename("00069394", "cam_sensor_edge_count_fault_update");
+        createOrRename("00069442", "cam_sensor_missing_edge_fault_update");
+        createOrRename("000694c2", "cam_sensor_fault_report_or_recover");
+        createOrRename("0000e314", "cam_edge_latch_read_and_clear");
+        createOrRename("0000e6b0", "cam_bank0_capture_interrupt_publish");
+        createOrRename("0000e6da", "cam_bank1_capture_interrupt_publish");
+        // September 13 native diagnostic readiness and temperature history.
+        createOrRename("0005116e", "diagnostic_readiness_publish_all");
+        createOrRename("000565be", "diagnostic_basic_readiness_update");
+        createOrRename("000565f8", "diagnostic_battery_readiness_update");
+        createOrRename("0001ae04", "minimum_temperature_history_update");
+        // September 13 shutdown state, callback accounting and queued record.
+        createOrRename("000310d8", "ignition_off_shutdown_state_update");
+        createOrRename("00030fd4", "shutdown_state_initialize");
+        createOrRename("0004eec4", "shutdown_diagnostic_counter_update");
+        // September 13 AVLS diagnostics, shared timers and digital inputs.
+        createOrRename("00069ca8", "avls_electrical_diagnostic_dispatch");
+        createOrRename("000705fa", "avls_switch_performance_diagnostic_dispatch");
+        createOrRename("00070608", "avls_switch_monitor_qualify");
+        createOrRename("000706de", "avls_switch_response_counter_update");
+        createOrRename("00070852", "avls_switch_fault_report_or_recover");
+        createOrRename("0000f0c0", "avls_pwm_periodic_buffer_write");
+        createOrRename("0000f12a", "avls_pwm_transition_restart");
+        createOrRename("0000f39c", "avls_osv_current_adc_convert");
+        createOrRename("00006bb4", "digital_inputs_two_sample_debounce");
+        createOrRename("000193d0", "runtime_digital_switch_flags_publish");
+        // September 13 cam performance monitor and healthy recovery.
+        createOrRename("0007198c", "avcs_cam_performance_diagnostic_dispatch");
+        createOrRename("000719a8", "avcs_cam_performance_monitor_qualify");
+        createOrRename("00071ade", "avcs_cam_performance_failure_update");
+        createOrRename("00071d2c", "avcs_cam_performance_healthy_update");
+        // September 13 native ignition device trace, applied through MCP.
+        createOrRename("000296f0", "ignition_schedule_records_initialize");
+        createOrRename("00009bcc", "ignition_coil_devices_poll");
+        createOrRename("0000997a", "ignition_coil_angle_enqueue");
+        createOrRename("000099b4", "ignition_coil_pending_cancel");
+        createOrRename("000099e0", "ignition_coil_pending_state");
+        createOrRename("00009fec", "ignition_dwell_counts_update");
+        createOrRename("00009d3a", "ignition_coil_angle_service");
+        createOrRename("00009f9c", "ignition_coil_timer_prepare");
+        createOrRename("0002a214", "ignition_auxiliary_mask_update");
+        createOrRename("0002a262", "ignition_effective_inhibit_mask");
+        createOrRename("00029e14", "ignition_inhibit_transition_update");
+        createOrRename("00029aa8", "ignition_schedule_phase_resynchronize");
         // September 9 central review, applied live through MCP and read back.
         createOrRename("0000b536", "protected_float_pair_zero_initialize");
         createOrRename("0000251c", "u16_add_saturating");
@@ -287,15 +452,21 @@ public class ApplyMasterNames extends GhidraScript {
         createOrRename(
             "000123f6", "diagnostic_enable_runtime_latch_update_123f6"
         );
-        createOrRename("0000a9a8", "ac00_lookup_and_ae_state_update");
+        createOrRename("0000a9a8", "knock_reference_and_window_parameters_update");
         createOrRename("0000b690", "front_af_sensor_pair_signal_process");
         createOrRename("0000d24c", "periodic_status_counter_service_d24c");
         createOrRename("0000deaa", "fuel_pump_pwm_output_write");
         createOrRename("0000f474", "engine_oil_temperature_sensor_process");
-        createOrRename("0000f5f6", "hardware_register_word_initialize_f5f6");
+        createOrRename("0000f5f6", "retained_bank_header_invalidate");
         createOrRename(
-            "0000f710", "hardware_register_guarded_initialize_f710"
+            "0000f710", "retained_bank_validate_or_begin_reset"
         );
+        createOrRename("0000fd5c", "retained_bank_validate_all_subsystems");
+        createOrRename("00010690", "retained_bank_cold_initialize_all_subsystems");
+        createOrRename("00030a84", "retained_bank_invalid_link_status_publish");
+        createOrRename("00004c7c", "startup_stack_relocate_with_saved_pointer");
+        createOrRename("00004c82", "startup_stack_restore_saved_pointer");
+        createOrRename("0000f950", "startup_ram_pattern_write_readback_test");
         createOrRename("00013330", "runtime_status_b19c_bit7_is_set");
         createOrRename("00016acc", "atmospheric_pressure_sensor_value_condition");
         createOrRename("000172a4", "maf_airflow_temperature_compensation_update");
@@ -425,10 +596,27 @@ public class ApplyMasterNames extends GhidraScript {
         createOrRename("000317ec", "atmospheric_pressure_logger_value_get");
         createOrRename("0003253c", "engine_oil_temperature_logger_convert");
         createOrRename(
-            "00033964", "rear_o2_sensor_response_integrator_initialize"
+            "00033964", "avcs_ocv_current_integrator_initialize"
         );
-        createOrRename("00033970", "rear_o2_sensor_response_integrator_update");
-        createOrRename("00034be4", "rear_o2_sensor_response_ratio_update");
+        createOrRename("00033970", "avcs_ocv_current_integrator_update");
+        createOrRename("00033aac", "avcs_ocv_current_filter_error_update");
+        createOrRename("00033b12", "avcs_ocv_current_reference_update");
+        createOrRename("00034be4", "avcs_ocv_duty_feedback_output");
+        createOrRename("0000df00", "avcs_ocv_duty_set");
+        createOrRename("0000dfb4", "avcs_ocv_bank_current_select");
+        createOrRename("0000e0d0", "avcs_ocv_pair_current_adc_convert");
+        createOrRename("0000e290", "avcs_ocv_pwm_buffer_write");
+        createOrRename("00069568", "avcs_ocv_circuit_diagnostic_dispatch");
+        createOrRename("0000e468", "avcs_cam_capture_convert_and_queue");
+        createOrRename("00034208", "avcs_cam_capture_filter_update");
+        createOrRename("00034304", "avcs_cam_actual_angle_update");
+        createOrRename("0003438e", "avcs_cam_target_error_update");
+        createOrRename("00034880", "avcs_rest_learning_convergence_update");
+        createOrRename("00034920", "avcs_learned_permission_update");
+        createOrRename("0003df56", "knock_grid_avcs_fallback_reset");
+        createOrRename("000078ac", "iat_filtered_adc_electrical_status");
+        createOrRename("000685d2", "iat_high_voltage_diagnostic_update");
+        createOrRename("0006864c", "iat_low_voltage_diagnostic_update");
         createOrRename("000353b0", "intake_avcs_target_by_avls_mode_update");
         createOrRename("00035750", "intake_avcs_tracking_control_update");
         createOrRename(
@@ -442,7 +630,7 @@ public class ApplyMasterNames extends GhidraScript {
         createOrRename("0003d95a", "ign_per_cylinder_correction_initialize");
         createOrRename("0003d980", "ign_per_cylinder_correction_array_clear");
         createOrRename("0003eb68", "knock_correction_advance_max_select");
-        createOrRename("0003f5f0", "radiator_fan_state_timeout_update");
+        createOrRename("0003f5f0", "ignition_switch_off_spark_inhibit_update");
         createOrRename("0003f650", "radiator_fan_control_state_update");
         createOrRename("0003fdbc", "avls_control_sequence_update");
         createOrRename("0003ffda", "avls_threshold_curve_selector_state_update");
@@ -611,10 +799,10 @@ public class ApplyMasterNames extends GhidraScript {
         );
         setPlateComment(
             toAddr("00033964"),
-            "Initialization-only task writes float 1.0 to rear-O2 integrator " +
-            "RAM 0xFFFFC85C and 0xFFFFC860. Master fueling safety repoints its " +
-            "task slot at 0x1055C to an explicit zero initializer before " +
-            "reclaiming those words as lean-cut counter/state."
+            "Native AVCS OCV current integrators C85C/C860 initialize to float 1.0. " +
+            "The 2026-09-13 repaired master task1055C ->7EBA0 calls this initializer " +
+            "and separately zeros lean state AE9C/AEA0. Earlier rear-O2 labels " +
+            "and reclamation of C85C/C860 were incorrect."
         );
         setPlateComment(
             toAddr("00023fc0"),
