@@ -9,6 +9,7 @@ does not model baud timing, interrupt arrival or the host's electrical link.
 import _test_paths
 from itertools import product
 import unittest
+import struct
 import xml.etree.ElementTree as ET
 
 import logger_profiles as profiles
@@ -157,6 +158,9 @@ class SSMCommandProcessTests(unittest.TestCase):
                 assert image[a:b] == stock[a:b], hex(a)
             assert int.from_bytes(image[0x4B87C:0x4B880], 'big') == 0x319E2
             assert int.from_bytes(image[0x4BEBC:0x4BEC0], 'big') == 0x32894
+            for a, b in ((0x3192A, 0x3198E), (0x319F2, 0x31A18),
+                         (0xDFB4, 0xDFBE), (0xDFE4, 0xDFE8), (0x258C, 0x25BC)):
+                assert image[a:b] == stock[a:b], hex(a)
 
     def test_native_signed_division_used_for_request_counts_matches_integer_quotients(self):
         cpu = SSMCommandMachine(self.images['v2'])
@@ -189,6 +193,40 @@ class SSMCommandProcessTests(unittest.TestCase):
             self.assertFalse({0x336E6, 0x32894, 0xF5F6} & cpu.visited)
             self.assertTrue({0x32BB4, 0x32CA4, 0x474AE, 0x47A08, 0x32FEC,
                              0x32B24, 0x32DE8, 0x3322C, 0x33668, 0x4280} <= cpu.visited)
+
+    def test_avcs_callbacks_and_profile_separate_upstream_demand_from_normal_output(self):
+        for image in self.images.values():
+            cpu = SSMCommandMachine(image)
+            capability = cpu.read(0x4C458+14*4, 4)
+            self.assertEqual(capability, 0x7BDB3)
+            self.assertEqual(cpu.read(capability, 1) & 0xFC, 0xFC)
+            for values, expected in (
+                    ((12, 28, 40, 60, .32, .64), (62, 78, 102, 153, 10, 20)),
+                    ((-50, 205, -10, 110, 0, 8.16), (0, 255, 0, 255, 0, 255))):
+                for a, value in zip((0xC8C8, 0xC8CC, 0xC914, 0xC918, 0xB098, 0xB09C), values):
+                    cpu.put_float(RAM+a, value)
+                for index, entry, value in zip(range(0x3C, 0x42),
+                        (0x3192A, 0x31938, 0x31946, 0x31954, 0x31962, 0x31978), expected):
+                    self.assertEqual(cpu.read(0x4B6FC+4*index, 4), entry)
+                    cpu.execute(entry, set())
+                    self.assertEqual(cpu.r[0], value)
+            # Deliberately disagree with the earlier C914/C918 demand: the
+            # new channels must read the repaired 34BE4 output publications.
+            cpu.put_float(RAM+0xC91C, 25)
+            cpu.put_float(RAM+0xC920, 75)
+            addresses = saved_queries(profiles.AVCS_PROFILE)
+            self.assertEqual(len(addresses), 43)
+            self.assertFalse({0x3E, 0x3F} & set(addresses))
+            retained = cpu.protected_bytes()
+            cpu.feed(read_packet(addresses))
+            for _ in range(2):
+                frame = cpu.response(len(addresses))
+                self.assertEqual(sum(frame[:-1]) & 255, frame[-1])
+                for base, expected in ((0xFFC91C, 25), (0xFFC920, 75)):
+                    raw = bytes(frame[5+addresses.index(base+i)] for i in range(4))
+                    self.assertEqual(struct.unpack('>f', raw)[0], expected)
+            self.assertEqual(cpu.protected_bytes(), retained)
+            self.assertFalse({0x336E6, 0x32894, 0xF5F6} & cpu.visited)
 
     def test_reading_reset_parameter_uses_getter_and_leaves_retained_bytes_unchanged(self):
         for image in self.images.values():

@@ -140,11 +140,11 @@ task startup, power retention and physical handshakes remain explicit limits.
 Five retained-reset groups connect the actual serial input, all request/rearm
 gates, native shutdown callbacks, one-shot invalidation and the next startup
 reset. The switch suite now also verifies the corrected serial/AVLS mapping.
-Six SSM command groups execute all seven saved profiles through two complete
+Seven SSM command groups execute all eight saved profiles through two complete
 continuous responses, distinguish read/getter and write/setter dispatch,
 and exercise explicit reset writes and rejected requests entirely offline.
 
-It currently runs 354 groups covering checksums, diagnostic masks, configured
+It currently runs 355 groups covering checksums, diagnostic masks, configured
 cylinder disable, WB monitoring, cam/IAM correction, knock cells, barometric
 learning, AVLS phase/output, injector timers, immediate tip-in delivery, purge
 filters/PWM, IAT conversion/substitution, connected CAN/driver/final-throttle

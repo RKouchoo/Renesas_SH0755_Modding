@@ -75,7 +75,7 @@ LOGGER_PROFILE = LOGGER_DIR / "D2WD610H_idle_diagnostic_profile.xml"
 # confined to 7D4B0/B4 and checksum. Both oil thresholds return to stock 15 C.
 EXPECTED_OUTPUT_SHA256 = "3e95b7508427f544e30a96c7aa78298b32560a6f3caf5c180e7949b8c2adc388"
 # Canonical E524 plus AVLS/cut diagnostics; prior 123 signal conversions retained.
-EXPECTED_LOGGER_SHA256 = "e2bf2106b81fb146a138981e8a5367132a9eb405c0cba199465deac3f147428a"
+EXPECTED_LOGGER_SHA256 = "855b0af1620eb9efd6cc439945dec4fe5fc7dd957e9b79d506f8d1d1a099c71d"
 
 
 def fail(message: str) -> None:
@@ -877,6 +877,8 @@ def verify_logger_fragment() -> None:
         "E525": ("0xFFB744", "2", "uint16", {"x"}),
         "E526": ("0xFFCD89", "1", "uint8", {"x"}),
         "E527": ("0xFFCD8A", "1", "uint8", {"x"}),
+        "E528": ("0xFFC91C", "4", "float", {"x"}),
+        "E529": ("0xFFC920", "4", "float", {"x"}),
     }
     parameters = list(root.findall("ecuparam"))
     by_id = {parameter.get("id"): parameter for parameter in parameters}

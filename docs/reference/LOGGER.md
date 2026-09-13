@@ -4,9 +4,9 @@
 
 The complete definition is
 [D2WD610H_master_logger.xml](../../logger/D2WD610H_master_logger.xml),
-with the [E500–E527 fragment](../../logger/D2WD610H_master_logger_ecuparams.xml).
+with the [E500–E529 fragment](../../logger/D2WD610H_master_logger_ecuparams.xml).
 The complete definition SHA-256 is
-`e2bf2106b81fb146a138981e8a5367132a9eb405c0cba199465deac3f147428a`.
+`855b0af1620eb9efd6cc439945dec4fe5fc7dd957e9b79d506f8d1d1a099c71d`.
 The AVCS repair relocates E500/E504/E505 to `FFAE8C/FFAEA0/FFAE9C`.
 Use this complete definition with the repaired rolling BINs; older definitions
 would read native OCV currents/integrators as patch state. IDs, conversions and
@@ -17,7 +17,7 @@ Both current integrations include the [local load-fallback repair](V2_LOAD_FALLB
 
 ## Native request budget
 
-All seven generated profiles use **43 address bytes** in each worst-case selected
+All eight generated profiles use **43 address bytes** in each worst-case selected
 request. The A8 frame is 136 bytes at that budget. Native receiver `32CA4`
 has a receive-index limit of 137; 44 addresses do not fit. An accepted profile
 file does not establish that the ECU accepts its request size.
@@ -29,6 +29,7 @@ no serial connection was opened during this audit.
 
 | Profile | Purpose |
 |---|---|
+| [AVCS repair](../../logger/D2WD610H_avcs_repair_profile.xml) | Both actual cam angles, measured OCV currents and restored normal output duty, retaining IAM, knock and cut context. See the [20-channel budget](../../logger/README.md#avcs-repair-validation). |
 | [AVLS and fuel cut](../../logger/D2WD610H_avls_cut_diagnostic_profile.xml) | Both bank output paths, software modes, lean-cut state and injector inhibition; retains IAM and both knock corrections. See the [23-channel budget](../../logger/README.md#avls-and-cut-diagnosis). |
 | [Road tuning](../../logger/D2WD610H_road_tuning_profile.xml) | IAM, feedback/learned knock, timing, native SD MAP, load and fueling, with speed, pedal and throttle. See the [18-channel budget](../../logger/README.md). |
 | [Idle](../../logger/D2WD610H_idle_diagnostic_profile.xml) | General idle running signals. |
@@ -73,6 +74,8 @@ the main verifier.
 | E525 | `FFFFB744`, u16 | Native injector-inhibit word; bits 0–5 select channels and 65535 inhibits all. |
 | E526 | `FFFFCD89`, u8 | AVLS bank-index-0 software mode; same index as P123/P125. |
 | E527 | `FFFFCD8A`, u8 | AVLS bank-index-1 software mode; same index as P124/P126. |
+| E528 | `FFFFC91C`, float percent | AVCS bank-index-0 normal output duty after `34BE4` feedback/gates; before later diagnostic override/PWM selection. |
+| E529 | `FFFFC920`, float percent | AVCS bank-index-1 normal output duty at the same stage. |
 
 E51 is **processed MAP B2A0**, not SD's direct input. P24 is a quantized
 atmospheric estimate, not an independent physical reference. Raw pedal uses
@@ -103,13 +106,23 @@ explains why this path is not established as the cause of the latest drive.
 ## Native AVLS channel verification
 
 The later [native command-flow tests](../../tests/test_ssm_command_process_flow.py)
-execute all seven saved profiles through receive/echo handling, command decode,
+execute all eight saved profiles through receive/echo handling, command decode,
 actual getters and two complete continuous responses in main/v2/captured.
 Each 43-address selection produces a valid 49-byte response. None reaches
 the explicit retained-bank reset writer: A8 reads use table `4B6FC`, whereas
 B8 writes use `4BD3C`. Parameter `0060` reads `8262` through `319E2`; only
 its explicit setter `32894` can invalidate the header. These are offline
 CPU checks with supplied serial events, not a measured live connection.
+
+The added AVCS callback group distinguishes P50/P51's upstream `C914/C918`
+from the profile's new E528/E529 normal outputs `C91C/C920`. Actual angles
+P48/P49 use `3192A/31938`; upstream duty P50/P51 uses `31946/31954`;
+current P52/P53 uses `31962/31978 -> DFB4`. All use native `258C` rounding
+and byte clamping. Capability index 14 points to `7BDB3=FF`. Six direct
+callback checks and a complete profile exchange with deliberately different
+demand/output values confirm the selection. The
+[AVCS logger evidence](evidence/avcs_logger_20260913.json) records exact byte
+windows, sample results and MCP comment limitations.
 
 [Saved checks and MCP comments](evidence/avls_logger_20260912.json) record the
 image identity, sample callback results and Ghidra updates.

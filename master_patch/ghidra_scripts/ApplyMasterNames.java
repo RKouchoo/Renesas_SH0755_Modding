@@ -40,6 +40,20 @@ public class ApplyMasterNames extends GhidraScript {
 
     @Override
     public void run() throws Exception {
+        // Native AVCS logger callbacks; MCP accepted comments but exposes no
+        // function bodies here for independent comment readback.
+        setPlateComment(toAddr("0003192a"),
+            "SSM P48 / parameter003C: native258C encodes C8C8 actual bank0 cam angle with scale1 and bias-50; display byte-50 degrees. Bank0 matches upstream Right label. Capability14 at7BDB3 supports this callback. Verified native callback and complete AVCS profile exchange on main/v2/captured; physical harness assignment and target tracking remain separate.");
+        setPlateComment(toAddr("00031938"),
+            "SSM P49 / parameter003D: native258C encodes C8CC actual bank1 cam angle with scale1 and bias-50; display byte-50 degrees. Bank1 matches upstream Left label. Verified native callback and complete AVCS profile exchange; physical cam response remains outside offline tests.");
+        setPlateComment(toAddr("00031946"),
+            "SSM P50 / parameter003E reads C914 upstream AVCS bank0 duty demand, scaled by native258C with divisor0.3921568394. It does not read normal-output C91C after the repaired34BE4 current integrator and gates. AVCS repair profile deliberately selects direct E528/C91C instead.");
+        setPlateComment(toAddr("00031954"),
+            "SSM P51 / parameter003F reads C918 upstream AVCS bank1 duty demand, scaled by native258C with divisor0.3921568394. It does not read normal-output C920 after the repaired34BE4 current integrator and gates. AVCS repair profile deliberately selects direct E529/C920 instead.");
+        setPlateComment(toAddr("00031962"),
+            "SSM P52 / parameter0040 calls DFB4(bank0) for native B098 OCV current amps. Native258C divisor0.03199999779 yields32mA per byte count. B098 was incorrectly reused as a WB mirror in older patched images; repaired WB mirror is AE8C. Callback reads existing memory and does not itself measure hardware.");
+        setPlateComment(toAddr("00031978"),
+            "SSM P53 / parameter0041 calls DFB4(bank1) for native B09C OCV current amps. Native258C divisor0.03199999779 yields32mA per byte count. B09C was incorrectly reused as a WB mirror in older patched images; repaired WB mirror is AE90. Callback reads existing memory and does not itself measure hardware.");
         setPlateComment(
             toAddr("000193d0"),
             "Corrected September 13: PE14/15 from AAE6 publish to B51C/20,10 and " +

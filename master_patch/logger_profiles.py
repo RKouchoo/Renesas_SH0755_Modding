@@ -15,6 +15,7 @@ IDLE_AIR_PROFILE = PROFILE_DIR / 'D2WD610H_idle_air_diagnostic_profile.xml'
 MAP_SOURCE_PROFILE = PROFILE_DIR / 'D2WD610H_map_source_diagnostic_profile.xml'
 ROAD_PROFILE = PROFILE_DIR / 'D2WD610H_road_tuning_profile.xml'
 AVLS_CUT_PROFILE = PROFILE_DIR / 'D2WD610H_avls_cut_diagnostic_profile.xml'
+AVCS_PROFILE = PROFILE_DIR / 'D2WD610H_avcs_repair_profile.xml'
 IDLE_PARAMETERS = {
     'P2', 'P3', 'P4', 'P5', 'P6', 'P8', 'P10', 'P11', 'P12', 'P13',
     'P17', 'P21', 'P24', 'P47', 'E32', 'E33', 'E50', 'E51', 'E60',
@@ -52,6 +53,13 @@ AVLS_CUT_PARAMETERS = {
     'E31', 'E39', 'E41', 'E500', 'E503', 'E504', 'E518', 'E520',
     'E525', 'E526', 'E527',
 }
+# Observe the repaired normal-output stage, not P50/P51's upstream demand.
+# Seven floats plus the standard channels and two cut states total 43 bytes.
+AVCS_PARAMETERS = {
+    'P2', 'P8', 'P9', 'P10', 'P13', 'P21', 'P30',
+    'P48', 'P49', 'P52', 'P53',
+    'E31', 'E39', 'E41', 'E500', 'E504', 'E518', 'E525', 'E528', 'E529',
+}
 PROFILE_SELECTIONS = {
     IDLE_PROFILE: IDLE_PARAMETERS,
     AFTERSTART_PROFILE: AFTERSTART_PARAMETERS,
@@ -60,6 +68,7 @@ PROFILE_SELECTIONS = {
     MAP_SOURCE_PROFILE: MAP_SOURCE_PARAMETERS,
     ROAD_PROFILE: ROAD_PARAMETERS,
     AVLS_CUT_PROFILE: AVLS_CUT_PARAMETERS,
+    AVCS_PROFILE: AVCS_PARAMETERS,
 }
 UNIT_OVERRIDES = {path: {'E123': 'fuel-air equivalence ratio'}
                   for path in (RECOVERY_PROFILE, IDLE_AIR_PROFILE, ROAD_PROFILE)}
@@ -68,6 +77,7 @@ UNITS = {
     'P2': 'C', 'P3': '%', 'P4': '%', 'P5': '%', 'P6': '%', 'P7': 'kPa',
     'P8': 'rpm', 'P9': 'km/h', 'P10': 'degrees', 'P11': 'C', 'P12': 'g/s', 'P13': '%',
     'P17': 'V', 'P21': 'ms', 'P24': 'mmHg', 'P30': '%', 'P38': '%', 'P47': '%', 'P92': '%',
+    'P48': 'degrees', 'P49': 'degrees', 'P50': '%', 'P51': '%', 'P52': 'mA', 'P53': 'mA',
     'P122': 'C', 'P123': '%', 'P124': '%', 'P125': 'mA', 'P126': 'mA',
     'E31': 'multiplier', 'E32': 'g/rev', 'E33': 'status',
     'E39': 'degrees', 'E40': 'degrees', 'E41': 'degrees',
@@ -85,6 +95,7 @@ UNITS = {
     'E524': '%',
     'E525': 'raw inhibit word',
     'E526': 'AVLS mode (1 low; 3 high)', 'E527': 'AVLS mode (1 low; 3 high)',
+    'E528': '%', 'E529': '%',
 }
 SWITCHES = {'S4', 'S5', 'S11'}
 

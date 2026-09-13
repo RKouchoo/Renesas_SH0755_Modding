@@ -4,6 +4,10 @@
 
 **This broader process-flow audit is in progress. A real AVCS output defect has been repaired; the loaded cut is not yet proven cured.**
 
+Work is paused at the user's request. Continue from the
+[September 13 resume checkpoint](AUDIT_RESUME_20260913.md), including its
+unfinished temperature-consumer traces and completed AVCS logger follow-up.
+
 The full-flow trace found that the former rear-O2 bypass actually removed
 OCV-current feedback and normal cam-solenoid PWM publication. See the
 [repair, complete handoff and RAM migration](AVCS_OCV_REPAIR_20260913.md).
@@ -3001,7 +3005,7 @@ agree, preventing a later script run from reinstating the stale name.
 Reproduce the inventory with `python3 -B tools/analysis/inventory_patch_dependencies.py`.
 It writes this review's generated assignment register and JSON only. Run the
 consolidated tests with `python3 -B tools/analysis/verify_process_flow.py`.
-The [saved 354-group report](evidence/process_flow_tests_20260912.json) passes with
+The [saved 355-group report](evidence/process_flow_tests_20260912.json) passes with
 the three image hashes recorded. Groups count test methods, including three
 cylinder-disable image runs; they are not a percentage of ROM coverage.
 Ghidra comments and corrected producer names are updated through MCP and read

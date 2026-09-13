@@ -6,7 +6,7 @@
     "captured": "fd795813febf817c845fc922e81e498539a539efeeb6e4d11822af47098094a2"
   },
   "passed": true,
-  "groups": 354,
+  "groups": 355,
   "results": [
     {
       "module": "test_runtime_rom_checksum_execution",
@@ -526,9 +526,9 @@
       "module": "test_ssm_command_process_flow",
       "variant": "internal",
       "passed": true,
-      "groups": 6,
-      "elapsed_seconds": 15.347,
-      "transcript": "test_all_saved_profiles_run_native_read_and_two_complete_continuous_responses (__main__.SSMCommandProcessTests.test_all_saved_profiles_run_native_read_and_two_complete_continuous_responses) ... ok\ntest_bad_request_checksum_and_unreachable_44_address_checksum_never_dispatch (__main__.SSMCommandProcessTests.test_bad_request_checksum_and_unreachable_44_address_checksum_never_dispatch) ... ok\ntest_explicit_b8_parameter_write_reaches_reset_handler_and_checks_complete_word (__main__.SSMCommandProcessTests.test_explicit_b8_parameter_write_reaches_reset_handler_and_checks_complete_word) ... ok\ntest_native_signed_division_used_for_request_counts_matches_integer_quotients (__main__.SSMCommandProcessTests.test_native_signed_division_used_for_request_counts_matches_integer_quotients) ... ok\ntest_raw_b0_writes_to_retained_header_or_reset_word_are_blocked_by_native_address_check (__main__.SSMCommandProcessTests.test_raw_b0_writes_to_retained_header_or_reset_word_are_blocked_by_native_address_check) ... ok\ntest_reading_reset_parameter_uses_getter_and_leaves_retained_bytes_unchanged (__main__.SSMCommandProcessTests.test_reading_reset_parameter_uses_getter_and_leaves_retained_bytes_unchanged) ... ok\n\n----------------------------------------------------------------------\nRan 6 tests in 15.347s\n\nOK\n"
+      "groups": 7,
+      "elapsed_seconds": 16.698,
+      "transcript": "test_all_saved_profiles_run_native_read_and_two_complete_continuous_responses (test_ssm_command_process_flow.SSMCommandProcessTests.test_all_saved_profiles_run_native_read_and_two_complete_continuous_responses) ... ok\ntest_avcs_callbacks_and_profile_separate_upstream_demand_from_normal_output (test_ssm_command_process_flow.SSMCommandProcessTests.test_avcs_callbacks_and_profile_separate_upstream_demand_from_normal_output) ... ok\ntest_bad_request_checksum_and_unreachable_44_address_checksum_never_dispatch (test_ssm_command_process_flow.SSMCommandProcessTests.test_bad_request_checksum_and_unreachable_44_address_checksum_never_dispatch) ... ok\ntest_explicit_b8_parameter_write_reaches_reset_handler_and_checks_complete_word (test_ssm_command_process_flow.SSMCommandProcessTests.test_explicit_b8_parameter_write_reaches_reset_handler_and_checks_complete_word) ... ok\ntest_native_signed_division_used_for_request_counts_matches_integer_quotients (test_ssm_command_process_flow.SSMCommandProcessTests.test_native_signed_division_used_for_request_counts_matches_integer_quotients) ... ok\ntest_raw_b0_writes_to_retained_header_or_reset_word_are_blocked_by_native_address_check (test_ssm_command_process_flow.SSMCommandProcessTests.test_raw_b0_writes_to_retained_header_or_reset_word_are_blocked_by_native_address_check) ... ok\ntest_reading_reset_parameter_uses_getter_and_leaves_retained_bytes_unchanged (test_ssm_command_process_flow.SSMCommandProcessTests.test_reading_reset_parameter_uses_getter_and_leaves_retained_bytes_unchanged) ... ok\n\n----------------------------------------------------------------------\nRan 7 tests in 16.698s\n\nOK\n"
     }
   ],
   "incremental_validation": [
@@ -723,6 +723,15 @@
       "groups": 15,
       "net_new_groups": 12,
       "reason": "Runtime switch suite rerun with corrected AVLS/serial mapping assertions and one new group; five new native retained-request groups and six SSM command/response groups pass. Existing shared harnesses and all three pinned images unchanged. Earlier results retained; consolidated incremental evidence, not a fresh complete-suite run."
+    },
+    {
+      "date": "2026-09-13",
+      "modules": [
+        "test_ssm_command_process_flow"
+      ],
+      "groups": 7,
+      "net_new_groups": 1,
+      "reason": "SSM suite rerun with all eight generated profiles and new native AVCS callback/demand-versus-output controls. All three pinned images unchanged. Logger contracts pass separately; other suite results retained, not a fresh complete-suite run."
     }
   ]
 }

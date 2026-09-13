@@ -201,4 +201,12 @@
     <ecu id="3C5A387116"><address length="1">0xFFCD8A</address></ecu>
     <conversions><conversion units="AVLS mode (1 low; 3 high)" storagetype="uint8" expr="x" format="0" gauge_min="0" gauge_max="3" gauge_step="1" /></conversions>
   </ecuparam>
+  <ecuparam id="E528" name="AVCS Normal Output Duty Bank 0 (D2WD610H diagnostic)*" desc="Normal OCV output duty percent at FFFFC91C from restored 34BE4 after multiplying C914 by native current-feedback integrator C85C and applying its enable/fault gates. Standard P50 reads the earlier C914 demand instead. Bank index 0 corresponds to P48/P52 Right labels. DF00 subsequently selects normal or diagnostic override duty before PWM; this value is not measured hardware duty or proof of cam tracking. Separate SSM byte reads can straddle an update." target="1">
+    <ecu id="3C5A387116"><address length="4">0xFFC91C</address></ecu>
+    <conversions><conversion units="%" storagetype="float" expr="x" format="0.00" gauge_min="0" gauge_max="100" gauge_step="10" /></conversions>
+  </ecuparam>
+  <ecuparam id="E529" name="AVCS Normal Output Duty Bank 1 (D2WD610H diagnostic)*" desc="Normal OCV output duty percent at FFFFC920 from restored 34BE4 after multiplying C918 by native current-feedback integrator C860 and applying its enable/fault gates. Standard P51 reads the earlier C918 demand instead. Bank index 1 corresponds to P49/P53 Left labels. DF00 subsequently selects normal or diagnostic override duty before PWM; this value is not measured hardware duty or proof of cam tracking. Separate SSM byte reads can straddle an update." target="1">
+    <ecu id="3C5A387116"><address length="4">0xFFC920</address></ecu>
+    <conversions><conversion units="%" storagetype="float" expr="x" format="0.00" gauge_min="0" gauge_max="100" gauge_step="10" /></conversions>
+  </ecuparam>
 </ecuparams>

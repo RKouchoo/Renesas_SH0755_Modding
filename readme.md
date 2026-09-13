@@ -159,7 +159,7 @@ in the [test guide](tests/README.md). Exact artifact identities are kept in the
 [image reference](docs/reference/IMAGES.md).
 
 Use the shared [logger definition and capture profiles](logger/README.md) with
-either integration. The seven generated captures each use 43 byte addresses,
+either integration. The eight generated captures each use 43 byte addresses,
 producing a 136-byte SSM request. Hardware assumptions and vehicle validation
 procedures are documented in [calibration](master_patch/CALIBRATION.md),
 [wiring](master_patch/WIRING.md) and [commissioning](master_patch/COMMISSIONING.md).

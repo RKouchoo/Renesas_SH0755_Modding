@@ -28,7 +28,7 @@ FRAGMENT = LOGGER_DIR / "D2WD610H_master_logger_ecuparams.xml"
 ECU_ID = "3C5A387116"
 TRANSPORT_ID = "iso9141"
 MODULE_ID = "ecu"
-PARAMETER_IDS = {f"E{number}" for number in range(500, 528)}
+PARAMETER_IDS = {f"E{number}" for number in range(500, 530)}
 
 # The upstream logger contains a global catalogue for many Subaru ECUs, TCMs,
 # diesel engines, and DCCD controllers.  Standard SSM parameters do not carry
@@ -403,7 +403,7 @@ def main(argv: list[str] | None = None) -> None:
         "  always-visible stock  : "
         f"{len(ALWAYS_VISIBLE_STOCK_PARAMETER_IDS)}"
     )
-    print("  project params         : E500 through E527 (always visible)")
+    print("  project params         : E500 through E529 (always visible)")
     print(f"  ECU-specific records   : {ECU_ID} only")
 
 

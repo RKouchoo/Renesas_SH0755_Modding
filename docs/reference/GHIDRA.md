@@ -7,6 +7,14 @@ The audit used the connected **Ghidra MCP server**, operating on the stock
 describe patched behavior only when explicitly scoped to main or v2. The
 stock binary on disk was not patched.
 
+The AVCS logger follow-up adds six callback comments at `3192A/31938`,
+`31946/31954` and `31962/31978`. They distinguish actual angles, upstream
+duty and measured current, and explain why the repair profile instead reads
+normal-output duty at `C91C/C920`. MCP accepted the comments but has no
+function bodies here for independent readback. The reapplication script and
+[separate logger evidence](evidence/avcs_logger_20260913.json) preserve them;
+no function creation or explicit project save is claimed.
+
 Ten additional names and verified entry comments identify retained-ignition
 validation `29570`, grid validation `3D9E8`, IAM initialization `3E9FC`,
 reset qualification `3EC6C/3ECB6`, rough learning `3ED6C`, fault recovery

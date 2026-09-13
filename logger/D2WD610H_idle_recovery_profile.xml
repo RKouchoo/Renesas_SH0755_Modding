@@ -21,6 +21,12 @@
         <parameter id="P38" units="%" />
         <parameter id="P47" livedata="selected" dash="selected" units="%" />
         <parameter id="P92" units="%" />
+        <parameter id="P48" units="degrees" />
+        <parameter id="P49" units="degrees" />
+        <parameter id="P50" units="%" />
+        <parameter id="P51" units="%" />
+        <parameter id="P52" units="mA" />
+        <parameter id="P53" units="mA" />
         <parameter id="P122" units="C" />
         <parameter id="P123" units="%" />
         <parameter id="P124" units="%" />
@@ -67,6 +73,8 @@
         <parameter id="E525" units="raw inhibit word" />
         <parameter id="E526" units="AVLS mode (1 low; 3 high)" />
         <parameter id="E527" units="AVLS mode (1 low; 3 high)" />
+        <parameter id="E528" units="%" />
+        <parameter id="E529" units="%" />
     </parameters>
     <switches>
         <switch id="S4" />

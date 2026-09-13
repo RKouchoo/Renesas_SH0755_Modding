@@ -13,6 +13,7 @@ See [findings](FINDINGS.md) before relying on an older address label.
 
 | Read | Covers |
 |---|---|
+| [Resume checkpoint — September 13](AUDIT_RESUME_20260913.md) | User-requested pause: exact artifacts, completed checks, unfinished temperature traces and the completed AVCS logger follow-up. |
 | [Full patch process-flow review](PATCH_PROCESS_FLOW.md) | Ongoing dependency audit beyond the earlier address review: every build assignment, producers, consumers, initialization, latches and scheduling. |
 | [AVCS actuator dependency repair](AVCS_OCV_REPAIR_20260913.md) | Corrects the false rear-O2 identity, restores current feedback and PWM, and moves patch RAM out of the cam controller. |
 | [Patch story and operation](PATCH_STORY.md) | Why the patch exists, how the pieces interact, and the investigation's history. |

@@ -2,13 +2,15 @@
 
 [Reference home](README.md) · [Findings](FINDINGS.md) · [Address index](ADDRESS_INDEX.md)
 
-The later [full process-flow review](PATCH_PROCESS_FLOW.md) is **in progress**.
+The later [full process-flow review](PATCH_PROCESS_FLOW.md) is **incomplete,
+paused at the user's request**. The [September 13 resume checkpoint](AUDIT_RESUME_20260913.md)
+records the exact interruption point and subsequently completed AVCS logger preparation.
 It expands the scope to every patch touchpoint and its transitive native
 dependencies. Completion of the historical address inventory below does not
 mean that broader state-machine review is complete.
 
 Its latest [consolidated native results](evidence/process_flow_tests_20260912.json)
-passes 354 groups with the captured loaded-drive image explicitly pinned.
+records 355 passing groups with the captured loaded-drive image explicitly pinned.
 The new [flow document](PATCH_PROCESS_FLOW.md) separates those bounded results
 from open fault/arbitration edges and unmeasured scheduling limits. The [OCV repair](AVCS_OCV_REPAIR_20260913.md) now changes both rolling BINs: the
 former rear-O2 bypass removed native AVCS feedback/output. Earlier conclusions

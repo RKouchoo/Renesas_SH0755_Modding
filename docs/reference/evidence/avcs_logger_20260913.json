@@ -1,0 +1,323 @@
+{
+  "date": "2026-09-13T12:50:24.696219+10:00",
+  "status": "Logger/profile implemented; native callback and packet checks pass; no live ECU connection or ROM mutation.",
+  "profile": "logger/D2WD610H_avcs_repair_profile.xml",
+  "channel_count": 20,
+  "address_bytes": 43,
+  "request_frame_bytes": 136,
+  "response_frame_bytes": 49,
+  "artifact_sha256": {
+    "logger/D2WD610H_master_logger.xml": "855b0af1620eb9efd6cc439945dec4fe5fc7dd957e9b79d506f8d1d1a099c71d",
+    "logger/D2WD610H_master_logger_ecuparams.xml": "181ec13265122b651c4b378eb476800c523170882ab0386fc7cb7529a1a5a674",
+    "logger/D2WD610H_avcs_repair_profile.xml": "b6c5c1709bf5703a24fd55f4bbc916496498cfe077c6d10d58cd00cc8c050348",
+    "master_patch/D2WD610H_master_patch.bin": "3e95b7508427f544e30a96c7aa78298b32560a6f3caf5c180e7949b8c2adc388",
+    "master_patch_v2/D2WD610H_master_patch_v2.bin": "fabceb54359aca76e6e15835a51aa5cfd008e570dc002e886eaa62a6cb020ce5"
+  },
+  "existing_profile_selections_unchanged": true,
+  "existing_parameter_semantics_unchanged": true,
+  "native_byte_windows": [
+    {
+      "start": "3192A",
+      "end_exclusive": "3198E",
+      "hex": "9362c737f438f608d235422bf59d935cf438c733f608d231422bf59df68dc72d9354d22ef438422bf5089350f68dc729f438d22a422bf5084f22d32a430be400f40cc729f68dd325f508432b4f264f22d325430be401c724f40cd320f68df508432b4f26"
+    },
+    {
+      "start": "319F2",
+      "end_exclusive": "31A18",
+      "hex": "c8c8c8ccc914c918b4e8b4ec82623ec8c8c842c800000000258cc24800000000dfb43d03126e"
+    },
+    {
+      "start": "0DFB4",
+      "end_exclusive": "0DFBE",
+      "hex": "d00b644c4408000bf046"
+    },
+    {
+      "start": "0DFE4",
+      "end_exclusive": "0DFE8",
+      "hex": "ffffb098"
+    },
+    {
+      "start": "0258C",
+      "end_exclusive": "025BC",
+      "hex": "c70af4619510f453f308f24cf230f23d045a34578f020009a004645344118d010009e400000b604300ffffff3f000000"
+    },
+    {
+      "start": "4B7EC",
+      "end_exclusive": "4B804",
+      "hex": "0003192a0003193800031946000319540003196200031978"
+    },
+    {
+      "start": "4C490",
+      "end_exclusive": "4C494",
+      "hex": "0007bdb3"
+    },
+    {
+      "start": "7BDB3",
+      "end_exclusive": "7BDB4",
+      "hex": "ff"
+    }
+  ],
+  "standard_callbacks": [
+    {
+      "id": "P48",
+      "index": "003C",
+      "entry": "3192A",
+      "source": "FFFFC8C8",
+      "meaning": "bank0 actual angle"
+    },
+    {
+      "id": "P49",
+      "index": "003D",
+      "entry": "31938",
+      "source": "FFFFC8CC",
+      "meaning": "bank1 actual angle"
+    },
+    {
+      "id": "P50",
+      "index": "003E",
+      "entry": "31946",
+      "source": "FFFFC914",
+      "meaning": "bank0 upstream duty demand"
+    },
+    {
+      "id": "P51",
+      "index": "003F",
+      "entry": "31954",
+      "source": "FFFFC918",
+      "meaning": "bank1 upstream duty demand"
+    },
+    {
+      "id": "P52",
+      "index": "0040",
+      "entry": "31962",
+      "source": "FFFFB098",
+      "meaning": "bank0 OCV current through DFB4"
+    },
+    {
+      "id": "P53",
+      "index": "0041",
+      "entry": "31978",
+      "source": "FFFFB09C",
+      "meaning": "bank1 OCV current through DFB4"
+    }
+  ],
+  "added_channels": {
+    "E528": {
+      "address": "FFFFC91C",
+      "width": 4,
+      "type": "float",
+      "units": "percent",
+      "stage": "34BE4 normal output before diagnostic override/PWM"
+    },
+    "E529": {
+      "address": "FFFFC920",
+      "width": 4,
+      "type": "float",
+      "units": "percent",
+      "stage": "34BE4 normal output before diagnostic override/PWM"
+    }
+  },
+  "native_sample_control": {
+    "inputs": [
+      12,
+      28,
+      40,
+      60,
+      0.32,
+      0.64
+    ],
+    "ssm_bytes": [
+      62,
+      78,
+      102,
+      153,
+      10,
+      20
+    ],
+    "normal_output_values": [
+      25,
+      75
+    ]
+  },
+  "logger_contracts_passed": true,
+  "ssm_test_result": {
+    "module": "test_ssm_command_process_flow",
+    "variant": "internal",
+    "passed": true,
+    "groups": 7,
+    "elapsed_seconds": 16.698,
+    "transcript": "test_all_saved_profiles_run_native_read_and_two_complete_continuous_responses (test_ssm_command_process_flow.SSMCommandProcessTests.test_all_saved_profiles_run_native_read_and_two_complete_continuous_responses) ... ok\ntest_avcs_callbacks_and_profile_separate_upstream_demand_from_normal_output (test_ssm_command_process_flow.SSMCommandProcessTests.test_avcs_callbacks_and_profile_separate_upstream_demand_from_normal_output) ... ok\ntest_bad_request_checksum_and_unreachable_44_address_checksum_never_dispatch (test_ssm_command_process_flow.SSMCommandProcessTests.test_bad_request_checksum_and_unreachable_44_address_checksum_never_dispatch) ... ok\ntest_explicit_b8_parameter_write_reaches_reset_handler_and_checks_complete_word (test_ssm_command_process_flow.SSMCommandProcessTests.test_explicit_b8_parameter_write_reaches_reset_handler_and_checks_complete_word) ... ok\ntest_native_signed_division_used_for_request_counts_matches_integer_quotients (test_ssm_command_process_flow.SSMCommandProcessTests.test_native_signed_division_used_for_request_counts_matches_integer_quotients) ... ok\ntest_raw_b0_writes_to_retained_header_or_reset_word_are_blocked_by_native_address_check (test_ssm_command_process_flow.SSMCommandProcessTests.test_raw_b0_writes_to_retained_header_or_reset_word_are_blocked_by_native_address_check) ... ok\ntest_reading_reset_parameter_uses_getter_and_leaves_retained_bytes_unchanged (test_ssm_command_process_flow.SSMCommandProcessTests.test_reading_reset_parameter_uses_getter_and_leaves_retained_bytes_unchanged) ... ok\n\n----------------------------------------------------------------------\nRan 7 tests in 16.698s\n\nOK\n"
+  },
+  "ghidra": [
+    {
+      "tool": "set_disassembly_comment",
+      "address": "0003192a",
+      "comment": "SSM P48 / parameter003C: native258C encodes C8C8 actual bank0 cam angle with scale1 and bias-50; display byte-50 degrees. Bank0 matches upstream Right label. Capability14 at7BDB3 supports this callback. Verified native callback and complete AVCS profile exchange on main/v2/captured; physical harness assignment and target tracking remain separate.",
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "Comment set successfully"
+          }
+        ],
+        "isError": false
+      },
+      "independent_comment_readback": false,
+      "reason": "MCP has no function body at this callback; earlier queries are preserved in the paused audit evidence."
+    },
+    {
+      "tool": "set_disassembly_comment",
+      "address": "00031938",
+      "comment": "SSM P49 / parameter003D: native258C encodes C8CC actual bank1 cam angle with scale1 and bias-50; display byte-50 degrees. Bank1 matches upstream Left label. Verified native callback and complete AVCS profile exchange; physical cam response remains outside offline tests.",
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "Comment set successfully"
+          }
+        ],
+        "isError": false
+      },
+      "independent_comment_readback": false,
+      "reason": "MCP has no function body at this callback; earlier queries are preserved in the paused audit evidence."
+    },
+    {
+      "tool": "set_disassembly_comment",
+      "address": "00031946",
+      "comment": "SSM P50 / parameter003E reads C914 upstream AVCS bank0 duty demand, scaled by native258C with divisor0.3921568394. It does not read normal-output C91C after the repaired34BE4 current integrator and gates. AVCS repair profile deliberately selects direct E528/C91C instead.",
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "Comment set successfully"
+          }
+        ],
+        "isError": false
+      },
+      "independent_comment_readback": false,
+      "reason": "MCP has no function body at this callback; earlier queries are preserved in the paused audit evidence."
+    },
+    {
+      "tool": "set_disassembly_comment",
+      "address": "00031954",
+      "comment": "SSM P51 / parameter003F reads C918 upstream AVCS bank1 duty demand, scaled by native258C with divisor0.3921568394. It does not read normal-output C920 after the repaired34BE4 current integrator and gates. AVCS repair profile deliberately selects direct E529/C920 instead.",
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "Comment set successfully"
+          }
+        ],
+        "isError": false
+      },
+      "independent_comment_readback": false,
+      "reason": "MCP has no function body at this callback; earlier queries are preserved in the paused audit evidence."
+    },
+    {
+      "tool": "set_disassembly_comment",
+      "address": "00031962",
+      "comment": "SSM P52 / parameter0040 calls DFB4(bank0) for native B098 OCV current amps. Native258C divisor0.03199999779 yields32mA per byte count. B098 was incorrectly reused as a WB mirror in older patched images; repaired WB mirror is AE8C. Callback reads existing memory and does not itself measure hardware.",
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "Comment set successfully"
+          }
+        ],
+        "isError": false
+      },
+      "independent_comment_readback": false,
+      "reason": "MCP has no function body at this callback; earlier queries are preserved in the paused audit evidence."
+    },
+    {
+      "tool": "set_disassembly_comment",
+      "address": "00031978",
+      "comment": "SSM P53 / parameter0041 calls DFB4(bank1) for native B09C OCV current amps. Native258C divisor0.03199999779 yields32mA per byte count. B09C was incorrectly reused as a WB mirror in older patched images; repaired WB mirror is AE90. Callback reads existing memory and does not itself measure hardware.",
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "Comment set successfully"
+          }
+        ],
+        "isError": false
+      },
+      "independent_comment_readback": false,
+      "reason": "MCP has no function body at this callback; earlier queries are preserved in the paused audit evidence."
+    },
+    {
+      "tool": "get_xrefs_to",
+      "address": "0xFFFFC91C",
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "From 000695a2 in rear_o2_sensor_voltage_low_diagnostic_pair [READ]"
+          },
+          {
+            "type": "text",
+            "text": "From 000339aa in avcs_ocv_current_integrator_update [READ]"
+          },
+          {
+            "type": "text",
+            "text": "From 000697e6 in rear_o2_sensor_voltage_high_diagnostic_pair [READ]"
+          },
+          {
+            "type": "text",
+            "text": "From 00034c72 in avcs_ocv_duty_feedback_output [WRITE]"
+          },
+          {
+            "type": "text",
+            "text": "From 00034ca8 in avcs_ocv_duty_feedback_output [READ]"
+          },
+          {
+            "type": "text",
+            "text": "From 00034c8e in avcs_ocv_duty_feedback_output [WRITE]"
+          }
+        ],
+        "isError": false
+      }
+    },
+    {
+      "tool": "get_xrefs_to",
+      "address": "0xFFFFC920",
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "From 000695aa in rear_o2_sensor_voltage_low_diagnostic_pair [READ]"
+          },
+          {
+            "type": "text",
+            "text": "From 000339c0 in avcs_ocv_current_integrator_update [READ]"
+          },
+          {
+            "type": "text",
+            "text": "From 000697ec in rear_o2_sensor_voltage_high_diagnostic_pair [READ]"
+          },
+          {
+            "type": "text",
+            "text": "From 00034c76 in avcs_ocv_duty_feedback_output [WRITE]"
+          },
+          {
+            "type": "text",
+            "text": "From 00034cb4 in avcs_ocv_duty_feedback_output [READ]"
+          },
+          {
+            "type": "text",
+            "text": "From 00034c9e in avcs_ocv_duty_feedback_output [WRITE]"
+          }
+        ],
+        "isError": false
+      }
+    }
+  ],
+  "limitations": [
+    "No live connection or hydraulic response proof.",
+    "No AVCS target channels in this selection.",
+    "Normal output commands precede diagnostic overrides and hardware PWM.",
+    "Standard current bytes are not valid OCV measurements in older images that reused B098/B09C for WB.",
+    "MCP callback comments accepted but missing function bodies prevent independent comment readback.",
+    "The wider audit remains paused."
+  ]
+}

@@ -1,0 +1,309 @@
+{
+  "schema_version": 1,
+  "paused_at": "2026-09-13T12:37:01.127761+10:00",
+  "status": "Paused at user request; full process-flow audit incomplete; loaded-cut causality and vehicle cure unproven.",
+  "checkpoint": "docs/reference/AUDIT_RESUME_20260913.md",
+  "git_head_before_checkpoint": "a6e217c9a9e31a771d65b0660af7cdf67ca3e890",
+  "production_changes_this_session": false,
+  "ecu_communication_this_session": false,
+  "artifact_sha256": {
+    "master_patch/D2WD610H_master_patch.bin": "3e95b7508427f544e30a96c7aa78298b32560a6f3caf5c180e7949b8c2adc388",
+    "master_patch_v2/D2WD610H_master_patch_v2.bin": "fabceb54359aca76e6e15835a51aa5cfd008e570dc002e886eaa62a6cb020ce5",
+    "logger/D2WD610H_master_logger.xml": "e2bf2106b81fb146a138981e8a5367132a9eb405c0cba199465deac3f147428a",
+    "logs/romraiderlog_adjustedvedrive_20260912_144204.csv": "347d10ce5e5c70d64f478e4bb6d124453697af07b1e074271ecbe1830d7efb33"
+  },
+  "captured_image_sha256": "fd795813febf817c845fc922e81e498539a539efeeb6e4d11822af47098094a2",
+  "verification": {
+    "report": "docs/reference/evidence/process_flow_tests_20260912.json",
+    "passed": true,
+    "groups": 354,
+    "result_rows": 64,
+    "fresh_run_this_session": false,
+    "new_formal_groups_this_session": 0
+  },
+  "ghidra": {
+    "program": "2005 BLE MT.bin",
+    "cumulative_capture_file": "docs/reference/evidence/patch_process_flow_20260912.json",
+    "captures": 3359,
+    "captures_appended_at_pause": 48,
+    "new_mutations_this_session": false,
+    "explicit_save_or_ram_migration": false
+  },
+  "open_work": [
+    "Complete hot-IAT fuel fixture feature initialization and prior B7E4/B7E8 publication, then connect to native 1DD04.",
+    "Formalize useful IAT timing, hot-timing qualifier/release and post-start air tests with strict write sets and pinned images.",
+    "Continue remaining per-family closure list in PATCH_PROCESS_FLOW.md.",
+    "If user proceeds with vehicle validation, verify standard AVCS callbacks/capabilities and produce a request-budgeted profile; no new profile exists yet."
+  ],
+  "proposed_logger": {
+    "status": "Pending; no profile or definition written",
+    "existing_profile_count": 7,
+    "base_selection": "AVLS_CUT_PARAMETERS",
+    "remove": [
+      "P122",
+      "P123",
+      "P124",
+      "P125",
+      "P126",
+      "E520",
+      "E526",
+      "E527"
+    ],
+    "add": [
+      "P48",
+      "P49",
+      "P50",
+      "P51",
+      "P52",
+      "P53",
+      "E32",
+      "P11"
+    ],
+    "expected_address_bytes": 43,
+    "targets_included": false,
+    "callbacks": {
+      "003C": "3192A",
+      "003D": "31938",
+      "003E": "31946",
+      "003F": "31954",
+      "0040": "31962",
+      "0041": "31978"
+    },
+    "callback_mcp_bodies_available": false,
+    "callback_native_value_validation_complete": false
+  },
+  "exploratory_probes": [
+    {
+      "filename": "temperature_consumer_probe.py",
+      "source_sha256": "3b132493e28dc39221dcdbff20c9b8c194e5ad361e82639d6d878c43ecb72e6d",
+      "source": "import sys\nsys.path.insert(0,'/Users/regan/Dev/Renesas_SH0755_modding/tests');import _test_paths\nfrom test_timing_feedback_process_flow import TimingFeedbackMachine,RAM,ROOT\nfrom test_startup_retained_process_flow import StartupRetainedMachine,BANK_WRITES\nfrom test_opening_timing_execution import LIMIT_WRITES\nclass Temp(TimingFeedbackMachine):\n call_lookup=StartupRetainedMachine.call_lookup\n def __init__(self,image,rpm=2800,coolant=67):\n  self.native_targets=set();super().__init__(image,rpm=rpm,speed=44,coolant=coolant,correction=0);self.final_inputs()\n  self.write(RAM+0xB484,0,1);self.write(RAM+0xB51C,1,1);self.write(RAM+0xB51A,0,1);self.write(RAM+0xB51D,0,1);self.write(RAM+0xCD48,4,1)\n  for a,v in [(0xB3B8,37),(0xB438,2),(0xB2F4,10),(0xB2F8,20),(0xB314,80),(0xC104,-10)]:self.put_float(RAM+a,v)\n  self.write(RAM+0xC12A,0,1);self.write(RAM+0xC121,1,1);self.write(RAM+0xC12E,7,1);self.write(RAM+0xC128,0,2)\n def hot(self):\n  for e in (0x27480,0x2769C,0x27728,0x2777C):self.execute(e,BANK_WRITES)\n  return [self.read(RAM+0xC121,1),self.read(RAM+0xC12E,1),self.read(RAM+0xC128,2),self.get_float(RAM+0xC108),self.get_float(RAM+0xC104),self.final()]\nif __name__=='__main__':\n im=(ROOT/'master_patch_v2/D2WD610H_master_patch_v2.bin').read_bytes()\n for ect,rpm in [(67,2800),(120,2000)]:\n  c=Temp(im,rpm,ect)\n  try:\n   for i in range(20):\n    out=c.hot()\n    if i in [0,1,15,17,18,19]:print(ect,rpm,i,out)\n  except Exception as e:print('failed',hex(c.pc),e)\n",
+      "boundary": "Native timing qualifier/ceiling exploration with explicitly imposed old flags and C104=-10; not a vehicle-state reconstruction.",
+      "formal_test": false
+    },
+    {
+      "filename": "temperature_air_probe.py",
+      "source_sha256": "376f768aecb13401830fb4d493434860e4373922d7ed0a029bc533f107f3047f",
+      "source": "from temperature_consumer_probe import *\nc=Temp((ROOT/'master_patch_v2/D2WD610H_master_patch_v2.bin').read_bytes());c.air_path_inputs(70)\nfor a in range(0xC588,0xC5CC,4):c.put_float(RAM+a,0)\nfor a in (0xC5AC,0xC5AE,0xC5B0):c.write(RAM+a,0,2)\nc.write(RAM+0xC5B2,0,1)\nc.put_float(RAM+0xB3B8,37)\nc.write(RAM+0xB51E,0x10,1)\nc.write(RAM+0xB51C,0,1)\nc.write(RAM+0xB51A,0x80,1)\nc.write(RAM+0xB484,0,1)\ntry:\n c.write(RAM+0xB748,0x80,1)\n for a in (0x2E55C,0x2E5B6,0x2E684):c.execute(a,BANK_WRITES)\n print('start',c.get_float(RAM+0xC588),c.get_float(RAM+0xC58C))\n c.write(RAM+0xB748,0,1)\n for i in range(400):\n  for a in (0x2E55C,0x2E5B6,0x2E684):c.execute(a,BANK_WRITES)\n  if i in (0,5,30,100,399):\n   c.idle_compensation()\n   print('tick',i,c.get_float(RAM+0xC588),c.get_float(RAM+0xC58C),'air',c.air_path(),'driver',c.final_step())\nexcept Exception as e:print('failed',hex(c.pc),e)\n",
+      "boundary": "Uses the timing probe class and corrected ignition/digital states; explicit crank/runtime/air histories; no physical DBW response or task cadence.",
+      "formal_test": false
+    },
+    {
+      "filename": "temperature_fuel_probe.py",
+      "source_sha256": "859a126e0da8318dd4bfaf159133e6cdb154c174a187c7a4401df7828e257236",
+      "source": "from temperature_consumer_probe import *\nim=(ROOT/'master_patch_v2/D2WD610H_master_patch_v2.bin').read_bytes()\nfor iat,flow,old in [(37,100,0),(80,10,0),(80,100,1)]:\n c=Temp(im); c.seed_composer()\n for a in range(0xBE88,0xBEB6):c.write(RAM+a,0,1)\n c.put_float(RAM+0xB3B8,iat)\n c.put_float(RAM+0xB420,flow)\n c.write(RAM+0xBF1C,0,1)\n c.write(RAM+0xCC4E,0xC0,1)\n c.execute(0x23300,BANK_WRITES)\n c.put_float(RAM+0xBE94,old)\n try:\n  for n in range(32):\n   c.execute(0x23482,BANK_WRITES)\n   c.execute(0x234A0,BANK_WRITES)\n   c.execute(0x2333C,BANK_WRITES)\n   if n in (0,1,20,31):\n    print(iat,flow,n,'factor',c.get_float(RAM+0xBE88),'weight',c.get_float(RAM+0xBE94),'flags',[c.read(RAM+a,1) for a in range(0xBEB0,0xBEB6)],'terms',[c.get_float(RAM+a) for a in (0xBE90,0xBE98,0xBE9C)])\n except Exception as e:print('failed',hex(c.pc),e)\n",
+      "boundary": "Unfinished: second update raises an uninitialized B7E8 fixture read at 235A4; CC4E=C0 is forced, not an established installed feature result.",
+      "formal_test": false
+    }
+  ],
+  "resume_probe_instructions": "Recover exploratory_probes[].source to separate files with their stored filenames in one scratch directory. The first file adds this repository tests path and the other two import it. Update that path only if the checkout moves. These are incomplete exploratory programs and are not registered tests or evidence of a reproduced vehicle failure.",
+  "checkpoint_validation": {
+    "artifact_pins": true,
+    "probe_syntax_and_source_hashes": true,
+    "existing_report_totals": true,
+    "historical_mcp_captures_preserved": true,
+    "checkpoint_markdown_links_checked": 138,
+    "checkpoint_missing_links": 0,
+    "all_markdown_links_checked": 2278,
+    "preexisting_missing_links": [
+      {
+        "file": "logs/20260911_drive2_review.md",
+        "target": "../master_patch_v2/alert_strobe_component.py"
+      },
+      {
+        "file": "master_patch/COMMISSIONING.md",
+        "target": "../logs/20260908_dashpot_review.md"
+      },
+      {
+        "file": "master_patch/COMMISSIONING.md",
+        "target": "../logs/20260908_recovery_review.md"
+      },
+      {
+        "file": "logs/archive/20260908_dashpot_review.md",
+        "target": "../docs/archive/master_patch/MAP_SOURCE_AUDIT.md"
+      },
+      {
+        "file": "logs/archive/20260908_dashpot_review.md",
+        "target": "../tools/analysis/analyze_20260908_dashpot.py"
+      },
+      {
+        "file": "logs/archive/20260908_idle_review.md",
+        "target": "../docs/archive/master_patch/IDLE_RECOVERY_AUDIT.md"
+      },
+      {
+        "file": "logs/archive/20260908_idle_review.md",
+        "target": "../docs/archive/master_patch/LOGGER_CONNECTION_AUDIT.md"
+      },
+      {
+        "file": "logs/archive/20260908_idle_review.md",
+        "target": "../docs/archive/master_patch/IDLE_RECOVERY_AUDIT.md"
+      },
+      {
+        "file": "logs/archive/README.md",
+        "target": "../docs/archive/master_patch/GHIDRA_AUDIT.md"
+      },
+      {
+        "file": "logs/archive/README.md",
+        "target": "../docs/archive/audit.md"
+      },
+      {
+        "file": "logs/archive/README.md",
+        "target": "../docs/archive/master_patch/IDLE_AIR_RECOVERY_AUDIT.md"
+      },
+      {
+        "file": "logs/archive/README.md",
+        "target": "../docs/archive/master_patch/IDLE_RECOVERY_AUDIT.md"
+      },
+      {
+        "file": "logs/archive/20260911_drive2_review.md",
+        "target": "../master_patch_v2/alert_strobe_component.py"
+      },
+      {
+        "file": "logs/archive/20260911_drive2_review.md",
+        "target": "../tools/analyze_log_ve.py"
+      },
+      {
+        "file": "logs/archive/20260908_recovery_review.md",
+        "target": "../docs/archive/master_patch/IDLE_AIR_RECOVERY_AUDIT.md"
+      },
+      {
+        "file": "docs/archive/audit.md",
+        "target": "../../logs/20260908_dashpot_review.md"
+      },
+      {
+        "file": "docs/archive/audit.md",
+        "target": "../../logs/20260908_idle_review.md"
+      },
+      {
+        "file": "docs/archive/audit.md",
+        "target": "../../logs/20260908_recovery_review.md"
+      },
+      {
+        "file": "docs/archive/project_overview.md",
+        "target": "../../logs/20260908_recovery_review.md"
+      },
+      {
+        "file": "docs/archive/master_patch/GHIDRA_AUDIT.md",
+        "target": "../../../logs/20260908_dashpot_review.md"
+      },
+      {
+        "file": "docs/archive/master_patch/GHIDRA_AUDIT.md",
+        "target": "../../../logs/20260908_idle_review.md"
+      },
+      {
+        "file": "docs/archive/master_patch/GHIDRA_AUDIT.md",
+        "target": "../../../logs/20260908_recovery_review.md"
+      },
+      {
+        "file": "docs/archive/master_patch/README.md",
+        "target": "../../../logs/20260908_dashpot_review.md"
+      },
+      {
+        "file": "docs/archive/master_patch/README.md",
+        "target": "../../../logs/20260908_recovery_review.md"
+      },
+      {
+        "file": "docs/archive/master_patch/README.md",
+        "target": "../../../logs/20260908_idle_review.md"
+      },
+      {
+        "file": "master_patch/candidates/README.md",
+        "target": "../../logs/20260908_recovery_review.md"
+      },
+      {
+        "file": "docs/archive/master_patch/SD_FALLBACK_AUDIT.md",
+        "target": "../../../logs/20260908_load_recovery_replay.json"
+      },
+      {
+        "file": "docs/archive/master_patch/SD_FALLBACK_AUDIT.md",
+        "target": "../../../logs/20260908_sd_fallback.json"
+      },
+      {
+        "file": "docs/archive/master_patch/FPU_USAGE_AUDIT.md",
+        "target": "../../../logs/20260908_dashpot_review.md"
+      },
+      {
+        "file": "docs/archive/master_patch/IDLE_AIR_RECOVERY_AUDIT.md",
+        "target": "../../../logs/20260908_dashpot_review.md"
+      },
+      {
+        "file": "docs/archive/master_patch/IDLE_AIR_RECOVERY_AUDIT.md",
+        "target": "../../../logs/20260908_load_recovery_replay.json"
+      },
+      {
+        "file": "docs/archive/master_patch/LOGGER_CONNECTION_AUDIT.md",
+        "target": "../../../logs/20260908_idle_review.md"
+      },
+      {
+        "file": "docs/archive/master_patch/LOGGER_CONNECTION_AUDIT.md",
+        "target": "../../../logs/20260908_recovery_review.md"
+      },
+      {
+        "file": "docs/archive/master_patch/TRANSIENT_COMPONENT_AUDIT.md",
+        "target": "../../../logs/20260908_recovery_review.md"
+      },
+      {
+        "file": "docs/archive/master_patch/TRANSIENT_COMPONENT_AUDIT.md",
+        "target": "../../../logs/20260908_transient_components.json"
+      },
+      {
+        "file": "docs/archive/master_patch/TRANSIENT_COMPONENT_AUDIT.md",
+        "target": "../../../logs/20260908_transient_remedies.json"
+      },
+      {
+        "file": "docs/archive/master_patch/MAP_SOURCE_AUDIT.md",
+        "target": "../../../logs/20260908_map_intercept.json"
+      },
+      {
+        "file": "docs/archive/master_patch/MAP_SOURCE_AUDIT.md",
+        "target": "../../../logs/20260908_map_sources.json"
+      },
+      {
+        "file": "docs/archive/master_patch/SD_FAULT_REPAIR_PROTOTYPE.md",
+        "target": "../../../logs/20260908_sd_fault_repair_prototype.json"
+      },
+      {
+        "file": "docs/archive/master_patch/IDLE_RECOVERY_AUDIT.md",
+        "target": "../../../logs/20260908_recovery_review.md"
+      },
+      {
+        "file": "docs/archive/master_patch/IDLE_RECOVERY_AUDIT.md",
+        "target": "../../../logs/20260908_idle_review.md"
+      },
+      {
+        "file": "docs/archive/master_patch/IDLE_RECOVERY_AUDIT.md",
+        "target": "../../../logs/20260908_transient_replay.json"
+      },
+      {
+        "file": "docs/archive/research/D2WD610H_RE_notes.md",
+        "target": "../../../logs/20260908_recovery_review.md"
+      },
+      {
+        "file": "docs/archive/research/D2WD610H_RE_notes.md",
+        "target": "../../../logs/20260908_idle_review.md"
+      },
+      {
+        "file": "master_patch/romraider_query_fix/README.md",
+        "target": "../../logs/20260908_idle_review.md"
+      },
+      {
+        "file": "master_patch/romraider_query_fix/README.md",
+        "target": "../../logs/20260908_recovery_review.md"
+      }
+    ],
+    "preexisting_link_sources_unchanged_from_head": true
+  },
+  "keepawake": {
+    "audit_owned_pid": 20608,
+    "status": "released for user-requested pause",
+    "released_at": "2026-09-13T12:38:53.290660+10:00"
+  },
+  "logger_follow_up": {
+    "completed_at": "2026-09-13T12:50:24.696219+10:00",
+    "evidence": "docs/reference/evidence/avcs_logger_20260913.json",
+    "profile": "logger/D2WD610H_avcs_repair_profile.xml",
+    "profile_sha256": "b6c5c1709bf5703a24fd55f4bbc916496498cfe077c6d10d58cd00cc8c050348",
+    "logger_definition_sha256": "855b0af1620eb9efd6cc439945dec4fe5fc7dd957e9b79d506f8d1d1a099c71d",
+    "supersedes": "proposed_logger and the pending logger-preparation item only; the audit-pause snapshot and unfinished temperature work remain historical/paused.",
+    "consolidated_groups": 355
+  }
+}

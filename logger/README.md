@@ -13,6 +13,7 @@ definition/image pairings when replaying old captures; see the
 
 | Profile | Purpose |
 |---|---|
+| [AVCS repair](D2WD610H_avcs_repair_profile.xml) | Both cam angles, restored normal OCV output duty and measured current, with IAM, knock, AFR, MAP and injector/lean-cut state. Use with the repaired rolling v2 and the updated complete definition. |
 | [AVLS and fuel cut](D2WD610H_avls_cut_diagnostic_profile.xml) | Both banks' software lift modes, OSV duty/current and injector inhibition, with IAM, knock, MAP and baro. Use for the September 12 transition investigation. |
 | [Road tuning](D2WD610H_road_tuning_profile.xml) | IAM, feedback/learned knock, ignition timing, native MAP, load, wideband and fuel response, with speed and driver inputs. |
 | [MAP source](D2WD610H_map_source_diagnostic_profile.xml) | Native and processed MAP, raw MAP voltage, barometric estimate, diagnostic flags and engine response. |
@@ -21,7 +22,7 @@ definition/image pairings when replaying old captures; see the
 | [Recovery](D2WD610H_idle_recovery_profile.xml) | Pedal, transient fuel correction, base factor and lift state. |
 | [Idle air](D2WD610H_idle_air_diagnostic_profile.xml) | Idle RPM request, throttle request, pedal and feedback flags. |
 
-All seven generated capture profiles use the native limit of 43 byte addresses
+All eight generated capture profiles use the native limit of 43 byte addresses
 per request. See the [logger reference](../docs/reference/LOGGER.md) for signal
 meanings and capture evidence.
 
@@ -31,6 +32,40 @@ the request budget. Selecting all four as well produces a 184-byte request
 that the ECU rejects, reported by RomRaider as an invalid header. Reload the
 profile after changing the file; replace channels instead of adding to this
 full selection. The generator now checks the byte budget before writing.
+
+## AVCS repair validation
+
+Select the updated [complete definition](D2WD610H_master_logger.xml), then
+load [D2WD610H_avcs_repair_profile.xml](D2WD610H_avcs_repair_profile.xml) through
+RomRaider's **File → Load Profile**. Reload the definition or restart RomRaider
+if E528/E529 are absent. Load one profile at a time and keep the selection as
+provided: it uses all 43 available byte addresses.
+
+| AVCS signals | Parameter IDs | Requested bytes |
+|---|---|---:|
+| Actual cam angle and ADC-derived OCV current for both banks | P48, P49, P52, P53 | 4 |
+| Normal output duty from the restored feedback stage | E528, E529 | 8 |
+| IAM and feedback/learned knock corrections | E31, E39, E41 | 12 |
+| Wideband AFR and native MAP | E500, E518 | 8 |
+| Injector-inhibit word and added lean-cut state | E525, E504 | 3 |
+| RPM, speed, timing, pedal, plate, gross pulse width and coolant | P8, P9, P10, P30, P13, P21, P2 | 8 |
+| **Total: 20 channels** | | **43** |
+
+Standard P50/P51 read upstream duty demand `C914/C918`. E528/E529 instead
+read `C91C/C920`, after restored `34BE4` applies the current integrator and
+enable/fault gates. Later diagnostic overrides and the hardware PWM remain
+separate; these channels report the normal output command. P52/P53 read native
+`B098/B09C` through `DFB4`, at 32 mA per byte count. P48/P49 read native
+`C8C8/C8CC`, at one degree per byte count. Right/Left labels correspond to
+software bank indices 0/1; harness assignment is not independently established.
+
+Native callbacks and capability bits are verified. The complete selected
+request is 136 bytes and both continuous 49-byte responses pass the native
+SSM tests, including distinct demand/output values. This is an offline
+protocol check, not a live connection or proof of hydraulic cam response.
+The profile omits cam targets, load, IAT and AVLS mode to retain knock and
+cut context; it cannot alone prove target tracking. It reads existing RAM
+and requires no additional ROM change.
 
 ## AVLS and cut diagnosis
 
@@ -100,12 +135,12 @@ in the same capture without exceeding the 136-byte request size. The road
 profile continues to use its existing channel definitions.
 
 [testinglogger.xml](testinglogger.xml) and [testprofile.xml](testprofile.xml)
-are retained manual test selections, separate from the seven verified captures.
+are retained manual test selections, separate from the eight generated captures.
 [D2WD610H_master_logger_ecuparams.xml](D2WD610H_master_logger_ecuparams.xml) is
 the generator's parameter fragment; select the complete definition in RomRaider.
 
 The existing helper commands remain under `master_patch/`. From the repository
-root, regenerate the seven capture profiles with:
+root, regenerate the eight capture profiles with:
 
 ```sh
 python3 -B master_patch/logger_profiles.py

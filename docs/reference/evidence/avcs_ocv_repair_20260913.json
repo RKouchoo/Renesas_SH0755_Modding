@@ -312,7 +312,7 @@
   "verification": {
     "consolidated_report": "docs/reference/evidence/process_flow_tests_20260912.json",
     "passed": true,
-    "groups": 354,
+    "groups": 355,
     "image_sha256": {
       "main": "3e95b7508427f544e30a96c7aa78298b32560a6f3caf5c180e7949b8c2adc388",
       "v2": "fabceb54359aca76e6e15835a51aa5cfd008e570dc002e886eaa62a6cb020ce5",
